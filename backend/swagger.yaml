@@ -1,0 +1,1859 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: DebiAI_BACKEND_API
+  description: DebiAI backend api
+  contact:
+    email: debiai@irt-systemx.fr
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /version:
+    get:
+      summary: Ping to check if the backend is running
+      operationId: controller.projects.ping
+      responses:
+        200:
+          description: The server is online
+
+  # Logs
+  /projects/{projectId}/log:
+    post:
+      summary: Update log file for front and backend projects
+      tags: [Project]
+      operationId: controller.projects.log
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            properties:
+              line:
+                description: line to add to log file
+                type: object
+          required: true
+
+      responses:
+        200:
+          description: log updated
+        404:
+          description: Project not found
+
+  # Projects
+  /projects:
+    get:
+      summary: Get the projects overview
+      tags: [Project]
+      operationId: controller.projects.get_projects
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectOverview"
+
+    post:
+      summary: Post a new project
+      tags: [Project]
+      operationId: controller.projects.post_project
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - projectName
+            properties:
+              projectName:
+                type: string
+                description: The project name
+              blockLevelInfo:
+                type: array
+                items:
+                  $ref: "#/definitions/blockLevelInfo"
+                description: List of the block level info
+
+      responses:
+        200:
+          description: project created, the project ID is returned
+          schema:
+            type: object
+            required:
+              - projectId
+            properties:
+              projectId:
+                type: string
+        400:
+          description: The project name must not be null
+        401:
+          description: The project name is too long
+        402:
+          description: The project name contain invalid characters
+        403:
+          description: A project with the same name already exist
+
+  /projects/{projectId}:
+    get:
+      summary: Get project name, nb of models & nb of selections (overviews of a project)
+      tags: [Project]
+      operationId: controller.projects.get_project
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
+    delete:
+      summary: remove a project from ID
+      tags: [Project]
+      operationId: controller.projects.delete_project
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project deleted
+        404:
+          description: project doesn't exist
+
+  # BlockLevels
+  /projects/{projectId}/blocklevels:
+    post:
+      summary: add a new data blocks level structure
+      tags: [Project]
+      operationId: controller.projects.post_blocklevels
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: blocklevels
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                groundTruth:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                inputs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                contexts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+              minItems: 1
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Block tructure added, the block structure is returned
+
+  /projects/{projectId}/resultsStructure:
+    post:
+      summary: add a new expected results structure
+      tags: [Project]
+      operationId: controller.projects.post_resultsStructure
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: resultStructure
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                name:
+                  type:
+                    - number
+                    - string
+                type:
+                  type: string
+                  description: text, number or bool
+                default:
+                  type:
+                    - number
+                    - string
+                    - boolean
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Results structure added, the resultStructure is returned
+        404:
+          description: The project does not exist
+        403:
+          description: The result structure already exist
+
+  /projects/{projectId}/expectedResult:
+    post:
+      summary: Add an expected result to the results structure, a default value is required
+      tags: [Project]
+      operationId: controller.projects.post_addExpectedResult
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: resultColumn
+          in: body
+          schema:
+            type: object
+            required:
+              - name
+              - type
+              - default
+            properties:
+              name:
+                type:
+                  - number
+                  - string
+              type:
+                type: string
+                description: text, number or bool
+              default:
+                type:
+                  - number
+                  - string
+                  - boolean
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Results structure added, the updated resultStructure is returned
+        404:
+          description: The project does not exist
+
+  /projects/{projectId}/del_expectedResult:
+    post:
+      summary: Delete an expected result to the results structure
+      tags: [Project]
+      operationId: controller.projects.delete_expectedResult
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: resultColumn
+          in: body
+          schema:
+            type: object
+            required:
+              - value
+            properties:
+              value:
+                type:
+                  - string
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Results structure removed, the updated resultStructure is returned.
+        404:
+          description: The project/column does not exist.
+
+  # Hash
+  /projects/{projectId}/check_hash:
+    post:
+      summary: Check hash and return non valide ones
+      tags: [Hash]
+      operationId: controller.projects.check_hash
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - hash_list
+            properties:
+              hash_list:
+                type: array
+                items:
+                  type: string
+          required: true
+      responses:
+        200:
+          description: List of non-valide hash
+          schema:
+            type: array
+            items:
+              type: string
+
+  # Models
+  /projects/{projectId}/models:
+    get:
+      summary: get the project models overviews
+      tags: [Model]
+      operationId: controller.models.get_models
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: List of model overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/modelOverview"
+    post:
+      summary: add a model
+      tags: [Model]
+      operationId: controller.models.post_model
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              metadata:
+                type: object
+                description: Model metadata - key value list
+          required: true
+      responses:
+        200:
+          description: Model added
+        201:
+          description: Warning - Model already exist
+        402:
+          description: Model name contain prohibed caracters
+        404:
+          description: Project not found
+
+  /projects/{projectId}/models/commonResults:
+    post:
+      summary: get number of common results between models
+      tags: [Model]
+      operationId: controller.models.get_common_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - modelIds
+              - common
+            properties:
+              modelIds:
+                type: array
+                items:
+                  type: string
+              common:
+                type: boolean
+                description: decied if left or right join
+              selectionId:
+                description: Selection Id, not required
+
+          required: true
+      responses:
+        200:
+          description: Common samples
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: Project or model not found
+
+  /projects/{projectId}/models/{modelId}:
+    delete:
+      summary: remove a model
+      tags: [Model]
+      operationId: controller.models.delete_model
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model deleted
+        404:
+          description: model or project doesn't exist
+
+  /projects/{projectId}/models/{modelId}/resultsDict:
+    post:
+      summary: Add a results to a model
+      tags: [Model]
+      operationId: controller.models.add_results_dict
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          description: Tree object with existing block references, the end of the tree need to include the expected results in the block structure
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - results
+            properties:
+              results:
+                type: object
+              expected_results_order:
+                description: order of the given results array, by default is the project result structure
+                type: array
+
+      responses:
+        200:
+          description: model results added
+        403:
+          description: Block not found
+        404:
+          description: model or project doesn't exist
+
+  /projects/{projectId}/models/{modelId}/resultsHash:
+    post:
+      summary: Add a results to a model from hash
+      tags: [Model]
+      operationId: controller.models.add_results_hash
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          description: Dictionnary of hash-results
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - results
+            properties:
+              results:
+                type: object
+              expected_results_order:
+                description: order of the given results array, by default is the project result structure
+                type: array
+
+      responses:
+        200:
+          description: model results added
+        404:
+          description: model or project doesn't exist
+
+  /projects/{projectId}/models/{modelId}/getModelResults:
+    post:
+      summary: Get the model results from a sample list
+      tags: [Model]
+      operationId: controller.models.get_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                description: List of sample ID
+                items:
+                  type: string
+      responses:
+        200:
+          description: model results
+          schema:
+            type: object
+            additionalProperties:
+              type: array
+              description: List of results ordered the same way as the project expected results
+        404:
+          description: model or project doesn't exist
+
+  # Samples
+  /projects/{projectId}/samples:
+    post:
+      summary: get the project sampleId list, can be filtered by selections, models, or both
+      tags: [Samples]
+      operationId: controller.samples.get_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            properties:
+              selectionIds:
+                type: array
+                items:
+                  type: string
+                description: To get the samples that are parts of those given selection
+              selectionIntersection:
+                type: boolean
+                description: To get only the the samples that are in all of the selections
+
+              modelIds:
+                type: array
+                items:
+                  type: string
+                description: To get the samples that those models have been evaluated on
+              commonResults:
+                type: boolean
+                description: To get only the the samples that have been evaluated on a common sample
+
+      responses:
+        200:
+          description: List of the project sample id
+          schema:
+            type: object
+            properties:
+              samples:
+                type: array
+                items:
+                  type: string
+                description: List of samples
+              nbFromSelection:
+                type: integer
+                description: The number of samples that are from the selection (and not the models)
+        404:
+          description: project doesn't exist
+
+  /projects/{projectId}/selectionSamples/{selectionId}:
+    get:
+      summary: get the project selection sampleId list
+      tags: [Samples]
+      operationId: controller.samples.get_selection_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          description: selection ID
+          required: true
+
+      responses:
+        200:
+          description: List of the project sample id
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: project or selection doesn't exist
+
+  # Blocks
+  /projects/{projectId}/blocks:
+    post:
+      summary: add a tree to an existing project block tree
+      tags: [Block]
+      operationId: controller.blocks.post_block_tree
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - blockTree
+            properties:
+              blockTree:
+                $ref: "#/definitions/blockTree"
+          required: true
+
+      responses:
+        200:
+          description: Block tree added
+        403:
+          description: Invalid parameters
+        404:
+          description: Project not found
+
+    get:
+      summary: get a project block tree from a depth
+      tags: [Block]
+      operationId: controller.blocks.get_block_racine
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: depth
+          in: query
+          type: integer
+          description: depth of the wanted tree
+          minimum: 0
+          default: 0
+
+      responses:
+        200:
+          description: Block tree list
+          schema:
+            type: array
+        404:
+          description: project doesn't exist
+
+  /projects/{projectId}/blocksWithModelResults:
+    post:
+      summary: get a project tree with the results of a model list
+      tags: [Block]
+      operationId: controller.blocks.get_tree_with_model_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - modelIds
+            properties:
+              modelIds:
+                type: array
+                items:
+                  type: string
+              common:
+                type: boolean
+                default: true
+          required: true
+
+      responses:
+        200:
+          description: Block tree with sample
+          schema:
+            type: object
+        403:
+          description: Invalid parameters
+        404:
+          description: Project or one of the models not found
+
+  /projects/{projectId}/blocks/{selectionId}:
+    get:
+      summary: get a project selection block tree from a depth and a selection ID
+      tags: [Block]
+      operationId: controller.blocks.get_block_racine_from_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: selectionId
+          in: path
+          type: string
+          description: selection ID
+          required: true
+
+        - name: depth
+          in: query
+          type: integer
+          description: depth of the wanted tree
+          minimum: 0
+          default: 0
+
+      responses:
+        200:
+          description: Block tree list
+          schema:
+            type: array
+        404:
+          description: project or selection doesn't exist
+
+  /projects/{projectId}/block:
+    post:
+      summary: get a block and his sub blocks from a depth
+      tags: [Block]
+      operationId: controller.blocks.get_block_tree
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - blockId
+              - blockPath
+            properties:
+              blockId:
+                type: string
+                description: code of the block from where we want the tree to start
+              blockPath:
+                type: string
+                description: path of the block from where we want the tree to start
+              depth:
+                type: integer
+                description: depth of the wanted tree
+                minimum: 0
+                default: 1
+          required: true
+
+      responses:
+        200:
+          description: Block tree
+          schema:
+            type: object
+        404:
+          description: block or project doesn't exist
+
+    delete:
+      summary: remove a block from a block ID
+      tags: [Block]
+      operationId: controller.blocks.delete_block
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+
+        - name: blockId
+          in: path
+          type: string
+          description: ID of the block to delete
+          required: true
+
+      responses:
+        200:
+          description: block deleted
+        404:
+          description: block or project doesn't exist
+
+  /projects/{projectId}/blocksFromSampleIds:
+    post:
+      summary: get a project tree form a sample list
+      tags: [Block]
+      operationId: controller.blocks.get_tree_from_sampleid_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                type: array
+                items:
+                  type: string
+          required: true
+
+      responses:
+        200:
+          description: Block tree with sample
+          schema:
+            type: object
+        404:
+          description: Project or one of the models not found
+
+  # Data streaming
+  /projects/{projectId}/getAvailableDataNumber:
+    get:
+      summary: get a the number of data in the project or a selection
+      tags: [Block]
+      operationId: controller.blocks.get_training_samples_number
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: selectionId
+          in: query
+          type: string
+          required: false
+          description: selection number of sample, number of all data if no selectionId
+
+      responses:
+        200:
+          description: Number of sample available
+          schema:
+            type: number
+        404:
+          description: project or selection doesn't exist
+
+  /projects/{projectId}/getAvailableDataNumberWithModelResults:
+    get:
+      summary: get a the number of data in the project or a selection
+      tags: [Block]
+      operationId: controller.blocks.get_training_samples_number_with_model_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: modelIds
+          in: query
+          type: array
+          items:
+            type: string
+          description: list of modelsIds to get the results from
+          required: true
+
+        - name: common
+          in: query
+          type: boolean
+          description: get common sample evaluation results or not
+          required: true
+
+        - name: selectionId
+          in: query
+          type: string
+          required: false
+          description: selection number of sample, number of all data if no selectionId
+
+      responses:
+        200:
+          description: Number of sample available
+          schema:
+            type: number
+        404:
+          description: project or selection doesn't exist
+
+  /projects/{projectId}/trainingSamples:
+    get:
+      summary: get a sample patch ready for training
+      tags: [Block]
+      operationId: controller.blocks.get_training_samples
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: start
+          in: query
+          type: integer
+          description: start of the patch
+          minimum: 0
+          required: true
+
+        - name: size
+          in: query
+          type: integer
+          description: size of the patch
+          minimum: 1
+          required: true
+
+        - name: selectionId
+          in: query
+          type: string
+          required: false
+          description: selection to pull the data, all data if no selectionId
+
+      responses:
+        200:
+          description: Block tree list
+          schema:
+            type: object
+        404:
+          description: project or selection doesn't exist
+
+  /projects/{projectId}/trainingSamplesWithModelResults:
+    get:
+      summary: get a sample patch with the given model results
+      tags: [Block]
+      operationId: controller.blocks.get_training_samples_with_model_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: start
+          in: query
+          type: integer
+          description: start of the patch
+          minimum: 0
+          required: true
+
+        - name: size
+          in: query
+          type: integer
+          description: size of the patch
+          minimum: 1
+          required: true
+
+        - name: modelIds
+          in: query
+          type: array
+          items:
+            type: string
+          description: list of modelsIds to get the results from
+          required: true
+
+        - name: common
+          in: query
+          type: boolean
+          description: get common sample evaluation results or not
+          required: true
+
+        - name: selectionId
+          in: query
+          type: string
+          required: false
+          description: selection to pull the data, all data if no selectionId
+
+      responses:
+        200:
+          description: Block tree list with model results
+          schema:
+            type: object
+        404:
+          description: project, model or selection doesn't exist
+
+  # Requests
+  /projects/{projectId}/requests/:
+    get:
+      summary: Get the project requests
+      tags: [Requests]
+      operationId: controller.requests.get_requests
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project requests
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/request"
+
+    post:
+      summary: add a request
+      tags: [Requests]
+      operationId: controller.requests.post_request
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - requestName
+              - filters
+            properties:
+              requestName:
+                type: string
+              filters:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                    - columnLabel
+                  properties:
+                    type:
+                      type: string
+                    columnLabel:
+                      type: string
+                    inverted:
+                      type: boolean
+                      default: false
+                  description: can be of type 'values' or 'intervals'. 'values'
+                    filers need to have a 'values' key with an array of values,
+                    'intervals' filters need to have an 'intervals' key with a list
+                    of {min, max} intervals
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/request"
+          description: request added, the request is returned
+
+  /projects/{projectId}/requests/{requestId}/newSelection:
+    post:
+      summary: Create a selection from a request filters
+      tags: [Requests]
+      operationId: controller.requests.create_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - selectionName
+            properties:
+              selectionName:
+                type: string
+      responses:
+        200:
+          description: selection created
+
+  /projects/{projectId}/requests/{requestId}:
+    get:
+      summary: Get a project request
+      tags: [Requests]
+      operationId: controller.requests.get_request
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project request
+          schema:
+            $ref: "#/definitions/request"
+    delete:
+      summary: delete a request
+      tags: [Requests]
+      operationId: controller.requests.delete_request
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: request deleted
+
+  # Selections
+  /projects/{projectId}/selections/:
+    get:
+      summary: Get the project selections
+      tags: [Selection]
+      operationId: controller.selection.get_selections
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selections
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/selection"
+
+    post:
+      summary: add a selection
+      tags: [Selection]
+      operationId: controller.selection.post_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selection sample id (hash)
+              selectionName:
+                type: string
+              requestDescription:
+                type: string
+                x-nullable: true
+              requestId:
+                type: string
+                description: Id of the request that has created the selection.
+                x-nullable: true
+      responses:
+        200:
+          description: selection added
+          schema:
+            type: object
+
+  /projects/{projectId}/selections/{selectionId}:
+    delete:
+      summary: delete a selection
+      tags: [Selection]
+      operationId: controller.selection.delete_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: selection deleted
+
+  # Widget configuration
+  /projects/{projectId}/widgetconf:
+    get:
+      summary: Get the project widget configurations
+      tags: [Widget configuration]
+      operationId: controller.widgetConfiguration.get_configurations
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project widget configurations, one key in one widget, the values are a list of configurations
+          schema:
+            type: object
+    post:
+      summary: Add a widget configuration to a project
+      tags: [Widget configuration]
+      operationId: controller.widgetConfiguration.post_configuration
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - widgetTitle
+              - configuration
+              - name
+              - description
+            properties:
+              widgetTitle:
+                type: string
+                description: Title of the wigdet linked to the configuration
+                minLength: 1
+              configuration:
+                type: object
+                description: Key value list with the configuration
+              name:
+                type: string
+                description: Name of the preset choosen by the user
+                minLength: 1
+              description:
+                type: string
+                description: Description of the preset choosen by the user
+          required: true
+
+      responses:
+        200:
+          description: Widget configuration saved
+        404:
+          description: Project not found
+
+  /projects/{projectId}/widgetconf/delete:
+    post:
+      summary: Delete a widget configuration
+      tags: [Widget configuration]
+      operationId: controller.widgetConfiguration.delete_configuration
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - widgetTitle
+              - name
+            properties:
+              widgetTitle:
+                type: string
+                description: Title of the wigdet linked to the configuration
+                minLength: 1
+              name:
+                type: string
+                description: Name of the preset choosen by the user
+                minLength: 1
+          required: true
+
+      responses:
+        200:
+          description: Widget configuration saved
+        404:
+          description: Project or configuration not found
+
+  # Tags
+  /projects/{projectId}/tags:
+    post:
+      summary: Add a tag to a project
+      tags: [Tags]
+      operationId: controller.tags.post_tag
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - tagName
+              - tagHash
+            properties:
+              tagName:
+                type: string
+                description: Tag name
+                minLength: 1
+              tagHash:
+                type: object
+                description: key value ; key is the sample hash, value is the tag value
+          required: true
+      responses:
+        200:
+          description: Tag added or updated
+        404:
+          description: Project not found
+
+    get:
+      summary: Get project tags
+      tags: [Tags]
+      operationId: controller.tags.get_tags
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Tag overview list
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/tag"
+
+  /projects/{projectId}/tags/{tagId}:
+    get:
+      summary: Get a tag from Id
+      tags: [Tags]
+      operationId: controller.tags.get_tag
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: tagId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Tag
+          schema:
+            $ref: "#/definitions/tag"
+    delete:
+      summary: Delete a tag
+      tags: [Tags]
+      operationId: controller.tags.delete_tag
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: tagId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Tag deleted
+        404:
+          description: Project or tag not found
+
+  /projects/{projectId}/tags/{tagId}/samples/{tagValue}:
+    get:
+      summary: Get a sample tree from a tag and a value
+      tags: [Tags]
+      operationId: controller.tags.get_tag_sample_tree
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: tagId
+          in: path
+          type: string
+          required: true
+        - name: tagValue
+          in: path
+          type: integer
+          required: true
+      responses:
+        200:
+          description: Sample tree
+          schema:
+            type: object
+  # Statistical operations
+  /statisticalOperations/pearsonCorrelation:
+    post:
+      summary: Calculate pearson correlation between rows
+      tags: [Statistical operations]
+      operationId: controller.statisticalOperations.pearsonCorrelation
+      parameters:
+        - name: data
+          in: body
+          description: Array of rows with the same sizes (discrete & continuous)
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+
+      responses:
+        200:
+          description: pearson correlation matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/spearmanCorrelation:
+    post:
+      summary: Calculate spearman correlation between rows
+      tags: [Statistical operations]
+      operationId: controller.statisticalOperations.spearmanCorrelation
+      parameters:
+        - name: data
+          in: body
+          description: Array of rows with the same sizes (discrete & continuous)
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+
+      responses:
+        200:
+          description: spearman correlation matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/continuousMutualInformation:
+    post:
+      summary: Calculate mutual informations
+      tags: [Statistical operations]
+      operationId: controller.statisticalOperations.mutualInformation
+      parameters:
+        - name: data
+          in: body
+          description: mutual information matrix
+          schema:
+            type: object
+            required:
+              - list_continuous
+              - list_discrete
+            properties:
+              k:
+                type: integer
+                description: number of neighbors
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+              list_continuous:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (continuous only)
+              list_discrete:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (dicrete only)
+              normalise:
+                type: string
+                default: "max"
+                description: This parameter is used to normalise the mutual information coefficient, it takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+
+      responses:
+        200:
+          description: mutual information matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/higherDimensionMutualInformation:
+    post:
+      summary: Calculate the mutual information between variables
+      tags: [Statistical operations]
+      operationId: controller.statisticalOperations.higherDimensionMutualInformation
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - X
+              - k
+            properties:
+              k:
+                type: integer
+                description: number of neighbors (must be < to len(X))
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+                default: 2
+              X:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: list of list of the variables, it can take more than 2 variables
+
+      responses:
+        200:
+          description: mutual information between the variables
+          schema:
+            type: number
+        403:
+          description: Invalid Input
+
+  /statisticalOperations/continuousAndHigherDimensionMutualInformation:
+    post:
+      summary: Calculate matrix mutual informations and the higher Dimension
+      tags: [Statistical operations]
+      operationId: controller.statisticalOperations.mutualAndHigherInformation
+      parameters:
+        - name: data
+          in: body
+          description: mutual information matrix
+          schema:
+            type: object
+            required:
+              - list_continuous
+              - list_discrete
+              - k
+            properties:
+              k:
+                type: integer
+                description: number of neighbors
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+              list_continuous:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (continuous only)
+              list_discrete:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (dicrete only)
+              normalise:
+                type: string
+                default: "max"
+                description: This parameter is used to normalise the mutual information coefficient, it takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+
+      responses:
+        200:
+          description: mutual information matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+        403:
+          description: Invalid Input array, not the same size
+
+definitions:
+  # Projects
+  projectOverview:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+        description: project ID
+
+      name:
+        type: string
+        description: project name
+
+      nbModels:
+        type: integer
+        description: number of Models
+
+      nbSelections:
+        type: integer
+        description: number of selections
+
+      creationDate:
+        type: string
+        format: date-time
+        description: creation date
+
+      updateDate:
+        type: string
+        format: date-time
+        description: last update date
+
+  project:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: project ID
+
+      modelOverviews:
+        type: array
+        items:
+          $ref: "#/definitions/modelOverview"
+        description: list of the model overviews
+
+      blockLevelInfo:
+        type: array
+        items:
+          $ref: "#/definitions/blockLevelInfo"
+        description: list of the projects blockLevelInfo that describe the project tree
+
+  blockLevelInfo:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: block level name
+        example: file
+
+  # Artefacts
+  artefact:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      creationDate:
+        type: string
+        format: date-time
+      updateDate:
+        type: string
+        format: date-time
+      version:
+        type: string
+      metaDataList:
+        type: object
+        additionalProperties:
+          type: string
+        example:
+          meteo: soleil
+          temperature: 50
+
+  # Models
+  modelOverview:
+    type: object
+    required:
+      - name
+      - id
+    properties:
+      name:
+        type: string
+      id:
+        type: string
+      nbEvaluatedSamples:
+        type: integer
+      updateDate:
+        type: string
+        format: date-time
+      creationDate:
+        type: string
+        format: date-time
+      metadata:
+        type: object
+
+  model:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          hyperParameters:
+            type: array
+            items:
+              type: string
+          trainingLogs:
+            type: array
+            items:
+              type: string
+
+  # Selections and requests
+  selection:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          nbSamples:
+            type: integer
+
+  request:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        required:
+          - filters
+        properties:
+          filters:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - columnLabel
+              properties:
+                type:
+                  type: string
+                columnLabel:
+                  type: string
+            description: Can be of type 'values' of 'intervals', 'values'
+              filters have a 'values' key that is a list of text or numbers
+              , 'intervals' filters have an 'interval' key that is a list of
+              {min, max} intervals
+
+  # Tags
+  tag:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        required:
+          - tags
+        properties:
+          tags:
+            type: object
+            description: key is samplehash and value is an integer
+
+  # DataTypes
+  dataType:
+    type: object
+    properties:
+      gdtList:
+        type: array
+        items:
+          type: object
+        description: list of ground thruth (key - value)
+
+      inputList:
+        type: array
+        items:
+          type: object
+        description: list of inputs (key - value)
+
+      contextList:
+        type: array
+        items:
+          type: object
+        description: list of context (key - value)
+
+  dataTypeOut:
+    allOf:
+      - $ref: "#/definitions/dataType"
+      - type: object
+        required:
+          - id
+        properties:
+          id:
+            type: string
+
+  # block & sample
+
+  block:
+    allOf:
+      - $ref: "#/definitions/dataType"
+      - type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+
+  blockOverview:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: name of the block
+
+  sample:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+
+  blockTree:
+    type: array
+    items:
+      $ref: "#/definitions/block"

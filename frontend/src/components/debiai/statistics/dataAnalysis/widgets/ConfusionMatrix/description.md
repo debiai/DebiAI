@@ -1,0 +1,1 @@
+Calulate the confusion between a groundtruth and a result column

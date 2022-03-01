@@ -1,0 +1,126 @@
+<template>
+  <div id="intervals">
+    <!-- Add values modal -->
+    <modal v-if="addIntervalPannel">
+      <h4 class="aligned">
+        Add an interval filter on the
+        <div id="columnLabel" class="margedSide">
+          {{ filter.column.label }}
+        </div>
+        column
+      </h4>
+      <br />
+      <input
+        :type="filter.column.typeText == 'Class' ? 'text' : 'number'"
+        v-model="newMin"
+        placeholder="More than"
+      />
+      and
+      <input
+        :type="filter.column.typeText == 'Class' ? 'text' : 'number'"
+        v-model="newMax"
+        placeholder="Less than"
+      />
+      <br />
+      <br />
+
+      <!-- #controls -->
+      <div class="aligned centered">
+        <button @click="addInterval(false)" :disabled="!intervalValid">
+          Add
+        </button>
+        <button @click="addInterval(true)" :disabled="!intervalValid">
+          Add and close
+        </button>
+        <button class="red" @click="addIntervalPannel = false">Cancel</button>
+      </div>
+    </modal>
+
+    <div id="intervalList">
+      <Interval
+        class="interval"
+        v-for="(interval, i) in filter.intervals"
+        :key="i"
+        :isLast="i == filter.intervals.length - 1"
+        :filter="interval"
+        v-on:remove="removeInterval(i)"
+      />
+      <button @click="addIntervalPannel = true">Add interval</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import Interval from "./Interval";
+
+export default {
+  name: "Intervals",
+  components: { Interval },
+  props: { filter: { type: Object, required: true } },
+  data() {
+    return {
+      addIntervalPannel: false,
+      newMin: null,
+      newMax: null,
+    };
+  },
+  methods: {
+    addInterval(closeAfter) {
+      this.newMin = parseFloat(this.newMin);
+      this.newMax = parseFloat(this.newMax);
+
+      if (isNaN(this.newMin)) this.newMin = null;
+      if (isNaN(this.newMax)) this.newMax = null;
+
+      let interval = {
+        min: this.newMin,
+        max: this.newMax,
+      };
+
+      this.$store.commit("addIntervalToFilter", {
+        interval,
+        filterId: this.filter.id,
+      });
+      this.$emit("intervalAdded", { interval, id: this.filter.id });
+      if (closeAfter) this.addIntervalPannel = false;
+    },
+    removeInterval(i) {
+      this.$store.commit("removeIntervalFromFilter", {
+        filterId: this.filter.id,
+        intervalIndex: i,
+      });
+      this.$emit("intervalRemoved", { intervalIndex: i, id: this.filter.id });
+    },
+  },
+  computed: {
+    intervalValid() {
+      if (
+        (this.newMin === null || this.newMin === "") &&
+        (this.newMax === null || this.newMax === "")
+      )
+        return false;
+
+      if (
+        this.filter.column.typeText !== "Class" &&
+        this.newMin !== null &&
+        this.newMax !== null
+      )
+        if (parseFloat(this.newMin) > parseFloat(this.newMax)) return false;
+      return true;
+    },
+  },
+};
+</script>
+
+<style scoped>
+#intervals {
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+  padding: 10px;
+  margin: 0 20px 0 20px;
+}
+.interval {
+  padding: 5px;
+}
+</style>

@@ -1,0 +1,22 @@
+# Root
+deployment/
+images/
+TODO
+README.md
+kubernetes.yaml
+debiai.log
+LICENSE
+
+# Back
+backend/__pycache__/
+backend/tests/
+backend/dist/
+backend/.gitignore
+backend/README.md
+
+# Front
+frontend/node_modules/
+frontend/dist/
+frontend/tests/
+frontend/.gitignore
+frontend/README.md
