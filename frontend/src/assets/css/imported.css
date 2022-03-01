@@ -1,0 +1,89 @@
+/* Check box */
+
+.toggle {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.toggle:before {
+  content: "";
+  position: relative;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 14px;
+  display: block;
+  background: gray;
+  border-radius: 8px;
+  transition: background .2s ease;
+}
+
+.toggle span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(gray, .5);
+  transition: all .2s ease;
+}
+
+.toggle span:before {
+  content: "";
+  position: absolute;
+  display: block;
+  margin: -18px;
+  width: 56px;
+  height: 56px;
+  background: var(--secondary);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.customCbx:checked+.toggle::before {
+  background: #ec9464;
+}
+
+.customCbx:checked+.toggle span {
+  background: var(--secondary);
+  transform: translateX(20px);
+  transition: all .2s cubic-bezier(.8, .4, .3, 1.25), background .15s ease;
+  border: solid white 1px;
+}
+
+.customCbx:checked+.toggle span:before {
+  transform: scale(1);
+  opacity: 0;
+  transition: all .4s ease;
+}
+
+/* Swal */
+
+.swal-title {
+  /* margin: 0px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.21);
+  margin-bottom: 28px; */
+  font-family: sans-serif
+}
+
+.swal-text {
+  font-family: sans-serif
+}
+
+/* Floating menu */
+
+.fab-tooltip.tooltip .tooltip-inner {
+  border-radius: 4px !important;
+}

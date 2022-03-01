@@ -1,0 +1,374 @@
+import axios from 'axios'
+import config from '../../config'
+import store from '../store'
+import services from "./services"
+
+const apiURL = config.API_URL
+console.log("Backend url : " + apiURL);
+
+function startRequest(name) {
+  let requestCode = services.uuid()
+  store.commit("startRequest", { name, code: requestCode })
+  return requestCode
+}
+
+function endRequest(code) {
+  store.commit("endRequest", code)
+}
+
+export default {
+
+  ping() { return axios.get(apiURL) },
+
+  log(projectId, data) {
+    return axios.post(apiURL + "projects/" + projectId + "/log", data);
+  },
+
+  // ====== Menu
+
+  // Projects
+  getProjects() {
+    let code = startRequest("Getting projects")
+    return axios.get(apiURL + 'projects').finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  addProject(project) {
+    let code = startRequest("Creating project")
+    return axios.post(apiURL + 'projects', project).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getProject(id) {
+    let code = startRequest("Getting project data")
+    return axios.get(apiURL + 'projects/' + id).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  deleteProject(id) {
+    let code = startRequest("Deleting project")
+    return axios.delete(apiURL + 'projects/' + id).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  saveProjectlevels(projectId, blockLevels) {
+    let code = startRequest("Creating project")
+    return axios.post(apiURL + 'projects/' + projectId + '/blocklevels', blockLevels).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+  // Samples
+  getSampleNumber(projectId, selectionId = undefined) {
+    let code = startRequest("Loading the project data")
+    let request = apiURL + 'projects/' + projectId + '/getAvailableDataNumber'
+    if (selectionId) request += '?selectionId=' + selectionId
+
+    return axios.get(request).finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  getSampleNumberWithModelResults(projectId, modelIds, common) {
+    let code = startRequest("Loading the project data")
+    let request = apiURL + 'projects/' + projectId + '/getAvailableDataNumberWithModelResults?modelIds=' + modelIds + '&common=' + common
+
+    return axios.get(request).finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  getProjectSamples(projectId, {
+    selectionIds = [],
+    selectionIntersection = false,
+    modelIds = [],
+    commonResults = false
+  }) {
+    let code = startRequest("Loading the project samples list")
+    let request = apiURL + 'projects/' + projectId + '/samples'
+
+    return axios.post(request,
+      {
+        selectionIds,
+        selectionIntersection,
+        modelIds,
+        commonResults,
+      }).finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  getSelectionSamples(projectId, selectionId) {
+    let code = startRequest("Loading the project samples list")
+    let request = apiURL + 'projects/' + projectId + '/selectionSamples/' + selectionId
+
+    return axios.get(request).finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+
+  // Blocks
+  addBlock(projectId, block) {
+    let code = startRequest("Adding Block")
+    return axios.post(apiURL + 'projects/' + projectId + '/blocks', block).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getBlocks(projectId, depth = 1) {
+    let code = startRequest("Loading the project data")
+
+    return axios.get(apiURL + 'projects/' + projectId + '/blocks?depth=' + depth).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getBlocksChunk(projectId, start, size, selectionId = undefined) {
+    let request = apiURL + 'projects/' + projectId + '/trainingSamples?start=' + start + '&size=' + size
+    if (selectionId) request += '&selectionId=' + selectionId
+
+    return axios.get(request).then((response) => response.data)
+  },
+  getBlocksChunkWithModelResults(projectId, start, size, modelIds, common, selectionId = undefined) {
+    let request = apiURL + 'projects/' + projectId +
+      '/trainingSamplesWithModelResults?start=' + start + '&size=' + size + '&modelIds=' + modelIds + '&common=' + common
+    if (selectionId) request += '&selectionId=' + selectionId
+
+    return axios.get(request).then((response) => response.data)
+  },
+  getBlocksFromSelection(projectId, selectionId, depth = 1) {
+    let code = startRequest("Loading the request data")
+
+    return axios.get(apiURL + 'projects/' + projectId + '/blocks/' + selectionId + '?depth=' + depth).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getBlocksTree(projectId, blockId, blockPath, depth = 1) {
+    let code = startRequest("Loading the project data")
+
+    return axios.post(apiURL + 'projects/' + projectId + '/block', {
+      blockId,
+      blockPath,
+      depth,
+    }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getBlocksTreeWithModelResults(projectId, modelIds, common) {
+    let code = startRequest("Loading the project data and the model results")
+
+    return axios.post(apiURL + 'projects/' + projectId + '/blocksWithModelResults', {
+      modelIds,
+      common,
+    }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  getBlocksFromSampleIds(projectId, sampleIds) {
+    return axios.post(apiURL + 'projects/' + projectId + '/blocksFromSampleIds', { sampleIds })
+      .then((response) => response.data)
+  },
+
+  // Models
+  getModels(projectId) {
+    let code = startRequest("Loading models")
+    return axios.get(apiURL + 'projects/' + projectId + '/models').finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+  getCommonModelResults(projectId, selectionId, modelIds, common) {
+    let code = startRequest("Loading common model results")
+    return axios.post(apiURL + 'projects/' + projectId + '/models/commonResults',
+      {
+        modelIds,
+        common,
+        selectionId
+      }
+    ).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+  getModelResults(projectId, modelId, sampleIds) {
+    return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
+      .then((response) => response.data)
+  },
+
+  delModel(projectId, modelId) {
+    let code = startRequest("Deleting selection")
+    return axios.delete(apiURL + 'projects/' + projectId + '/models/' + modelId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+
+
+  // Selections
+  getSelections(projectId) {
+    let code = startRequest("Loading selections")
+    return axios.get(apiURL + 'projects/' + projectId + '/selections/')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  addSelection(projectId, sampleHashList, selectionName, requestId = null) {
+    console.log(requestId);
+    let code = startRequest("Saving selection")
+    return axios.post(apiURL + 'projects/' + projectId + '/selections/',
+      { sampleHashList, selectionName, requestId }).finally(() => {
+        endRequest(code)
+      }).then((response) => {
+        return response.data
+      })
+  },
+  delSelection(projectId, selectionId) {
+    let code = startRequest("Deleting selection")
+    return axios.delete(apiURL + 'projects/' + projectId + '/selections/' + selectionId).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+  // Requests
+  getRequests(projectId) {
+    let code = startRequest("Loading requests")
+    return axios.get(apiURL + 'projects/' + projectId + '/requests/')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  getRequest(projectId, requestId) {
+    let code = startRequest("Loading request")
+    return axios.get(apiURL + 'projects/' + projectId + '/requests/' + requestId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  addRequest(projectId, requestName, requestDescription, filters) {
+    let code = startRequest("Saving the request")
+    return axios.post(apiURL + 'projects/' + projectId + '/requests/',
+      { requestName, requestDescription, filters }).finally(() => {
+        endRequest(code)
+      }).then((response) => {
+        return response.data
+      })
+  },
+  createSelectionFromRequest(projectId, requestId, selectionName) {
+    let code = startRequest("Creating a selection")
+    return axios.post(apiURL + 'projects/' + projectId + '/requests/' + requestId + '/newSelection', { selectionName }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  delRequest(projectId, requestId) {
+    let code = startRequest("Deleting request")
+    return axios.delete(apiURL + 'projects/' + projectId + '/requests/' + requestId).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+
+  // ====== DataAnalysis
+
+  // Operation center
+  correlationMatrix(columnsData, matrixType) {
+    let code = startRequest("Calculating " + matrixType + " correlation matrix")
+    return axios.post(apiURL + 'statisticalOperations/' + matrixType + 'Correlation', columnsData).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  mutualInformation(columnsData, matrixType) {
+    let code = startRequest("Calculating " + matrixType + " correlation matrix")
+    return axios.post(apiURL + 'statisticalOperations/' + matrixType + 'Correlation', columnsData).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  higherDimensionMutualInformation(columnsData, k, base) {
+    let code = startRequest("Calculating higher mutual information")
+    return axios.post(apiURL + 'statisticalOperations/higherDimensionMutualInformation', {
+      X: columnsData,
+      k,
+      base
+    }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  continuousAndHigherDimensionMutualInformation(list_continuous, list_discrete, k, base, normalise) {
+
+    let code = startRequest("Calculating mutual information")
+    return axios.post(apiURL + 'statisticalOperations/continuousAndHigherDimensionMutualInformation', {
+      list_continuous,
+      list_discrete,
+      k,
+      base,
+      normalise
+    }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
+  // Widget configurations
+  getWidgetConfiguration(projectId) {
+    let code = startRequest("Loading widget configurations")
+    return axios.get(apiURL + 'projects/' + projectId + '/widgetconf')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  saveWidgetConfiguration(projectId, { widgetTitle, configuration, name, description }) {
+    let code = startRequest("Saving widget configuration")
+    return axios.post(apiURL + 'projects/' + projectId + '/widgetconf',
+      { widgetTitle, configuration, name, description })
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  deleteWidgetConfiguration(projectId, { widgetTitle, name }) {
+    let code = startRequest("Deleting widget configuration")
+    return axios.post(apiURL + 'projects/' + projectId + '/widgetconf/delete', { widgetTitle, name })
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+
+  // Tags
+  updateTag(projectId, tagName, tagHash) {
+    let code = startRequest("Updating tag")
+    return axios.post(apiURL + 'projects/' + projectId + '/tags', { tagName, tagHash })
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  getTags(projectId) {
+    let code = startRequest("Loading tags")
+    return axios.get(apiURL + 'projects/' + projectId + '/tags')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  deleteTag(projectId, tagId) {
+    let code = startRequest("Deleting tag")
+    return axios.delete(apiURL + 'projects/' + projectId + '/tags/' + tagId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  }
+}
