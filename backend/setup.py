@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 NAME = "debiai-backend"
-VERSION = "1.0.0"
+VERSION = "0.15.0"
 
 # To setup the project, run the command:
 #

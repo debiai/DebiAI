@@ -3,7 +3,7 @@
     <!-- header -->
     <div id="head">
       <h1 id="title">DebiAI</h1>
-      <h2 id="version">1.0.0</h2>
+      <h2 id="version">0.15.0</h2>
 
       <p id="description">
         <!-- IRT Logo -->

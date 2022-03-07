@@ -1,11 +1,12 @@
 TODO
 debiai.log
 dist/
+deployment/
 
 # Back
 backend/data
 backend/logs/
-backend/__pycache__/
+__pycache__/
 
 # Front
 frontend/node_modules/
