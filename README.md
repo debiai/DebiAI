@@ -23,4 +23,21 @@ A python module is provided to insert directly from your Python workflow the dat
 
 ## Documentation
 
-Comming soon...
+[Installation guide](https://github.com/debiai/docs/blob/main/documentation/debiai/gettingStarted/installation/README.md)
+
+Web documentation : Comming soon...
+
+---
+
+<p align="center" style="display:flex; align-items:center; justify-content:space-around" >
+  Developed by :
+  <a href="https://www.irt-systemx.fr/" title="IRT SystemX">
+   <img src="https://www.irt-systemx.fr/wp-content/uploads/2013/03/system-x-logo.jpeg"  height="70">
+  </a>
+  Integrated in :
+  <a href="https://www.confiance.ai/" title="Conf AI">
+   <img src="https://pbs.twimg.com/profile_images/1443838558549258264/EvWlv1Vq_400x400.jpg"  height="70">
+  </a>
+</p>
+
+---
