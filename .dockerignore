@@ -9,6 +9,7 @@ LICENSE
 
 # Back
 backend/__pycache__/
+backend/data/
 backend/tests/
 backend/dist/
 backend/.gitignore
