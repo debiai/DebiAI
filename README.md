@@ -1,14 +1,15 @@
 # DebiAI
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![cd](https://github.com/debiai/debiai/actions/workflows/docker-push.yml/badge.svg)
 
-DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison. 
+DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
 
-DebiAI provides data scientists with features to: 
+DebiAI provides data scientists with features to:
 
-- Identify biases and errors in your input, results, contextual or ground truth project data 
-- Make a comparison of the performance of your ML according to their contextual results 
-- Select and create sets of data graphically for further analysis or (re-)training purposes 
-- Quickly create and share statistical visualizations of your project data for your team or client 
+- Identify biases and errors in your input, results, contextual or ground truth project data
+- Make a comparison of the performance of your ML according to their contextual results
+- Select and create sets of data graphically for further analysis or (re-)training purposes
+- Quickly create and share statistical visualizations of your project data for your team or client
 
 DebiAI has a Graphical User Interface with a complete data visualisation toolkit offering many statistical analysis tools:
 
