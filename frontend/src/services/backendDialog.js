@@ -190,21 +190,6 @@ export default {
     })
   },
 
-  getCommonModelResults(projectId, selectionId, modelIds, common) {
-    let code = startRequest("Loading common model results")
-    return axios.post(apiURL + 'projects/' + projectId + '/models/commonResults',
-      {
-        modelIds,
-        common,
-        selectionId
-      }
-    ).finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-
   getModelResults(projectId, modelId, sampleIds) {
     return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
       .then((response) => response.data)

@@ -170,8 +170,9 @@ async function downloadTree(projectId, timestamp, sampleIds) {
   let requestCode = startProgressRequest('Loading the project data')
   console.time('Loading the project data')
   // Pull the tree
-  let retArray = [] //Object.values(cachedSamples)
-  let retHashlist = []// Object.keys(cachedSamples)
+  let retArray = []
+  let retHashlist = []
+
   try {
     while (pulledData < nbSamples) {
 
@@ -187,15 +188,26 @@ async function downloadTree(projectId, timestamp, sampleIds) {
         // Then download the missing samples
         console.log(samplesToDownload.length + " samples to download")
 
-        let tree = await backendDialog.default.getBlocksFromSampleIds(projectId, samplesToDownload)
-        let { array, sampleHashList } = await treeToArray(tree, { considerResults: false })
+        let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(projectId, samplesToDownload)
 
-        retArray = [...retArray, ...array]
-        retHashlist = [...retHashlist, ...sampleHashList]
-
-        // Save data in the cache
-        let sampleToSave = array.map((data, i) => { return { sampleId: sampleHashList[i], data } })
-        cacheService.saveSamples(projectId, timestamp, sampleToSave)
+        if (downloadedSamples.dataMap) {
+          // Dataprovider project, we derectly receive an map of samples
+          let map = downloadedSamples.data
+           Object.keys(map).forEach(dataId => {
+             map[dataId] = [dataId, ...map[dataId]]
+           });
+          // Add the samples ID to the array
+          retArray = [...retArray, ...Object.values(map)]
+          retHashlist = [...retHashlist, ...Object.keys(map)]
+        } else {
+          // Python module project, we receive a tree that we need to convert
+          let { samplesId, array } = await treeToArray(downloadedSamples, { considerResults: false })
+          retArray = [...retArray, ...array]
+          retHashlist = [...retHashlist, ...samplesId]
+          // Save data in the cache
+          let sampleToSave = array.map((data, i) => { return { sampleId: samplesId[i], data } })
+          cacheService.saveSamples(projectId, timestamp, sampleToSave)
+        }
       }
 
       // Update the progress
@@ -216,11 +228,11 @@ function treeToArray(tree, { considerResults }) {
   tree.forEach(block => array.push(...getBlockRecur(block, considerResults)));
 
   // get the samples id hash list
-  var sampleHashList = []
-  tree.forEach(block => sampleHashList.push(...getSampleHashList(block, considerResults)));
+  var samplesId = []
+  tree.forEach(block => samplesId.push(...getSampleHashList(block, considerResults)));
 
   // Return the data array :  [[label 1, label 2], [value 1-1, value 1-2], ...]
-  return { array, sampleHashList }
+  return { array, samplesId }
 }
 
 async function downloadResults(projectId, timestamp, modelId, sampleIds) {
@@ -493,7 +505,6 @@ async function loadProjectSamples({
 
   let requestCode = startRequest("The analysis is starting")
 
-
   // Load the project tree as an array
   let data, projectSamples
   try {
@@ -520,11 +531,9 @@ async function loadProjectSamples({
     data = await arrayToJson(array, metaData);
     data.sampleHashList = sampleHashList
 
-  } catch (error) {
-    endRequest(requestCode)
-    throw error
   }
-  endRequest(requestCode)
+  finally { endRequest(requestCode) }
+
   return data
 }
 

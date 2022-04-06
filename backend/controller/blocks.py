@@ -6,6 +6,9 @@ import os
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
 import utils.hashUtils as hashUtils
+import utils.dataProviders as dataProviders
+
+import utils.debiai.blocks as blocksUtils
 
 dataPath = debiaiUtils.dataPath
 
@@ -110,21 +113,17 @@ def get_tree_with_model_results(projectId, data):
 
 @utils.traceLogLight
 def get_tree_from_sampleid_list(projectId, data):
-
-    # Check parameters
-    if not debiaiUtils.projectExist(projectId):
-        return "project not found", 404
-
     # return a tree from a list of sample ID
     sampleIds = data['sampleIds']
 
-    # Get path from the hashmap
-    samplePath = debiaiUtils.getPathFromHashArray(projectId, sampleIds)
+    # Check parameters
+    if debiaiUtils.projectExist(projectId):
+        return blocksUtils.get_tree_from_sampleid_list(projectId, sampleIds), 200
 
-    # Get tree from samples
-    tree = debiaiUtils.getBlockTreeFromSamples(projectId, samplePath)
+    if dataProviders.projectExist(projectId):
+        return dataProviders.get_data(projectId, sampleIds), 200
 
-    return tree, 200
+    return "project not found", 404
 
 
 # Training samples
