@@ -1,5 +1,6 @@
 {
     "name": "Data distribution",
+    "description": "Bar plot with the distribution of a column",
     "layout": {
         "width": 6
     }

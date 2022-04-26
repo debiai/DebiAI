@@ -1,1 +1,0 @@
-Bar plot with the repartition of a column

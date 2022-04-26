@@ -1,3 +1,4 @@
 {
-    "name": "Correlation matrix"
+    "name": "Correlation matrix",
+    "description": "Show the data correlation between columns"
 }

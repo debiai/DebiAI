@@ -23,6 +23,25 @@ If you have a bug report or feature request, please [fill an issue](https://gith
 <!-- TODO: Complete -->
 Comming soon
 
+```json
+{
+    "name": "Widget name",
+    "description": "Widget description",
+
+    // Optional fields:
+    "layout": {
+        // Size of the widget when played in the dashboard
+        "width": 5,
+        "minWidth": 2,
+        "maxWidth": 15,
+        "height": 4,
+        "minHeight": 2,
+        "maxHeight": 15,
+    }
+
+}
+```
+
 ### New features, improvements, bug fixes or changes to existing features
 
 If you have improvements to DebiAI, send us your pull requests!

@@ -10,8 +10,8 @@
       <progressive-img :src="require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)" class="icon" />
 
       <div id="title">
-        <div class="name">{{ widget.componentName }}</div>
-        <div class="description">{{ description }}</div>
+        <div class="name">{{ widget.name }}</div>
+        <div class="description">{{ widget.description }}</div>
       </div>
       <div class="control">
         <button class="green" @click="$emit('add', widget)">Add</button>
@@ -65,19 +65,6 @@ export default {
       description: "",
       displayConfigurations: false,
     };
-  },
-  created() {},
-  mounted() {
-    // Load the widget descriptions
-    try {
-      this.description = require("raw-loader!../../widgets/" +
-        this.widget.componentKey +
-        "/description.md").default;
-    } catch (error) {
-      console.warn(
-        "No description for the component " + this.widget.componentName
-      );
-    }
   },
   methods: {
     clicked() {

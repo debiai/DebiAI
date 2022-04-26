@@ -1,1 +1,0 @@
-Display a colored scatter point and its average from two columns
