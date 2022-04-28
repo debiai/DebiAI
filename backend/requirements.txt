@@ -1,4 +1,4 @@
-Flask == 2.0.3
+Flask == 1.0.4
 flask_cors == 3.0.8
 connexion == 2.6.0
 requests == 2.25.1
