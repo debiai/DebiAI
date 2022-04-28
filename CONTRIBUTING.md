@@ -1,10 +1,11 @@
 # Contributing guidelines
 
-When contributing to this repository, please first discuss the change you
-wish to make via issue before making a change.
+Before sending your pull requests, make sure you do the following:
 
-Please note we have a [Code of Conduct](CODE_OF_CONDUCT.md),
-please follow it in all your interactions with the project.
+-   Read the [contributing guidelines](CONTRIBUTING.md).
+-   Read the [Code of Conduct](CODE_OF_CONDUCT.md).
+-   Ensure you have signed the
+    [Contributor License Agreement (CLA)](https://cla.developers.google.com/).
 
 ## How to become a contributor
 
@@ -14,37 +15,19 @@ We expect to see submissions on these topics:
 - New widgets
 - [New features, improvements, bug fixes or changes to existing features](#new-features-improvements-bug-fixes-or-changes-to-existing-features)
 
+When contributing to this repository, please first discuss the change you
+wish to make via issue before making a change.
+
 ### Bug reports and feature requests
 
 If you have a bug report or feature request, please [fill an issue](https://github.com/debiai/debiai/issues/new).
 
 ### New widgets
 
-<!-- TODO: Complete -->
-Comming soon
-
-```json
-{
-    "name": "Widget name",
-    "description": "Widget description",
-
-    // Optional fields:
-    "layout": {
-        // Size of the widget when played in the dashboard
-        "width": 5,
-        "minWidth": 2,
-        "maxWidth": 15,
-        "height": 4,
-        "minHeight": 2,
-        "maxHeight": 15,
-    }
-
-}
-```
+Please follow the [widget creation guide](./frontend/doc/new-widgets/Adding-new-widgets.md) to create a new widget.
 
 ### New features, improvements, bug fixes or changes to existing features
 
-If you have improvements to DebiAI, send us your pull requests!
 If you want to contribute, start working through the DebiAI codebase,
 navigate to the [Github "issues" tab](https://github.com/debiai/debiai/issues) and start looking through interesting issues. If you are not sure of where to start, then start by trying one of the smaller/easier issues here i.e. [issues with the "good first issue" label](https://github.com/debiai/debiai/labels/good%20first%20issue).
 
