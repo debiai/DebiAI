@@ -9,6 +9,7 @@ We expect to see submissions on these topics:
 - Bug reports and feature requests
 - [New widgets](#new-widgets)
 - [New features, improvements, bug fixes or changes to existing features](#new-features-improvements-bug-fixes-or-changes-to-existing-features)
+- Data providers template (comming soon)
 
 ### Bug reports and feature requests
 
@@ -23,6 +24,12 @@ If you want to add new widgets to DebiAI, please follow the [widget creation gui
 If you want to contribute, navigate to the [Github "issues" tab](https://github.com/debiai/debiai/issues) and start looking through interesting issues. If you are not sure of where to start, then start by trying one of the smaller/easier issues here i.e. [issues with the "good first issue" label](https://github.com/debiai/debiai/labels/good%20first%20issue).
 
 If you decide to start on an issue, leave a comment so we and other people know that you're working on it, we will be happy to help.
+
+### Other ways to contribute
+
+Feel free to share your experience on your use cases with DebiAI on the [community discussions](https://github.com/debiai/debiai/discussions/categories/show-and-tell).
+
+
 
 ## Contribution standards
 
