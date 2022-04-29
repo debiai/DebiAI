@@ -31,8 +31,6 @@ If you decide to start on an issue, leave a comment so we and other people know 
 
 Feel free to share your experience on your use cases with DebiAI on the [community discussions](https://github.com/debiai/debiai/discussions/categories/show-and-tell).
 
-
-
 ## Contribution standards
 
 ### Submission
