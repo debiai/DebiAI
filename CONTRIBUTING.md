@@ -5,11 +5,13 @@ Before contributing, please check out our [Code of Conduct](CODE_OF_CONDUCT.md) 
 ## How to become a contributor
 
 We expect to see submissions on these topics:
+- [Bug reports and feature requests](#bug-reports-and-feature-requests)
 
-- Bug reports and feature requests
 - [New widgets](#new-widgets)
+
 - [New features, improvements, bug fixes or changes to existing features](#new-features-improvements-bug-fixes-or-changes-to-existing-features)
-- Data providers template (comming soon)
+
+- [Other ways to contribute](#other-ways-to-contribute)
 
 ### Bug reports and feature requests
 
@@ -58,5 +60,5 @@ Here is a [complete guide on how to contribute by forking](https://sqldbawithabe
 Make sure your changes are consistent with the guidelines and follow the
 DebiAI coding style:
 
-*   [debiai/frontend](https://github.com/debiai/debiai/tree/main/frontend): no specific coding style defined at the moment.
-*   [debiai/backend](https://github.com/debiai/debiai/tree/main/backend): no specific coding style defined at the moment, try to implem the unitary tests if applicable.
+<!-- *   [debiai/frontend](https://github.com/debiai/debiai/tree/main/frontend): no specific coding style defined at the moment. -->
+*   [debiai/backend](https://github.com/debiai/debiai/tree/main/backend): Try to implement the unitary tests if applicable.
