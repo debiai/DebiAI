@@ -7,6 +7,7 @@ from datetime import date
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
 import backend.utils.export.kafkaUtils as kafkaUtils
+import utils.dataProviders as dataProviders
 
 dataPath = debiaiUtils.dataPath
 
@@ -18,20 +19,22 @@ dataPath = debiaiUtils.dataPath
 @utils.traceLogLight
 def get_selections(projectId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+    if debiaiUtils.projectExist(projectId):
+        # Get selections
+        selections = []
+        for selectionId in debiaiUtils.getSelectionIds(projectId):
+            selections.append(
+                debiaiUtils.getSelectionInfo(projectId, selectionId))
+        return selections, 200
 
-    # Get selections
-    selections = []
-    for selectionId in debiaiUtils.getSelectionIds(projectId):
-        selections.append(debiaiUtils.getSelectionInfo(projectId, selectionId))
+    if dataProviders.projectExist(projectId):
+        return dataProviders.get_selections(projectId)
 
-    return selections, 200
+    return "project " + projectId + " not found", 404
 
 
 @utils.traceLogLight
 def post_selection(projectId, data):
-
     # ParametersCheck
     if not debiaiUtils.projectExist(projectId):
         return "project " + projectId + " not found", 404

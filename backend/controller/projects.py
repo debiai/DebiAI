@@ -1,12 +1,13 @@
 #############################################################################
 # Imports
 #############################################################################
-import os
 import shutil
 import ujson as json
 
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
+import utils.dataProviders as dataProviders
+import utils.debiai.projects as projects
 
 dataPath = debiaiUtils.dataPath
 
@@ -16,7 +17,7 @@ dataPath = debiaiUtils.dataPath
 
 
 def ping():
-    return "Online v0.15.1", 200
+    return "Online v1.5.3", 200
 
 
 def log(projectId, data):
@@ -35,6 +36,19 @@ def log(projectId, data):
     return 200
 
 
+# Projects
+def upload(upfile):
+    # Create a project from a zip file
+    import zipfile
+
+    # TODO Check project compliency
+
+    with zipfile.ZipFile(upfile, 'r') as zip_ref:
+        zip_ref.extractall(dataPath)
+
+    return 200
+
+
 def get_projects():
     # return a list of project overviews
     projectOverviews = []
@@ -42,37 +56,22 @@ def get_projects():
     for projectId in debiaiUtils.getProjectsIds():
         projectOverviews.append(debiaiUtils.getProjectOverview(projectId))
 
+    # Add the data providers views
+    projectOverviews += dataProviders.get_projects()
+
     return projectOverviews, 200
 
 
 def get_project(projectId):
     # return the info about datasets, models, selections & tags
-    if not debiaiUtils.projectExist(projectId):
-        return "Project " + projectId + " not found", 404
+    if debiaiUtils.projectExist(projectId):
+        return projects.getProjectById(projectId), 200
 
-    projectInfo = debiaiUtils.getProjectOverview(projectId)
+    # Check if the project exists in the data providers
+    if dataProviders.projectExist(projectId):
+        return dataProviders.getProjectById(projectId), 200
 
-    # Add the selections
-    projectInfo["selections"] = []
-    for selectionId in debiaiUtils.getSelectionIds(projectId):
-        projectInfo["selections"].append(
-            debiaiUtils.getSelectionInfo(projectId, selectionId))
-
-    # Add the models
-    projectInfo["models"] = []
-    for modelId in debiaiUtils.getModelIds(projectId):
-        projectInfo["models"].append(
-            debiaiUtils.getModelInfo(projectId, modelId))
-
-    # Add the block structure
-    projectInfo["blockLevelInfo"] = debiaiUtils.getProjectblockLevelInfo(
-        projectId)
-
-    # Add the results structure
-    projectInfo["resultStructure"] = debiaiUtils.getResultStructure(
-        projectId)
-
-    return projectInfo
+    return "Project " + projectId + " not found", 404
 
 
 @ utils.traceLog

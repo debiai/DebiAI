@@ -4,6 +4,58 @@ import utils.utils as utils
 dataPath = debiaiUtils.dataPath
 
 
+def get_list(projectId, data):
+    """
+    Return a list of samples in a project
+    """
+
+    # Get the hashmap
+    hashmap = debiaiUtils.getHashmap(projectId)
+
+    # Get params
+    selectionIds = data["selectionIds"]
+    selectionIntersection = data["selectionIntersection"]
+    modelIds = data["modelIds"]
+    commonResults = data["commonResults"]
+
+    if not selectionIds or len(selectionIds) == 0:
+        # Start form all the project samples
+        samples = hashmap.keys()
+    else:
+        # Or from the selections samples
+        try:
+            samples = debiaiUtils.getSelectionsSamples(
+                projectId, selectionIds, selectionIntersection)
+        except KeyError as e:
+            print(e)
+            return "selection not found", 404
+
+    if len(samples) == 0:
+        return {
+            "samples": [],
+            "nbSamples": 0,
+            "nbFromSelection": 0,
+            "nbFromModels": 0
+        }
+
+    nbFromSelection = len(samples)
+    nbFromModels = 0
+    # Then, concat with the model results if given
+    if modelIds and len(modelIds) > 0:
+        modelSamples = debiaiUtils.getModelListResults(
+            projectId, modelIds, commonResults)
+        nbFromModels = len(modelSamples)
+        samples = set(samples)
+        samples.intersection_update(set(modelSamples))
+
+    return {
+        "samples": list(samples),
+        "nbSamples": len(samples),
+        "nbFromSelection": nbFromSelection,
+        "nbFromModels": nbFromModels
+    }
+
+
 def projectSamplesGerenator(projectId):
     """
     Generator used to iterate over all samples in a project.

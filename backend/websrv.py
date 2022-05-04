@@ -26,13 +26,16 @@ def send_frontend(path):
     # In development, redirect to the DEV_FRONTEND_URL
     else:
         if request.method == "GET":
-            resp = requests.get(f"{DEV_FRONTEND_URL}{path}")
-            excluded_headers = [
-                "content-encoding", "content-length", "transfer-encoding", "connection"]
-            headers = [(name, value) for (name, value) in resp.raw.headers.items(
-            ) if name.lower() not in excluded_headers]
-            response = Response(resp.content, resp.status_code, headers)
-            return response
+            try:
+                resp = requests.get(f"{DEV_FRONTEND_URL}{path}")
+                excluded_headers = [
+                    "content-encoding", "content-length", "transfer-encoding", "connection"]
+                headers = [(name, value) for (name, value) in resp.raw.headers.items(
+                ) if name.lower() not in excluded_headers]
+                response = Response(resp.content, resp.status_code, headers)
+                return response
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+                return "You are in a development environment and the DebAI frontend is not available at the url : " + DEV_FRONTEND_URL, 503
         else:
             print("Unexpected request method")
 
