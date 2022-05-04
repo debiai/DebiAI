@@ -25,9 +25,9 @@ var customColumnCreation = function (data, colName, firstColumnIndex, rules) {
 
     rules.forEach((rule, ruleNb) => {
       if (data.columns[rule.colIndex].type == Number)
-        operation += " " + rule.operator + " " + values[ruleNb][i]
+        operation += " " + rule.operator.code + " " + values[ruleNb][i]
       else
-        operation += " " + rule.operator + " '" + values[ruleNb][i] + "'"
+        operation += " " + rule.operator.code + " '" + values[ruleNb][i] + "'"
     });
 
     try {
