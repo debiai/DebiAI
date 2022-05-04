@@ -6,7 +6,7 @@ from datetime import date
 
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
-import backend.utils.export.kafkaUtils as kafkaUtils
+import utils.export.kafkaUtils as kafkaUtils
 import utils.dataProviders as dataProviders
 
 dataPath = debiaiUtils.dataPath
