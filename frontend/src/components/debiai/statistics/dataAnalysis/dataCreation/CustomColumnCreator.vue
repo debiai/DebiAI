@@ -22,16 +22,13 @@
         Select an operation
         <button @click="ruleSelection = false" class="red">Cancel</button>
       </h2>
-      <button @click="selectRule('+')">+</button>
-      <button @click="selectRule('-')">-</button>
-      <button @click="selectRule('/')">/</button>
-      <button @click="selectRule('x')">x</button>
-      <button @click="selectRule('&&')">and</button>
-      <button @click="selectRule('||')">or</button>
-      <button @click="selectRule('>')">></button>
-      <button @click="selectRule('<')">&lt;</button>
-      <button @click="selectRule('==')">==</button>
-      <br />
+      <button
+        v-for="(operator, operatorName) in operators"
+        :key="operatorName"
+        @click="selectRule(operatorName)"
+      >
+        {{ operator.display }}
+      </button>
     </modal>
 
     <!-- modal title -->
@@ -75,7 +72,7 @@
               ruleSelectionIndex = index;
             "
           >
-            {{ rule.operator }}
+            {{ rule.operator.display }}
           </button>
           <Column
             :column="data.columns.find((c) => c.index == rule.colIndex)"
@@ -119,6 +116,18 @@ export default {
       ruleSelectionIndex: null,
 
       rules: [],
+
+      operators: {
+        plus: { code: "+", display: "+" },
+        minus: { code: "-", display: "-" },
+        div: { code: "/", display: "/" },
+        mult: { code: "*", display: "x" },
+        and: { code: "&&", display: "and" },
+        or: { code: "||", display: "or" },
+        sup: { code: ">", display: ">" },
+        inf: { code: "<", display: "<" },
+        equal: { code: "==", display: "equal" },
+      },
     };
   },
   created() {},
@@ -151,12 +160,12 @@ export default {
     addRule() {
       this.rules.push({
         colIndex: 0,
-        operator: "+",
+        operator:  this.operators.plus,
       });
       this.selectedColToChange = this.rules.length;
     },
-    selectRule(operator) {
-      this.rules[this.ruleSelectionIndex].operator = operator;
+    selectRule(operatorName) {
+      this.rules[this.ruleSelectionIndex].operator = this.operators[operatorName];
       this.ruleSelection = false;
     },
   },
