@@ -1,1 +1,0 @@
-Simple statistics, like the average or top value of a column

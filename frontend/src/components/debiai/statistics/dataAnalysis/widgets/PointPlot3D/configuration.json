@@ -1,5 +1,6 @@
 {
     "name": "3D Point plot",
+    "description": "3d colored visualisation of 3 selected columns",
     "layout": {
         "height": 6
     }
