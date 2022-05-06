@@ -35,23 +35,24 @@ Feel free to share your experience on your use cases with DebiAI on the [communi
 
 ### Submission
 
-There is two ways to submit your contribution to DebiAI, you can either [work on the DebiAI repository on your own branch](#creating-a-branch) or [fork the repository](#forking-the-repository).
+There is two ways to submit your contribution to DebiAI, you can either  [fork the repository](#forking-the-repository) or [have your own branch on the DebiAI repository](#creating-a-branch).
 
 If both cases, to submit your code, please make a pull request to our [main](https://github.com/debiai/debiai/tree/main) branch. For those just getting started, Github has a [how to](https://help.github.com/articles/using-pull-requests/) about pull requests.
 
-You will be asked to sign [our CLA (Contributing License Agreement)](https://gist.github.com/Tomansion/b92a659d316aecaeae918da1c3304b8f) before we can merge your code. Please read it before you start working on the project.
+You will be asked to sign [our CLA (Contributing License Agreement)](https://gist.github.com/Tomansion/1d09a86bd0849f639fe59bf00eda730d#file-debiai_cla-md) before we can merge your code. Please read it before you start working on the project.
 
 A DebiAI team members will then be assigned to review your pull request. Once the pull request is approved, your changes will be merged.
 
-#### Creating a branch
-
-Before being able to create a branch, you will need to be added as a contributor to the repository. You can do this by asking us at debiai@irt-systemx.fr, on a discussion or by commenting on an issue.
-
 #### Forking the repository
 
-You can also fork the repository and submit your contribution to the repository.
+To add changes, you can fork the repository and submit your contribution by creating a pull request.
 
 Here is a [complete guide on how to contribute by forking](https://sqldbawithabeard.com/2019/11/29/how-to-fork-a-github-repository-and-contribute-to-an-open-source-project/).
+
+#### Creating a branch
+
+If you don't want to fork the project, we allow contributors to have their own branch in the repository. Before being able to create a branch, you will need to be added as a contributor to the repository. You can do this by asking us at [debiai@irt-systemx.fr](mailto:debiai@irt-systemx.fr), on a discussion or by commenting on an issue.
+
 
 ### General guidelines and philosophy for contribution
 
