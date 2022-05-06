@@ -23,9 +23,9 @@ A python module is provided to insert directly from your Python workflow the dat
 
 ## Documentation
 
-[Installation guide](https://github.com/debiai/docs/blob/main/documentation/debiai/gettingStarted/installation/README.md)
+[Web documentation](https://debiai.irt-systemx.fr/)
 
-Web documentation : Comming soon...
+[Installation guide](https://debiai.irt-systemx.fr/debiai/gettingStarted/installation/)
 
 ---
 
