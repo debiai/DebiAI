@@ -1,1 +1,0 @@
-Efficient way of displaying a fast overview of all of the samples. Make selection on each one of the columns

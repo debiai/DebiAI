@@ -301,7 +301,6 @@ export default {
       });
 
       // Loading the available widgets names
-      console.log(componentsGridStackData.getAvailableWidgets());
       this.availableWidgets = componentsGridStackData.getAvailableWidgets();
     },
     loadLayout(layout) {

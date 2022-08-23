@@ -54,6 +54,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
     // Check configuration
     let widgetName = configuration.name || componentKey;
+    let widgetDescription = configuration.description || "";
     let widgetSimple = configuration.simple || false;
 
     let widgetLayout
@@ -64,11 +65,14 @@ availableWidgets.keys().forEach((componentFilePath) => {
     }
 
     // Save the component configuration
-    availableWidgetsConfiguration[componentKey] = {
-      name: widgetName,
-      simple: widgetSimple,
-      key: componentKey,
-      layout: widgetLayout,
+    if (configuration.display !== false) {
+      availableWidgetsConfiguration[componentKey] = {
+        name: widgetName,
+        description: widgetDescription,
+        simple: widgetSimple,
+        key: componentKey,
+        layout: widgetLayout,
+      }
     }
   } catch (e) {
     console.log(e);
@@ -89,8 +93,9 @@ function getAvailableWidgets() {
   let widgetList = Object.keys(availableWidgetsConfiguration).map((widgetKey) => {
     return {
       componentKey: availableWidgetsConfiguration[widgetKey].key,
-      componentName: availableWidgetsConfiguration[widgetKey].name,
-     };
+      name: availableWidgetsConfiguration[widgetKey].name,
+      description: availableWidgetsConfiguration[widgetKey].description,
+    };
   })
   return widgetList;
 }
