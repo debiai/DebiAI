@@ -136,7 +136,7 @@ import Vue from "vue";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
-import ExportMenu from "./dataSelection/ExportMenu";
+import ExportMenu from "./dataExport/ExportMenu";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
