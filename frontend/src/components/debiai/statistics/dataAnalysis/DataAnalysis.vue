@@ -28,7 +28,14 @@
       />
     </modal>
     <!-- Selection export -->
-    <modal v-if="selectionExport"> Hello </modal>
+    <modal v-if="selectionExport">
+      <ExportMenu
+        :data="data"
+        :selectedData="selectedData"
+        @cancel="selectionExport = false"
+        @exported="selectionExport = false"
+      />
+    </modal>
     <!-- WidgetCatalog -->
     <modal v-if="widgetCatalog">
       <WidgetCatalog
@@ -119,16 +126,17 @@
 import { GridStack } from "gridstack";
 import swal from "sweetalert";
 import "gridstack/dist/gridstack.css";
-import fab from "vue-fab";
+import fab from "vue-fab"; // For the bubble floating menu
 
 // Widget
 import Widget from "./utils/Widget";
 import Vue from "vue";
 
-// Other components
+// Menu
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
+import ExportMenu from "./dataSelection/ExportMenu";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -141,13 +149,17 @@ export default {
     // Widget
     Widget,
 
-    // Other
+    // Menu
     CustomColumnCreator,
     SelectionCreator,
     TagCreator,
-    fab,
+    ExportMenu,
     WidgetCatalog,
+
     Footer,
+
+    // Other
+    fab,
   },
   data() {
     return {
