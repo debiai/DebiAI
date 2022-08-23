@@ -79,11 +79,22 @@
     <div style="text-align: right">
       <button class="green" @click="newExportMethod">New export method</button>
     </div>
+
+    <!-- New Method modal -->
+    <modal v-if="newExportMethodModal">
+      <ExportMethodCreator
+        @cancel="newExportMethodModal = false"
+        @created="newExportMethodModal = false"
+      />
+    </modal>
   </div>
 </template>
 
 <script>
+import ExportMethodCreator from "./ExportMethodCreator.vue";
+
 export default {
+  components: { ExportMethodCreator },
   name: "ExportMenu",
   data() {
     return {
@@ -98,7 +109,7 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
-    // Load the tagged exportMethods
+    // Load the exportMethods
     // TODO
   },
   methods: {
@@ -139,10 +150,6 @@ export default {
 </script>
 
 <style scoped>
-.errorMsg {
-  color: red;
-}
-
 /* Form: */
 .dataGroup {
   flex-direction: column;
