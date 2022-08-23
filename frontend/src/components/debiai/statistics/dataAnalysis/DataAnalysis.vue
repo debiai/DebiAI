@@ -27,6 +27,8 @@
         @created="tagCreationWidget = false"
       />
     </modal>
+    <!-- Selection export -->
+    <modal v-if="selectionExport"> Hello </modal>
     <!-- WidgetCatalog -->
     <modal v-if="widgetCatalog">
       <WidgetCatalog
@@ -52,6 +54,7 @@
       @customColumn="customColumn"
       @saveSelection="saveSelection"
       @tagCreation="tagCreation"
+      @exportSelection="exportSelection"
       @defaultLayout="defaultLayout"
       @clearLayout="clearLayout"
       @changeDefaultLayout="changeDefaultLayout"
@@ -161,6 +164,7 @@ export default {
       customColumnCreation: false,
       saveSelectionWidget: false,
       tagCreationWidget: false,
+      selectionExport: false,
       widgetCatalog: false,
 
       // Menu
@@ -180,7 +184,13 @@ export default {
         {
           name: "tagCreation",
           icon: "local_offer",
-          tooltip: "Tag the selected values",
+          tooltip: "Tag the selected samples",
+          color: "var(--success)",
+        },
+        {
+          name: "exportSelection",
+          icon: "send",
+          tooltip: "Export the selected samples",
           color: "var(--success)",
         },
         {
@@ -407,6 +417,9 @@ export default {
     },
     tagCreation() {
       this.tagCreationWidget = true;
+    },
+    exportSelection() {
+      this.selectionExport = true;
     },
     changeDefaultLayout() {
       swal({
