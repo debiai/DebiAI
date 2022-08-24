@@ -32,8 +32,8 @@ class KafkaExportMethod(ExportMethod):
 
         # Create Kafka producer
         try:
-            self.producer = KafkaProducer(
-                bootstrap_servers=self.server, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+            # self.producer = KafkaProducer(
+            #     bootstrap_servers=self.server, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
             self.up = True
         except Exception as e:
             print("Kafka producer creation failed : " + str(e))
@@ -49,7 +49,7 @@ class KafkaExportMethod(ExportMethod):
             raise Exception("Kafka producer is not up")
 
         try:
-            self.producer.send(self.topic, data)
+            # self.producer.send(self.topic, data)
             print("Kafka export method : Data sent")
         except Exception as e:
             print("Kafka export method : Error sending data to kafka", e)

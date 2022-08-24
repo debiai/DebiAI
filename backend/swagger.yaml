@@ -1458,11 +1458,11 @@ paths:
         404:
           description: Unknown export method
 
-  /projects/{projectId}/export:
+  /projects/{projectId}/exportSelection:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
-      operationId: controller.exports.export
+      operationId: controller.exports.exportSelection
       parameters:
         - name: projectId
           in: path
