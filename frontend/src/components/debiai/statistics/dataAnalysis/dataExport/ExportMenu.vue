@@ -69,7 +69,8 @@
 
     <!-- New Method modal -->
     <modal v-if="newExportMethodModal">
-      <ExportMethodCreator @cancel="newExportMethodModal = false" @created="newExportMethodModal = false; loadExportMethods()" />
+      <ExportMethodCreator @cancel="newExportMethodModal = false"
+        @created="newExportMethodModal = false; loadExportMethods()" />
     </modal>
   </div>
 </template>
@@ -124,8 +125,20 @@ export default {
       this.$emit("exported");
     },
 
-    deleteExportMethod() {
-      // TODO
+    deleteExportMethod(id) {
+      this.$backendDialog.deleteExportMethod(id).then(() => {
+        this.$store.commit("sendMessage", {
+          title: "success",
+          msg: "Export method deleted",
+        });
+      }).catch((err) => {
+        console.error(err);
+        this.$store.commit("sendMessage", {
+          title: "error",
+          msg: "Error while deleting the export method",
+        });
+      }).finally(() => this.loadExportMethods());
+
     },
 
     newExportMethod() {

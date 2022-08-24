@@ -372,10 +372,10 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  // deleteTag(projectId, tagId) {
-  //   let code = startRequest("Deleting tag")
-  //   return axios.delete(apiURL + 'app/' + projectId + '/tags/' + tagId)
-  //     .finally(() => endRequest(code))
-  //     .then((response) => response.data)
-  // }
+  deleteExportMethod(methodId) {
+    let code = startRequest("Deleting the export method")
+    return axios.delete(apiURL + 'app/exportMethods/' + methodId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
 }

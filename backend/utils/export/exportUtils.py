@@ -118,6 +118,7 @@ def create_export_method(name, type, parameters):
 
 
 def delete_export_method(method_id):
+    global export_methods
     # Check the method id
     if not method_exist(method_id):
         raise Exception("The expons method wasn't found")

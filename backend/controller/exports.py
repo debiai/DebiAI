@@ -22,9 +22,9 @@ def post_export_method(data):
         return str(e), 400
 
 
-def delete_export_method(methodId):
+def delete_export_method(exportMethodId):
     try:
-        return exportUtils.delete_export_method(methodId), 200
+        return exportUtils.delete_export_method(exportMethodId), 200
     except Exception as e:
         return str(e), 400
 
