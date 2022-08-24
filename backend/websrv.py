@@ -9,6 +9,7 @@ import requests
 DEV_FRONTEND_URL = "http://localhost:8080/"
 PORT = 3000
 
+
 logging.basicConfig(level=logging.INFO)
 app = connexion.App(__name__)
 app.add_api('swagger.yaml', strict_validation=True)

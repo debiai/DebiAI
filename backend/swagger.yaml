@@ -1381,6 +1381,116 @@ paths:
           description: Sample tree
           schema:
             type: object
+
+  # Selection export
+  /app/exportMethods:
+    get:
+      summary: Get the application export methods
+      tags: [Export]
+      operationId: controller.exports.get_export_methods
+      responses:
+        200:
+          description: Export method list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - name
+                - parameters
+              properties:
+                type:
+                  type: string
+                  description: Export method type
+                name:
+                  type: string
+                  description: Export method name
+                  minLength: 1
+                parameters:
+                  type: object
+                  description: Export method parameters
+
+    post:
+      summary: Create an export method for the app
+      tags: [Export]
+      operationId: controller.exports.post_export_method
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - type
+              - name
+              - parameters
+            properties:
+              type:
+                type: string
+                description: Export method type
+              name:
+                type: string
+                description: Export method name
+                minLength: 1
+              parameters:
+                type: object
+                description: Export method parameters, can be anything as long as the export method type can read it
+          required: true
+      responses:
+        200:
+          description: Export method added
+        400:
+          description: Wrong type or parameters
+
+  /app/exportMethods/{exportMethodId}:
+    delete:
+      summary: Remove an export method for the app
+      tags: [Export]
+      operationId: controller.exports.delete_export_method
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Export method removed
+        404:
+          description: Unknown export method
+
+  /projects/{projectId}/export:
+    post:
+      summary: Export a selected sample id list from an export method
+      tags: [Export]
+      operationId: controller.exports.export
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+              - exportMethodId
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selected sample id (hash)
+              selectionName:
+                type: string
+              exportMethodId:
+                type: string
+      responses:
+        200:
+          description: Selection exported
+
+
   # Statistical operations
   /statisticalOperations/pearsonCorrelation:
     post:

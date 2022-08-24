@@ -2,6 +2,7 @@ from kafka import KafkaProducer
 from configparser import ConfigParser
 import json
 import time
+
 # Read config.ini file
 config_object = ConfigParser()
 config_object.read("config/config.ini")
@@ -20,15 +21,17 @@ if "KAFKA" in config_object \
                              value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     is_kafka_up = True
 
+print("========= Kafka =========")
+
 if is_kafka_up:
-    print("Kafka up: " + KAFKA_SERVER)
+    print("Kafka exports up: " + KAFKA_SERVER)
 else:
-    print("========= Kafka =========")
-    print("Kafka is not up, the configuration need to be completed.")
+    print("Kafka exports isn't up, the configuration need to be completed.")
     print("Please add:")
     print("[KAFKA]\nserver = <kafka_server_url>\nselections_topic = <topic_name>")
     print("To the config/config.ini file.")
-    print("=========================")
+
+print("=========================")
 
 
 def send_sample_selection(project_name: str, selection_name: str, sample_ids: list):

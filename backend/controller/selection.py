@@ -1,12 +1,8 @@
 #############################################################################
 # Imports
 #############################################################################
-import os
-from datetime import date
-
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
-import utils.export.kafkaUtils as kafkaUtils
 import utils.dataProviders as dataProviders
 
 dataPath = debiaiUtils.dataPath
@@ -64,18 +60,6 @@ def post_selection(projectId, data):
         requestId
     )
 
-    # Send the selection to Kafka
-    project_name = debiaiUtils.getProjectNameFromId(projectId)
-    project_sample_hashmap = debiaiUtils.getHashmap(projectId)
-    sample_path = []
-    for sample_hash in selectionInfo['samples']:
-        sample_path.append(project_sample_hashmap[sample_hash])
-
-    kafkaUtils.send_sample_selection(
-        project_name,
-        data['selectionName'],
-        sample_path
-    )
     return selectionInfo, 200
 
 
