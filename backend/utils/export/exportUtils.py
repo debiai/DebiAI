@@ -1,10 +1,10 @@
-import uuid
 import utils.debiaiUtils as debiaiUtils
 import utils.config as configUtils
+from utils.export.methods.kafkaUtils import KafkaExportType
 
 #############################################################################
 #
-# Export ulits
+# Export utils
 #
 # DebiAI allows to export data or selections to other services with
 # different methods.
@@ -13,45 +13,10 @@ import utils.config as configUtils
 #############################################################################
 
 
-class ExportType:
-    name = None
-    parameters = {}
-
-    def __init__(self, name, parameters):
-        self.name = name
-        self.parameters = parameters
-
-    def to_dict(self):
-        return {
-            'name': self.name,
-            'parameters': self.parameters
-        }
-
-
-class ExportMethod:
-    id = None
-    type = None
-    name = None
-    parameters = {}
-
-    def __init__(self, type, name, parameters):
-        self.id = uuid.uuid4().hex
-        self.type = type
-        self.name = name
-        self.parameters = parameters
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'type': self.type,
-            'name': self.name,
-            'parameters': self.parameters
-        }
-
-
 export_types = [
-    ExportType("kafka", {"server": "string", "topic": "string"})
+    KafkaExportType()
 ]
+
 export_methods = []
 
 
@@ -63,15 +28,36 @@ def load_export_methods():
     # Load the export methods from the config file
     config = configUtils.get_config()
 
-    if 'exports' in config:
+    if 'EXPORT_METHODS' in config:
         config_export_methods = config['EXPORT_METHODS']
 
         for method in config_export_methods:
             print("Configuring method " + method,
                   "[", config_export_methods[method], "]")
 
-            # if method['type'] not in [type.name for type in export_types]:
-            #     raise "method type " + method['type'] + " not found"
+            parameters = config_export_methods[method].split(",")
+            if len(parameters) == 0:
+                raise "method " + method + " has no parameters, aborting"
+
+            # Trim parameters
+            for i in range(len(parameters)):
+                parameters[i] = "".join(parameters[i].rstrip().lstrip())
+
+            export_type_name = parameters[0]
+
+            # Check the method type
+            if not type_exist(export_type_name):
+                raise "method type " + export_type_name + " isn't supported, only " + \
+                    str([type.name for type in export_types]) + " are supported"
+
+            # Get the export type
+            export_type = get_export_type(export_type_name)
+
+            # Create the method
+            export_methods.append(
+                export_type.export_method_class(method, parameters[1:]))
+
+            print("Method " + method + " added")
 
     if len(export_methods) == 0:
         print("No export method configured")
@@ -86,23 +72,32 @@ def get_export_methods():
     return [method.to_dict() for method in export_methods]
 
 
+def get_export_type(typeName):
+    return [type for type in export_types if type.name == typeName][0]
+
+
 def method_exist(methodId):
     return methodId in [method.id for method in export_methods]
 
 
+def type_exist(typeName):
+    return typeName in [type.name for type in export_types]
+
+
 def add_export_method(data):
-    # Check the method type
-    if data['type'] not in [method.name for method in export_types]:
-        raise "method type " + data['type'] + " not found"
+    # # Check the method type
+    # if not type_exist(data['type']):
+    #     raise "method type " + data['type'] + " not found"
 
-    # Check the method name
-    if data['name'] in [method.name for method in export_methods]:
-        raise "method name " + data['name'] + " already exists"
+    # # Check the method name
+    # if data['name'] in [method.name for method in export_methods]:
+    #     raise "method name " + data['name'] + " already exists"
 
-    # Add the method
-    export_methods.append(ExportMethod(
-        data['type'], data['name'], data['parameters']))
-    return "method " + data['name'] + " added"
+    # # Add the method
+    # export_methods.append(ExportMethod(
+    #     data['type'], data['name'], data['parameters']))
+    # return "method " + data['name'] + " added"
+    pass
 
 
 def delete_export_method(methodId):
@@ -140,3 +135,17 @@ def export(projectId, methodId, data):
     #     data['selectionName'],
     #     sample_path
     # )
+    # project_name: str, selection_name: str, sample_ids: list):
+    #         # Construct id list
+    #         id_list = []
+
+    #         for id in sample_ids:
+    #             id_list.append({"id": id})
+
+    #         producer.send(KAFKA_SELECTIONS_TOPIC, {
+    #             'origine': 'debiai',
+    #             'project_name': project_name,
+    #             'selection_name': selection_name,
+    #             'date': time.time(),
+    #             'sample_ids': id_list
+    #         })
