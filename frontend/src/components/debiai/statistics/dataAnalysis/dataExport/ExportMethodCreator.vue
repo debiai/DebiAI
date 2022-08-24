@@ -14,35 +14,31 @@
       <button @click="$emit('cancel')" class="red marged">Cancel</button>
     </h2>
 
+    <!-- Export method name -->
+    <form v-on:submit.prevent class="dataGroup">
+      <!-- Selected samples -->
+      <div class="data">
+        <span class="name"> Export method name </span>
+        <span class="value">
+          <input type="text" v-model="exportMethodName" style="flex: 2" />
+        </span>
+      </div>
+    </form>
+
     <div id="methodList" class="itemList">
       <div id="kafka" class="item">
         <h3>Kafka</h3>
         <div class="parameters">
           <span>
-            Method name:
-            <input
-              type="text"
-              v-model="methodName"
-              placeholder="Kafka export"
-            />
-          </span>
-          <span>
             Server:
-            <input
-              type="text"
-              v-model="kafkaServer"
-              placeholder="localhost:9092"
-            />
+            <input type="text" v-model="kafkaServer" placeholder="kafka.svc.local:9092" />
           </span>
           <span>
             Topic:
             <input type="text" v-model="kafkaTopic" placeholder="kafka_topic" />
           </span>
         </div>
-        <button
-          class="green"
-          @click="createMethod('kafka', { kafkaServer, kafkaTopic })"
-        >
+        <button class="green" @click="createMethod('kafka', [kafkaServer, kafkaTopic])">
           Create
         </button>
       </div>
@@ -55,8 +51,9 @@ export default {
   name: "ExportMethodCreator",
   data() {
     return {
+      exportMethodName: "New export method",
+
       // Kafka
-      methodName: "",
       kafkaServer: "",
       kafkaTopic: "",
     };
@@ -66,25 +63,32 @@ export default {
     // TODO
   },
   methods: {
-    createMethod(name, parameters) {
-      console.log(name, parameters);
-      //   this.$backendDialog
-      //     .updateTag(projectId, this.selectionName, tagHash)
-      //     .then(() => {
-      //       this.$store.commit("sendMessage", {
-      //         title: "success",
-      //         msg: "Tag uploaded successfully",
-      //       });
-      //       this.$emit("created");
-      //     })
-      //     .catch((err) => {
-      //       console.error(err);
-      //       this.$store.commit("sendMessage", {
-      //         title: "error",
-      //         msg: "Error while saving or updating the tag to the server",
-      //       });
-      //     });
-      this.$emit("created");
+    createMethod(type, parameters) {
+      console.log(type, parameters);
+      this.$backendDialog
+        .addExportMethod(this.exportMethodName, type, parameters)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Export method created successfully",
+          });
+          this.$emit("created");
+        })
+        .catch((e) => {
+          console.log(e);
+          console.log(e.response);
+          if ('response' in e && 'data' in e.response) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: e.response.data,
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "An error occured",
+            });
+          }
+        });
     },
   },
   computed: {

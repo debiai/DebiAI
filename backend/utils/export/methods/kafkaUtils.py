@@ -18,7 +18,7 @@ class KafkaExportMethod(ExportMethod):
     up = False
 
     def __init__(self, name, parameters):
-        super().__init__("kafka", name, parameters)
+        super().__init__(KafkaExportType(), name, parameters)
 
         # Expected parameters: [server, topic]
         # Check parameters

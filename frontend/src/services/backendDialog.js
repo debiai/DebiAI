@@ -4,7 +4,6 @@ import store from '../store'
 import services from "./services"
 
 const apiURL = config.API_URL
-console.log("Backend url : " + apiURL);
 
 function startRequest(name) {
   let requestCode = services.uuid()
@@ -355,5 +354,28 @@ export default {
     return axios.delete(apiURL + 'projects/' + projectId + '/tags/' + tagId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
-  }
+  },
+
+  // Exports
+  getExportMethods() {
+    let code = startRequest("Loading export methods")
+    return axios.get(apiURL + 'app/exportMethods')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  addExportMethod(name, type, parameters) {
+
+    let toExport = { name, type, parameters }
+
+    let code = startRequest("Creating the export method")
+    return axios.post(apiURL + 'app/exportMethods', toExport)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  // deleteTag(projectId, tagId) {
+  //   let code = startRequest("Deleting tag")
+  //   return axios.delete(apiURL + 'app/' + projectId + '/tags/' + tagId)
+  //     .finally(() => endRequest(code))
+  //     .then((response) => response.data)
+  // }
 }

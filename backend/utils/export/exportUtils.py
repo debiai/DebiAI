@@ -39,7 +39,7 @@ def get_export_methods():
 def get_export_method(methodId):
     # Check the method id
     if not method_exist(methodId):
-        raise Exception("method " + methodId + " not found")
+        raise Exception("Export method " + methodId + " not found")
 
     return [method for method in export_methods if method.id == methodId][0]
 
@@ -86,14 +86,18 @@ def load_export_methods():
 def add_export_method(data):
     # Check the method type
     if not type_exist(data['type']):
-        raise Exception("method type " + data['type'] + " not found")
+        raise Exception("Method type " + data['type'] + " not found")
 
     # Check the method name
     if data['name'] in [method.name for method in export_methods]:
-        raise Exception("method name " + data['name'] + " already exists")
+        raise Exception("An export method with the name '" +
+                        data['name'] + "' already exists")
 
     export_method = create_export_method(
         data['name'], data['type'], data['parameters'])
+
+    # The export method created from the dashboard are deletable
+    export_method.deletable = True
 
     export_methods.append(export_method)
 
@@ -103,7 +107,7 @@ def add_export_method(data):
 def create_export_method(name, type, parameters):
     # Check the method type
     if not type_exist(type):
-        raise Exception("method type " + type + " isn't supported, only " +
+        raise Exception("Export type '" + type + "' isn't supported, only " +
                         str([type.name for type in export_types]) + " are supported")
 
     # Get the export type
@@ -116,7 +120,7 @@ def create_export_method(name, type, parameters):
 def delete_export_method(method_id):
     # Check the method id
     if not method_exist(method_id):
-        raise Exception("method " + method_id + " not found")
+        raise Exception("The expons method wasn't found")
 
     # Delete the method
     export_methods = [

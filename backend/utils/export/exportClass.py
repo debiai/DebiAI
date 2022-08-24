@@ -23,7 +23,7 @@ class ExportType:
 
 class ExportMethod:
     id = None
-    type = None
+    type = None  # ExportType object
     name = None
     parameters = []
 
@@ -38,8 +38,9 @@ class ExportMethod:
     def to_dict(self):
         return {
             'id': self.id,
-            'type': self.type,
+            'type': self.type.name,
             'name': self.name,
             'parameters': self.parameters,
+            'parameterNames': self.type.parameters_definition,
             'deletable': self.deletable
         }

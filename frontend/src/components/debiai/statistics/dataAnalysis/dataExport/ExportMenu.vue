@@ -35,14 +35,10 @@
       </h3>
       <div id="exportMethods" class="card" v-if="exportMethods">
         <div class="itemList">
-          <div
-            class="exportMethod item"
-            v-for="exportMethod in exportMethods"
-            :key="exportMethod.id"
-          >
+          <div class="exportMethod item" v-for="exportMethod in exportMethods" :key="exportMethod.id">
             <h3 class="name">
               {{ exportMethod.name }}
-              <button class="red" @click="deleteExportMethod(exportMethod.id)">
+              <button class="red" @click="deleteExportMethod(exportMethod.id)" v-if="exportMethod.deletable !== false">
                 <b>Delete</b>
               </button>
               <span style="flex: 1"></span>
@@ -54,25 +50,16 @@
             <div class="details">
               <div class="type">{{ exportMethod.type }}</div>
               <div class="parameters">
-                <div
-                  class="parameter"
-                  v-for="parameterKey in Object.keys(exportMethod.parameters)"
-                  :key="parameterKey"
-                >
-                  <u> {{ parameterKey }}:</u>
-                  {{ exportMethod.parameters[parameterKey] }}
+                <div class="parameter" v-for="(parameter, i) in exportMethod.parameters" :key="i">
+                  <u> {{ exportMethod.parameterNames[i] }}:</u>
+                  {{ parameter }}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        v-else
-        id="exportMethods"
-        class="card"
-        style="justify-content: center; color: grey"
-      >
+      <div v-else id="exportMethods" class="card" style="justify-content: center; color: grey">
         Loading export methods
       </div>
     </div>
@@ -82,10 +69,7 @@
 
     <!-- New Method modal -->
     <modal v-if="newExportMethodModal">
-      <ExportMethodCreator
-        @cancel="newExportMethodModal = false"
-        @created="newExportMethodModal = false"
-      />
+      <ExportMethodCreator @cancel="newExportMethodModal = false" @created="newExportMethodModal = false; loadExportMethods()" />
     </modal>
   </div>
 </template>
@@ -110,9 +94,16 @@ export default {
   },
   created() {
     // Load the exportMethods
-    // TODO
+    this.loadExportMethods();
   },
   methods: {
+    loadExportMethods() {
+      this.exportMethods = null;
+      this.$backendDialog.getExportMethods().then((exportMethods) => {
+        this.exportMethods = exportMethods;
+        console.log(exportMethods);
+      });
+    },
     exportSamples() {
       //   this.$backendDialog
       //     .updateTag(projectId, this.selectionName, tagHash)
@@ -154,9 +145,11 @@ export default {
 .dataGroup {
   flex-direction: column;
 }
-.dataGroup .data + .data {
+
+.dataGroup .data+.data {
   padding-top: 4px;
 }
+
 .dataGroup .value {
   flex: 1;
 }
@@ -168,29 +161,34 @@ export default {
   height: 400px;
   overflow: auto;
 }
+
 .exportMethod {
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: stretch;
 }
+
 .exportMethod .name {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .exportMethod .details {
   display: flex;
   align-items: flex-start;
   padding: 10px;
   gap: 10px;
 }
+
 .exportMethod .details .parameters {
   border-left: 1px solid rgb(75, 75, 75);
   text-align: left;
   padding-left: 15px;
   opacity: 80%;
 }
+
 .exportMethod .details .parameter {
   padding-bottom: 8px;
 }

@@ -1399,6 +1399,7 @@ paths:
                 - type
                 - name
                 - parameters
+                - parameterNames
               properties:
                 type:
                   type: string
@@ -1408,8 +1409,11 @@ paths:
                   description: Export method name
                   minLength: 1
                 parameters:
-                  type: object
+                  type: array
                   description: Export method parameters
+                parametersNames:
+                  type: array
+                  description: Name of the export method parameters according to the export type
 
     post:
       summary: Create an export method for the app
@@ -1433,7 +1437,7 @@ paths:
                 description: Export method name
                 minLength: 1
               parameters:
-                type: object
+                type: array
                 description: Export method parameters, can be anything as long as the export method type can read it
           required: true
       responses:
@@ -1489,7 +1493,6 @@ paths:
       responses:
         200:
           description: Selection exported
-
 
   # Statistical operations
   /statisticalOperations/pearsonCorrelation:
