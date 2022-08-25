@@ -378,4 +378,10 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
+  exportSelection(projectId, selectionName, exportMethodId, sampleHashList) {
+    let code = startRequest("Exporting the selection " + selectionName)
+    return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', { selectionName, sampleHashList, exportMethodId })
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  }
 }

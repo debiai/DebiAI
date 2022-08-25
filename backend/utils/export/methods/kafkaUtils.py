@@ -44,7 +44,7 @@ class KafkaExportMethod(ExportMethod):
     def export(self, data):
         print("Kafka export method : Sending data to kafka",
               self.server, self.topic)
-
+        print(data)
         if not self.up:
             raise Exception("Kafka producer is not up")
 

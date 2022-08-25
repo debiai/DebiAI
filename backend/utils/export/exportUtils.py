@@ -88,11 +88,6 @@ def add_export_method(data):
     if not type_exist(data['type']):
         raise Exception("Method type " + data['type'] + " not found")
 
-    # Check the method name
-    if data['name'] in [method.name for method in export_methods]:
-        raise Exception("An export method with the name '" +
-                        data['name'] + "' already exists")
-
     export_method = create_export_method(
         data['name'], data['type'], data['parameters'])
 
@@ -147,7 +142,9 @@ def exportSelection(projectId, data):
     project_sample_hashmap = debiaiUtils.getHashmap(projectId)
     sample_path = []
     for sample_hash in data['sampleHashList']:
-        sample_path.append(project_sample_hashmap[sample_hash])
+        # Removing the '/' at the end of the hash
+        id = project_sample_hashmap[sample_hash][:-1]
+        sample_path.append(id)
 
     id_list = []
 

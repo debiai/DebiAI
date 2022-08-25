@@ -24,10 +24,11 @@
           </DocumentationBlock>
         </span>
         <span class="value">
-          <input type="text" v-model="selectionName" style="flex: 2" />
+          <input type="text" v-model="selectionName" style="flex: 2" required />
         </span>
       </div>
     </form>
+
     <!-- Export method list -->
     <div>
       <h3 style="text-align: left; padding-top: 15px">
@@ -42,7 +43,7 @@
                 <b>Delete</b>
               </button>
               <span style="flex: 1"></span>
-              <button class="green" @click="exportSamples(exportMethod.id)">
+              <button class="green" @click="exportSamples(exportMethod.id)" :disabled="exportMethod.exporting === true">
                 Export
               </button>
             </h3>
@@ -102,27 +103,46 @@ export default {
       this.exportMethods = null;
       this.$backendDialog.getExportMethods().then((exportMethods) => {
         this.exportMethods = exportMethods;
-        console.log(exportMethods);
+
+        // Adding an 'exporting' property to each exportMethod
+        for (let exportMethod of this.exportMethods) {
+          exportMethod.exporting = false;
+        }
       });
     },
-    exportSamples() {
-      //   this.$backendDialog
-      //     .updateTag(projectId, this.selectionName, tagHash)
-      //     .then(() => {
-      //       this.$store.commit("sendMessage", {
-      //         title: "success",
-      //         msg: "Tag uploaded successfully",
-      //       });
-      //       this.$emit("created");
-      //     })
-      //     .catch((err) => {
-      //       console.error(err);
-      //       this.$store.commit("sendMessage", {
-      //         title: "error",
-      //         msg: "Error while saving or updating the tag to the server",
-      //       });
-      //     });
-      this.$emit("exported");
+    exportSamples(methodId) {
+      let projectId = this.$store.state.ProjectPage.projectId;
+      let selectedHash = this.selectedData.map(
+        (selectedIndex) => this.data.sampleHashList[selectedIndex]
+      );
+
+      this.exportMethods.find((exportMethod) => exportMethod.id === methodId).exporting = true;
+
+      this.$backendDialog
+        .exportSelection(projectId, this.selectionName, methodId, selectedHash)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Selection exported successfully",
+          });
+          this.$emit("exported");
+        })
+        .catch((e) => {
+          console.log(e);
+          if (e.response && e.response.data) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: e.response.data,
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Error while exporting the selection",
+            });
+          }
+        }).finally(() => {
+          this.exportMethods.find((exportMethod) => exportMethod.id === methodId).exporting = false;
+        });
     },
 
     deleteExportMethod(id) {
