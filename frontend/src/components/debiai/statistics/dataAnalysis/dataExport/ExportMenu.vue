@@ -35,6 +35,11 @@
         Select an export method:
       </h3>
       <div id="exportMethods" class="card" v-if="exportMethods">
+
+        <div v-if="exportMethods.length === 0" class="marged">
+          No export method available, please create one.
+        </div>
+
         <div class="itemList">
           <div class="exportMethod item" v-for="exportMethod in exportMethods" :key="exportMethod.id">
             <h3 class="name">
@@ -43,7 +48,7 @@
                 <b>Delete</b>
               </button>
               <span style="flex: 1"></span>
-              <button class="green" @click="exportSamples(exportMethod.id)" :disabled="exportMethod.exporting === true">
+              <button class="green" @click="exportSamples(exportMethod.id)" :disabled="exporting">
                 Export
               </button>
             </h3>
@@ -86,6 +91,7 @@ export default {
     return {
       exportMethods: null,
       selectionName: "DebiAI Selection",
+      exporting: false,
 
       newExportMethodModal: false,
     };
@@ -103,11 +109,6 @@ export default {
       this.exportMethods = null;
       this.$backendDialog.getExportMethods().then((exportMethods) => {
         this.exportMethods = exportMethods;
-
-        // Adding an 'exporting' property to each exportMethod
-        for (let exportMethod of this.exportMethods) {
-          exportMethod.exporting = false;
-        }
       });
     },
     exportSamples(methodId) {
@@ -116,7 +117,7 @@ export default {
         (selectedIndex) => this.data.sampleHashList[selectedIndex]
       );
 
-      this.exportMethods.find((exportMethod) => exportMethod.id === methodId).exporting = true;
+      this.exporting = true;
 
       this.$backendDialog
         .exportSelection(projectId, this.selectionName, methodId, selectedHash)
@@ -141,7 +142,7 @@ export default {
             });
           }
         }).finally(() => {
-          this.exportMethods.find((exportMethod) => exportMethod.id === methodId).exporting = false;
+          this.exporting = false;
         });
     },
 
@@ -165,11 +166,7 @@ export default {
       this.newExportMethodModal = !this.newExportMethodModal;
     },
   },
-  computed: {
-    selectionExportNameOk() {
-      return this.selectionName.length >= 1;
-    },
-  },
+  computed: {},
 };
 </script>
 

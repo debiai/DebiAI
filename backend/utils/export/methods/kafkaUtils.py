@@ -39,7 +39,7 @@ class KafkaExportMethod(ExportMethod):
             print("Kafka producer creation failed : " + str(e))
             print("server : |" + self.server + "|")
             raise Exception(
-                "Kafka producer creation failed with error : " + str(e))
+                "Kafka producer creation on server '" + self.server + "' failed with error : " + str(e))
 
     def export(self, data):
         print("Kafka export method : Sending data to kafka",
@@ -50,7 +50,7 @@ class KafkaExportMethod(ExportMethod):
             raise Exception("Kafka producer is not up")
 
         try:
-            self.producer.send(self.topic, data)
+            print(self.producer.send(self.topic, data))
             print("Kafka export method : Data sent")
         except Exception as e:
             print("Kafka export method : Error sending data to kafka", e)
