@@ -497,7 +497,7 @@ paths:
               sampleIds:
                 description: List of sample ID
                 items:
-                  type: string
+                  type: [string, integer, number]
       responses:
         200:
           description: model results
@@ -803,7 +803,7 @@ paths:
               sampleIds:
                 type: array
                 items:
-                  type: string
+                  type: [string, integer, number]
           required: true
 
       responses:

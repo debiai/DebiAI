@@ -3,6 +3,7 @@ import ujson as json
 
 import utils.config as configUtil
 import utils.utils as utils
+import utils.dataProviders as dataProviders
 import utils.export.exportUtils as exportUtils
 import utils.hashUtils as hashUtils
 
@@ -19,6 +20,9 @@ dataTypes = ["groundTruth",
 def init():
     # Init config file
     configUtil.init_config()
+
+    # Init data providers
+    dataProviders.setup_data_prividers()
 
     # Init export methods
     exportUtils.load_export_methods()

@@ -1,5 +1,4 @@
-import utils.debiaiUtils as debiaiUtils
-from configparser import ConfigParser
+from utils.config import get_config
 from utils.utils import timeNow
 import requests
 
@@ -92,35 +91,35 @@ def is_data_provider_up(data_provider_url):
         return False
 
 
-# The data providers url are stored in the config file
-config_object = ConfigParser()
-config_object.read("config/config.ini")
-
 data_providers = []
 
 
 # Get the data providers from the config file
 def setup_data_prividers():
-    if len(config_object["DATA_PROVIDERS"]) == 0:
-        print("No data providers configured")
-    else:
-        print("Data providers configured:")
-        for provider_name in config_object["DATA_PROVIDERS"]:
-            provider_url = config_object["DATA_PROVIDERS"][provider_name]
+    print("===== Data providers ======")
+    # The data providers url are stored in the config file
+    config = get_config()
+    if "DATA_PROVIDERS" in config and len(config["DATA_PROVIDERS"]) > 0:
+        for provider_name in config["DATA_PROVIDERS"]:
+            provider_url = config["DATA_PROVIDERS"][provider_name]
 
             # Correct the url if needed
             if not provider_url.endswith("/"):
                 provider_url += "/"
 
-            print("\t" + provider_name + ": " + provider_url)
+            print("Configuring data provider " +
+                  provider_name + " [" + provider_url + "]")
 
             # Test the connection
             if not is_data_provider_up(provider_url):
-                print("\t\tError: " + provider_name +
+                print("\tError: " + provider_name +
                       " is not available or does not respect the DebiAI data provider API.")
             else:
                 data_providers.append(DataProvider(
                     provider_name, provider_url))
+
+    if len(data_providers) == 0:
+        print("No data providers configured")
 
 
 # Projects
@@ -278,6 +277,3 @@ def getModelResults(projectId, modelId, sampleIds):
 # Selections
 def get_selections(projectId):
     return []
-
-
-setup_data_prividers()

@@ -16,8 +16,7 @@ config = {}
 def init_config():
     global config
     config_object.read(config_path)
-    config
-
+    config = {}
     for section in config_object.sections():
         config[section] = {}
         for option in config_object.options(section):
