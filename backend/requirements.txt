@@ -9,3 +9,4 @@ scipy == 1.5.2
 ujson == 4.0.2
 itsdangerous==2.0.1
 sklearn==0.0
+kafka-python == 2.0.2

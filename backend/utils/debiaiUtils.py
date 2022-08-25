@@ -1,7 +1,10 @@
 import os
 import ujson as json
 
+import utils.config as configUtil
 import utils.utils as utils
+import utils.dataProviders as dataProviders
+import utils.export.exportUtils as exportUtils
 import utils.hashUtils as hashUtils
 
 dataPath = "data/"
@@ -15,6 +18,15 @@ dataTypes = ["groundTruth",
 
 # Init, called at the server start
 def init():
+    # Init config file
+    configUtil.init_config()
+
+    # Init data providers
+    dataProviders.setup_data_prividers()
+
+    # Init export methods
+    exportUtils.load_export_methods()
+
     # Create the projects data directory
     try:
         os.mkdir("data")
@@ -27,8 +39,6 @@ def init():
         utils.writeJsonFile("logs/logs.json", [])
     except Exception:
         print('Logs already initiated')
-
-    # TODO: Create a demonstration project
 
     #  Create the sample hash to path map of each projects
     for projectId in os.listdir(dataPath):

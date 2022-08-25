@@ -27,6 +27,15 @@
         @created="tagCreationWidget = false"
       />
     </modal>
+    <!-- Selection export -->
+    <modal v-if="selectionExport">
+      <ExportMenu
+        :data="data"
+        :selectedData="selectedData"
+        @cancel="selectionExport = false"
+        @exported="selectionExport = false"
+      />
+    </modal>
     <!-- WidgetCatalog -->
     <modal v-if="widgetCatalog">
       <WidgetCatalog
@@ -52,6 +61,7 @@
       @customColumn="customColumn"
       @saveSelection="saveSelection"
       @tagCreation="tagCreation"
+      @exportSelection="exportSelection"
       @defaultLayout="defaultLayout"
       @clearLayout="clearLayout"
       @changeDefaultLayout="changeDefaultLayout"
@@ -116,16 +126,17 @@
 import { GridStack } from "gridstack";
 import swal from "sweetalert";
 import "gridstack/dist/gridstack.css";
-import fab from "vue-fab";
+import fab from "vue-fab"; // For the bubble floating menu
 
 // Widget
 import Widget from "./utils/Widget";
 import Vue from "vue";
 
-// Other components
+// Menu
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
+import ExportMenu from "./dataExport/ExportMenu";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -138,13 +149,17 @@ export default {
     // Widget
     Widget,
 
-    // Other
+    // Menu
     CustomColumnCreator,
     SelectionCreator,
     TagCreator,
-    fab,
+    ExportMenu,
     WidgetCatalog,
+
     Footer,
+
+    // Other
+    fab,
   },
   data() {
     return {
@@ -161,6 +176,7 @@ export default {
       customColumnCreation: false,
       saveSelectionWidget: false,
       tagCreationWidget: false,
+      selectionExport: false,
       widgetCatalog: false,
 
       // Menu
@@ -180,7 +196,13 @@ export default {
         {
           name: "tagCreation",
           icon: "local_offer",
-          tooltip: "Tag the selected values",
+          tooltip: "Tag the selected samples",
+          color: "var(--success)",
+        },
+        {
+          name: "exportSelection",
+          icon: "send",
+          tooltip: "Export the selected samples",
           color: "var(--success)",
         },
         {
@@ -407,6 +429,9 @@ export default {
     },
     tagCreation() {
       this.tagCreationWidget = true;
+    },
+    exportSelection() {
+      this.selectionExport = true;
     },
     changeDefaultLayout() {
       swal({

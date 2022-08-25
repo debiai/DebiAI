@@ -4,7 +4,6 @@ import store from '../store'
 import services from "./services"
 
 const apiURL = config.API_URL
-console.log("Backend url : " + apiURL);
 
 function startRequest(name) {
   let requestCode = services.uuid()
@@ -190,21 +189,6 @@ export default {
     })
   },
 
-  getCommonModelResults(projectId, selectionId, modelIds, common) {
-    let code = startRequest("Loading common model results")
-    return axios.post(apiURL + 'projects/' + projectId + '/models/commonResults',
-      {
-        modelIds,
-        common,
-        selectionId
-      }
-    ).finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-
   getModelResults(projectId, modelId, sampleIds) {
     return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
       .then((response) => response.data)
@@ -368,6 +352,35 @@ export default {
   deleteTag(projectId, tagId) {
     let code = startRequest("Deleting tag")
     return axios.delete(apiURL + 'projects/' + projectId + '/tags/' + tagId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+
+  // Exports
+  getExportMethods() {
+    let code = startRequest("Loading export methods")
+    return axios.get(apiURL + 'app/exportMethods')
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  addExportMethod(name, type, parameters) {
+
+    let toExport = { name, type, parameters }
+
+    let code = startRequest("Creating the export method")
+    return axios.post(apiURL + 'app/exportMethods', toExport)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  deleteExportMethod(methodId) {
+    let code = startRequest("Deleting the export method")
+    return axios.delete(apiURL + 'app/exportMethods/' + methodId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
+  },
+  exportSelection(projectId, selectionName, exportMethodId, sampleHashList) {
+    let code = startRequest("Exporting the selection " + selectionName)
+    return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', { selectionName, sampleHashList, exportMethodId })
       .finally(() => endRequest(code))
       .then((response) => response.data)
   }

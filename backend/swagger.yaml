@@ -380,45 +380,6 @@ paths:
         404:
           description: Project not found
 
-  /projects/{projectId}/models/commonResults:
-    post:
-      summary: get number of common results between models
-      tags: [Model]
-      operationId: controller.models.get_common_results
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - modelIds
-              - common
-            properties:
-              modelIds:
-                type: array
-                items:
-                  type: string
-              common:
-                type: boolean
-                description: decied if left or right join
-              selectionId:
-                description: Selection Id, not required
-
-          required: true
-      responses:
-        200:
-          description: Common samples
-          schema:
-            type: array
-            items:
-              type: string
-        404:
-          description: Project or model not found
-
   /projects/{projectId}/models/{modelId}:
     delete:
       summary: remove a model
@@ -536,7 +497,7 @@ paths:
               sampleIds:
                 description: List of sample ID
                 items:
-                  type: string
+                  type: [string, integer, number]
       responses:
         200:
           description: model results
@@ -842,7 +803,7 @@ paths:
               sampleIds:
                 type: array
                 items:
-                  type: string
+                  type: [string, integer, number]
           required: true
 
       responses:
@@ -1420,6 +1381,119 @@ paths:
           description: Sample tree
           schema:
             type: object
+
+  # Selection export
+  /app/exportMethods:
+    get:
+      summary: Get the application export methods
+      tags: [Export]
+      operationId: controller.exports.get_export_methods
+      responses:
+        200:
+          description: Export method list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - name
+                - parameters
+                - parameterNames
+              properties:
+                type:
+                  type: string
+                  description: Export method type
+                name:
+                  type: string
+                  description: Export method name
+                  minLength: 1
+                parameters:
+                  type: array
+                  description: Export method parameters
+                parametersNames:
+                  type: array
+                  description: Name of the export method parameters according to the export type
+
+    post:
+      summary: Create an export method for the app
+      tags: [Export]
+      operationId: controller.exports.post_export_method
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - type
+              - name
+              - parameters
+            properties:
+              type:
+                type: string
+                description: Export method type
+              name:
+                type: string
+                description: Export method name
+                minLength: 1
+              parameters:
+                type: array
+                description: Export method parameters, can be anything as long as the export method type can read it
+          required: true
+      responses:
+        200:
+          description: Export method added
+        400:
+          description: Wrong type or parameters
+
+  /app/exportMethods/{exportMethodId}:
+    delete:
+      summary: Remove an export method for the app
+      tags: [Export]
+      operationId: controller.exports.delete_export_method
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Export method removed
+        404:
+          description: Unknown export method
+
+  /projects/{projectId}/exportSelection:
+    post:
+      summary: Export a selected sample id list from an export method
+      tags: [Export]
+      operationId: controller.exports.exportSelection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+              - exportMethodId
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selected sample id (hash)
+              selectionName:
+                type: string
+              exportMethodId:
+                type: string
+      responses:
+        200:
+          description: Selection exported
+
   # Statistical operations
   /statisticalOperations/pearsonCorrelation:
     post:

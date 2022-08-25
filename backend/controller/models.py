@@ -6,6 +6,7 @@ import ujson as json
 
 import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
+import utils.dataProviders as dataProviders
 
 dataPath = debiaiUtils.dataPath
 
@@ -229,30 +230,6 @@ def add_results_hash(projectId, modelId, data):
 
 
 @utils.traceLogLight
-def get_common_results(projectId, data):
-    """
-    Find the model results common samples from a model id list
-    """
-    modelIds = data["modelIds"]
-    common = data["common"]
-
-    # Check parameters
-    if not debiaiUtils.projectExist(projectId):
-        return "Project '" + projectId + "' doesn't exist", 404
-
-    if len(modelIds) == 0:
-        return [], 200
-
-    for modelId in modelIds:
-        if not debiaiUtils.modelExist(projectId, modelId):
-            return "Model " + modelId + " does not exist", 404
-
-    # Get common or union
-    res = debiaiUtils.getModelListResults(projectId, modelIds, common)
-    return res, 200
-
-
-@utils.traceLogLight
 def get_results(projectId, modelId, data):
     """
      Get the model results from a sample list
@@ -260,16 +237,24 @@ def get_results(projectId, modelId, data):
     sampleIds = data["sampleIds"]
 
     # Check parameters
-    if not debiaiUtils.projectExist(projectId):
-        return "Project '" + projectId + "' doesn't exist", 404
+    if debiaiUtils.projectExist(projectId):
+        if debiaiUtils.modelExist(projectId, modelId):
+            # Get model results
+            modelResults = debiaiUtils.getModelResults(projectId, modelId)
+            ret = {}
+            for sampleId in sampleIds:
+                if sampleId in modelResults:
+                    ret[sampleId] = modelResults[sampleId]
+            return ret, 200
+        else:
+            return "Model " + modelId + " does not exist", 404
 
-    if not debiaiUtils.modelExist(projectId, modelId):
-        return "Model " + modelId + " does not exist", 404
+    if dataProviders.projectExist(projectId):
+        if dataProviders.modelExist(projectId, modelId):
+            # Get model results
+            modelResults = dataProviders.getModelResults(projectId, modelId, sampleIds)
+            return modelResults, 200
+        else:
+            return "Model " + modelId + " does not exist", 404
 
-    # Get model results
-    modelResults = debiaiUtils.getModelResults(projectId, modelId)
-    ret = {}
-    for sampleId in sampleIds:
-        if sampleId in modelResults:
-            ret[sampleId] = modelResults[sampleId]
-    return ret, 200
+    return "Project '" + projectId + "' doesn't exist", 404
