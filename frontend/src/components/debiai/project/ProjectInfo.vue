@@ -3,7 +3,9 @@
     <div id="left">
       <!-- DebiAI & project path -->
       <div id="title">
-        <h1 id="DebiAI" @click="$router.push('/')">DebiAI</h1>
+        <h1 id="DebiAI" @click="$router.push('/')">
+          <img src="../../../../src/assets/images/DebiAI.png" alt="DebiAI" height="48" />
+        </h1>
         <div class="path">
           <transition name="fade">
             <span v-if="project">
@@ -23,56 +25,31 @@
           <div id="items">
             <!-- Nb samples -->
             <div class="item nbSamples" title="Number of samples">
-              <inline-svg
-                :src="require('../../../assets/svg/data.svg')"
-                width="25"
-                height="25"
-                fill="white"
-              />
+              <inline-svg :src="require('../../../assets/svg/data.svg')" width="25" height="25" fill="white" />
               {{ project.nbSamples }} samples
             </div>
 
             <!-- Nb requests -->
             <div class="item nbSelections" title="Project requests">
-              <inline-svg
-                :src="require('../../../assets/svg/request.svg')"
-                width="25"
-                height="25"
-                fill="white"
-              />
+              <inline-svg :src="require('../../../assets/svg/request.svg')" width="25" height="25" fill="white" />
               {{ project.nbRequests }} requests
             </div>
 
             <!-- Nb selections -->
             <div class="item nbSelections" title="Project selections">
-              <inline-svg
-                :src="require('../../../assets/svg/loupe.svg')"
-                width="25"
-                height="25"
-                fill="white"
-              />
+              <inline-svg :src="require('../../../assets/svg/loupe.svg')" width="25" height="25" fill="white" />
               {{ project.nbSelections }} selections
             </div>
 
             <!-- Nb Tags -->
             <div class="item nbTags" title="Project Tags">
-              <inline-svg
-                :src="require('../../../assets/svg/tag.svg')"
-                width="25"
-                height="25"
-                fill="white"
-              />
+              <inline-svg :src="require('../../../assets/svg/tag.svg')" width="25" height="25" fill="white" />
               {{ project.nbTags }} Tags
             </div>
 
             <!-- Nb models -->
             <div class="item nbModel" title="Model added to the project">
-              <inline-svg
-                :src="require('../../../assets/svg/gear.svg')"
-                width="25"
-                height="25"
-                fill="white"
-              />
+              <inline-svg :src="require('../../../assets/svg/gear.svg')" width="25" height="25" fill="white" />
               {{ project.nbModels }} models
             </div>
           </div>
@@ -84,12 +61,7 @@
     <div id="right">
       <!-- Setting btn -->
       <button id="settings" @click="$emit('settings')">
-        <inline-svg
-          :src="require('../../../assets/svg/settings.svg')"
-          width="15"
-          height="15"
-          fill="white"
-        />
+        <inline-svg :src="require('../../../assets/svg/settings.svg')" width="15" height="15" fill="white" />
       </button>
 
       <!-- Delete btn -->
@@ -99,11 +71,7 @@
 
       <!-- Refresh btn -->
       <button id="refresh" class="warning" @click="$emit('refresh')">
-        <inline-svg
-          :src="require('../../../assets/svg/update.svg')"
-          width="10"
-          height="10"
-        />
+        <inline-svg :src="require('../../../assets/svg/update.svg')" width="10" height="10" />
         Refresh
       </button>
 
@@ -178,6 +146,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .path .link {
   cursor: pointer;
   text-decoration: underline;
@@ -199,6 +168,7 @@ export default {
   font-size: 1.2em;
   opacity: 0.8;
 }
+
 .item {
   padding-left: 2vw;
 }
