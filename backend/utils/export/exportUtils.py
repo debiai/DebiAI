@@ -63,19 +63,22 @@ def load_export_methods():
             print("Configuring method " + method,
                   "[", config_export_methods[method], "]")
 
-            parameters = config_export_methods[method].split(",")
-            if len(parameters) == 0:
-                raise "method " + method + " has no parameters, aborting"
+            try:
+                parameters = config_export_methods[method].split(",")
+                if len(parameters) == 0:
+                    raise "method " + method + " has no parameters, aborting"
 
-            # Trim parameters
-            for i in range(len(parameters)):
-                parameters[i] = "".join(parameters[i].rstrip().lstrip())
+                # Trim parameters
+                for i in range(len(parameters)):
+                    parameters[i] = "".join(parameters[i].rstrip().lstrip())
 
-            export_type_name = parameters[0]
-            export_method = create_export_method(
-                method, export_type_name, parameters[1:])
+                export_type_name = parameters[0]
+                export_method = create_export_method(
+                    method, export_type_name, parameters[1:])
 
-            export_methods.append(export_method)
+                export_methods.append(export_method)
+            except Exception as e:
+                print("Error while configuring method " + method + ": " + str(e))
 
     if len(export_methods) == 0:
         print("No export method configured")
