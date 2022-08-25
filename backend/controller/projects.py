@@ -17,7 +17,7 @@ dataPath = debiaiUtils.dataPath
 
 
 def ping():
-    return "Online v1.5.3", 200
+    return "Online v0.15.1", 200
 
 
 def log(projectId, data):
