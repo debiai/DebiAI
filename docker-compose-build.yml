@@ -7,3 +7,11 @@ services:
       - "3000:3000"
     volumes:
       - ./debiai_data:/backend/data
+    environment:
+      # Data providers (DEBIAI_DATA_PROVIDER_<name>=<url>)
+      # - DEBIAI_DATA_PROVIDER_MyDp1=http://localhost:3010
+      # - DEBIAI_DATA_PROVIDER_MyDp2=http://localhost:3011
+
+      # Export methods (DEBIAI_EXPORT_METHOD_<name>="<type>, <parmeter1>, <parmeter 2>)
+      # - DEBIAI_EXPORT_METHOD_MyExport1="kafka, local:9092, my_topic_1"
+      # - DEBIAI_EXPORT_METHOD_MyExport2="kafka, local:9092, my_topic_2"
