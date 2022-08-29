@@ -212,6 +212,10 @@ def getProjectById(projectId):
             return project
 
 
+def getProjectName(projectId):
+    return projectId.split("|")[1]
+
+
 def getDataproviderByname(name):
     for data_provider in data_providers:
         if data_provider.name == name:

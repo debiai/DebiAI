@@ -1,4 +1,5 @@
 import utils.debiaiUtils as debiaiUtils
+import utils.dataProviders as dataProvider
 import utils.config as configUtils
 import time
 from utils.export.methods.kafkaUtils import KafkaExportType
@@ -134,25 +135,40 @@ def exportSelection(projectId, data):
     if not method_exist(method_id):
         raise Exception("method " + method_id + " not found")
 
-    if not debiaiUtils.projectExist(projectId):
-        raise Exception("project " + projectId + " not found")
-
     export_method = get_export_method(method_id)
 
-    # Creation of the data selection to export
-    project_name = debiaiUtils.getProjectNameFromId(projectId)
+    # Check if the project exists
+    project_exist = False
+    if debiaiUtils.projectExist(projectId):
+        project_exist = True
+        # Creation of the data selection to export
+        project_name = debiaiUtils.getProjectNameFromId(projectId)
 
-    project_sample_hashmap = debiaiUtils.getHashmap(projectId)
-    sample_path = []
-    for sample_hash in data['sampleHashList']:
-        # Removing the '/' at the end of the hash
-        id = project_sample_hashmap[sample_hash][:-1]
-        sample_path.append(id)
+        project_sample_hashmap = debiaiUtils.getHashmap(projectId)
+        sample_path = []
+        for sample_hash in data['sampleHashList']:
+            # Removing the '/' at the end of the hash
+            id = project_sample_hashmap[sample_hash][:-1]
+            sample_path.append(id)
 
-    id_list = []
+        id_list = []
 
-    for id in sample_path:
-        id_list.append({"id": id})
+        for id in sample_path:
+            id_list.append({"id": id})
+
+    elif dataProvider.projectExist(projectId):
+        project_exist = True
+
+        # Creation of the data selection to export
+        project_name = dataProvider.getProjectName(projectId)
+
+        id_list = []
+
+        for id in data['sampleHashList']:
+            id_list.append({"id": id})
+
+    if not project_exist:
+        raise Exception("Project " + projectId + " not found")
 
     data_to_export = {
         'origine': 'DebiAI',
