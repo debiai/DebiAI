@@ -166,7 +166,7 @@ def get_projects():
                     debiai_models.append({
                         "name": model["name"] if "name" in model else model["id"],
                         "id": model["id"],
-                        "nbResults": model["nbSamples"] if "nbSamples" in model else 0,
+                        "nbResults": model["nbResults"] if "nbResults" in model else 0,
                         "creationDate": timeNow(),
                         "updateDate": timeNow(),
                         "metadata": {}
