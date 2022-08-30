@@ -109,12 +109,12 @@ class DataProvider:
             view, selectionIds[0]))
 
         for selectionId in selectionIds[1:]:
-            if not intersection:  # Selection union
+            if intersection:  # Selection intersection
                 samples.intersection_update(
-                    self.get_model_evaluated_data_id_list(view, selectionId))
-            else:  # Intersection of the selections samples
+                    self.get_selection_id_list(view, selectionId))
+            else:  # Union of the selections samples
                 samples = samples.union(
-                    self.get_model_evaluated_data_id_list(view, selectionId))
+                    self.get_selection_id_list(view, selectionId))
 
         return list(samples)
 
