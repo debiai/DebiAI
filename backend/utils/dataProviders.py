@@ -18,9 +18,6 @@ class DataProvider:
         self.name = name
         self.url = url
 
-        # Test the connection
-        self.get_info()
-
     def get_info(self):
         try:
             r = requests.get(self.url + "info")
@@ -157,6 +154,11 @@ def get_projects():
                     "inputs": inputColumns
                 }]
 
+                if "nbSamples" in data_provider_info[view]:
+                    nbSamples = data_provider_info[view]["nbSamples"]
+                else:
+                    nbSamples = None
+
                 # Get the models
                 models = data_provider.get_models(view)
                 debiai_models = []
@@ -170,9 +172,6 @@ def get_projects():
                         "metadata": {}
                     })
 
-                # Get the data
-                samples = data_provider.get_data_id_list(view)
-
                 # Converting views to DebiAI projects
                 projects.append({
                     "id": data_provider.name + "|" + view,
@@ -182,7 +181,7 @@ def get_projects():
                     "blockLevelInfo": blockLevelInfo,
                     "resultStructure": data_provider_info[view]["expectedResults"],
                     "nbModels": len(debiai_models),
-                    "nbSamples": len(samples),
+                    "nbSamples": nbSamples,
                     "nbRequests": 0,
                     "nbTags": 0,
                     "nbSelections": 0,
