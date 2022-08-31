@@ -18,15 +18,14 @@ class DataProvider:
         self.name = name
         self.url = url
 
-        # Test the connection
-        self.get_info()
-
     def get_info(self):
         try:
             r = requests.get(self.url + "info")
             return r.json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             return None
+
+    # Data
 
     def get_data_id_list(self, view):
         try:
@@ -45,6 +44,8 @@ class DataProvider:
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise Exception(
                 "Could not get the data provider {} data for view {}".format(self.url, view))
+
+    # Models
 
     def get_models(self, view):
         try:
@@ -81,6 +82,41 @@ class DataProvider:
             return r.json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             return {}
+
+    # Selections
+
+    def get_selections(self, view):
+        # Get the selections overview for the view
+        try:
+            r = requests.get(self.url + "view/{}/selections".format(view))
+            return r.json()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            return None
+
+    def get_selection_id_list(self, view, selectionId):
+        # Get a selection id list
+        try:
+            r = requests.get(
+                self.url + "view/{}/selection/{}/selectedDataIdList".format(view, selectionId))
+            return r.json()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            return None
+
+    def get_selections_id_list(self, view, selectionIds, intersection):
+        # Get a selection id list by combining the selections
+
+        samples = set(self.get_selection_id_list(
+            view, selectionIds[0]))
+
+        for selectionId in selectionIds[1:]:
+            if intersection:  # Selection intersection
+                samples.intersection_update(
+                    self.get_selection_id_list(view, selectionId))
+            else:  # Union of the selections samples
+                samples = samples.union(
+                    self.get_selection_id_list(view, selectionId))
+
+        return list(samples)
 
 
 def is_data_provider_up(data_provider_url):
@@ -157,21 +193,36 @@ def get_projects():
                     "inputs": inputColumns
                 }]
 
-                # Get the models
+                # Samples number
+                if "nbSamples" in data_provider_info[view]:
+                    nbSamples = data_provider_info[view]["nbSamples"]
+                else:
+                    nbSamples = None
+
+                # Selections
+                selections = data_provider.get_selections(view)
+                debiai_selections = []
+                for selection in selections:
+                    debiai_selections.append({
+                        "name": selection["name"] if "name" in selection else selection["id"],
+                        "id": selection["id"],
+                        "nbSamples": selection["nbSamples"] if "nbSamples" in selection else 0,
+                        "creationDate": timeNow(),
+                        "updateDate": timeNow(),
+                    })
+
+                # Models
                 models = data_provider.get_models(view)
                 debiai_models = []
                 for model in models:
                     debiai_models.append({
                         "name": model["name"] if "name" in model else model["id"],
                         "id": model["id"],
-                        "nbResults": model["nbSamples"] if "nbSamples" in model else 0,
+                        "nbResults": model["nbResults"] if "nbResults" in model else 0,
                         "creationDate": timeNow(),
                         "updateDate": timeNow(),
                         "metadata": {}
                     })
-
-                # Get the data
-                samples = data_provider.get_data_id_list(view)
 
                 # Converting views to DebiAI projects
                 projects.append({
@@ -182,14 +233,14 @@ def get_projects():
                     "blockLevelInfo": blockLevelInfo,
                     "resultStructure": data_provider_info[view]["expectedResults"],
                     "nbModels": len(debiai_models),
-                    "nbSamples": len(samples),
+                    "nbSamples": nbSamples,
                     "nbRequests": 0,
                     "nbTags": 0,
-                    "nbSelections": 0,
+                    "nbSelections": len(selections),
                     "creationDate": timeNow(),
                     "updateDate": timeNow(),
                     "modelOverviews": [],
-                    "selections": [],
+                    "selections": debiai_selections,
                     "models": debiai_models,
                 })
 
@@ -227,27 +278,32 @@ def getDataproviderByname(name):
 def get_list(projectId, data):
     project = getProjectById(projectId)
     data_provider = getDataproviderByname(project["dataProvider"])
-    samples = data_provider.get_data_id_list(project["view"])
+
+    # Filter by selections
+    nbFromSelection = 0
+    if "selectionIds" in data and len(data["selectionIds"]) > 0:
+        samples = data_provider.get_selections_id_list(
+            project["view"], data["selectionIds"], data["selectionIntersection"])
+        nbFromSelection = len(samples)
+    else:
+        # Get all the samples ids
+        samples = data_provider.get_data_id_list(project["view"])
 
     # Then, concat with the model results if given
+    nbFromModels = 0
     if data["modelIds"] and len(data["modelIds"]) > 0:
         modelSamples = data_provider.getModelListResults(
             project["view"], data["modelIds"],  data["commonResults"])
         nbFromModels = len(modelSamples)
         samples = set(samples)
         samples.intersection_update(set(modelSamples))
+        samples = list(samples)
 
-        return {
-            "samples": list(samples),
-            "nbSamples": len(samples),
-            "nbFromSelection": len(samples),
-            "nbFromModels": nbFromModels
-        }
     return {
         "samples": samples,
         "nbSamples": len(samples),
-        "nbFromSelection": len(samples),
-        "nbFromModels": 0
+        "nbFromSelection": nbFromSelection,
+        "nbFromModels": nbFromModels
     }
 
 
@@ -280,4 +336,5 @@ def getModelResults(projectId, modelId, sampleIds):
 
 # Selections
 def get_selections(projectId):
-    return []
+    project = getProjectById(projectId)
+    return project["selections"]
