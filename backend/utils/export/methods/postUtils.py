@@ -54,4 +54,5 @@ class PostExportMethod(ExportMethod):
             print("Post export method : Data sent")
         except Exception as e:
             print("Post export method : Error sending post request", e)
-            raise "Post export method : Error sending post request"
+            raise Exception("Post export method : Error sending post request on url '" +
+                            self.url + "'")

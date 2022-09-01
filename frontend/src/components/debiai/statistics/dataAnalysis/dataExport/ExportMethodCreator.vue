@@ -26,6 +26,21 @@
     </form>
 
     <div id="methodList" class="itemList">
+      <!-- Post expost type -->
+      <div id="post" class="item">
+        <h3>Post - http</h3>
+        <div class="parameters">
+          <span>
+            Url:
+            <input type="text" v-model="postUrl" placeholder="http://localhost:3010/debiai_export/" />
+          </span>
+        </div>
+        <button class="green" @click="createMethod('post', [postUrl])">
+          Create
+        </button>
+      </div>
+
+      <!-- Kafka expost type -->
       <div id="kafka" class="item">
         <h3>Kafka</h3>
         <div class="parameters">
@@ -52,6 +67,9 @@ export default {
   data() {
     return {
       exportMethodName: "New export method",
+
+      // Post
+      postUrl: "",
 
       // Kafka
       kafkaServer: "",
@@ -100,6 +118,9 @@ export default {
 </script>
 
 <style scoped>
+
+#ExportMethodCreator {
+}
 #methodList .item {
   display: flex;
   justify-content: flex-start;
@@ -110,8 +131,11 @@ export default {
 .parameters {
   display: flex;
   flex-direction: column;
-  text-align: left;
+  flex:1;
   gap: 5px;
   padding: 0px 30px 3px 30px;
+}
+.parameters span input{
+  width: 300px;
 }
 </style>
