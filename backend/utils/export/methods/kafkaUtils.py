@@ -2,6 +2,14 @@ from kafka import KafkaProducer
 from utils.export.exportClass import ExportType, ExportMethod
 import json
 
+#############################################################################
+#
+# Kafka export method
+#
+# Connect to a kafka server on init and send data to a topic
+#
+#############################################################################
+
 
 class KafkaExportType(ExportType):
     def __init__(self):
