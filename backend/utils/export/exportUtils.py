@@ -3,6 +3,7 @@ import utils.dataProviders as dataProvider
 import utils.config as configUtils
 import time
 from utils.export.methods.kafkaUtils import KafkaExportType
+from utils.export.methods.postUtils import PostExportType
 
 #############################################################################
 #
@@ -16,7 +17,8 @@ from utils.export.methods.kafkaUtils import KafkaExportType
 
 
 export_types = [
-    KafkaExportType()
+    KafkaExportType(),
+    PostExportType()
 ]
 
 export_methods = []
@@ -145,6 +147,7 @@ def exportSelection(projectId, data):
         project_name = debiaiUtils.getProjectNameFromId(projectId)
 
         project_sample_hashmap = debiaiUtils.getHashmap(projectId)
+        new_project_Id = projectId
         sample_path = []
         for sample_hash in data['sampleHashList']:
             # Removing the '/' at the end of the hash
@@ -161,6 +164,7 @@ def exportSelection(projectId, data):
 
         # Creation of the data selection to export
         project_name = dataProvider.getProjectName(projectId)
+        new_project_Id = projectId.split("|")[1]
 
         id_list = []
 
@@ -171,7 +175,9 @@ def exportSelection(projectId, data):
         raise Exception("Project " + projectId + " not found")
 
     data_to_export = {
-        'origine': 'DebiAI',
+        'origin': 'DebiAI',
+        'type': 'selection',
+        'project_id': new_project_Id,
         'project_name': project_name,
         'selection_name': data["selectionName"],
         'date': time.time(),
