@@ -26,7 +26,7 @@
     </form>
 
     <div id="methodList" class="itemList">
-      <!-- Post expost type -->
+      <!-- Post export type -->
       <div id="post" class="item">
         <h3>Post - http</h3>
         <div class="parameters">
@@ -40,7 +40,7 @@
         </button>
       </div>
 
-      <!-- Kafka expost type -->
+      <!-- Kafka export type -->
       <div id="kafka" class="item">
         <h3>Kafka</h3>
         <div class="parameters">
