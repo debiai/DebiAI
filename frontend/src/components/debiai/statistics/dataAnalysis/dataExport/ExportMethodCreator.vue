@@ -119,8 +119,6 @@ export default {
 
 <style scoped>
 
-#ExportMethodCreator {
-}
 #methodList .item {
   display: flex;
   justify-content: flex-start;
