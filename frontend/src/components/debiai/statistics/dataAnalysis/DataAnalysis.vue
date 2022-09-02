@@ -17,7 +17,7 @@
     </modal>
     <!-- Selection export -->
     <modal v-if="selectionExport">
-      <ExportMenu :data="data" :selectedData="selectedData" @cancel="selectionExport = false"
+      <SelectionExportMenu :data="data" :selectedData="selectedData" @cancel="selectionExport = false"
         @exported="selectionExport = false" />
     </modal>
     <!-- WidgetCatalog -->
@@ -75,7 +75,7 @@ import Vue from "vue";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
-import ExportMenu from "./dataExport/ExportMenu";
+import SelectionExportMenu from "./dataExport/SelectionExportMenu";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -92,7 +92,7 @@ export default {
     CustomColumnCreator,
     SelectionCreator,
     TagCreator,
-    ExportMenu,
+    SelectionExportMenu,
     WidgetCatalog,
 
     Footer,

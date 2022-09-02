@@ -6,6 +6,10 @@
         :suggestedConfName="suggestedConfName" @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
         @setWidgetName="setName" />
     </modal>
+    <!-- Export data modal -->
+    <modal v-if="exportModal">
+      <DataExportMenu :dataToExport="exportData" @exported="exportModal = false" @cancel="exportModal = false" />
+    </modal>
 
     <!-- Widget -->
     <div id="widgetHeader" :class="
@@ -47,8 +51,8 @@
 
           <button class="warning" @click="drawPlot">Redraw</button>
           <button @click="
-            colorWarning = false;
-          selectedDataWarning = false;
+  colorWarning = false;
+selectedDataWarning = false;
           ">
             Hide
           </button>
@@ -113,11 +117,13 @@
 
 <script>
 import WidgetConfPannel from "./widgetConfiguration/WidgetConfPannel";
+import DataExportMenu from "../dataExport/DataExportMenu";
+
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel },
+  components: { WidgetConfPannel, DataExportMenu },
   props: {
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
@@ -144,7 +150,8 @@ export default {
       startFiltering: false,
 
       // Export
-      exportData: null
+      exportData: null,
+      exportModal: false,
     };
   },
   created() {
@@ -285,11 +292,11 @@ export default {
 
     // Export
     setExport(exportData) {
-      console.log("setExport", exportData);
       this.exportData = exportData;
     },
 
     startExport() {
+      this.exportModal = true;
     },
 
     // Other
