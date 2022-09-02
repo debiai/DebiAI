@@ -804,7 +804,7 @@ export default {
         //   origin: "DebiAI",
         //   type: "2Drange",
         //   project_id: ProjectID,
-        //   selection_id: SelectionID,
+        //   selection_ids: [SelectionID, ...],
         //   colX : colName
         //   colY : colName
         //   x : [min, max],
@@ -837,7 +837,6 @@ export default {
             x: rangeX,
             y: rangeY,
           };
-          console.log(filters);
 
           this.$parent.$emit("setExport", exportData);
         }
@@ -881,6 +880,10 @@ export default {
         let selectedValues = selectedUniquesValuesIndex.map(
           (v) => col.uniques[v]
         );
+
+        // Quick fix for the case of timestamps
+        if (selectedValues.length == 0) selectedValues = [min, max];
+
         return {
           type: "values",
           values: selectedValues,

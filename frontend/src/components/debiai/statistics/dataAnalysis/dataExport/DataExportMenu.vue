@@ -11,9 +11,7 @@
                 <span class="name"> Exported data </span>
                 <pre class="value">
 
-
 {{ JSON.stringify(dataToExport, undefined, 2) }}
-
 
                 </pre>
             </div>
@@ -85,12 +83,14 @@ export default {
 
   .dataGroup .value {
       margin: 0;
-      padding:20px;
+      padding-left: 10px;
       display: block;
       flex: 1;
       text-align: left;
       max-width: 400px;
-      max-height: 200px;
+      max-height: 230px;
       overflow: scroll;
+      font-size: 0.7em;
+      font-family: monospace;
   }
   </style>

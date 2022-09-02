@@ -34,3 +34,10 @@ def exportSelection(projectId, data):
         return exportUtils.exportSelection(projectId, data), 200
     except Exception as e:
         return str(e), 400
+
+
+def exportData(exportMethodId, data):
+    try:
+        return exportUtils.exportData(exportMethodId, data), 200
+    except Exception as e:
+        return str(e), 400
