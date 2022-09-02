@@ -7,10 +7,7 @@
         Block structure
         <button class="red" @click="settings = false">Close</button>
       </h2>
-      <BlockStructrureCreation
-        :projectId="project.id"
-        v-on:create="createBlockLevels"
-      />
+      <BlockStructrureCreation :projectId="project.id" v-on:create="createBlockLevels" />
       <!-- TODO results structure -->
 
       <!-- Tags -->
@@ -18,42 +15,24 @@
     </Modal>
 
     <!-- ProjectInfo -->
-    <ProjectInfo
-      :project="project"
-      v-on:settings="settings = !settings"
-      v-on:refresh="loadProject"
-      v-on:deleteProject="deleteProject"
-    />
+    <ProjectInfo :project="project" v-on:settings="settings = !settings" v-on:refresh="loadProject"
+      v-on:deleteProject="deleteProject" />
     <transition name="fade">
       <div id="projectContent" v-if="project">
         <div id="selectionAndModels">
           <!-- Data selection selection -->
-          <Selections
-            :project="project"
-            :nbSelectedSamples="nbSelectedSamples"
-            v-on:selectionSelected="selectionSelected"
-            v-on:selectionDeleted="selectionDeleted"
-            v-on:setSelectionIntersection="(si) => (selectionIntersection = si)"
-            v-on:newSelection="loadProject"
-          />
+          <Selections :project="project" :nbSelectedSamples="nbSelectedSamples"
+            v-on:selectionSelected="selectionSelected" v-on:selectionDeleted="selectionDeleted"
+            v-on:setSelectionIntersection="(si) => (selectionIntersection = si)" v-on:newSelection="loadProject" />
 
           <!-- Model selection -->
-          <Models
-            :project="project"
-            :nbEvaluatedSamples="nbEvaluatedSamples"
-            :nbSelectedSamples="nbSelectedSamples"
-            :nbResults="nbResults"
-            v-on:modelSelected="modelSelected"
-            v-on:modelDeleted="modelDeleted"
-            v-on:setCommomModelResults="(cmr) => (commomModelResults = cmr)"
-          />
+          <Models :project="project" :nbEvaluatedSamples="nbEvaluatedSamples" :nbSelectedSamples="nbSelectedSamples"
+            :nbResults="nbResults" v-on:modelSelected="modelSelected" v-on:modelDeleted="modelDeleted"
+            v-on:setCommomModelResults="(cmr) => (commomModelResults = cmr)" />
         </div>
 
         <!-- Start analysis -->
-        <Analysis
-          :disabled="!readyToAnalyse"
-          v-on:startAnalysis="startAnalysis"
-        />
+        <Analysis :disabled="!readyToAnalyse" v-on:startAnalysis="startAnalysis" />
       </div>
     </transition>
   </div>
@@ -256,8 +235,7 @@ export default {
         .then((data) => {
           // Creating the data object
           this.$store.commit("selectProjectId", projectId);
-          // this.$store.commit("setSelectedSelectionIds", selectionIds);
-          // this.$store.commit("setProjectSelections", this.project.selections);
+          this.$store.commit("setSelectionsIds", selectionIds);
           this.$store.commit("setColoredColumnIndex", 0);
           this.$store.commit("clearAllFilters");
 

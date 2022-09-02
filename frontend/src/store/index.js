@@ -49,6 +49,7 @@ const Dashboard = {
 const ProjectPage = {
   state: {
     projectId: null,
+    selectionsIds: [],
     blockLevels: [],
     columns: [],
   },
@@ -89,6 +90,12 @@ const ProjectPage = {
 
 
       state.columns = columns;
+    },
+    setSelectionsIds(state, selectionsIds) {
+      if (selectionsIds)
+        state.selectionsIds = selectionsIds;
+      else
+        state.selectionsIds = [];
     }
   }
 }
