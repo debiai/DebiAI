@@ -1,0 +1,6 @@
+{
+    "name": "Rangeslider plot",
+    "description": "A line plot with a rangeslider, useful for zooming in on a particular time series.",
+    "layout": {},
+    "widgetSimple": false
+}
