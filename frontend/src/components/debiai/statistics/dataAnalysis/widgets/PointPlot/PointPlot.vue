@@ -2,39 +2,18 @@
   <div id="pointPlot" class="dataVisualisationWidget">
     <!-- Axis selection Modals -->
     <modal v-if="xAxisSelection">
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequiered="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxiesSelect"
-      />
+      <ColumnSelection title="Select the X axis" :data="data" :validateRequiered="false" :colorSelection="true"
+        :defaultSelected="[columnXindex]" v-on:cancel="xAxisSelection = false" v-on:colSelect="xAxiesSelect" />
     </modal>
     <modal v-if="yAxisSelection">
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequiered="false"
-        :colorSelection="true"
-        :defaultSelected="[columnYindex]"
-        v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxiesSelect"
-      />
+      <ColumnSelection title="Select the Y axis" :data="data" :validateRequiered="false" :colorSelection="true"
+        :defaultSelected="[columnYindex]" v-on:cancel="yAxisSelection = false" v-on:colSelect="yAxiesSelect" />
     </modal>
     <modal v-if="sizeAxisSelection">
-      <ColumnSelection
-        title="Select the point size axis"
-        :data="data"
-        :validateRequiered="false"
-        :colorSelection="true"
+      <ColumnSelection title="Select the point size axis" :data="data" :validateRequiered="false" :colorSelection="true"
         :defaultSelected="
           columnSizeIndex === null ? undefined : [columnSizeIndex]
-        "
-        v-on:cancel="sizeAxisSelection = false"
-        v-on:colSelect="sizeAxiesSelect"
-      />
+        " v-on:cancel="sizeAxisSelection = false" v-on:colSelect="sizeAxiesSelect" />
     </modal>
 
     <div id="settings" v-if="settings">
@@ -44,11 +23,8 @@
         <div class="data">
           <span class="name">X axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="xAxisSelection = true"
-            />
+            <Column :column="data.columns.find((c) => c.index == columnXindex)" :colorSelection="true"
+              v-on:selected="xAxisSelection = true" />
           </div>
         </div>
         <!-- Swap axis -->
@@ -57,11 +33,8 @@
         <div class="data">
           <span class="name">Y axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnYindex)"
-              :colorSelection="true"
-              v-on:selected="yAxisSelection = true"
-            />
+            <Column :column="data.columns.find((c) => c.index == columnYindex)" :colorSelection="true"
+              v-on:selected="yAxisSelection = true" />
           </div>
         </div>
       </div>
@@ -81,18 +54,12 @@
           <div class="data">
             <span class="name">Point size axis</span>
             <div class="value" v-if="columnSizeIndex !== null">
-              <Column
-                :column="data.columns.find((c) => c.index == columnSizeIndex)"
-                :colorSelection="true"
-                v-on:selected="sizeAxisSelection = true"
-              />
-              <button
-                class="red"
-                @click="
-                  columnSizeIndex = null;
-                  pointPlotDrawed = false;
-                "
-              >
+              <Column :column="data.columns.find((c) => c.index == columnSizeIndex)" :colorSelection="true"
+                v-on:selected="sizeAxisSelection = true" />
+              <button class="red" @click="
+  columnSizeIndex = null;
+pointPlotDrawed = false;
+              ">
                 Remove
               </button>
             </div>
@@ -106,13 +73,7 @@
           <div class="data" v-if="columnSizeIndex !== null">
             <span class="name">Max point Size</span>
             <div class="value">
-              <input
-                type="number"
-                v-model="maxPointSize"
-                :min="1"
-                :step="5"
-                @change="pointPlotDrawed = false"
-              />
+              <input type="number" v-model="maxPointSize" :min="1" :step="5" @change="pointPlotDrawed = false" />
             </div>
           </div>
           <!-- Point opacity -->
@@ -126,14 +87,8 @@
 
               <span class="name">Opacity</span>
               <div class="value">
-                <input
-                  type="number"
-                  v-if="!autoPointOpacity"
-                  v-model="pointOpacity"
-                  :step="0.05"
-                  :min="0.01"
-                  :max="1"
-                />
+                <input type="number" v-if="!autoPointOpacity" v-model="pointOpacity" :step="0.05" :min="0.01"
+                  :max="1" />
                 <div v-else>{{ Math.round(pointOpacity * 1000) / 1000 }}</div>
               </div>
             </div>
@@ -143,11 +98,7 @@
         <!-- line Plot Controls -->
         <div id="linePlotControls" class="dataGroup">
           <!-- Draw -->
-          <button
-            class="drawBtn orange"
-            @click="checkLinePlot"
-            v-if="!linePlotDrawed"
-          >
+          <button class="drawBtn orange" @click="checkLinePlot" v-if="!linePlotDrawed">
             Draw statistics
           </button>
           <button v-else class="drawBtn warning" @click="clearLinePlot">
@@ -157,25 +108,15 @@
           <div class="data">
             <span class="name">Bins</span>
             <div class="value">
-              <input
-                type="number"
-                v-model="bins"
-                :min="1"
-                @change="linePlotDrawed = false"
-              />
+              <input type="number" v-model="bins" :min="1" @change="linePlotDrawed = false" />
             </div>
           </div>
           <!-- Display average as bar -->
           <div class="data">
             <span class="name">Display as bar</span>
             <div class="value">
-              <input
-                type="checkbox"
-                :id="'avegareAsBar' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="avegareAsBar"
-              />
+              <input type="checkbox" :id="'avegareAsBar' + index" class="customCbx" style="display: none"
+                v-model="avegareAsBar" />
               <label :for="'avegareAsBar' + index" class="toggle">
                 <span></span>
               </label>
@@ -185,14 +126,8 @@
           <div class="data" v-if="!avegareAsBar">
             <span class="name">Display null</span>
             <div class="value">
-              <input
-                type="checkbox"
-                :id="'displayNull' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="displayNull"
-                @change="updateTraces()"
-              />
+              <input type="checkbox" :id="'displayNull' + index" class="customCbx" style="display: none"
+                v-model="displayNull" @change="updateTraces()" />
               <label :for="'displayNull' + index" class="toggle">
                 <span></span>
               </label>
@@ -207,13 +142,8 @@
         <div class="data" v-if="coloredColumnIndex != null">
           <span class="name">Groub by color</span>
           <div class="value">
-            <input
-              type="checkbox"
-              :id="'dividePerColorCbxPontPlot' + index"
-              class="customCbx"
-              v-model="dividePerColor"
-              style="display: none"
-            />
+            <input type="checkbox" :id="'dividePerColorCbxPontPlot' + index" class="customCbx" v-model="dividePerColor"
+              style="display: none" />
             <label :for="'dividePerColorCbxPontPlot' + index" class="toggle">
               <span></span>
             </label>
@@ -223,13 +153,7 @@
         <div class="data">
           <span class="name">Absolute value</span>
           <div class="value">
-            <input
-              type="checkbox"
-              :id="'absolute' + index"
-              class="customCbx"
-              v-model="absolue"
-              style="display: none"
-            />
+            <input type="checkbox" :id="'absolute' + index" class="customCbx" v-model="absolue" style="display: none" />
             <label :for="'absolute' + index" class="toggle">
               <span></span>
             </label>
@@ -821,6 +745,8 @@ export default {
     // Filters
     selectDataOnPlot(event) {
       let filters = [];
+      this.$parent.$emit("setExport", null);
+
       // An event msg :
       // {
       //   points: ...,
@@ -828,6 +754,7 @@ export default {
       // } or undefined (single click or double click out)
 
       if (event && this.$parent.startFiltering) {
+        // Get the filters acording
         let colx = this.data.columns[this.columnXindex];
         filters.push(
           this.getFilterFromColumn(
@@ -846,7 +773,77 @@ export default {
             this.absolue
           )
         );
+
+        // Exporting the bondaries of the selection
+        // We want to export the range of the selection
+        // Filter format :
+        // [
+        //   {
+        //     "type": "values",
+        //     "values": [
+        //       "image-1",
+        //       "image-3",
+        //       ...
+        //     ],
+        //     "columnIndex": 0
+        //   },
+        //   {
+        //     "type": "intervals",
+        //     "intervals": [
+        //       {
+        //        max: 19.950596252129472,
+        //        min: 6.730834752981263
+        //       }
+        //     ],
+        //     "columnIndex": 1
+        //   }
+        // ]
+
+        // Goal format :
+        // {
+        //   origin: "DebiAI",
+        //   type: "2Drange",
+        //   project_id: ProjectID,
+        //   selection_ids: [SelectionID, ...],
+        //   colX : colName
+        //   colY : colName
+        //   x : [min, max],
+        //   y : [min, max]
+        // }
+
+        if (filters.length == 2) {
+
+          const getRangeFromFilter = (filter) => {
+            if (filter.type == "values") return [
+              filter.values[0],
+              filter.values[filter.values.length - 1]
+            ];
+            else if (filter.type == "intervals") return [
+              filter.intervals[0].min,
+              filter.intervals[0].max
+            ];
+            return null;
+          };
+          const rangeX = getRangeFromFilter(filters[0]);
+          const rangeY = getRangeFromFilter(filters[1]);
+
+          const exportData = {
+            origin: "DebiAI",
+            type: "2Drange",
+            project_id: this.$store.state.ProjectPage.projectId,
+            selection_ids: this.$store.state.ProjectPage.selectionsIds,
+            colX: colx.label,
+            colY: coly.label,
+            x: rangeX,
+            y: rangeY,
+          };
+
+          this.$parent.$emit("setExport", exportData);
+        }
+
       }
+
+      // Store the filters in the DebiAI selection system
       this.$store.commit("addFilters", {
         filters,
         from: {
@@ -858,6 +855,7 @@ export default {
       });
     },
     getFilterFromColumn(col, min, max, absolute) {
+      // Create a debiai filter from a column and a range
       if (col.type !== String) {
         if (absolute) {
           return {
@@ -882,6 +880,10 @@ export default {
         let selectedValues = selectedUniquesValuesIndex.map(
           (v) => col.uniques[v]
         );
+
+        // Quick fix for the case of timestamps
+        if (selectedValues.length == 0) selectedValues = [min, max];
+
         return {
           type: "values",
           values: selectedValues,
@@ -898,12 +900,17 @@ export default {
       // Remove the layout select mod
       if (this.pointPlotDrawed || this.linePlotDrawed)
         Plotly.relayout(this.divPointPlot, { dragmode: "zoom" });
+
+      this.$parent.$emit("setExport", null);
     },
     filterCleared() {
       // Remove the selection on the plot
       if (this.pointPlotDrawed || this.linePlotDrawed)
         Plotly.restyle(this.divPointPlot, "selectedpoints", null);
+
+      this.$parent.$emit("setExport", null);
     },
+
     // axies selection
     xAxiesSelect(index) {
       this.columnXindex = index;
@@ -935,8 +942,8 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      this.bins =
-        colX.type == String ? colX.nbOccu : colX.nbOccu > 20 ? 20 : colX.nbOccu;
+      if (colX.type == String) this.bins = Math.min(colX.nbOccu, 300)
+      else this.bins = Math.min(colX.nbOccu, 30);
       this.linePlotDrawed = false;
     },
     setPointOpacity() {
@@ -996,12 +1003,15 @@ export default {
 #axisSelection {
   flex-wrap: wrap;
 }
+
 #axisSelection .data {
   flex: 1;
 }
+
 #axisSelection .data .value {
   flex: 1;
 }
+
 #axisSelection #swapBtn {
   margin: 0 10px 0 10px;
 }
@@ -1010,21 +1020,26 @@ export default {
 #plotControls {
   display: flex;
 }
+
 #plotControls .dataGroup {
   flex: 1;
   flex-direction: column;
   justify-content: flex-start;
 }
+
 #plotControls .drawBtn {
   height: 40px;
 }
+
 #plotControls .data {
   margin-top: 3px;
   min-height: 35px;
 }
+
 #plotControls .data .name {
   flex: 0.4;
 }
+
 #plotControls .data .value {
   flex: 1;
 }
@@ -1033,6 +1048,7 @@ export default {
 #commonControls {
   justify-content: space-evenly;
 }
+
 #commonControls .data {
   min-height: 35px;
 }

@@ -33,7 +33,7 @@ def type_exist(typeName):
     return typeName in [type.name for type in export_types]
 
 
-# Export methods
+# Export utils
 def get_export_methods():
     # Return all the export methods as a list of dictionaries
     return [method.to_dict() for method in export_methods]
@@ -129,6 +129,8 @@ def delete_export_method(method_id):
         method for method in export_methods if method.id != method_id]
     return "method " + method_id + " deleted"
 
+# Export methods
+
 
 def exportSelection(projectId, data):
     method_id = data['exportMethodId']
@@ -184,7 +186,20 @@ def exportSelection(projectId, data):
         'sample_ids': id_list
     }
 
-    export_method.export(data_to_export)
-    # Send the selection to Kafka
     # Export the data
+    export_method.export(data_to_export)
+
+    return "data exported"
+
+
+def exportData(method_id, data):
+    # Check the method id
+    if not method_exist(method_id):
+        raise Exception("method " + method_id + " not found")
+
+    export_method = get_export_method(method_id)
+
+    # Export the data
+    export_method.export(data)
+
     return "data exported"

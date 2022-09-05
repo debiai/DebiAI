@@ -3,115 +3,54 @@
     <!--============= Modals =============-->
     <!-- customColumnCreation -->
     <modal v-if="customColumnCreation">
-      <CustomColumnCreator
-        :data="data"
-        @cancel="customColumnCreation = false"
-        @create="createCustomColumn"
-      />
+      <CustomColumnCreator :data="data" @cancel="customColumnCreation = false" @create="createCustomColumn" />
     </modal>
     <!-- saveSelectionWidget -->
     <modal v-if="saveSelectionWidget">
-      <SelectionCreator
-        :data="data"
-        :selectedData="selectedData"
-        @cancel="saveSelectionWidget = false"
-        @done="saveSelectionWidget = false"
-      />
+      <SelectionCreator :data="data" :selectedData="selectedData" @cancel="saveSelectionWidget = false"
+        @done="saveSelectionWidget = false" />
     </modal>
     <!-- tagCreationWidget -->
     <modal v-if="tagCreationWidget">
-      <TagCreator
-        :data="data"
-        :selectedData="selectedData"
-        @cancel="tagCreationWidget = false"
-        @created="tagCreationWidget = false"
-      />
+      <TagCreator :data="data" :selectedData="selectedData" @cancel="tagCreationWidget = false"
+        @created="tagCreationWidget = false" />
     </modal>
     <!-- Selection export -->
     <modal v-if="selectionExport">
-      <ExportMenu
-        :data="data"
-        :selectedData="selectedData"
-        @cancel="selectionExport = false"
-        @exported="selectionExport = false"
-      />
+      <SelectionExportMenu :data="data" :selectedData="selectedData" @cancel="selectionExport = false"
+        @exported="selectionExport = false" />
     </modal>
     <!-- WidgetCatalog -->
     <modal v-if="widgetCatalog">
-      <WidgetCatalog
-        :widgets="availableWidgets"
-        @cancel="widgetCatalog = false"
-        @add="addWidget"
-        @addWithConf="
-          ({ widgetComponent, conf }) => addWidget(widgetComponent, null, conf)
-        "
-      />
+      <WidgetCatalog :widgets="availableWidgets" @cancel="widgetCatalog = false" @add="addWidget" @addWithConf="
+        ({ widgetComponent, conf }) => addWidget(widgetComponent, null, conf)
+      " />
     </modal>
 
     <!-- floating menu -->
-    <fab
-      name="menu"
-      bg-color="var(--primaryDark)"
-      position="top-right"
-      main-tooltip="Menu"
-      main-icon="menu"
-      fixed-tooltip="true"
-      z-index="2"
-      :actions="menuList"
-      @customColumn="customColumn"
-      @saveSelection="saveSelection"
-      @tagCreation="tagCreation"
-      @exportSelection="exportSelection"
-      @defaultLayout="defaultLayout"
-      @clearLayout="clearLayout"
-      @changeDefaultLayout="changeDefaultLayout"
-      @restoreDefaultLayout="restoreDefaultLayout"
-    />
+    <fab name="menu" bg-color="var(--primaryDark)" position="top-right" main-tooltip="Menu" main-icon="menu"
+      fixed-tooltip="true" z-index="2" :actions="menuList" @customColumn="customColumn" @saveSelection="saveSelection"
+      @tagCreation="tagCreation" @exportSelection="exportSelection" @defaultLayout="defaultLayout"
+      @clearLayout="clearLayout" @changeDefaultLayout="changeDefaultLayout"
+      @restoreDefaultLayout="restoreDefaultLayout" />
     <!-- floating wiget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
-      <fab
-        name="widgetCatalog"
-        bg-color="var(--success)"
-        size="small"
-        position="right"
-        main-tooltip="Add a widget"
-        main-icon="add"
-        z-index="2"
-      />
+      <fab name="widgetCatalog" bg-color="var(--success)" size="small" position="right" main-tooltip="Add a widget"
+        main-icon="add" z-index="2" />
     </div>
     <header />
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
-      <div
-        v-for="component in components"
-        :key="component.id"
-        :id="component.id"
-        :data-gs-id="component.id"
-        :data-gs-x="component.layout.x"
-        :data-gs-y="component.layout.y"
-        :data-gs-width="component.layout.width"
-        :data-gs-min-width="component.layout.minWidth"
-        :data-gs-max-width="component.layout.maxWidth"
-        :data-gs-height="component.layout.height"
-        :data-gs-min-height="component.layout.minHeight"
-        :data-gs-max-height="component.layout.maxHeight"
-      >
-        <Widget
-          :title="component.name"
-          :simple="component.simple"
-          :conf="component.conf"
-          :index="component.id"
-          v-on:remove="removeWidget(component)"
-          v-on:copy="(conf) => copyWidget({ component, conf })"
-        >
-          <component
-            :is="component.key"
-            :component="component"
-            :data="data"
-            :selectedData="selectedData"
-            :index="component.id"
-          />
+      <div v-for="component in components" :key="component.id" :id="component.id" :data-gs-id="component.id"
+        :data-gs-x="component.layout.x" :data-gs-y="component.layout.y" :data-gs-width="component.layout.width"
+        :data-gs-min-width="component.layout.minWidth" :data-gs-max-width="component.layout.maxWidth"
+        :data-gs-height="component.layout.height" :data-gs-min-height="component.layout.minHeight"
+        :data-gs-max-height="component.layout.maxHeight">
+        <Widget :title="component.name" :simple="component.simple" :conf="component.conf" :index="component.id"
+          v-on:remove="removeWidget(component)" v-on:copy="(conf) => copyWidget({ component, conf })">
+          <component :is="component.key" :component="component" :data="data" :selectedData="selectedData"
+            :index="component.id" />
         </Widget>
       </div>
     </div>
@@ -136,7 +75,7 @@ import Vue from "vue";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
-import ExportMenu from "./dataExport/ExportMenu";
+import SelectionExportMenu from "./dataExport/SelectionExportMenu";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -153,7 +92,7 @@ export default {
     CustomColumnCreator,
     SelectionCreator,
     TagCreator,
-    ExportMenu,
+    SelectionExportMenu,
     WidgetCatalog,
 
     Footer,
@@ -497,7 +436,7 @@ export default {
   },
   beforeDestroy() {
     // this.$store.commit("selectProjectId", null);
-    // this.$store.commit("setSelectedSelectionIds", null);
+    this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
   },
 };
@@ -509,10 +448,12 @@ header {
   background-color: var(--third);
   height: 43px;
 }
+
 header #widgetList {
   display: flex;
 }
-header #widgetList button + button {
+
+header #widgetList button+button {
   margin-left: 5px;
 }
 
@@ -520,6 +461,7 @@ header #widgetList button + button {
 .grid-stack-item {
   overflow: hidden;
 }
+
 .ui-resizable-handle {
   z-index: 2 !important;
 }
@@ -530,6 +472,7 @@ header #widgetList button + button {
 .dataVisualisationWidget {
   height: 100%;
 }
+
 .plot {
   height: 100%;
 }
@@ -537,11 +480,13 @@ header #widgetList button + button {
 .grid-stack {
   background-color: lightgray;
 }
+
 .grid-stack-placeholder {
   border: 1px dashed black;
   transform-origin: center;
   transform: scale(0.95);
 }
+
 .ui-resizable-handle {
   z-index: 2;
 }

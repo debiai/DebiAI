@@ -383,5 +383,11 @@ export default {
     return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', { selectionName, sampleHashList, exportMethodId })
       .finally(() => endRequest(code))
       .then((response) => response.data)
+  },
+  exportData(data, exportMethodId) {
+    let code = startRequest("Exporting " + data.type)
+    return axios.post(apiURL + 'app/exportMethods/' + exportMethodId + '/exportData', data)
+      .finally(() => endRequest(code))
+      .then((response) => response.data)
   }
 }

@@ -126,6 +126,7 @@ button.purple {
 button.white {
   background-color: rgb(223, 223, 223);
   border-color: var(--white);
+  color:rgb(70, 70, 70);
 }
 
 button.highlighted {
