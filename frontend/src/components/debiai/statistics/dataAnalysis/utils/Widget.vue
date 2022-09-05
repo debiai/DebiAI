@@ -50,10 +50,7 @@
           </div>
 
           <button class="warning" @click="drawPlot">Redraw</button>
-          <button @click="
-  colorWarning = false;
-selectedDataWarning = false;
-          ">
+          <button @click="colorWarning = false; selectedDataWarning = false;">
             Hide
           </button>
         </div>
