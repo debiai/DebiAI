@@ -30,13 +30,25 @@
             </div>
           </div>
         </div>
+        <div class="dataGroup color" v-if="coloredColumnIndex !== null">
+          <div class="data">
+            <div class="name">Group by color</div>
+            <div class="value">
+              <input type="checkbox" :id="'avegareAsBar' + index" class="customCbx" style="display: none"
+                v-model="dividePerColor" />
+              <label :for="'avegareAsBar' + index" class="toggle">
+                <span></span>
+              </label>
+            </div>
+          </div>
+        </div>
 
-        <!-- Draw -->
-        <button id="drawBtn" @click="drawPlot" :disabled="plotDrawed">
-          Draw
-        </button>
       </div>
 
+      <!-- Draw -->
+      <button id="drawBtn" @click="drawPlot" :disabled="plotDrawed">
+        Draw
+      </button>
     </div>
 
     <!-- Plot -->
@@ -46,9 +58,11 @@
 </template>
 
 <script>
+import swal from 'sweetalert';
 import Plotly from "plotly.js/dist/plotly";
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
+import dataOperations from "@/services/statistics/dataOperations";
 
 export default {
   components: {
@@ -65,6 +79,7 @@ export default {
       // Conf
       columnXindex: 0,
       columnYindex: 0,
+      dividePerColor: true,
 
       // Other
       currentDrawedColorIndex: null,
@@ -156,7 +171,7 @@ export default {
     },
 
     // Display
-    drawPlot() {
+    async drawPlot() {
       var colX = this.data.columns[this.columnXindex];
       var colY = this.data.columns[this.columnYindex];
 
@@ -164,42 +179,76 @@ export default {
       let valuesX = this.selectedData.map((i) => colX.values[i]);
       let valuesY = this.selectedData.map((i) => colY.values[i]);
 
-      // Color
-      // let colorscale = "Portland";
-      // let showscale = false;
-      // let color = 0;
+      const lines = []
 
-      // var colColor;
-      // if (this.coloredColumnIndex !== null) {
-      //   colColor = this.data.columns[this.coloredColumnIndex];
-      //   color = this.selectedData.map((i) =>
-      //     colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
-      //   );
-      //   // Deal with color if string
-      //   // if (colColor.type === String) {
-      //   //   cmin = Math.min(...colColor.valuesIndexUniques);
-      //   //   cmax = Math.max(...colColor.valuesIndexUniques);
-      //   // } else {
-      //   //   showscale = true;
-      //   //   cmin = colColor.min;
-      //   //   cmax = colColor.max;
-      //   // }
-      // }
+      if (this.dividePerColor && this.coloredColumnIndex !== null) {
+        // Color
+        const colColor = this.data.columns[this.coloredColumnIndex];
 
-      var line1 = {
-        x: valuesX,
-        y: valuesY,
-        z: valuesX,
-        type: 'line',
-        name: "line1",
-        transforms: [{
-          type: 'sort',
-          target: 'x',
-          order: 'descending'
-        }],
-      };
+        if (colColor.uniques.length > 20) {
+          // This is a lot, we ask for confirmation
+          let rep = await swal({
+            title: "Long calculation: do you want to proceed ?",
+            text: "Range slider plot: You have selected to group data by color\
+           with more than 20 uniques values. This will create a lot of lines, this may\
+           have an impact on the performaces",
+            icon: "warning",
+            buttons: {
+              continue: { text: "continue", className: "warning" },
+              cancel: "cancel",
+            },
+            dangerMode: true,
+          });
+          if (rep != "continue") return;
+        }
 
-      var layout = {
+        let selectedColorsValues = colColor.type == String
+          ? this.selectedData.map((i) => colColor.valuesIndex[i])
+          : this.selectedData.map((i) => colColor.values[i]);
+        let selectorUniques = colColor.type == String
+          ? colColor.valuesIndexUniques
+          : colColor.uniques;
+
+        let groupedValues = dataOperations.groupBy(
+          selectedColorsValues,
+          selectorUniques
+        );
+
+
+        groupedValues.forEach((idValues, i) => {
+          let colorX = idValues.map((i) => valuesX[i]);
+          let colorY = idValues.map((i) => valuesY[i]);
+
+          lines.push({
+            x: colorX,
+            y: colorY,
+            type: 'line',
+            name: colColor.uniques[i],
+            transforms: [{
+              type: 'sort',
+              target: 'x',
+              order: 'descending'
+            }],
+          });
+        })
+      }
+      else {
+        // No color
+        lines.push({
+          x: valuesX,
+          y: valuesY,
+          type: 'line',
+          name: "line1",
+          transforms: [{
+            type: 'sort',
+            target: 'x',
+            order: 'descending'
+          }],
+        });
+      }
+
+
+      const layout = {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
         xaxis: {
           rangeslider: true,
@@ -231,7 +280,7 @@ export default {
       };
 
       // Draw
-      Plotly.react(this.plotDiv, [line1], layout, {
+      Plotly.react(this.plotDiv, lines, layout, {
         displayModeBar: false,
         responsive: true,
       });
@@ -414,8 +463,26 @@ export default {
     },
   },
   computed: {
+    coloredColumnIndex() {
+      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+    },
+    redrawRequiered() {
+      return !(
+        this.dividePerColor &&
+        this.currentDrawedColorIndex !== this.coloredColumnIndex
+      );
+    },
   },
   watch: {
+    dividePerColor() {
+      this.plotDrawed = false;
+    },
+    selectedData() {
+      if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
+    },
+    redrawRequiered(o, n) {
+      this.$parent.colorWarning = n;
+    },
   },
 };
 </script>
@@ -430,9 +497,16 @@ export default {
   margin-left: 10px;
 }
 
+#settings {
+  display: flex;
+  flex-direction: row;
+}
+
 /* Controls */
 #axisControls {
   display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .otherControls {
@@ -458,10 +532,14 @@ export default {
   flex: 1;
 }
 
+.color {
+  margin: 10px;
+  justify-content: center;
+}
+
 #drawBtn {
   margin: 10px;
-  width: 80px;
+  width: 70px;
   margin-left: 0px;
-  margin-bottom: 0px;
 }
 </style>
