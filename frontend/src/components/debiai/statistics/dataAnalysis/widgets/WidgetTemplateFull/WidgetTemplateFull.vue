@@ -2,29 +2,16 @@
   <div id="WidgetTemplateFull" class="dataVisualisationWidget">
     <!-- Column selection modal -->
     <modal v-if="colSelection">
-      <ColumnSelection
-        title="Select a column"
-        :data="data"
-        :validateRequiered="false"
-        :colorSelection="true"
-        :defaultSelected="[selectedColumnIndex]"
-        v-on:cancel="colSelection = false"
-        v-on:colSelect="colSelect"
-      />
+      <ColumnSelection title="Select a column" :data="data" :validateRequiered="false" :colorSelection="true"
+        :defaultSelected="[selectedColumnIndex]" v-on:cancel="colSelection = false" v-on:colSelect="colSelect" />
     </modal>
 
     <!-- Multyple columns selection modal -->
     <modal v-if="multypleColSelection">
-      <ColumnSelection
-        v-if="multypleColSelection"
-        title="Select columns"
-        :data="data"
-        :cancelAvailable="selectedColumnsIndexs.length > 0"
-        :colorSelection="true"
-        :defaultSelected="selectedColumnsIndexs"
-        v-on:cancel="multypleColSelection = false"
-        v-on:validate="multypleColsSelected"
-      />
+      <ColumnSelection v-if="multypleColSelection" title="Select columns" :data="data"
+        :cancelAvailable="selectedColumnsIndexs.length > 0" :colorSelection="true"
+        :defaultSelected="selectedColumnsIndexs" v-on:cancel="multypleColSelection = false"
+        v-on:validate="multypleColsSelected" />
     </modal>
 
     <!-- Controls -->
@@ -35,11 +22,8 @@
         <div class="data">
           <div class="name">My column</div>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == selectedColumnIndex)"
-              :colorSelection="true"
-              v-on:selected="colSelection = true"
-            />
+            <Column :column="data.columns.find((c) => c.index == selectedColumnIndex)" :colorSelection="true"
+              v-on:selected="colSelection = true" />
           </div>
         </div>
         <!-- Columns selection -->
@@ -56,13 +40,8 @@
           <div class="data">
             <div class="name">Checkbox</div>
             <div class="value">
-              <input
-                type="checkbox"
-                :id="'checkbox' + index"
-                class="customCbx"
-                v-model="checkboxValue"
-                style="display: none"
-              />
+              <input type="checkbox" :id="'checkbox' + index" class="customCbx" v-model="checkboxValue"
+                style="display: none" />
               <label :for="'checkbox' + index" class="toggle">
                 <span></span>
               </label>
@@ -72,16 +51,10 @@
           <div class="data">
             <div class="name">Selection</div>
             <div class="value">
-              <button
-                :class="option == 'Opt.1' ? 'radioBtn selected' : 'radioBtn'"
-                @click="option = 'Opt.1'"
-              >
+              <button :class="option == 'Opt.1' ? 'radioBtn selected' : 'radioBtn'" @click="option = 'Opt.1'">
                 Opt.1
               </button>
-              <button
-                :class="option == 'Opt.2' ? 'radioBtn selected' : 'radioBtn'"
-                @click="option = 'Opt.2'"
-              >
+              <button :class="option == 'Opt.2' ? 'radioBtn selected' : 'radioBtn'" @click="option = 'Opt.2'">
                 Opt.2
               </button>
             </div>
@@ -94,8 +67,8 @@
             </div>
           </div>
         </div>
-      <!-- Button -->
-      <button>Button</button>
+        <!-- Button -->
+        <button>Button</button>
       </div>
 
     </div>
@@ -158,9 +131,27 @@ export default {
     });
 
     // Filters
-    this.$parent.$on("filterStarted", () => {});
-    this.$parent.$on("filterEnded", () => {});
-    this.$parent.$on("filterCleared", () => {});
+    this.$parent.$on("filterStarted", () => { });
+    this.$parent.$on("filterEnded", () => { });
+    this.$parent.$on("filterCleared", () => { });
+
+    // Exporting data
+    // You can emit the following event to export and data with an export method
+    this.$parent.$emit("setExport", {
+      // Some standard DebAI export data:
+      origin: "DebiAI",
+      type: "MyDataExportType (bounding box, 1Drange, 2Drange, IdList, csv, ...)",
+      project_id: this.$store.state.ProjectPage.projectId,
+      selection_ids: this.$store.state.ProjectPage.selectionsIds,
+
+      // Your data:
+      // Make sure the object is a valid JSON
+      myData1: 0,
+      myData2: "data",
+      myData3: [null, null, null]
+      // ...
+    });
+
   },
   mounted() {
     // Watch for configuration changes
@@ -273,9 +264,16 @@ export default {
 
     // =============== Filtering ===============
     /*
-     * If we want to filter the data we can use the following functions
+     * If we want to filter the data we can use the following function
+     * If this function is defined, the purple "filter" button will be displayed in the widget
+     *
+     * The filterStarted event is emitted when the filter button is pressed
+     * The filterEnded event is emitted when the filter button is pressed again
+     * The filterCleared event is emitted when the filter cleared button is pressed
+     *
+     * See the "created()"
      */
-    filtering() {
+    selectDataOnPlot() {
       if (this.$parent.startFiltering) {
         // The filtering button is active
 
@@ -316,7 +314,7 @@ export default {
      * The swal component is used to display messages and confirmation
      * Refer to https://www.npmjs.com/package/sweetalert
      */
-    sendSwal(){
+    sendSwal() {
       swal({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
