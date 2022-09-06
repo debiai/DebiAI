@@ -70,9 +70,6 @@ export default {
       currentDrawedColorIndex: null,
       plotDrawed: false,
 
-      // Filtering
-      border1: null,
-      border2: null,
     };
   },
   props: {
@@ -81,8 +78,6 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
-    this.plotDrawed = false;
-    this.currentDrawedColorIndex = null;
 
     // Widget events
     this.$parent.$on("settings", () => {
@@ -91,11 +86,13 @@ export default {
     });
     this.$parent.$on("redraw", this.drawPlot);
 
+    // Filtering
+    this.border1 = null
+    this.border2 = null
     // Filters events
     this.$parent.$on("filterStarted", this.filterStarted);
     this.$parent.$on("filterEnded", this.filterEnded);
     this.$parent.$on("filterCleared", this.filterCleared);
-
   },
   mounted() {
     this.plotDiv = document.getElementById("rangesliderPlot_" + this.index);
@@ -239,26 +236,11 @@ export default {
         responsive: true,
       });
 
-      this.plotDiv.removeListener("plotly_selected", this.selectDataOnPlot);
-      this.plotDiv.on("plotly_selected", this.selectDataOnPlot);
 
-      this.plotDiv.on('plotly_click', (data) => {
-        if (data.points.length === 0) return
-        let selectionX = data.points[0].data.x[data.points[0].pointIndex]
-
-        if (this.border1 === null) {
-          // Nothing defined yet, first click
-          this.border1 = selectionX
-          this.drawLine(selectionX)
-        } else if (this.border2 === null) {
-          // Second placement
-          this.border2 = selectionX
-          this.drawLine(selectionX)
-        } else {
-          // Reset
-          this.resetLines()
-        }
-      });
+      // Deal with point click to select data
+      // Goal : place two lines and export bondaries
+      this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
+      this.plotDiv.on('plotly_click', this.selectDataOnPlot);
 
       this.plotDrawed = true;
       this.$parent.selectedDataWarning = false;
@@ -286,8 +268,8 @@ export default {
     },
 
     resetLines() {
-      Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false, 'shapes[1].visible': false })
-      // Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false })
+      if (this.border1 !== null && this.border2 !== null) Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false, 'shapes[1].visible': false })
+      else if (this.border1 !== null) Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false })
 
       this.border1 = null
       this.border2 = null
@@ -312,203 +294,122 @@ export default {
     },
 
     // Filters
-    selectDataOnPlot(event) {
-      // Some event msgs :
+    selectDataOnPlot(data) {
+      if (!this.filtering) return;
+
+      // Event data format:
       // {
-      //   xaxis.range[0]: "2020-01-19 18:59:16.806",
-      //   xaxis.range[1]: "2020-01-20 12:44:37.1109"
+      // points: [{
+      //   curveNumber: 1,  // index in data of the trace associated with the selected point
+      //   pointNumber: 1,  // index of the selected point
+      //   x: 1,      // x value
+      //   y: 1,      // y value
+      //   data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+      //   fullData: {/* */},   // ref to the trace including all of the default attributes
+      //  xaxis: {/* */},   // ref to x-axis object (i.e layout.xaxis) associated with the selected point
+      //  yaxis: {/* */}    // ref to y-axis object " "
+      // }, {
+
+      /* similarly for other selected points */
+      // }]
       // }
+
+      // Get clicked point
+      if (data.points.length === 0) return
+
+      let selectionX = data.points[0].data.x[data.points[0].pointIndex]
+
+      // Update lines
+      if (this.border1 === null) {
+        // Nothing defined yet, first click
+        this.border1 = selectionX
+        this.drawLine(selectionX)
+      } else if (this.border2 === null) {
+        // Second placement
+        this.border2 = selectionX
+        this.drawLine(selectionX)
+      } else {
+        // Reset
+        this.resetLines()
+      }
+
+
+      if (this.border1 === null && this.border2 === null) {
+        // Remove filter
+        this.$store.commit("addFilters", {
+          filters: [],
+          from: {
+            widgetType: this.$parent.type,
+            widgetName: this.$parent.name,
+            widgetIndex: this.index,
+          },
+          removeExisting: true,
+        });
+
+        // Cancel export
+        this.$parent.$emit("setExport", null);
+
+        return
+      }
+
+      if (this.border1 === null || this.border2 === null) return
+
+      // Create a debiai filter
+      let colx = this.data.columns[this.columnXindex];
+
+      const min = this.border1 < this.border2 ? this.border1 : this.border2
+      const max = this.border1 > this.border2 ? this.border1 : this.border2
+
+      const filter = {
+        type: "intervals",
+        intervals: [{ min, max }],
+        columnIndex: colx.index,
+      };
+
+      // Store the filters in the DebiAI selection system
+      this.$store.commit("addFilters", {
+        filters: [filter],
+        from: {
+          widgetType: this.$parent.type,
+          widgetName: this.$parent.name,
+          widgetIndex: this.index,
+        },
+        removeExisting: true,
+      });
+
+      // Export boundaries
+      // Goal format :
       // {
-      //   yaxis.range[0]: 59,
-      //   yaxis.range[1]: 44
-      // }
-      // {
-      //   xaxis.range[0]: "2020-01-19 18:59:16.806",
-      //   xaxis.range[1]: "2020-01-20 12:44:37.1109"
-      //   yaxis.range[0]: 59,
-      //   yaxis.range[1]: 44
-      // }
-      // {
-      //   xaxis.autorange: true,
-      //   yaxis.autorange: true
+      //   origin: "DebiAI",
+      //   type: "1Drange",
+      //   project_id: ProjectID,
+      //   selection_ids: [SelectionID, ...],
+      //   colX : colName
+      //   x : [min, max],
       // }
 
-      // The values returned by plotly are not the same as the ones in the data
-      // (they can be in between 2 values)
+      const exportData = {
+        origin: "DebiAI",
+        type: "1Drange",
+        project_id: this.$store.state.ProjectPage.projectId,
+        selection_ids: this.$store.state.ProjectPage.selectionsIds,
+        colX: colx.label,
+        x: [min, max],
+      };
 
-      let str = JSON.stringify(event, null, 4); // (Optional) beautiful indented output.
-      console.log(str); // Logs output to dev tools console.
-      return
-      // // let filters = [];
-      // this.$parent.$emit("setExport", null);
+      this.$parent.$emit("setExport", exportData);
 
-      // if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
-      //   // let min = event["xaxis.range[0]"];
-      //   // let max = event["xaxis.range[1]"];
-
-      //   let col = this.data.columns[this.columnXindex];
-      //   console.log(col.uniques);
-
-      //   if (col.type == String) {
-      //     // Find the closest values
-      //     // The value to the right of the range[0]:
-      //     // let leftValue = col.uniques.reduce((a, b) => {
-      //     //   console.log("reducing left", min, a, b, a > min, a < b, a > min && a < b ? a : b);
-      //     //   return a > min && a < b ? a : b;
-      //     // });
-      //     // let rightValue = col.uniques.reduce((a, b) => {
-      //     //   return a < max && a > b ? a : b;
-      //     // });
-
-      //     // console.log(leftValue, rightValue);
-      //   }
-      // }
-      // return
-      // // Create a debiai filter from a column and a range
-      // if (col.type !== String) {
-      //   if (absolute) {
-      //     return {
-      //       type: "intervals",
-      //       intervals: [
-      //         { min, max },
-      //         { max: -min, min: -max },
-      //       ],
-      //       columnIndex: col.index,
-      //     };
-      //   } else {
-      //     return {
-      //       type: "intervals",
-      //       intervals: [{ min, max }],
-      //       columnIndex: col.index,
-      //     };
-      //   }
-      // } else {
-      //   let selectedUniquesValuesIndex = col.valuesIndexUniques.filter(
-      //     (v) => v >= min && v <= max
-      //   );
-      //   let selectedValues = selectedUniquesValuesIndex.map(
-      //     (v) => col.uniques[v]
-      //   );
-
-      //   // Quick fix for the case of timestamps
-      //   if (selectedValues.length == 0) selectedValues = [min, max];
-
-      //   return {
-      //     type: "values",
-      //     values: selectedValues,
-      //     columnIndex: col.index,
-      //   };
-      // }
-
-
-      // // Get the filters acording
-      // let colx = this.data.columns[this.columnXindex];
-      // filters.push(
-      //   this.getFilterFromColumn(
-      //     colx,
-      //     event.range.x[0],
-      //     event.range.x[1],
-      //     false
-      //   )
-      // );
-
-      // //   // Exporting the bondaries of the selection
-      // //   // We want to export the range of the selection
-      // //   // Filter format :
-      // //   // [
-      // //   //   {
-      // //   //     "type": "values",
-      // //   //     "values": [
-      // //   //       "image-1",
-      // //   //       "image-3",
-      // //   //       ...
-      // //   //     ],
-      // //   //     "columnIndex": 0
-      // //   //   },
-      // //   //   {
-      // //   //     "type": "intervals",
-      // //   //     "intervals": [
-      // //   //       {
-      // //   //        max: 19.950596252129472,
-      // //   //        min: 6.730834752981263
-      // //   //       }
-      // //   //     ],
-      // //   //     "columnIndex": 1
-      // //   //   }
-      // //   // ]
-
-      // //   // Goal format :
-      // //   // {
-      // //   //   origin: "DebiAI",
-      // //   //   type: "2Drange",
-      // //   //   project_id: ProjectID,
-      // //   //   selection_ids: [SelectionID, ...],
-      // //   //   colX : colName
-      // //   //   colY : colName
-      // //   //   x : [min, max],
-      // //   //   y : [min, max]
-      // //   // }
-
-      // //   if (filters.length == 2) {
-
-      // //     const getRangeFromFilter = (filter) => {
-      // //       if (filter.type == "values") return [
-      // //         filter.values[0],
-      // //         filter.values[filter.values.length - 1]
-      // //       ];
-      // //       else if (filter.type == "intervals") return [
-      // //         filter.intervals[0].min,
-      // //         filter.intervals[0].max
-      // //       ];
-      // //       return null;
-      // //     };
-      // //     const rangeX = getRangeFromFilter(filters[0]);
-      // //     const rangeY = getRangeFromFilter(filters[1]);
-
-      // //     const exportData = {
-      // //       origin: "DebiAI",
-      // //       type: "2Drange",
-      // //       project_id: this.$store.state.ProjectPage.projectId,
-      // //       selection_ids: this.$store.state.ProjectPage.selectionsIds,
-      // //       colX: colx.label,
-      // //       colY: coly.label,
-      // //       x: rangeX,
-      // //       y: rangeY,
-      // //     };
-
-      // //     this.$parent.$emit("setExport", exportData);
-      // //   }
-
-      // // }
-
-      // // // Store the filters in the DebiAI selection system
-      // // this.$store.commit("addFilters", {
-      // //   filters,
-      // //   from: {
-      // //     widgetType: this.$parent.type,
-      // //     widgetName: this.$parent.name,
-      // //     widgetIndex: this.index,
-      // //   },
-      // //   removeExisting: true,
-      // // });
     },
     filterStarted() {
-      // Set the layout on select mod
-      if (this.plotDrawed)
-        Plotly.relayout(this.plotDiv, { dragmode: "select" });
+      this.filtering = true;
     },
     filterEnded() {
-      // Remove the layout select mod
-      if (this.plotDrawed)
-        Plotly.relayout(this.plotDiv, { dragmode: "zoom" });
-
-      this.$parent.$emit("setExport", null);
+      // Remove the lines on the plot
+      this.filtering = false;
     },
     filterCleared() {
-      // Remove the selection on the plot
-      if (this.plotDrawed)
-        Plotly.restyle(this.plotDiv, "selectedpoints", null);
-
+      // Remove the lines on the plot
+      this.resetLines();
       this.$parent.$emit("setExport", null);
     },
   },
