@@ -297,7 +297,7 @@ export default {
     },
 
     drawLine(x) {
-      let lineStyle = {
+      const lineStyle = {
         type: 'line',
         x0: x,
         x1: x,
@@ -316,8 +316,31 @@ export default {
       Plotly.relayout(this.plotDiv, { 'shapes[0]': lineStyle })
     },
 
-    resetLines() {
-      if (this.border1 !== null && this.border2 !== null) Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false, 'shapes[1].visible': false })
+    drawRectangle(x1, x2) {
+      const recStyle = {
+        type: 'rect',
+        x0: x1,
+        x1: x2,
+
+        y0: 0,
+        y1: 1,
+        yref: 'paper',
+
+        fillcolor: 'red',
+        opacity: 0.1,
+        line: { width: 0 }
+      }
+
+      Plotly.relayout(this.plotDiv, { 'shapes[0]': recStyle })
+    },
+
+    resetShapes() {
+      if (this.border1 !== null && this.border2 !== null) Plotly.relayout(this.plotDiv,
+        {
+          'shapes[0].visible': false, // First line
+          'shapes[1].visible': false, // Second line
+          'shapes[2].visible': false  // Rectangle
+        })
       else if (this.border1 !== null) Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false })
 
       this.border1 = null
@@ -377,9 +400,10 @@ export default {
         // Second placement
         this.border2 = selectionX
         this.drawLine(selectionX)
+        this.drawRectangle(this.border1, this.border2)
       } else {
         // Reset
-        this.resetLines()
+        this.resetShapes()
       }
 
 
@@ -451,6 +475,10 @@ export default {
     },
     filterStarted() {
       this.filtering = true;
+      this.$store.commit("sendMessage", {
+        title: "info",
+        msg: "Click on two samples to select the data between them",
+      });
     },
     filterEnded() {
       // Remove the lines on the plot
@@ -458,7 +486,7 @@ export default {
     },
     filterCleared() {
       // Remove the lines on the plot
-      this.resetLines();
+      this.resetShapes();
       this.$parent.$emit("setExport", null);
     },
   },
