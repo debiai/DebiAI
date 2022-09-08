@@ -3,7 +3,13 @@
         <!-- Export method list -->
         <div>
             <h3 style="text-align: left; padding-top: 15px">
-                Select an export method:
+                <span> Select an export method:</span>
+
+                <DocumentationBlock>
+                    The export method can be pre-defined in the DebiAI Config file or during deployment.
+
+                    <!-- TODO More information can be found in our online documentation :  -->
+                </DocumentationBlock>
             </h3>
             <div id="exportMethods" class="card" v-if="exportMethods">
 
@@ -109,6 +115,14 @@ export default {
 </script>
 
   <style scoped>
+  #ExportMethodSelection h3 {
+      display: flex;
+  }
+
+  #ExportMethodSelection h3 span {
+      flex: 1;
+  }
+
   /* Methods: */
   #exportMethods {
       display: flex;

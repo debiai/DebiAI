@@ -735,10 +735,7 @@ export default {
       });
 
       // Set zoom events for the data filtering
-      this.divPointPlot.removeListener(
-        "plotly_selected",
-        this.selectDataOnPlot
-      );
+      this.divPointPlot.removeListener("plotly_selected", this.selectDataOnPlot);
       this.divPointPlot.on("plotly_selected", this.selectDataOnPlot);
     },
 

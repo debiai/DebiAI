@@ -371,12 +371,6 @@ export default {
       this.zAxisSelection = false;
       this.plotDrawed = false;
     },
-    swap() {
-      let temp = this.columnYindex;
-      this.columnYindex = this.columnXindex;
-      this.columnXindex = temp;
-      this.drawPlot();
-    },
     setPointOpacity() {
       this.pointOpacity = parseFloat(
         (1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2)

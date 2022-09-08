@@ -196,7 +196,7 @@ button .badge {
   border-radius: 10px 10px 0px 0px;
   display: flex;
   align-items: center;
-  background-color: #585858;
+  background-color: #454a57;
   color: #fff;
   padding: 3px 7px 3px 7px;
 }
@@ -216,7 +216,7 @@ button .badge {
   justify-content: space-between;
   color: white;
   margin: 3px;
-  background: #a3a3a3d7;
+  background: #95969dd7;
   border-radius: 10px 10px 10px 10px;
 }
 
@@ -226,7 +226,7 @@ button .badge {
 
 .dataGroup .data .name {
   border-radius: 10px 0px 0px 10px;
-  background: #4b4b4b;
+  background: #3e404b;
   padding: 2px 6px 2px 6px;
   min-height: 30px;
   display: flex;
@@ -237,7 +237,7 @@ button .badge {
 
 .dataGroup .data .value {
   border-radius: 0px 10px 10px 0px;
-  background: #707070;
+  background: #60626c;
   padding: 2px;
   display: flex;
   align-items: center;

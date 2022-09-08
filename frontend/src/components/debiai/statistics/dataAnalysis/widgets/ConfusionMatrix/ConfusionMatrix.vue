@@ -145,7 +145,7 @@ export default {
            have an impact on the performaces",
           icon: "warning",
           buttons: {
-            continue: { text: "continue", className: "red" },
+            continue: { text: "continue", className: "warning" },
             cancel: "cancel",
           },
           dangerMode: true,
@@ -168,7 +168,7 @@ export default {
            This will create a large number matrix and have an impact on the performaces",
             icon: "warning",
             buttons: {
-              continue: { text: "continue", className: "red" },
+              continue: { text: "continue", className: "warning" },
               continueWithoutColor: "continue without grouping by color",
               cancel: "cancel",
             },

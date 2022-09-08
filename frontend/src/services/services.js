@@ -38,6 +38,7 @@ export default {
 
   prettyNumber(x) {
     if (x === null) return null
+    if (typeof x !== 'number') return x
     if (Math.abs(x) < 1000000) {
       return Number.isInteger(x) ? x : x.toFixed(2)
     }
