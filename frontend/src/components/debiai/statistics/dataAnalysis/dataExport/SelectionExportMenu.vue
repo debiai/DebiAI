@@ -27,6 +27,14 @@
           <input type="text" v-model="selectionName" style="flex: 2" required />
         </span>
       </div>
+      <div class="data">
+        <span class="name"> Exported json </span>
+        <pre class="value" id="exportedSelection">
+
+{{ JSON.stringify(selectionToExportDisplay, undefined, 2) }}
+
+        </pre>
+      </div>
     </form>
 
     <!-- Export method list -->
@@ -45,6 +53,14 @@ export default {
     return {
       selectionName: "DebiAI Selection",
       exporting: false,
+      selectionToExportDisplay: {
+        origin: 'DebiAI',
+        type: 'selection',
+        project_id: this.$store.state.ProjectPage.projectId,
+        selection_name: 'DebiAI Selection',
+        date: 'timestamp',
+        sample_ids: [{ id: 'sample id 1' }, { id: 'sample id 2' }, { id: '...' }],
+      }
     };
   },
   props: {
@@ -104,5 +120,17 @@ export default {
 
 .dataGroup .value {
   flex: 1;
+}
+
+.dataGroup #exportedSelection {
+    margin: 0;
+    padding-left: 10px;
+    max-width: 400px;
+    max-height: 230px;
+    overflow: scroll;
+    font-size: 0.7em;
+    font-family: monospace;
+    justify-content: flex-start;
+    text-align: left;
 }
 </style>

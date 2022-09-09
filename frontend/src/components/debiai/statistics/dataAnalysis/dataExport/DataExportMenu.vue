@@ -8,7 +8,7 @@
         <form v-on:submit.prevent class="dataGroup">
             <!-- Exported data -->
             <div class="data">
-                <span class="name"> Add an extra value </span>
+                <span class="name"> Annotation value </span>
                 <span class="value">
                     <input type="text" v-model="extraValue">
                     <DocumentationBlock>
