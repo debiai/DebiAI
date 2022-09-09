@@ -183,8 +183,12 @@ def exportSelection(projectId, data):
         'project_name': project_name,
         'selection_name': data["selectionName"],
         'date': time.time(),
-        'sample_ids': id_list
+        'sample_ids': id_list,
     }
+
+    # Annotation extra value
+    if 'annotationValue' in data and data['annotationValue'] != "":
+        data_to_export['value'] = data['annotationValue']
 
     # Export the data
     export_method.export(data_to_export)

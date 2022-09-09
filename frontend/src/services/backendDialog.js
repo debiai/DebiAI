@@ -378,9 +378,14 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  exportSelection(projectId, selectionName, exportMethodId, sampleHashList) {
+  exportSelection(projectId, selectionName, exportMethodId, sampleHashList, annotationValue) {
+    let toSend
+
+    if (annotationValue) toSend = { selectionName, sampleHashList, exportMethodId, annotationValue }
+    else toSend = { selectionName, sampleHashList, exportMethodId }
+
     let code = startRequest("Exporting the selection " + selectionName)
-    return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', { selectionName, sampleHashList, exportMethodId })
+    return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', toSend)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },

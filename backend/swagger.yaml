@@ -1508,6 +1508,9 @@ paths:
                 type: string
               exportMethodId:
                 type: string
+              annotationValue:
+                type: string
+                description: Any value set by the user
       responses:
         200:
           description: Selection exported
