@@ -10,4 +10,4 @@ ujson == 4.0.2
 itsdangerous==2.0.1
 sklearn==0.0
 kafka-python == 2.0.2
-openapi_spec_validator == 0.16.0
+openapi_spec_validator == 0.2.8
