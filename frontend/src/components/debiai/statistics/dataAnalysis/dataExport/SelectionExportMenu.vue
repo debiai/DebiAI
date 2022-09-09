@@ -1,5 +1,6 @@
 <template>
   <div id="SelectionExportMenu">
+    <!-- Modal title -->
     <h2>
       Export the selected samples
       <button @click="$emit('cancel')" class="red">Cancel</button>
@@ -27,8 +28,31 @@
           <input type="text" v-model="selectionName" style="flex: 2" required />
         </span>
       </div>
+      <!-- Annotation Value -->
       <div class="data">
-        <span class="name"> Exported json </span>
+        <span class="name"> Annotation value
+          <DocumentationBlock>
+            Add an extra value to the exported Json data.
+            <br>
+            This value can be used for anotation or for object creation purpose.
+          </DocumentationBlock>
+        </span>
+        <span class="value">
+          <input type="text" v-model="extraValue">
+        </span>
+      </div>
+      <!-- Exported data -->
+      <div class="data">
+        <span class="name"> Exported Json <br> format
+          <DocumentationBlock>
+            This is not the exact exported Json file. It is only
+            here to give you an idea of the structure of the exported Json file.
+
+            <br><br>
+
+            The exported Json file will be filled with the selected samples ids.
+          </DocumentationBlock>
+        </span>
         <pre class="value" id="exportedSelection">
 
 {{ JSON.stringify(selectionToExportDisplay, undefined, 2) }}
@@ -52,6 +76,8 @@ export default {
   data() {
     return {
       selectionName: "DebiAI Selection",
+      extraValue: null,
+
       exporting: false,
       selectionToExportDisplay: {
         origin: 'DebiAI',
@@ -78,7 +104,7 @@ export default {
       this.exporting = true;
 
       this.$backendDialog
-        .exportSelection(projectId, this.selectionName, methodId, selectedHash)
+        .exportSelection(projectId, this.selectionName, methodId, selectedHash, this.extraValue)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",
@@ -105,6 +131,15 @@ export default {
     },
   },
   computed: {},
+  watch: {
+    selectionName() {
+      this.selectionToExportDisplay.selection_name = this.selectionName;
+    },
+    extraValue() {
+      this.selectionToExportDisplay.value = this.extraValue;
+      if (this.extraValue === "") delete this.selectionToExportDisplay.value;
+    },
+  }
 };
 </script>
 
@@ -112,6 +147,7 @@ export default {
 /* Form: */
 .dataGroup {
   flex-direction: column;
+  align-items: center;
 }
 
 .dataGroup .data+.data {
@@ -123,14 +159,14 @@ export default {
 }
 
 .dataGroup #exportedSelection {
-    margin: 0;
-    padding-left: 10px;
-    max-width: 400px;
-    max-height: 230px;
-    overflow: scroll;
-    font-size: 0.7em;
-    font-family: monospace;
-    justify-content: flex-start;
-    text-align: left;
+  margin: 0;
+  padding-left: 10px;
+  max-width: 400px;
+  max-height: 270px;
+  overflow: scroll;
+  font-size: 0.6em;
+  font-family: monospace;
+  text-align: left;
+  display: block;
 }
 </style>

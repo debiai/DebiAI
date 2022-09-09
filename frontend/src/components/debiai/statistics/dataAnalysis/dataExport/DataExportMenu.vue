@@ -6,18 +6,20 @@
         </h2>
         <!-- Export params -->
         <form v-on:submit.prevent class="dataGroup">
-            <!-- Exported data -->
+            <!-- Annotation Value -->
             <div class="data">
-                <span class="name"> Annotation value </span>
-                <span class="value">
-                    <input type="text" v-model="extraValue">
+                <span class="name"> Annotation value
                     <DocumentationBlock>
                         Add an extra value to the exported Json data.
                         <br>
                         This value can be used for anotation or for object creation purpose.
                     </DocumentationBlock>
                 </span>
+                <span class="value">
+                    <input type="text" v-model="extraValue">
+                </span>
             </div>
+            <!-- Exported data -->
             <div class="data">
                 <span class="name"> Exported data </span>
                 <pre class="value" id="exportedData">
