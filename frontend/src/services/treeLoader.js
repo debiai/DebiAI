@@ -43,7 +43,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
 
   if (projectNbSamples === 0) { return [] }
 
-  if (!projectNbSamples || projectNbSamples < accepteSize || selectionIds.length > 1 ||  modelIds.length > 1) {
+  if (!projectNbSamples || projectNbSamples <= accepteSize || selectionIds.length > 1 ||  modelIds.length > 1) {
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
@@ -57,6 +57,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     let samplesIdList = []
 
     console.log("Splitting request in ", nbRequest, " requests");
+    let requestCode = startProgressRequest('Loading the project data ID list')
 
     for (let i = 0; i < nbRequest; i++) {
       console.log("Request ", i, " / ", nbRequest);
@@ -65,8 +66,10 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
       console.log("From ", from, " to ", to)
       const samplesId = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
       samplesIdList = samplesIdList.concat(samplesId)
+      updateRequestProgress(requestCode, (i + 1) / nbRequest)
     }
 
+    endRequest(requestCode)
     console.log("Request done, ", samplesIdList.length, " samples found over ", projectNbSamples, " samples requested");
 
     return samplesIdList

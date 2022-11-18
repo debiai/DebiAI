@@ -91,7 +91,8 @@ export default {
     from = null,
     to = null
   }) {
-    let code = startRequest("Loading the project samples list")
+    let code;
+    if (from === null) code = startRequest("Loading the project samples list")
     let request = apiURL + 'projects/' + projectId + '/samples'
 
     console.log("getProjectSamples", projectId, selectionIds, selectionIntersection, modelIds, commonResults);
