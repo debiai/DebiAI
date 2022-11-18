@@ -32,6 +32,47 @@ function endRequest(code) {
   store.commit("endRequest", code)
 }
 
+// Get project samples Id list functions
+async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selectionIntersection = false, modelIds = [], commonResults = false) {
+  // Returns the list of samples id for a project
+  // this need to be done in a sequential way to avoid
+  // too big requests
+
+  const accepteSize = 10000
+  const projectNbSamples = projectMetadata.nbSamples
+
+  if (projectNbSamples === 0) { return [] }
+
+  if (!projectNbSamples || projectNbSamples < accepteSize || selectionIds.length > 1 ||  modelIds.length > 1) {
+    // At the moment, we gather all ID when we deal with selections and models
+    // If we have a small project, we gather all ID
+    // Also, if we don't have the number of samples, we gather all ID
+    return backendDialog.default.getProjectSamples(projectMetadata.projectId, {
+      selectionIds, selectionIntersection, modelIds, commonResults
+    })
+  } else {
+    // We gather all the project samples ID
+    // We need to split it in multiple requests
+    let nbRequest = Math.ceil(projectNbSamples / accepteSize)
+    let samplesIdList = []
+
+    console.log("Splitting request in ", nbRequest, " requests");
+
+    for (let i = 0; i < nbRequest; i++) {
+      console.log("Request ", i, " / ", nbRequest);
+      const from = i * accepteSize
+      const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
+      console.log("From ", from, " to ", to)
+      const samplesId = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
+      samplesIdList = samplesIdList.concat(samplesId)
+    }
+
+    console.log("Request done, ", samplesIdList.length, " samples found over ", projectNbSamples, " samples requested");
+
+    return samplesIdList
+  }
+}
+
 // Get the values / results of the blocks
 function getBlockValues(block) {
   // Adding the block name into the values
@@ -125,9 +166,10 @@ async function getProjectMetadata(projectId, { considerResults }) {
   var metaData = {
     projectId: projectInfo.id,
     timestamp: projectInfo.creationDate,
+    nbSamples: projectInfo.nbSamples,
     labels: [],
     categories: [],
-    type: []
+    type: [],
   }
 
   projectInfo.blockLevelInfo.forEach(blockLevel => {
@@ -193,9 +235,9 @@ async function downloadTree(projectId, timestamp, sampleIds) {
         if (downloadedSamples.dataMap) {
           // Dataprovider project, we derectly receive an map of samples
           let map = downloadedSamples.data
-           Object.keys(map).forEach(dataId => {
-             map[dataId] = [dataId, ...map[dataId]]
-           });
+          Object.keys(map).forEach(dataId => {
+            map[dataId] = [dataId, ...map[dataId]]
+          });
           // Add the samples ID to the array
           retArray = [...retArray, ...Object.values(map)]
           retHashlist = [...retHashlist, ...Object.keys(map)]
@@ -300,14 +342,11 @@ const max = (arr) => {
  * @returns
  */
 async function loadTree(projectId, selectionIds, selectionIntersection) {
-
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: false })
 
   // Get the samples to pull
-  let samplesToPull = await backendDialog.default.getProjectSamples(projectId, {
-    selectionIds, selectionIntersection
-  })
+  let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection)
 
   // Download and convert the tree
   const { dataArray, sampleHashList } = await downloadTree(
@@ -334,9 +373,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: true })
 
   // Get the samples ID to pull
-  let samplesToPull = await backendDialog.default.getProjectSamples(projectId, {
-    selectionIds, selectionIntersection, modelIds, commonResults,
-  })
+  let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection, modelIds, commonResults)
 
   // Download and convert the tree
   const { dataArray, sampleHashList } = await downloadTree(
