@@ -20,7 +20,10 @@ def get_list(projectId, data):
 
     if not selectionIds or len(selectionIds) == 0:
         # Start form all the project samples
-        samples = hashmap.keys()
+        sample = hashmap.keys()
+        # In case of streaming purpose
+        if "from" in data and "to" in data:
+            sample = sample[data["from"]: data["to"]]
     else:
         # Or from the selections samples
         try:

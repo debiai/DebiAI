@@ -17,7 +17,7 @@ dataPath = debiaiUtils.dataPath
 # Get the list of samples ID of the project
 @utils.traceLogLight
 def get_list(projectId, data):
-
+    print(projectId)
     print("get_list")
     print(data)
     if "from" in data: print(data["from"])

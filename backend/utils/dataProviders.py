@@ -27,9 +27,13 @@ class DataProvider:
 
     # Data
 
-    def get_data_id_list(self, view):
+    def get_data_id_list(self, view, _from=None, _to=None):
         try:
-            r = requests.get(self.url + "view/{}/dataIdList".format(view))
+            if _from is not None and _to is not None:
+                url = self.url + "view/{}/dataIdList?from={}&to={}".format(view, _from, _to)
+            else:
+                url = self.url + "view/{}/dataIdList".format(view)
+            r = requests.get(url)
             return r.json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             print("Error getting data id list from {} on view {}".format(
@@ -248,7 +252,7 @@ def get_projects():
 
 
 def projectExist(projectId):
-    projects = get_projects()
+    projects = get_projects() # Todo improve speed
 
     for project in projects:
         if project["id"] == projectId:
@@ -287,13 +291,14 @@ def get_list(projectId, data):
         nbFromSelection = len(samples)
     else:
         # Get all the samples ids
-        samples = data_provider.get_data_id_list(project["view"])
+        _from, _to = (data["from"], data["to"]) if "from" in data and "to" in data else (None, None)
+        samples = data_provider.get_data_id_list(project["view"], _from, _to)
 
     # Then, concat with the model results if given
     nbFromModels = 0
     if data["modelIds"] and len(data["modelIds"]) > 0:
         modelSamples = data_provider.getModelListResults(
-            project["view"], data["modelIds"],  data["commonResults"])
+            project["view"], data["modelIds"], data["commonResults"])
         nbFromModels = len(modelSamples)
         samples = set(samples)
         samples.intersection_update(set(modelSamples))
