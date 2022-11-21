@@ -43,7 +43,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
 
   if (projectNbSamples === 0) { return [] }
 
-  if (!projectNbSamples || projectNbSamples <= accepteSize || selectionIds.length > 1 ||  modelIds.length > 1) {
+  if (!projectNbSamples || projectNbSamples <= accepteSize || selectionIds.length > 1 || modelIds.length > 1) {
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
@@ -57,21 +57,27 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     let nbRequest = Math.ceil(projectNbSamples / accepteSize)
     let samplesIdList = []
 
-    console.log("Splitting request in ", nbRequest, " requests");
+    console.log("Splitting ID list request in ", nbRequest, " requests");
     let requestCode = startProgressRequest('Loading the project data ID list')
 
     try {
+      console.time("getProjectSamplesIdList")
       for (let i = 0; i < nbRequest; i++) {
-        console.log("Request ", i, " / ", nbRequest);
         const from = i * accepteSize
         const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
-        console.log("From ", from, " to ", to)
+
         const res = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
+
+        if (res.samples.length === 0) throw ("No samples found while loading project samples ID list from " + from + " to " + to)
+        if (res.samples.length !== to - from + 1) throw ("Wrong number of samples while loading project samples ID list from " + from + " to " + to +
+          ", got " + res.samples.length + " instead of " + (to - from + 1))
         samplesIdList = samplesIdList.concat(res.samples)
         updateRequestProgress(requestCode, (i + 1) / nbRequest)
       }
+      console.timeEnd("getProjectSamplesIdList")
       endRequest(requestCode)
     } catch (error) {
+      console.timeEnd("getProjectSamplesIdList")
       endRequest(requestCode)
       throw error
     }
