@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.17.2
+  version: 0.18.0
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -544,7 +544,15 @@ paths:
               commonResults:
                 type: boolean
                 description: To get only the the samples that have been evaluated on a common sample
-
+              
+              from:
+                type: integer
+                description: Where we start the selection in case of over 10 000 samples
+                minimum: 0
+              to:
+                type: integer
+                description: Where we stop the selection in case of over 10 000 samples
+                minimum: 0
       responses:
         200:
           description: List of the project sample id

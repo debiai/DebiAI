@@ -9,7 +9,7 @@ def get_list(projectId, data):
     Return a list of samples in a project
     """
 
-    # Get the hashmap
+    # Get the hashmap
     hashmap = debiaiUtils.getHashmap(projectId)
 
     # Get params
@@ -18,9 +18,13 @@ def get_list(projectId, data):
     modelIds = data["modelIds"]
     commonResults = data["commonResults"]
 
+    samples = []
     if not selectionIds or len(selectionIds) == 0:
         # Start form all the project samples
-        samples = hashmap.keys()
+        samples = list(hashmap.keys())
+        # In case of streaming purpose
+        if "from" in data and "to" in data:
+            samples = samples[data["from"]: data["to"] + 1]
     else:
         # Or from the selections samples
         try:

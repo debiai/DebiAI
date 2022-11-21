@@ -87,18 +87,29 @@ export default {
     selectionIds = [],
     selectionIntersection = false,
     modelIds = [],
-    commonResults = false
+    commonResults = false,
+    from = null,
+    to = null
   }) {
-    let code = startRequest("Loading the project samples list")
+    let code;
+    if (from === null) code = startRequest("Loading the project samples list")
     let request = apiURL + 'projects/' + projectId + '/samples'
 
-    return axios.post(request,
-      {
-        selectionIds,
-        selectionIntersection,
-        modelIds,
-        commonResults,
-      }).finally(() => endRequest(code))
+    console.log("getProjectSamples", projectId, selectionIds, selectionIntersection, modelIds, commonResults);
+
+    const requestBody = {
+      selectionIds,
+      selectionIntersection,
+      modelIds,
+      commonResults,
+    }
+
+    if (from !== null && to !== null) {
+      requestBody.from = from
+      requestBody.to = to
+    }
+
+    return axios.post(request, requestBody).finally(() => endRequest(code))
       .then((response) => response.data)
   },
   getSelectionSamples(projectId, selectionId) {

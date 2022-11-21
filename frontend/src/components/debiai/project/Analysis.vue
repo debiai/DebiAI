@@ -28,13 +28,7 @@ export default {
       this.$emit("startAnalysis", { newTab });
     },
   },
-  computed: {
-    selectedModels() {
-      return this.selectedModelIds.map((mId) =>
-        this.project.models.find((m) => mId === m.id)
-      );
-    },
-  },
+  computed: {},
 };
 </script>
 
