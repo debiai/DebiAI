@@ -47,9 +47,10 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
-    return backendDialog.default.getProjectSamples(projectMetadata.projectId, {
+    const res = await backendDialog.default.getProjectSamples(projectMetadata.projectId, {
       selectionIds, selectionIntersection, modelIds, commonResults
     })
+    return res.samples
   } else {
     // We gather all the project samples ID
     // We need to split it in multiple requests
@@ -65,8 +66,8 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
         const from = i * accepteSize
         const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
         console.log("From ", from, " to ", to)
-        const samplesId = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
-        samplesIdList = samplesIdList.concat(samplesId.samples)
+        const res = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
+        samplesIdList = samplesIdList.concat(res.samples)
         updateRequestProgress(requestCode, (i + 1) / nbRequest)
       }
       endRequest(requestCode)
