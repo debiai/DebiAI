@@ -59,19 +59,23 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     console.log("Splitting request in ", nbRequest, " requests");
     let requestCode = startProgressRequest('Loading the project data ID list')
 
-    for (let i = 0; i < nbRequest; i++) {
-      console.log("Request ", i, " / ", nbRequest);
-      const from = i * accepteSize
-      const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
-      console.log("From ", from, " to ", to)
-      const samplesId = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
-      samplesIdList = samplesIdList.concat(samplesId)
-      updateRequestProgress(requestCode, (i + 1) / nbRequest)
+    try {
+      for (let i = 0; i < nbRequest; i++) {
+        console.log("Request ", i, " / ", nbRequest);
+        const from = i * accepteSize
+        const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
+        console.log("From ", from, " to ", to)
+        const samplesId = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
+        samplesIdList = samplesIdList.concat(samplesId.samples)
+        updateRequestProgress(requestCode, (i + 1) / nbRequest)
+      }
+      endRequest(requestCode)
+    } catch (error) {
+      endRequest(requestCode)
+      throw error
     }
 
-    endRequest(requestCode)
     console.log("Request done, ", samplesIdList.length, " samples found over ", projectNbSamples, " samples requested");
-
     return samplesIdList
   }
 }
@@ -355,7 +359,7 @@ async function loadTree(projectId, selectionIds, selectionIntersection) {
   const { dataArray, sampleHashList } = await downloadTree(
     projectId,
     projectMetadata.timestamp,
-    samplesToPull.samples
+    samplesToPull
   )
 
   return {
@@ -382,7 +386,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
   const { dataArray, sampleHashList } = await downloadTree(
     projectId,
     projectMetadata.timestamp,
-    samplesToPull.samples
+    samplesToPull
   )
 
   // =========== Then add the model results
@@ -401,7 +405,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
         projectId,
         projectMetadata.timestamp,
         modelId,
-        samplesToPull.samples
+        samplesToPull
       )
 
       const dataAndResultsArray = [];
