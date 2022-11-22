@@ -43,7 +43,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
 
   if (projectNbSamples === 0) { return [] }
 
-  if (!projectNbSamples || projectNbSamples <= accepteSize || selectionIds.length > 1 || modelIds.length > 1) {
+  if (projectNbSamples === undefined || projectNbSamples === null || projectNbSamples <= accepteSize || selectionIds.length > 0 || modelIds.length > 0) {
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
