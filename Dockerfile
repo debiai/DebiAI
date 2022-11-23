@@ -2,6 +2,7 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /frontend
 COPY frontend/ .
+ENV NODE_OPTIONS="--openssl-legacy-provider"
 RUN npm install
 RUN npm run build
 
