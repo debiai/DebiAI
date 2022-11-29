@@ -26,7 +26,6 @@ class DataProvider:
             return None
 
     # Data
-
     def get_data_id_list(self, view, _from=None, _to=None):
         try:
             if _from is not None and _to is not None:

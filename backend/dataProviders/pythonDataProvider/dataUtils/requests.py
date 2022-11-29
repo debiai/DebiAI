@@ -1,17 +1,13 @@
 import os
-import ujson as json
-import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-import utils.debiai.samples as samplesUtils
 
-dataPath = debiaiUtils.dataPath
-
+from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
+DATA_PATH = utils.DATA_PATH
 
 def getRequestsIds(projectId):
     try:
-        return os.listdir(dataPath + projectId + "/requests")
+        return os.listdir(DATA_PATH + projectId + "/requests")
     except FileNotFoundError:
-        os.mkdir(dataPath + projectId + "/requests")
+        os.mkdir(DATA_PATH + projectId + "/requests")
         return []
 
 
@@ -23,7 +19,7 @@ def getRequests(projetId):
 
 
 def getRequest(projectId, requestId):
-    return utils.readJsonFile(dataPath + projectId + "/requests/" + requestId + "/info.json")
+    return utils.readJsonFile(DATA_PATH + projectId + "/requests/" + requestId + "/info.json")
 
 
 def getRequestSelections(projectId, requestId):
@@ -98,7 +94,7 @@ def createRequest(projectId, requestName, requestDescription, filters):
         filtersToSave.append(f)
 
     # Save request
-    os.mkdir(dataPath + projectId + "/requests/" + requestId)
+    os.mkdir(DATA_PATH + projectId + "/requests/" + requestId)
 
     requestInfo = {
         "name": requestName,
@@ -108,14 +104,14 @@ def createRequest(projectId, requestName, requestDescription, filters):
         "creationDate": utils.timeNow()
     }
 
-    utils.writeJsonFile(dataPath + projectId + "/requests/" +
+    utils.writeJsonFile(DATA_PATH + projectId + "/requests/" +
                         requestId + "/info.json", requestInfo)
 
     return requestInfo
 
 
 def deleteRequest(projectId, requestId):
-    utils.deleteDir(dataPath + projectId + "/requests/" + requestId)
+    utils.deleteDir(DATA_PATH + projectId + "/requests/" + requestId)
 
 
 def createSelection(projectId, requestId, selectionName):

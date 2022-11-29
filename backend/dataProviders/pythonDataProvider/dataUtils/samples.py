@@ -1,7 +1,14 @@
-import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
+from backend.dataProviders.pythonDataProvider.dataUtils import utils, hash, tree, selections, models, projects
+DATA_PATH = utils.DATA_PATH
 
-dataPath = debiaiUtils.dataPath
+
+
+def get_tree_from_sampleid_list(projectId, sampleIds):
+    # Get path from the hashmap
+    samplePath = hash.getPathFromHashArray(projectId, sampleIds)
+
+    # Get tree from samples
+    return tree.getBlockTreeFromSamples(projectId, samplePath)
 
 
 def get_list(projectId, data):
@@ -10,7 +17,7 @@ def get_list(projectId, data):
     """
 
     # Get the hashmap
-    hashmap = debiaiUtils.getHashmap(projectId)
+    hashmap = hash.getHashmap(projectId)
 
     # Get params
     selectionIds = data["selectionIds"]
@@ -28,7 +35,7 @@ def get_list(projectId, data):
     else:
         # Or from the selections samples
         try:
-            samples = debiaiUtils.getSelectionsSamples(
+            samples = selections.getSelectionsSamples(
                 projectId, selectionIds, selectionIntersection)
         except KeyError as e:
             print(e)
@@ -46,7 +53,7 @@ def get_list(projectId, data):
     nbFromModels = 0
     # Then, concat with the model results if given
     if modelIds and len(modelIds) > 0:
-        modelSamples = debiaiUtils.getModelListResults(
+        modelSamples = models.getModelListResults(
             projectId, modelIds, commonResults)
         nbFromModels = len(modelSamples)
         samples = set(samples)
@@ -67,12 +74,12 @@ def projectSamplesGerenator(projectId):
     """
 
     # Get the project block structure
-    projectBlockStructure = debiaiUtils.getProjectblockLevelInfo(projectId)
+    projectBlockStructure = projects.getProjectblockLevelInfo(projectId)
     sampleLevel = len(projectBlockStructure) - 1
 
-    rootBlocks = utils.listDir(dataPath + projectId + "/blocks/")
+    rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")
     for rootBlock in rootBlocks:
-        path = dataPath + projectId + "/blocks/" + rootBlock + "/"
+        path = DATA_PATH + projectId + "/blocks/" + rootBlock + "/"
         yield from yieldSample(path,  0, [], sampleLevel, projectBlockStructure)
     print("end")
 
@@ -100,7 +107,7 @@ def getBlockInfo(blockLevel, blockInfo):
     ret = {}
     ret[blockLevel["name"]] = blockInfo["name"]
 
-    for dataType in debiaiUtils.dataTypes:
+    for dataType in utils.DATA_TYPES:
         if dataType in blockLevel:
             for (i, column) in enumerate(blockLevel[dataType]):
                 ret[column['name']] = blockInfo[dataType][i]
