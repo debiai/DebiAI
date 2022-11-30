@@ -1,14 +1,29 @@
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, hash, tree, selections, models, projects
+import utils
+import hash
+import tree
+import selections
+import models
+import projects
 DATA_PATH = utils.DATA_PATH
 
+# ID list
 
 
-def get_tree_from_sampleid_list(projectId, sampleIds):
-    # Get path from the hashmap
-    samplePath = hash.getPathFromHashArray(projectId, sampleIds)
+def get_all_samples_id_list(project_id, _from=None, _to=None):
+    """
+    Return a list of all samples id in a project
+    """
+    # Get the hashmap
+    hashmap = hash.getHashmap(project_id)
 
-    # Get tree from samples
-    return tree.getBlockTreeFromSamples(projectId, samplePath)
+    # Get all samples
+    samples = list(hashmap.keys())
+
+    # In case of streaming purpose
+    if _from is not None and _to is not None:
+        samples = samples[_from: _to + 1]
+
+    return samples
 
 
 def get_list(projectId, data):
@@ -67,49 +82,58 @@ def get_list(projectId, data):
     }
 
 
-def projectSamplesGerenator(projectId):
-    """
-    Generator used to iterate over all samples in a project.
-    Used by the 'createSelectionFromRequest' method
-    """
+# Get data
+def get_tree_from_sampleid_list(projectId, sampleIds):
+    # Get path from the hashmap
+    samplePath = hash.getPathFromHashList(projectId, sampleIds)
 
-    # Get the project block structure
-    projectBlockStructure = projects.getProjectblockLevelInfo(projectId)
-    sampleLevel = len(projectBlockStructure) - 1
-
-    rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")
-    for rootBlock in rootBlocks:
-        path = DATA_PATH + projectId + "/blocks/" + rootBlock + "/"
-        yield from yieldSample(path,  0, [], sampleLevel, projectBlockStructure)
-    print("end")
+    # Get tree from samples
+    return tree.getBlockTreeFromSamples(projectId, samplePath)
 
 
-def yieldSample(path, level, sampleInfo, sampleLevel, blockLevelInfo):
-    # TODO : optimisations : add in parameters the block that we need to open
-    blockInfo = utils.readJsonFile(path + "info.json")
-    sampleInfo.append(getBlockInfo(blockLevelInfo[level], blockInfo))
+# def projectSamplesGerenator(projectId):
+#     """
+#     Generator used to iterate over all samples in a project.
+#     Used by the 'createSelectionFromRequest' method
+#     """
 
-    if level == sampleLevel:
-        # merge the dict into one
-        yield {k: v for x in sampleInfo for k, v in x.items()}, blockInfo["id"]
-    else:
-        childrenBlockNames = utils.listDir(path)
-        for name in childrenBlockNames:
-            yield from yieldSample(path + name + "/",
-                                   level + 1, sampleInfo, sampleLevel, blockLevelInfo)
-            del sampleInfo[-1]
+#     # Get the project block structure
+#     projectBlockStructure = projects.getProjectblockLevelInfo(projectId)
+#     sampleLevel = len(projectBlockStructure) - 1
+
+#     rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")
+#     for rootBlock in rootBlocks:
+#         path = DATA_PATH + projectId + "/blocks/" + rootBlock + "/"
+#         yield from yieldSample(path,  0, [], sampleLevel, projectBlockStructure)
+#     print("end")
 
 
-def getBlockInfo(blockLevel, blockInfo):
-    """
-    Convert the block info to fill the sampleInfo list with a colonName:value dict
-    """
-    ret = {}
-    ret[blockLevel["name"]] = blockInfo["name"]
+# def yieldSample(path, level, sampleInfo, sampleLevel, blockLevelInfo):
+#     # TODO : optimisations : add in parameters the block that we need to open
+#     blockInfo = utils.readJsonFile(path + "info.json")
+#     sampleInfo.append(getBlockInfo(blockLevelInfo[level], blockInfo))
 
-    for dataType in utils.DATA_TYPES:
-        if dataType in blockLevel:
-            for (i, column) in enumerate(blockLevel[dataType]):
-                ret[column['name']] = blockInfo[dataType][i]
+#     if level == sampleLevel:
+#         # merge the dict into one
+#         yield {k: v for x in sampleInfo for k, v in x.items()}, blockInfo["id"]
+#     else:
+#         childrenBlockNames = utils.listDir(path)
+#         for name in childrenBlockNames:
+#             yield from yieldSample(path + name + "/",
+#                                    level + 1, sampleInfo, sampleLevel, blockLevelInfo)
+#             del sampleInfo[-1]
 
-    return ret
+
+# def getBlockInfo(blockLevel, blockInfo):
+#     """
+#     Convert the block info to fill the sampleInfo list with a colonName:value dict
+#     """
+#     ret = {}
+#     ret[blockLevel["name"]] = blockInfo["name"]
+
+#     for dataType in utils.DATA_TYPES:
+#         if dataType in blockLevel:
+#             for (i, column) in enumerate(blockLevel[dataType]):
+#                 ret[column['name']] = blockInfo[dataType][i]
+
+#     return ret

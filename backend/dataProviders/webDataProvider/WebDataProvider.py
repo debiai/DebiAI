@@ -1,4 +1,4 @@
-from backend.dataProviders.DataProvider import DataProvider
+from dataProviders.DataProvider import DataProvider
 
 class WebDataProvider(DataProvider):
     def _init_(self, url, name):

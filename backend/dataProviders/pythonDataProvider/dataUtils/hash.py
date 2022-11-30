@@ -1,7 +1,7 @@
 import hashlib
 import ujson as json
 
-from backend.dataProviders.pythonDataProvider.dataUtils import utils
+import utils
 DATA_PATH = utils.DATA_PATH
 
 def hash(text: str):
@@ -43,7 +43,7 @@ def getHashmap(projectId):
     return existingHm
 
 
-def getPathFromHashArray(projectId, hashArray):
+def getPathFromHashList(projectId, hashArray):
     hm = getHashmap(projectId)
     ret = []
     for hash in hashArray:
