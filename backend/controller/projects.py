@@ -67,21 +67,16 @@ def get_project(dataProviderId, projectId):
     # return the info about datasets, models, selections & tags
     
     print("getting data provider")
-    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-    print(data_provider.name)
-    print(data_provider.url)
-    return data_provider.get_project(projectId), 200
+    print(dataProviderId)
     
-    if debiaiUtils.projectExist(projectId):
-        return projects.getProjectById(projectId), 200
-
-    # Check if the project exists in the data providers
-    if dataProviders.projectExist(projectId):
-        return dataProviders.getProjectById(projectId), 200
-
-    return "Project " + projectId + " not found", 404
-
-
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    project = data_provider.get_project(projectId)
+    if project is not None:
+        return project, 200
+    
+    return "Project " + projectId + " on data Provider " + dataProviderId + " not found", 404
+    
+    
 #@utils.traceLog
 def post_project(data):
     projectName = data["projectName"]

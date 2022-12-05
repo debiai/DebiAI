@@ -7,6 +7,8 @@ import os
 import utils.utils as utils
 #import utils.hashUtils as hashUtils
 import utils.dataProviders as dataProviders
+import dataProviders.dataProviderManager as data_provider_manager
+
 
 #import utils.debiai.blocks as blocksUtils
 
@@ -109,18 +111,27 @@ def get_tree_with_model_results(projectId, data):
 
 
 #@utils.traceLogLight
-def get_tree_from_sampleid_list(projectId, data):
+def get_tree_from_sampleid_list(data_provider_id, projectId, data):
     # return a tree from a list of sample ID
     sampleIds = data["sampleIds"]
 
-    # Check parameters
-    if debiaiUtils.projectExist(projectId):
-        return blocksUtils.get_tree_from_sampleid_list(projectId, sampleIds), 200
+    data_provider = data_provider_manager.get_single_data_provider(data_provider_id)
+    
+    samples = data_provider.get_samples(projectId, sampleIds)
+    
+    if samples is not None:
+        return samples, 200
+    
+    
+        
+    # # Check parameters
+    # if debiaiUtils.projectExist(projectId):
+    #     return blocksUtils.get_tree_from_sampleid_list(projectId, sampleIds), 200
 
-    if dataProviders.projectExist(projectId):
-        return dataProviders.get_data(projectId, sampleIds), 200
+    # if dataProviders.projectExist(projectId):
+    #     return dataProviders.get_data(projectId, sampleIds), 200
 
-    return "project not found", 404
+    return "Can't find samples for project " + projectId + " on data provider : " + data_provider_id, 404
 
 
 # Training samples

@@ -1,19 +1,33 @@
 import os
 import ujson as json
-
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, projects
+import selections, projects, utils
 
 DATA_PATH = utils.DATA_PATH
+
 
 #  Models
 def getModelIds(projectId):
     return os.listdir(DATA_PATH + projectId + "/models/")
 
 
-def getModelInfo(projectId, modelId):
-    with open(DATA_PATH + projectId + "/models/" + modelId + "/info.json") as json_file:
-        return json.load(json_file)
+def getModels(projectId):
+    ret = []
+    for model in os.listdir(DATA_PATH + projectId + "/models/"):
+        with open(DATA_PATH + projectId + "/models/" + model + "/info.json") as json_file:
+            info = json.load(json_file)
+            ret.append(
+                {
+                    "name": model,
+                    "id": model,
+                    "creationDate": info["creationDate"],
+                    "updateDate": info["updateDate"],
+                    "version": "0.0.0",
+                    "metaDataList": info["metadata"],
+                    "nbEvaluatedSamples": info["nbResults"],
+                }
+            )
 
+    return ret
 
 def modelExist(projectId, modelId):
     return modelId in getModelIds(projectId)
@@ -44,7 +58,7 @@ def getModelResults(projectId, modelId, selectionId=None):
     if not selectionId:
         return d
     else:
-        selectionSamples = set(getSelectionSamples(projectId, selectionId))
+        selectionSamples = set(selections.getSelectionSamples(projectId, selectionId))
         return selectionSamples.intersection_update(d)
 
 

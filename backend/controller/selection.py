@@ -14,14 +14,6 @@ import utils.dataProviders as dataProviders
 
 #@utils.traceLogLight
 def get_selections(projectId):
-    # ParametersCheck
-    if debiaiUtils.projectExist(projectId):
-        # Get selections
-        selections = []
-        for selectionId in debiaiUtils.getSelectionIds(projectId):
-            selections.append(debiaiUtils.getSelectionInfo(projectId, selectionId))
-        return selections, 200
-
     if dataProviders.projectExist(projectId):
         return dataProviders.get_selections(projectId)
 

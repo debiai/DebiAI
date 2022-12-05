@@ -2,8 +2,6 @@ from config.init_config import get_config
 #from dataProviders.pythonDataProvider.PythonDataProvider import PythonDataProvider
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 
-
-
 data_providers_list = []
 
 

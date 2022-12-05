@@ -1,5 +1,6 @@
 import os
 import ujson as json
+import projects
 
 from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
 
@@ -29,9 +30,16 @@ def createSelection(
 
     os.mkdir(DATA_PATH + projectId + "/selections/" + selectionId)
     utils.writeJsonFile(selectionInfoFilePath, selectionInfo)
-    updateProject(projectId)
+    projects.updateProject(projectId)
+    projects.updateProject(projectId)
     return selectionInfo
 
+def getSelections(projectId):
+    # Get selections
+    selections = []
+    for selectionId in getSelectionIds(projectId):
+        selections.append(getSelectionInfo(projectId, selectionId))
+    return selections
 
 def getSelectionIds(projectId):
     return os.listdir(DATA_PATH + projectId + "/selections/")
@@ -117,4 +125,4 @@ def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> s
 
 def deleteSelection(projectId, selectionId):
     utils.deleteDir(DATA_PATH + projectId + "/selections/" + selectionId)
-    updateProject(projectId)
+    projects.updateProject(projectId)

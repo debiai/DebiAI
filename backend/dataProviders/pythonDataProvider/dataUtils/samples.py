@@ -6,7 +6,7 @@ import models
 import projects
 
 DATA_PATH = utils.DATA_PATH
-
+DATA_TYPES = utils.DATA_TYPES
 
 # ID list
 def get_all_samples_id_list(project_id, _from=None, _to=None):
@@ -78,12 +78,66 @@ def get_list(projectId, data):
 
 
 # Get data
-def get_data_from_sampleid_list(projectId, sampleIds):
+def get_data_from_sampleid_list(project_id, id_list):
     # Get path of the samples from the hashmap
-    samplePath = hash.getPathFromHashList(projectId, sampleIds)
+    samplePath = hash.getPathFromHashList(project_id, id_list)
 
     # Get tree from samples
-    return tree.getBlockTreeFromSamples(projectId, samplePath)
+    samples_tree = tree.getBlockTreeFromSamples(project_id, samplePath)
+
+    # Convert tree to array
+    data_array = _tree_to_array(samples_tree)
+
+    # Convert array to dict
+    data = {}
+    for i in range(len(id_list)):
+        data[id_list[i]] = data_array[i]
+
+def _tree_to_array(tree):
+    data_array = []
+    for block in tree:
+        data_array += _get_block_data_recur(block)
+    return data_array
+
+def _get_block_values(block):
+    # Adding the block name into the values
+    values = [block.name]
+
+    #store all key-values into an array
+    for data_type in DATA_TYPES:
+        if (data_type.blName in block):
+            for key in block[data_type]:
+                values.push(block[data_type][key])
+
+    return values
+
+def _get_block_data_recur(block):
+    # Getting bloc values
+    values = _get_block_values(block)
+    if "childrenInfoList" not in block or len(block["childrenInfoList"]) == 0:
+        return [values]
+
+    else :
+        # Getting all child values
+        child_values = []
+        for child_block in block["childrenInfoList"]:
+            child_values.append(_get_block_data_recur(child_block))
+
+        # Mergin childs and current block values
+        #     CurBlock childs
+        #     a        1
+        #     a        2
+        #     a        3
+
+        #     b        1
+        #     b        2
+        #     b        3
+
+        array = []
+        for child_val in child_values:
+            array.append(values + child_val)
+
+        return array
 
 
 # def projectSamplesGerenator(projectId):
@@ -117,18 +171,3 @@ def get_data_from_sampleid_list(projectId, sampleIds):
 #             yield from yieldSample(path + name + "/",
 #                                    level + 1, sampleInfo, sampleLevel, blockLevelInfo)
 #             del sampleInfo[-1]
-
-
-# def getBlockInfo(blockLevel, blockInfo):
-#     """
-#     Convert the block info to fill the sampleInfo list with a colonName:value dict
-#     """
-#     ret = {}
-#     ret[blockLevel["name"]] = blockInfo["name"]
-
-#     for dataType in utils.DATA_TYPES:
-#         if dataType in blockLevel:
-#             for (i, column) in enumerate(blockLevel[dataType]):
-#                 ret[column['name']] = blockInfo[dataType][i]
-
-#     return ret

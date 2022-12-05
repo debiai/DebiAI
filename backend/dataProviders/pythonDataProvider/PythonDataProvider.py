@@ -3,6 +3,8 @@ from utils.utils import utils as GlobalUtils
 import dataUtils.utils as utils
 import dataUtils.projects as projects
 import dataUtils.samples as samples
+import dataUtils.selections as selections
+import dataUtils.models as models
 
 
 class PythonDataProvider(DataProvider):
@@ -15,7 +17,7 @@ class PythonDataProvider(DataProvider):
         # Get DebiAI version
         return {
             "version": GlobalUtils.get_version(),
-            "dp_name": "Python Data Provider",
+            "dp_name": "Python module Data Provider",
         }
 
     def get_projects(self):
@@ -40,20 +42,20 @@ class PythonDataProvider(DataProvider):
     def get_samples(self, project_id, id_list):
         # http Request get full sample
         # Return object { id: [data]}
-        pass
+        return samples.get_data_from_sampleid_list(project_id, id_list)
 
-    def get_selections(self, project_id, id_list):
+    def get_selections(self, project_id):
         # Get selections on project
         # Return arr[object{ id, name, creation_time, nb_samples}]
-        pass
+        return selections.get_selections(project_id)
 
-    def get_selection(self, project_id, selection_id):
+    def get_selection_id_list(self, project_id, selection_id):
         # Get selections id for a project
-        #
-        pass
+        # Return selection ID list
+        return selections.getSelectionSamples(project_id, selection_id)
 
     def get_models(self, project_id):
-        pass
+        return models.getModels(project_id)
 
-    def get_model_results(self, id_list):
-        pass
+    def get_model_results(self,project_id, model_id, id_list):
+        return models.getModelResults(project_id, model_id, id_list)

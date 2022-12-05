@@ -17,31 +17,9 @@ import utils.dataProviders as dataProviders
 
 #@utils.traceLogLight
 def get_models(projectId):
-
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
-
     ret = []
 
-    for model in os.listdir(dataPath + projectId + "/models/"):
-        with open(
-            dataPath + projectId + "/models/" + model + "/info.json"
-        ) as json_file:
-            info = json.load(json_file)
-            ret.append(
-                {
-                    "name": model,
-                    "id": model,
-                    "creationDate": info["creationDate"],
-                    "updateDate": info["updateDate"],
-                    "version": "0.0.0",
-                    "metaDataList": info["metadata"],
-                    "nbEvaluatedSamples": info["nbResults"],
-                }
-            )
-
-    return ret, 200
+    # TODO data_providers
 
 
 #@utils.traceLog

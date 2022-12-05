@@ -10,6 +10,9 @@ def get_all_projects_from_data_provider(url, name):
     projects = get_projects(url)
     project_list = []
         
+    if not projects:
+        return
+    
     for project in projects:
         blockInfo = format_collumns_project_overview(projects[project])
         selections = format_selections_project_overview(url, project)
@@ -38,6 +41,8 @@ def get_all_projects_from_data_provider(url, name):
             "selections": selections,
             "models": models,
         })
+        
+    print(project_list)
         
     ###### Modify rest of function with what we need
     return project_list
