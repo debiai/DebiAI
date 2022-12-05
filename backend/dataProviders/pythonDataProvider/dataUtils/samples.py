@@ -4,11 +4,11 @@ import tree
 import selections
 import models
 import projects
+
 DATA_PATH = utils.DATA_PATH
 
+
 # ID list
-
-
 def get_all_samples_id_list(project_id, _from=None, _to=None):
     """
     Return a list of all samples id in a project
@@ -21,7 +21,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     # In case of streaming purpose
     if _from is not None and _to is not None:
-        samples = samples[_from: _to + 1]
+        samples = samples[_from : _to + 1]
 
     return samples
 
@@ -46,30 +46,25 @@ def get_list(projectId, data):
         samples = list(hashmap.keys())
         # In case of streaming purpose
         if "from" in data and "to" in data:
-            samples = samples[data["from"]: data["to"] + 1]
+            samples = samples[data["from"] : data["to"] + 1]
     else:
         # Or from the selections samples
         try:
             samples = selections.getSelectionsSamples(
-                projectId, selectionIds, selectionIntersection)
+                projectId, selectionIds, selectionIntersection
+            )
         except KeyError as e:
             print(e)
             return "selection not found", 404
 
     if len(samples) == 0:
-        return {
-            "samples": [],
-            "nbSamples": 0,
-            "nbFromSelection": 0,
-            "nbFromModels": 0
-        }
+        return {"samples": [], "nbSamples": 0, "nbFromSelection": 0, "nbFromModels": 0}
 
     nbFromSelection = len(samples)
     nbFromModels = 0
     # Then, concat with the model results if given
     if modelIds and len(modelIds) > 0:
-        modelSamples = models.getModelListResults(
-            projectId, modelIds, commonResults)
+        modelSamples = models.getModelListResults(projectId, modelIds, commonResults)
         nbFromModels = len(modelSamples)
         samples = set(samples)
         samples.intersection_update(set(modelSamples))
@@ -78,13 +73,13 @@ def get_list(projectId, data):
         "samples": list(samples),
         "nbSamples": len(samples),
         "nbFromSelection": nbFromSelection,
-        "nbFromModels": nbFromModels
+        "nbFromModels": nbFromModels,
     }
 
 
 # Get data
-def get_tree_from_sampleid_list(projectId, sampleIds):
-    # Get path from the hashmap
+def get_data_from_sampleid_list(projectId, sampleIds):
+    # Get path of the samples from the hashmap
     samplePath = hash.getPathFromHashList(projectId, sampleIds)
 
     # Get tree from samples

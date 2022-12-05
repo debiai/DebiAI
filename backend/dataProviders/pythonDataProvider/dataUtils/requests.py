@@ -1,7 +1,9 @@
 import os
 
 from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
+
 DATA_PATH = utils.DATA_PATH
+
 
 def getRequestsIds(projectId):
     try:
@@ -19,7 +21,9 @@ def getRequests(projetId):
 
 
 def getRequest(projectId, requestId):
-    return utils.readJsonFile(DATA_PATH + projectId + "/requests/" + requestId + "/info.json")
+    return utils.readJsonFile(
+        DATA_PATH + projectId + "/requests/" + requestId + "/info.json"
+    )
 
 
 def getRequestSelections(projectId, requestId):
@@ -84,7 +88,7 @@ def createRequest(projectId, requestName, requestDescription, filters):
         f = {
             "columnLabel": filter["columnLabel"],
             "type": filter["type"],
-            "inverted": filter["inverted"]
+            "inverted": filter["inverted"],
         }
         if f["type"] == "values":
             f["values"] = filter["values"]
@@ -101,11 +105,12 @@ def createRequest(projectId, requestName, requestDescription, filters):
         "description": requestDescription,
         "id": requestId,
         "filters": filtersToSave,
-        "creationDate": utils.timeNow()
+        "creationDate": utils.timeNow(),
     }
 
-    utils.writeJsonFile(DATA_PATH + projectId + "/requests/" +
-                        requestId + "/info.json", requestInfo)
+    utils.writeJsonFile(
+        DATA_PATH + projectId + "/requests/" + requestId + "/info.json", requestInfo
+    )
 
     return requestInfo
 
@@ -134,14 +139,16 @@ def createSelection(projectId, requestId, selectionName):
         nbS += 1
 
     debiaiUtils.createSelection(
-        projectId, selectionId, selectionName, selectionSamplesIds, requestId=requestId)
+        projectId, selectionId, selectionName, selectionSamplesIds, requestId=requestId
+    )
 
 
 def isSampleInSelection(sample, filters):
     for filter in filters:
         if filter["columnLabel"] not in sample:
-            raise KeyError("columnLabel " +
-                           filter["columnLabel"] + " not found in sample")
+            raise KeyError(
+                "columnLabel " + filter["columnLabel"] + " not found in sample"
+            )
 
         if "inverted" not in filter:
             filter["inverted"] = False
@@ -157,7 +164,9 @@ def isSampleInSelection(sample, filters):
                 return False
 
         elif filter["type"] == "intervals":
-            if _is_value_in_intervals(sample[filter["columnLabel"]], filter["intervals"]):
+            if _is_value_in_intervals(
+                sample[filter["columnLabel"]], filter["intervals"]
+            ):
                 if filter["inverted"]:
                     return False
             elif not filter["inverted"]:
@@ -173,7 +182,12 @@ def _is_value_in_intervals(value, intervals):
 
     for interval in intervals:
         # Case where the interval is [min, max]
-        if "min" in interval and interval["min"] is not None and "max" in interval and interval["max"] is not None:
+        if (
+            "min" in interval
+            and interval["min"] is not None
+            and "max" in interval
+            and interval["max"] is not None
+        ):
             if value < interval["min"] or value > interval["max"]:
                 return False
         # Case where the interval is [min, None]

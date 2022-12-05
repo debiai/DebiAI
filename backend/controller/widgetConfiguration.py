@@ -1,8 +1,8 @@
 #############################################################################
 # Imports
 #############################################################################
-import utils.debiaiUtils as debiaiUtils
-import utils.debiai.widgetConfiguration as widgetConfUtils
+#import utils.debiaiUtils as debiaiUtils
+#import utils.debiai.widgetConfiguration as widgetConfUtils
 import utils.utils as utils
 
 #############################################################################
@@ -27,12 +27,17 @@ def post_configuration(projectId, data):
         return "project " + projectId + " not found", 404
 
     # Save the selection
-    widgetConfUtils.createConfiguration(projectId, data['widgetTitle'], data['name'], {
-        "conf": data['configuration'],
-        "name": data['name'],
-        "description": data['description'],
-        "creationDate": utils.timeNow()
-    })
+    widgetConfUtils.createConfiguration(
+        projectId,
+        data["widgetTitle"],
+        data["name"],
+        {
+            "conf": data["configuration"],
+            "name": data["name"],
+            "description": data["description"],
+            "creationDate": utils.timeNow(),
+        },
+    )
 
     return 200
 
@@ -43,7 +48,9 @@ def delete_configuration(projectId, data):
         return "project " + projectId + " not found", 404
 
     configurations = widgetConfUtils.getConfigurations(projectId)
-    if data['widgetTitle'] in configurations:
-        widgetConfUtils.deleteConfiguration(projectId, data['widgetTitle'], data['name'])
+    if data["widgetTitle"] in configurations:
+        widgetConfUtils.deleteConfiguration(
+            projectId, data["widgetTitle"], data["name"]
+        )
 
     return widgetConfUtils.getConfigurations(projectId), 200

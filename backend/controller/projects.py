@@ -4,12 +4,13 @@
 import shutil
 import ujson as json
 
-import utils.debiaiUtils as debiaiUtils
+#import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
 import utils.dataProviders as dataProviders
-import utils.debiai.projects as projects
+import dataProviders.dataProviderManager as data_provider_manager
+#import utils.debiai.projects as projects
 
-dataPath = debiaiUtils.dataPath
+#dataPath = debiaiUtils.dataPath
 
 #############################################################################
 # PROJECTS Management
@@ -24,7 +25,7 @@ def log(projectId, data):
     if not debiaiUtils.projectExist(projectId):
         return "Project " + projectId + " not found", 404
 
-    path = 'logs/perfs.json'
+    path = "logs/perfs.json"
 
     # Get string from json
 
@@ -43,7 +44,7 @@ def upload(upfile):
 
     # TODO Check project compliency
 
-    with zipfile.ZipFile(upfile, 'r') as zip_ref:
+    with zipfile.ZipFile(upfile, "r") as zip_ref:
         zip_ref.extractall(dataPath)
 
     return 200
@@ -51,19 +52,26 @@ def upload(upfile):
 
 def get_projects():
     # return a list of project overviews
+    # todo : Faire marcher avec internal data provider
+    data_providers_list = data_provider_manager.get_data_provider_list()
     projectOverviews = []
-
-    for projectId in debiaiUtils.getProjectsIds():
-        projectOverviews.append(debiaiUtils.getProjectOverview(projectId))
-
-    # Add the data providers views
-    projectOverviews += dataProviders.get_projects()
+    for data_provider in data_providers_list:
+        projects = data_provider.get_projects()
+        if projects is not None:
+            projectOverviews.extend(projects)
 
     return projectOverviews, 200
 
 
-def get_project(projectId):
+def get_project(dataProviderId, projectId):
     # return the info about datasets, models, selections & tags
+    
+    print("getting data provider")
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    print(data_provider.name)
+    print(data_provider.url)
+    return data_provider.get_project(projectId), 200
+    
     if debiaiUtils.projectExist(projectId):
         return projects.getProjectById(projectId), 200
 
@@ -74,9 +82,9 @@ def get_project(projectId):
     return "Project " + projectId + " not found", 404
 
 
-@ utils.traceLog
+#@utils.traceLog
 def post_project(data):
-    projectName = data['projectName']
+    projectName = data["projectName"]
 
     # Check project name
     if len(projectName) > 50:
@@ -97,7 +105,7 @@ def post_project(data):
     return debiaiUtils.getProjectOverview(projectId), 200
 
 
-@ utils.traceLog
+#@utils.traceLog
 def delete_project(projectId):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
@@ -112,7 +120,7 @@ def delete_project(projectId):
 
 
 # Blocklevel
-@ utils.traceLog
+#@utils.traceLog
 def post_blocklevels(projectId, blocklevels):
 
     # ParametersCheck
@@ -122,14 +130,15 @@ def post_blocklevels(projectId, blocklevels):
     # TODO : check blocklevels
 
     # save blocklevels
-    utils.updateJsonFile(dataPath + projectId + '/info.json',
-                         "blockLevelInfo", blocklevels)
+    utils.updateJsonFile(
+        dataPath + projectId + "/info.json", "blockLevelInfo", blocklevels
+    )
 
     return blocklevels, 200
 
 
 # Expected_results
-@ utils.traceLog
+#@utils.traceLog
 def post_resultsStructure(projectId, resultStructure):
     # Add the expecter results structure
     # ParametersCheck
@@ -143,13 +152,14 @@ def post_resultsStructure(projectId, resultStructure):
         return "project " + projectId + " already have a results structure", 403
 
     # save resultStructure
-    utils.updateJsonFile(dataPath + projectId + '/info.json',
-                         "resultStructure", resultStructure)
+    utils.updateJsonFile(
+        dataPath + projectId + "/info.json", "resultStructure", resultStructure
+    )
     debiaiUtils.updateProject(projectId)
     return resultStructure, 200
 
 
-@ utils.traceLog
+#@utils.traceLog
 def post_addExpectedResult(projectId, resultColumn):
     # Add acolumn to the expecter results structure
     # ParametersCheck
@@ -166,10 +176,11 @@ def post_addExpectedResult(projectId, resultColumn):
     resultStructure.append(resultColumn)
 
     # save updated resultStructure
-    utils.updateJsonFile(dataPath + projectId + '/info.json',
-                         "resultStructure", resultStructure)
+    utils.updateJsonFile(
+        dataPath + projectId + "/info.json", "resultStructure", resultStructure
+    )
 
-    # add to each results the default value
+    # add to each results the default value
     for modelId in debiaiUtils.getModelsId(projectId):
         results = debiaiUtils.getModelResults(projectId, modelId)
 
@@ -182,7 +193,7 @@ def post_addExpectedResult(projectId, resultColumn):
     return resultStructure, 200
 
 
-@ utils.traceLog
+#@utils.traceLog
 def delete_expectedResult(projectId, resultColumn):
     # Add acolumn to the expecter results structure
     # ParametersCheck
@@ -210,10 +221,11 @@ def delete_expectedResult(projectId, resultColumn):
         return "Columns " + resultColumn + " does not exists.", 404
 
     # save updated resultStructure
-    utils.updateJsonFile(dataPath + projectId + '/info.json',
-                         "resultStructure", resultStructure)
+    utils.updateJsonFile(
+        dataPath + projectId + "/info.json", "resultStructure", resultStructure
+    )
 
-    # add to each results the default value
+    # add to each results the default value
     for modelId in debiaiUtils.getModelsId(projectId):
         results = debiaiUtils.getModelResults(projectId, modelId)
 
@@ -226,12 +238,12 @@ def delete_expectedResult(projectId, resultColumn):
     return resultStructure, 200
 
 
-@ utils.traceLogLight
+#@utils.traceLogLight
 def check_hash(projectId, data):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
 
-    hash_list = data['hash_list']
+    hash_list = data["hash_list"]
 
     hashmap = debiaiUtils.getHashmap(projectId)
 

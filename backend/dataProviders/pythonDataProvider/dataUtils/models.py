@@ -2,11 +2,12 @@ import os
 import ujson as json
 
 from backend.dataProviders.pythonDataProvider.dataUtils import utils, projects
+
 DATA_PATH = utils.DATA_PATH
 
 #  Models
 def getModelIds(projectId):
-    return os.listdir(DATA_PATH + projectId + '/models/')
+    return os.listdir(DATA_PATH + projectId + "/models/")
 
 
 def getModelInfo(projectId, modelId):
@@ -27,14 +28,17 @@ def deleteModel(projectId, modelId):
 
 
 def writeModelResults(projectId, modelId, results):
-    utils.writeJsonFile(DATA_PATH + projectId + "/models/" +
-                        modelId + "/results.json", results)
+    utils.writeJsonFile(
+        DATA_PATH + projectId + "/models/" + modelId + "/results.json", results
+    )
     projects.updateProject(projectId)
 
 
 def getModelResults(projectId, modelId, selectionId=None):
     # Get the models results from the project or a selection
-    with open(DATA_PATH + projectId + "/models/" + modelId + "/results.json", "r") as jsonFile:
+    with open(
+        DATA_PATH + projectId + "/models/" + modelId + "/results.json", "r"
+    ) as jsonFile:
         d = json.load(jsonFile)
 
     if not selectionId:
@@ -54,4 +58,3 @@ def getModelListResults(projectId, modelIds: list, common: bool) -> list:
             samples = samples.union(getModelResults(projectId, modelId))
 
     return list(samples)
-

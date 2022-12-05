@@ -2,7 +2,9 @@ import hashlib
 import ujson as json
 
 import utils
+
 DATA_PATH = utils.DATA_PATH
+
 
 def hash(text: str):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -16,28 +18,31 @@ def __createProjetHashMap(projectId, blockPath, hashmap, sampleLevel, curentLeve
         sampleHash = hash(blockPath)
         hashmap[sampleHash] = blockPath
 
-        # Update the sample
-        utils.updateJsonFile(DATA_PATH + projectId + "/blocks/" +
-                             blockPath + "info.json", "id", sampleHash)
+        # Update the sample
+        utils.updateJsonFile(
+            DATA_PATH + projectId + "/blocks/" + blockPath + "info.json",
+            "id",
+            sampleHash,
+        )
         return
 
     for children in utils.listDir(DATA_PATH + projectId + "/blocks/" + blockPath):
-        __createProjetHashMap(projectId, blockPath +
-                              children, hashmap, sampleLevel, curentLevel + 1)
+        __createProjetHashMap(
+            projectId, blockPath + children, hashmap, sampleLevel, curentLevel + 1
+        )
 
 
 def addToSampleHashmap(projectId, hashMap):
-    with open(DATA_PATH + projectId + '/samplesHashmap.json') as json_file:
+    with open(DATA_PATH + projectId + "/samplesHashmap.json") as json_file:
         existingHm = json.load(json_file)
 
     existingHm.update(hashMap)
 
-    utils.writeJsonFile(DATA_PATH + projectId +
-                        '/samplesHashmap.json', existingHm)
+    utils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", existingHm)
 
 
 def getHashmap(projectId):
-    with open(DATA_PATH + projectId + '/samplesHashmap.json') as json_file:
+    with open(DATA_PATH + projectId + "/samplesHashmap.json") as json_file:
         existingHm = json.load(json_file)
 
     return existingHm

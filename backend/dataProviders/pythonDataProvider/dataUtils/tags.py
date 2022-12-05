@@ -61,8 +61,9 @@ def updateTag(projectId, tagName, tagHash):
                 tag["tags"][sampleHash] = tagHash[sampleHash]
 
         tag["updateDate"] = utils.timeNow()
-        utils.writeJsonFile(dataPath + projectId + "/tags/" +
-                            tag['id'] + "/info.json", tag)
+        utils.writeJsonFile(
+            dataPath + projectId + "/tags/" + tag["id"] + "/info.json", tag
+        )
         return tag, 200
     else:
         # Create tag
@@ -87,8 +88,9 @@ def updateTag(projectId, tagName, tagHash):
             "updateDate": now,
         }
 
-        utils.writeJsonFile(dataPath + projectId + "/tags/" +
-                            tagId + "/info.json", tagInfo)
+        utils.writeJsonFile(
+            dataPath + projectId + "/tags/" + tagId + "/info.json", tagInfo
+        )
 
         return tagInfo, 200
 

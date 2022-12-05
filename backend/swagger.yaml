@@ -99,13 +99,17 @@ paths:
         403:
           description: A project with the same name already exist
 
-  /projects/{projectId}:
+  /data-provider/{dataProviderId}/projects/{projectId}:
     get:
       summary: Get project name, nb of models & nb of selections (overviews of a project)
       tags: [Project]
       operationId: controller.projects.get_project
       parameters:
         - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: dataProviderId
           in: path
           type: string
           required: true
@@ -121,6 +125,10 @@ paths:
       operationId: controller.projects.delete_project
       parameters:
         - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: dataProviderId
           in: path
           type: string
           required: true

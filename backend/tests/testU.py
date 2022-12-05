@@ -70,7 +70,7 @@ def test_project_name():
     # Create
     url = appUrl + "projects"
     payload = {"projectName": testProjectName, "blockLevelInfo": []}
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, headers=headers, json=payload)
     assert resp.status_code == 200
     data = json.loads(resp.text)
@@ -120,9 +120,10 @@ def test_project_nameTooLong():
     # Create
     url = appUrl + "projects"
     payload = {"projectName": testProjectName, "blockLevelInfo": []}
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, headers=headers, json=payload)
     assert resp.status_code == 400
+
 
 # ============== BLOCKS TEST =================
 
@@ -169,7 +170,7 @@ def test_post_block_badProjectName():
         "inputList": {"toto": "tata"},
         "contextList": {"toto": "tata"},
     }
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 404
 
@@ -184,7 +185,7 @@ def test_post_block_badParents():
         "inputList": {"toto": "tata"},
         "contextList": {"toto": "tata"},
     }
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
 
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 404
@@ -201,8 +202,9 @@ def test_post_block():
         "inputList": {"toto": "tata"},
         "contextList": {"toto": "tata"},
     }
-    resp = requests.post(url=url, json=payload, headers={
-                         'content-type': "application/json"})
+    resp = requests.post(
+        url=url, json=payload, headers={"content-type": "application/json"}
+    )
     assert resp.status_code == 200
     data = json.loads(resp.text)
     blockTestId = data["blockId"]
@@ -229,7 +231,7 @@ def test_post_block():
         "inputList": {"toto": "tata"},
         "contextList": {"toto": "tata"},
     }
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 200
     data = json.loads(resp.text)
@@ -301,6 +303,7 @@ def test_delete_block_badBlock():
     resp = requests.request("DELETE", url, headers={}, data={})
     assert resp.status_code == 200
 
+
 # ============== DATASETS TEST =================
 
 
@@ -308,11 +311,8 @@ def test_post_dataset_badProject():
 
     url = appUrl + "projects/IDONTEXIST/datasets/"
 
-    payload = {
-        "datasetName": "Greate dataset",
-        "blockIdList": []
-    }
-    headers = {'content-type': "application/json"}
+    payload = {"datasetName": "Greate dataset", "blockIdList": []}
+    headers = {"content-type": "application/json"}
 
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 404
@@ -321,9 +321,8 @@ def test_post_dataset_badProject():
 def test_post_dataset_badBlocks():
     # Create project
     url = appUrl + "projects"
-    payload = {"projectName": "My greate project with dataset",
-               "blockLevelInfo": []}
-    headers = {'content-type': "application/json"}
+    payload = {"projectName": "My greate project with dataset", "blockLevelInfo": []}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, headers=headers, json=payload)
     assert resp.status_code == 200
     pId = json.loads(resp.text)["id"]
@@ -333,9 +332,9 @@ def test_post_dataset_badBlocks():
 
     payload = {
         "datasetName": "I am a dataset",
-        "blockIdList": ["toto", "IDONTEXIST", "tutu"]
+        "blockIdList": ["toto", "IDONTEXIST", "tutu"],
     }
-    headers = {'content-type': "application/json"}
+    headers = {"content-type": "application/json"}
 
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 404
@@ -349,9 +348,8 @@ def test_post_dataset_badBlocks():
 def test_post_dataset():
     # Create project
     url = appUrl + "projects"
-    payload = {"projectName": "My greate project with dataset",
-               "blockLevelInfo": []}
-    headers = {'content-type': "application/json"}
+    payload = {"projectName": "My greate project with dataset", "blockLevelInfo": []}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, headers=headers, json=payload)
     assert resp.status_code == 200
     pId = json.loads(resp.text)["id"]
@@ -367,11 +365,8 @@ def test_post_dataset():
 
     # create dataset
     url = appUrl + "projects/" + pId + "/datasets"
-    payload = {
-        "datasetName": "I am a dataset",
-        "blockIdList": []  # empty blocks ref
-    }
-    headers = {'content-type': "application/json"}
+    payload = {"datasetName": "I am a dataset", "blockIdList": []}  # empty blocks ref
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, json=payload, headers=headers)
     assert resp.status_code == 200
     print(resp.text)
@@ -404,9 +399,8 @@ def test_post_dataset():
 def test_post_dataset_withCreatedBlock():
     # Create project
     url = appUrl + "projects"
-    payload = {"projectName": "My greate project with dataset",
-               "blockLevelInfo": []}
-    headers = {'content-type': "application/json"}
+    payload = {"projectName": "My greate project with dataset", "blockLevelInfo": []}
+    headers = {"content-type": "application/json"}
     resp = requests.post(url=url, headers=headers, json=payload)
     assert resp.status_code == 200
     pId = json.loads(resp.text)["id"]
@@ -420,8 +414,9 @@ def test_post_dataset_withCreatedBlock():
         "inputList": {"toto": "tata"},
         "contextList": {"toto": "tata"},
     }
-    resp = requests.post(url=url, json=payload, headers={
-                         'content-type': "application/json"})
+    resp = requests.post(
+        url=url, json=payload, headers={"content-type": "application/json"}
+    )
     assert resp.status_code == 200
     data = json.loads(resp.text)
     blockTestId = data["blockId"]
@@ -429,11 +424,8 @@ def test_post_dataset_withCreatedBlock():
 
     # addadataset
     url = appUrl + "projects/" + pId + "/datasets"
-    payload = {
-        "datasetName": "dataset with blocks",
-        "blockIdList": [blockTestId]
-    }
-    headers = {'content-type': "application/json"}
+    payload = {"datasetName": "dataset with blocks", "blockIdList": [blockTestId]}
+    headers = {"content-type": "application/json"}
 
     resp = requests.post(url=url, json=payload, headers=headers)
     print(resp.text)

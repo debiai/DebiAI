@@ -35,15 +35,12 @@ class PythonDataProvider(DataProvider):
     def get_id_list(self, project_id, _from=None, _to=None):
         # http Request on dp to get id list
         # Return Arr[id]
-        return samples.get_list(project_id, {
-            "from": _from,
-            "to": _to
-        }).samples
+        return samples.get_list(project_id, {"from": _from, "to": _to}).samples
 
     def get_samples(self, project_id, id_list):
         # http Request get full sample
         # Return object { id: [data]}
-        
+        pass
 
     def get_selections(self, project_id, id_list):
         # Get selections on project

@@ -1,38 +1,55 @@
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
+import ujson as json
+import os
+
+import utils, models, projects
 DATA_PATH = utils.DATA_PATH
+DATA_TYPES = utils.DATA_TYPES
+
+# def getFirstLevelBlock(projectId, blockId):
+#     blockList = os.listdir(DATA_PATH + projectId + '/blocks')
+
+#     if (blockId not in blockList):
+#         return -1
+
+#     with open(DATA_PATH + projectId + '/blocks/' + blockId + '/info.json')\
+#             as json_file:
+#         data = json.load(json_file)
+
+#     return data
 
 
-def getFirstLevelBlock(projectId, blockId):
+# def getBlockTree(projectId, path, depth):
 
-    blockList = os.listdir(DATA_PATH + projectId + '/blocks')
+#     childrenBlockNames = utils.listDir(path)
+#     childrenInfo = []
 
-    if (blockId not in blockList):
-        return -1
+#     if depth > 0:
+#         # Get the children blocks info
+#         for name in childrenBlockNames:
+#             childrenInfo.append(getBlockTree(
+#                 projectId, path + name + "/", depth - 1))
 
-    with open(DATA_PATH + projectId + '/blocks/' + blockId + '/info.json')\
-            as json_file:
-        data = json.load(json_file)
+#     with open(path + 'info.json') as json_file:
+#         data = json.load(json_file)
+#         data['childrenInfoList'] = childrenInfo
 
-    return data
+#     return data
 
 
-def getBlockTree(projectId, path, depth):
 
-    childrenBlockNames = utils.listDir(path)
-    childrenInfo = []
+def getBlockInfo(blockLevel, blockInfo):
+    """
+    Convert the block info to fill the sampleInfo list with a colonName:value dict
+    """
+    ret = {}
+    ret[blockLevel["name"]] = blockInfo["name"]
 
-    if depth > 0:
-        # Get the children blocks info
-        for name in childrenBlockNames:
-            childrenInfo.append(getBlockTree(
-                projectId, path + name + "/", depth - 1))
+    for dataType in utils.DATA_TYPES:
+        if dataType in blockLevel:
+            for (i, column) in enumerate(blockLevel[dataType]):
+                ret[column['name']] = blockInfo[dataType][i]
 
-    with open(path + 'info.json') as json_file:
-        data = json.load(json_file)
-        data['childrenInfoList'] = childrenInfo
-
-    return data
-
+    return ret
 
 def getBlockTreeFromSamples(projectId, samples: list):
     blocksData = []
@@ -108,10 +125,10 @@ def addResultsToTree(projectId, tree: list, modelIds: list, commonOnly: bool) ->
     # Load all the model results
     modelResults = {}
     for modelId in modelIds:
-        modelResults[modelId] = getModelResults(projectId, modelId)
+        modelResults[modelId] = models.getModelResults(projectId, modelId)
 
     # Get the project block structure
-    proBs = getProjectblockLevelInfo(projectId)
+    proBs = projects.getProjectblockLevelInfo(projectId)
     sampleLevel = len(proBs) - 1
 
     # Add in the samples the results
@@ -142,7 +159,7 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
     __checkBlockCompliant(block, level, blockLevelInfo)
 
     # check if block exist
-    data = findBlockInfo(projectId, parentPath + block["name"])
+    data = getBlockInfo(projectId, parentPath + block["name"])
     if data is None:
         # BLock doesn't exist
         blockToAdd.append(__createBlock(projectId, block, level, parentPath))

@@ -8,11 +8,7 @@ import time
 
 DATA_PATH = "data/pythonDataProvider/"
 
-DATA_TYPES = ["groundTruth",
-             "contexts",
-             "inputs",
-             "others"
-             ]
+DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 
 # Init, called at the server start
 def init():
@@ -20,7 +16,7 @@ def init():
     try:
         os.mkdir("data")
     except Exception:
-        print('Data already initiated')
+        print("Data already initiated")
 
 
 # File name verifications
@@ -29,14 +25,15 @@ def clean_filename(filename, whitelist):
     filename = filename.replace(" ", "_")
 
     # keep only valid ascii chars
-    cleaned_filename = unicodedata.normalize(
-        'NFKD', filename).encode('ASCII', 'ignore').decode()
+    cleaned_filename = (
+        unicodedata.normalize("NFKD", filename).encode("ASCII", "ignore").decode()
+    )
 
     # keep only whitelisted chars
     whitelist = "_-() %s%s" % (string.ascii_letters, string.digits)
     char_limit = 255
 
-    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+    cleaned_filename = "".join(c for c in cleaned_filename if c in whitelist)
     return cleaned_filename[:char_limit]
 
 
@@ -47,7 +44,7 @@ def is_filename_clean(filename):
 
 def is_secure_path(path):
     path = posixpath.normpath(path)
-    return not path.startswith(('/', '../'))
+    return not path.startswith(("/", "../"))
 
 
 # directories and file Manipulation
@@ -57,7 +54,9 @@ def fileExist(path):
 
 def listDir(path):
     # List the directories only
-    return [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))]
+    return [
+        name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))
+    ]
 
 
 def deleteFile(filePath):
@@ -90,7 +89,7 @@ def readJsonFile(path):
 
 
 def writeJsonFile(path, obj):
-    with open(path, 'w') as outfile:
+    with open(path, "w") as outfile:
         json.dump(obj, outfile)
 
 
@@ -118,4 +117,3 @@ def addToJsonFIle(path, dictToAdd: dict):
 # Date
 def timeNow():
     return time.time() * 1000
-

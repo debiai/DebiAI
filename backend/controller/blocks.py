@@ -3,45 +3,44 @@
 #############################################################################
 import os
 
-import utils.debiaiUtils as debiaiUtils
+#import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
-import utils.hashUtils as hashUtils
+#import utils.hashUtils as hashUtils
 import utils.dataProviders as dataProviders
 
-import utils.debiai.blocks as blocksUtils
+#import utils.debiai.blocks as blocksUtils
 
-dataPath = debiaiUtils.dataPath
+#dataPath = debiaiUtils.dataPath
 
 #############################################################################
 # BLOCK Management
 #############################################################################
 
 
-# Blocks to tree
-@utils.traceLogLight
+# Blocks to tree
+#@utils.traceLogLight
 def get_block_racine(projectId, depth):
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
-    # Get the first level blocks
-    blockList = os.listdir(dataPath + projectId + '/blocks')
+    # Get the first level blocks
+    blockList = os.listdir(dataPath + projectId + "/blocks")
 
     blocksData = []
 
     for blockId in blockList:
         blockPath = dataPath + projectId + "/blocks/" + blockId + "/"
-        blocksData.append(
-            debiaiUtils.getBlockTree(projectId, blockPath, depth))
+        blocksData.append(debiaiUtils.getBlockTree(projectId, blockPath, depth))
 
     return blocksData, 200
 
 
-@utils.traceLogLight
+#@utils.traceLogLight
 def get_block_racine_from_selection(projectId, selectionId, depth):
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
-    # Load selection sample list
+    # Load selection sample list
     selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
 
     if not selectionDetails:
@@ -50,28 +49,27 @@ def get_block_racine_from_selection(projectId, selectionId, depth):
     if len(selectionDetails["samples"]) == 0:
         return []
 
-    # Converting samples hash into path
+    # Converting samples hash into path
     hashList = debiaiUtils.getHashmap(projectId)
     for i in range(len(selectionDetails["samples"])):
         selectionDetails["samples"][i] = hashList[selectionDetails["samples"][i]]
 
-    # Get the tree
-    tree = debiaiUtils.getBlockTreeFromSamples(
-        projectId, selectionDetails["samples"])
+    # Get the tree
+    tree = debiaiUtils.getBlockTreeFromSamples(projectId, selectionDetails["samples"])
 
     return tree, 200
 
 
-@utils.traceLogLight
+#@utils.traceLogLight
 def get_block_tree(projectId, data):
-    blockId = data['blockId']
-    blockPath = data['blockPath']
-    depth = data['depth']
+    blockId = data["blockId"]
+    blockPath = data["blockPath"]
+    depth = data["depth"]
 
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
-    path = dataPath + projectId + '/blocks/' + blockPath
+    path = dataPath + projectId + "/blocks/" + blockPath
 
     blockInfo = debiaiUtils.findBlockInfo(projectId, blockPath)
 
@@ -83,15 +81,15 @@ def get_block_tree(projectId, data):
     return blockTree, 200
 
 
-@utils.traceLogLight
+#@utils.traceLogLight
 def get_tree_with_model_results(projectId, data):
     # return a tree from root with wanted model results in the samples
 
-    modelIds = data['modelIds']
+    modelIds = data["modelIds"]
     #  if common true : get the model common samples, else, get union
-    common = data['common']
+    common = data["common"]
 
-    # Check parameters
+    # Check parameters
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
@@ -99,9 +97,8 @@ def get_tree_with_model_results(projectId, data):
         if not debiaiUtils.modelExist(projectId, modelId):
             return "Model " + modelId + " does not exist", 403
 
-    # Get model results samples
-    samples = debiaiUtils.getModelListResults(
-        projectId, modelIds, common)
+    # Get model results samples
+    samples = debiaiUtils.getModelListResults(projectId, modelIds, common)
 
     # Get tree from samples
     tree = debiaiUtils.getBlockTreeFromSamples(projectId, samples)
@@ -111,12 +108,12 @@ def get_tree_with_model_results(projectId, data):
     return tree, 200
 
 
-@utils.traceLogLight
+#@utils.traceLogLight
 def get_tree_from_sampleid_list(projectId, data):
     # return a tree from a list of sample ID
-    sampleIds = data['sampleIds']
+    sampleIds = data["sampleIds"]
 
-    # Check parameters
+    # Check parameters
     if debiaiUtils.projectExist(projectId):
         return blocksUtils.get_tree_from_sampleid_list(projectId, sampleIds), 200
 
@@ -127,19 +124,19 @@ def get_tree_from_sampleid_list(projectId, data):
 
 
 # Training samples
-@utils.traceLogLight
+#@utils.traceLogLight
 def get_training_samples_number(projectId, selectionId=None):
     # return a the number of data to pull
 
-    # Check parameters
+    # Check parameters
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
     projectHashMap = debiaiUtils.getHashmap(projectId)
 
-    # Get samples
+    # Get samples
     if selectionId:
-        # Load selection sample list
+        # Load selection sample list
         selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
 
         if not selectionDetails:
@@ -152,11 +149,13 @@ def get_training_samples_number(projectId, selectionId=None):
     return len(hashListToReturn), 200
 
 
-@utils.traceLogLight
-def get_training_samples_number_with_model_results(projectId, modelIds, common, selectionId=None):
+##@utils.traceLogLight
+def get_training_samples_number_with_model_results(
+    projectId, modelIds, common, selectionId=None
+):
     # return a the number of data to pull but with models
 
-    # Check parameters
+    # Check parameters
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
@@ -165,40 +164,39 @@ def get_training_samples_number_with_model_results(projectId, modelIds, common, 
             return "Model " + modelId + " does not exist", 403
 
     if selectionId:
-        # Load selection sample list
+        # Load selection sample list
         selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
         if not selectionDetails:
             return "Selection " + selectionId + " not found", 404
 
-    # Get model results samples
-    samples = debiaiUtils.getModelListResults(
-        projectId, modelIds, common, selectionId)
+    # Get model results samples
+    samples = debiaiUtils.getModelListResults(projectId, modelIds, common, selectionId)
 
     return len(samples), 200
 
 
-@utils.traceLogLight
+##@utils.traceLogLight
 def get_training_samples(projectId, start, size, selectionId=None):
     # return a list of samples
     # from a start position and a size
 
-    # Check parameters
+    # Check parameters
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
     projectHashMap = debiaiUtils.getHashmap(projectId)
 
-    # Get samples
+    # Get samples
     if selectionId:
-        # Load selection sample list
+        # Load selection sample list
         selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
 
         if not selectionDetails:
             return "Selection " + selectionId + " not found", 404
 
-        hashListToReturn = selectionDetails["samples"][start:start + size]
+        hashListToReturn = selectionDetails["samples"][start : start + size]
     else:
-        hashListToReturn = list(projectHashMap.keys())[start:start + size]
+        hashListToReturn = list(projectHashMap.keys())[start : start + size]
 
     # Convert hash to sample path
     for i in range(len(hashListToReturn)):
@@ -209,12 +207,14 @@ def get_training_samples(projectId, start, size, selectionId=None):
     return tree, 200
 
 
-@utils.traceLogLight
-def get_training_samples_with_model_results(projectId, start, size, modelIds, common, selectionId=None):
+##@utils.traceLogLight
+def get_training_samples_with_model_results(
+    projectId, start, size, modelIds, common, selectionId=None
+):
     # return a tree chunk from root or a selection
     # with wanted model results in the samples
 
-    # Check parameters
+    # Check parameters
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
 
@@ -223,17 +223,16 @@ def get_training_samples_with_model_results(projectId, start, size, modelIds, co
             return "Model " + modelId + " does not exist", 403
 
     if selectionId:
-        # Load selection sample list
+        # Load selection sample list
         selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
         if not selectionDetails:
             return "Selection " + selectionId + " not found", 404
 
-    # Get model results samples
-    samples = debiaiUtils.getModelListResults(
-        projectId, modelIds, common, selectionId)
+    # Get model results samples
+    samples = debiaiUtils.getModelListResults(projectId, modelIds, common, selectionId)
 
     # Crop the samples for the chunk
-    samples = list(samples)[start:start + size]
+    samples = list(samples)[start : start + size]
 
     # Get tree from samples
     tree = debiaiUtils.getBlockTreeFromSamples(projectId, samples)
@@ -244,7 +243,7 @@ def get_training_samples_with_model_results(projectId, start, size, modelIds, co
 
 
 # Others
-@utils.traceLogLight
+##@utils.traceLogLight
 def post_block_tree(projectId, data):
     # ParametersCheck
     if not debiaiUtils.projectExist(projectId):
@@ -273,7 +272,7 @@ def post_block_tree(projectId, data):
     for block in blockToAdd:
 
         if block["level"] == sampleLevel:
-            # Sample level, creating hash
+            # Sample level, creating hash
             sampleHash = hashUtils.hash(block["path"])
             block["id"] = sampleHash
             hashToSave[sampleHash] = block["path"]
@@ -287,7 +286,7 @@ def post_block_tree(projectId, data):
     return str(len(blockToAdd)) + " added blocks", 200
 
 
-@utils.traceLog
+#@utils.traceLog
 def delete_block(projectId, blockId, blockPath):
 
     if not debiaiUtils.projectExist(projectId):

@@ -2,12 +2,16 @@ import os
 import ujson as json
 
 from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
+
 DATA_PATH = utils.DATA_PATH
 
 # Selections
-def createSelection(projectId, selectionId, selectionName, sampleHashList, requestId=None):
-    selectionInfoFilePath = DATA_PATH + projectId + \
-        '/selections/' + selectionId + "/info.json"
+def createSelection(
+    projectId, selectionId, selectionName, sampleHashList, requestId=None
+):
+    selectionInfoFilePath = (
+        DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
+    )
 
     now = utils.timeNow()
 
@@ -17,7 +21,7 @@ def createSelection(projectId, selectionId, selectionName, sampleHashList, reque
         "filePath": selectionInfoFilePath,
         "creationDate": now,
         "updateDate": now,
-        "samples": sampleHashList
+        "samples": sampleHashList,
     }
 
     if requestId is not None:
@@ -30,7 +34,7 @@ def createSelection(projectId, selectionId, selectionName, sampleHashList, reque
 
 
 def getSelectionIds(projectId):
-    return os.listdir(DATA_PATH + projectId + '/selections/')
+    return os.listdir(DATA_PATH + projectId + "/selections/")
 
 
 def selectionExist(projectId, selectionId):
@@ -38,7 +42,9 @@ def selectionExist(projectId, selectionId):
 
 
 def getSelectionInfo(projectId, selectionId):
-    with open(DATA_PATH + projectId + "/selections/" + selectionId + "/info.json") as json_file:
+    with open(
+        DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
+    ) as json_file:
         data = json.load(json_file)
         ret = {
             "id": data["id"],
@@ -46,7 +52,7 @@ def getSelectionInfo(projectId, selectionId):
             "filePath": data["filePath"],
             "creationDate": data["creationDate"],
             "updateDate": data["updateDate"],
-            "nbSamples": len(data['samples'])
+            "nbSamples": len(data["samples"]),
         }
 
         # Add the request Id if it exist
@@ -62,7 +68,9 @@ def getSelection(projectId, selectionId):
     if not selectionExist(projectId, selectionId):
         return None
 
-    with open(DATA_PATH + projectId + "/selections/" + selectionId + "/info.json") as json_file:
+    with open(
+        DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
+    ) as json_file:
         data = json.load(json_file)
         ret = {
             "id": data["id"],
@@ -70,8 +78,8 @@ def getSelection(projectId, selectionId):
             "filePath": data["filePath"],
             "creationDate": data["creationDate"],
             "updateDate": data["updateDate"],
-            "nbSamples": len(data['samples']),
-            "samples": data['samples']
+            "nbSamples": len(data["samples"]),
+            "samples": data["samples"],
         }
 
         # Add the request Id if it exist
@@ -85,9 +93,9 @@ def getSelectionSamples(projectId, selectionId):
     if not selectionData:
         raise KeyError("Selection " + selectionId + " doesn't exist")
 
-    if 'samples' not in selectionData:
+    if "samples" not in selectionData:
         return []
-    return selectionData['samples']
+    return selectionData["samples"]
 
 
 def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> set:
@@ -97,14 +105,12 @@ def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> s
     samples = set(getSelectionSamples(projectId, selectionIds[0]))
     for selectionId in selectionIds[1:]:
         if intersection:  # intersection of the selections samples
-            samples.intersection_update(
-                getSelectionSamples(projectId, selectionId))
+            samples.intersection_update(getSelectionSamples(projectId, selectionId))
 
             if len(samples) == 0:
                 return []
         else:  # Union of the model results samples
-            samples = samples.union(
-                getSelectionSamples(projectId, selectionId))
+            samples = samples.union(getSelectionSamples(projectId, selectionId))
 
     return samples
 
@@ -112,4 +118,3 @@ def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> s
 def deleteSelection(projectId, selectionId):
     utils.deleteDir(DATA_PATH + projectId + "/selections/" + selectionId)
     updateProject(projectId)
-
