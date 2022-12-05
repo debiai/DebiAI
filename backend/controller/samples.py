@@ -2,12 +2,8 @@
 # Imports
 #############################################################################
 
-#import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-#import utils.debiai.samples as samplesUtils
-import utils.dataProviders as dataProviders
-
-#dataPath = debiaiUtils.dataPath
+import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 #############################################################################
 # SAMPLES Management
@@ -15,7 +11,6 @@ import utils.dataProviders as dataProviders
 
 
 # Get the list of samples ID of the project
-#@utils.traceLogLight
 def get_list(projectId, data):
     print(projectId)
     print("get_list")
@@ -35,7 +30,6 @@ def get_list(projectId, data):
 
 
 # Get the list of samples ID of the project selection
-#@utils.traceLogLight
 def get_selection_list(projectId, selectionId):
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404

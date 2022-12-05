@@ -176,7 +176,6 @@ import Column from "../../common/Column";
 
 // services
 import dataOperations from "../../../../../../services/statistics/dataOperations";
-import timer from "../../../../../../services/statistics/timer";
 import swal from "sweetalert";
 
 export default {
@@ -358,8 +357,6 @@ export default {
 
     // Point plot
     pointPlot() {
-      let t0 = performance.now();
-
       let colX = this.data.columns[this.columnXindex];
       let colY = this.data.columns[this.columnYindex];
 
@@ -449,14 +446,6 @@ export default {
       this.pointPlotDrawed = true;
       this.$parent.selectedDataWarning = false;
       this.currentDrawedColorIndex = this.coloredColumnIndex;
-
-      // Might change data description
-      timer.logTime(
-        t0,
-        "PointPlot",
-        valuesX.length,
-        this.$store.state.ProjectPage.projectId
-      );
     },
     clearPointPlot() {
       // remove the first trace

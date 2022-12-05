@@ -15,14 +15,12 @@ import utils.dataProviders as dataProviders
 #############################################################################
 
 
-#@utils.traceLogLight
 def get_models(projectId):
     ret = []
 
     # TODO data_providers
 
 
-#@utils.traceLog
 def post_model(projectId, data):
 
     # ParametersCheck
@@ -62,7 +60,6 @@ def post_model(projectId, data):
     return modelInfo, 200
 
 
-#@utils.traceLog
 def delete_model(projectId, modelId):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
@@ -75,7 +72,6 @@ def delete_model(projectId, modelId):
     return "ok", 200
 
 
-#@utils.traceLogLight
 def add_results_dict(projectId, modelId, data):
 
     tree = data["results"]
@@ -226,7 +222,6 @@ def __check_blocks_of_tree_exists(
     return True, ""
 
 
-#@utils.traceLog
 def add_results_hash(projectId, modelId, data):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
@@ -269,7 +264,6 @@ def add_results_hash(projectId, modelId, data):
     return 200
 
 
-#@utils.traceLogLight
 def get_results(projectId, modelId, data):
     """
     Get the model results from a sample list

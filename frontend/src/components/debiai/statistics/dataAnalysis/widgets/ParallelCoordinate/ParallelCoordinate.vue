@@ -22,7 +22,6 @@ import Plotly from "plotly.js/dist/plotly";
 import ColumnSelection from "../../common/ColumnSelection";
 
 // services
-import timer from "@/services/statistics/timer";
 import selection from "@/services/statistics/parCoordSelection";
 import dataOperations from "@/services/statistics/dataOperations";
 
@@ -86,8 +85,6 @@ export default {
 
     // Plot
     drawPlot() {
-      var t0 = performance.now();
-
       // Filter selected columns
       let columns = this.selectedColumnsIds.map(
         (cId) => this.data.columns[cId]
@@ -156,16 +153,6 @@ export default {
         ligneList.item(i).setAttribute("stroke", "black");
         ligneList.item(i).setAttribute("stroke-width", "6");
       }
-
-      // Might change data description
-      var others_data = this.selectedColumnsIds.length + " contexts";
-      timer.logTime(
-        t0,
-        "ParallelCoordinate",
-        0, // TODO: fix this.selectedData.length,
-        this.$store.state.ProjectPage.projectId,
-        others_data
-      );
     },
 
     // Filters

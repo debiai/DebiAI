@@ -14,7 +14,6 @@ import utils.utils as utils
 
 
 #  === Correlation matrix ===
-#@utils.traceLogLight
 def pearsonCorrelation(data):
     """Computes the Pearson's coefficient for every pair of variables provided
 
@@ -54,7 +53,6 @@ def pearsonCorrelation(data):
     )  # pearson correlation matrix with the significance of the coefficient
 
 
-#@utils.traceLogLight
 def spearmanCorrelation(data):
     """
     Computes the Spearman's coefficient for every pair of variables provided

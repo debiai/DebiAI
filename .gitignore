@@ -1,11 +1,9 @@
 TODO
-debiai.log
 dist/
 deployment/
 
 # Back
 backend/data
-backend/logs/
 __pycache__/
 
 # Front

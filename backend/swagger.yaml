@@ -17,34 +17,6 @@ paths:
         200:
           description: The server is online
 
-  # Logs
-  /projects/{projectId}/log:
-    post:
-      summary: Update log file for front and backend projects
-      tags: [Project]
-      operationId: controller.projects.log
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-
-        - name: data
-          in: body
-          schema:
-            type: object
-            properties:
-              line:
-                description: line to add to log file
-                type: object
-          required: true
-
-      responses:
-        200:
-          description: log updated
-        404:
-          description: Project not found
-
   # Projects
   /projects:
     get:

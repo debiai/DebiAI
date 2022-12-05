@@ -12,7 +12,6 @@ import utils.dataProviders as dataProviders
 #############################################################################
 
 
-#@utils.traceLogLight
 def get_selections(projectId):
     if dataProviders.projectExist(projectId):
         return dataProviders.get_selections(projectId)
@@ -20,7 +19,6 @@ def get_selections(projectId):
     return "project " + projectId + " not found", 404
 
 
-#@utils.traceLogLight
 def post_selection(projectId, data):
     # ParametersCheck
     if not debiaiUtils.projectExist(projectId):
@@ -53,7 +51,6 @@ def post_selection(projectId, data):
     return selectionInfo, 200
 
 
-#@utils.traceLog
 def delete_selection(projectId, selectionId):
     if not debiaiUtils.projectExist(projectId):
         return "project " + projectId + " not found", 404

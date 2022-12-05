@@ -4,14 +4,9 @@
 import shutil
 import ujson as json
 
-#import utils.debiaiUtils as debiaiUtils
 import utils.utils as utils
-import utils.dataProviders as dataProviders
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
-#import utils.debiai.projects as projects
-
-#dataPath = debiaiUtils.dataPath
 
 #############################################################################
 # PROJECTS Management
@@ -20,35 +15,6 @@ import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 def ping():
     return "Online v0.15.1", 200
-
-
-def log(projectId, data):
-    if not debiaiUtils.projectExist(projectId):
-        return "Project " + projectId + " not found", 404
-
-    path = "logs/perfs.json"
-
-    # Get string from json
-
-    f = open(path, "a+")
-    f.write(json.dumps(data))
-    f.write("\n")
-    f.close()
-
-    return 200
-
-
-# Projects
-def upload(upfile):
-    # Create a project from a zip file
-    import zipfile
-
-    # TODO Check project compliency
-
-    with zipfile.ZipFile(upfile, "r") as zip_ref:
-        zip_ref.extractall(dataPath)
-
-    return 200
 
 
 def get_projects():
@@ -80,7 +46,6 @@ def get_project(projectId):
     return "Project " + projectId + " on data Provider " + dataProviderId + " not found", 404
     
     
-#@utils.traceLog
 def post_project(data):
     projectName = data["projectName"]
 
@@ -103,7 +68,6 @@ def post_project(data):
     return debiaiUtils.getProjectOverview(projectId), 200
 
 
-#@utils.traceLog
 def delete_project(projectId):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
@@ -118,7 +82,6 @@ def delete_project(projectId):
 
 
 # Blocklevel
-#@utils.traceLog
 def post_blocklevels(projectId, blocklevels):
 
     # ParametersCheck
@@ -136,7 +99,6 @@ def post_blocklevels(projectId, blocklevels):
 
 
 # Expected_results
-#@utils.traceLog
 def post_resultsStructure(projectId, resultStructure):
     # Add the expecter results structure
     # ParametersCheck
@@ -157,7 +119,6 @@ def post_resultsStructure(projectId, resultStructure):
     return resultStructure, 200
 
 
-#@utils.traceLog
 def post_addExpectedResult(projectId, resultColumn):
     # Add acolumn to the expecter results structure
     # ParametersCheck
@@ -191,7 +152,6 @@ def post_addExpectedResult(projectId, resultColumn):
     return resultStructure, 200
 
 
-#@utils.traceLog
 def delete_expectedResult(projectId, resultColumn):
     # Add acolumn to the expecter results structure
     # ParametersCheck
@@ -236,7 +196,6 @@ def delete_expectedResult(projectId, resultColumn):
     return resultStructure, 200
 
 
-#@utils.traceLogLight
 def check_hash(projectId, data):
     if not debiaiUtils.projectExist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404

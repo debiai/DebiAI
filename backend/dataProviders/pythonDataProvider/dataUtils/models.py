@@ -58,13 +58,13 @@ def get_model_results(projectId, modelId, selectionId=None):
         return selectionSamples.intersection_update(d)
 
 
-def getModelListResults(projectId, modelIds: list, common: bool) -> list:
-    samples = set(getModelResults(projectId, modelIds[0]))
+def get_model_list_results(projectId, modelIds: list, common: bool) -> list:
+    samples = set(get_model_results(projectId, modelIds[0]))
 
     for modelId in modelIds[1:]:
         if common:  # Common samples between models
-            samples.intersection_update(getModelResults(projectId, modelId))
+            samples.intersection_update(get_model_results(projectId, modelId))
         else:  # Union of the model results samples
-            samples = samples.union(getModelResults(projectId, modelId))
+            samples = samples.union(get_model_results(projectId, modelId))
 
     return list(samples)

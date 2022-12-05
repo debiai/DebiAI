@@ -20,7 +20,6 @@ import dataProviders.dataProviderManager as data_provider_manager
 
 
 # Blocks to tree
-#@utils.traceLogLight
 def get_block_racine(projectId, depth):
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
@@ -37,7 +36,6 @@ def get_block_racine(projectId, depth):
     return blocksData, 200
 
 
-#@utils.traceLogLight
 def get_block_racine_from_selection(projectId, selectionId, depth):
     if not debiaiUtils.projectExist(projectId):
         return "project not found", 404
@@ -62,7 +60,6 @@ def get_block_racine_from_selection(projectId, selectionId, depth):
     return tree, 200
 
 
-#@utils.traceLogLight
 def get_block_tree(projectId, data):
     blockId = data["blockId"]
     blockPath = data["blockPath"]
@@ -83,7 +80,6 @@ def get_block_tree(projectId, data):
     return blockTree, 200
 
 
-#@utils.traceLogLight
 def get_tree_with_model_results(projectId, data):
     # return a tree from root with wanted model results in the samples
 
@@ -110,7 +106,6 @@ def get_tree_with_model_results(projectId, data):
     return tree, 200
 
 
-#@utils.traceLogLight
 def get_tree_from_sampleid_list(data_provider_id, projectId, data):
     # return a tree from a list of sample ID
     sampleIds = data["sampleIds"]
@@ -135,7 +130,6 @@ def get_tree_from_sampleid_list(data_provider_id, projectId, data):
 
 
 # Training samples
-#@utils.traceLogLight
 def get_training_samples_number(projectId, selectionId=None):
     # return a the number of data to pull
 
@@ -160,7 +154,6 @@ def get_training_samples_number(projectId, selectionId=None):
     return len(hashListToReturn), 200
 
 
-##@utils.traceLogLight
 def get_training_samples_number_with_model_results(
     projectId, modelIds, common, selectionId=None
 ):
@@ -186,7 +179,6 @@ def get_training_samples_number_with_model_results(
     return len(samples), 200
 
 
-##@utils.traceLogLight
 def get_training_samples(projectId, start, size, selectionId=None):
     # return a list of samples
     # from a start position and a size
@@ -218,7 +210,6 @@ def get_training_samples(projectId, start, size, selectionId=None):
     return tree, 200
 
 
-##@utils.traceLogLight
 def get_training_samples_with_model_results(
     projectId, start, size, modelIds, common, selectionId=None
 ):
@@ -254,7 +245,6 @@ def get_training_samples_with_model_results(
 
 
 # Others
-##@utils.traceLogLight
 def post_block_tree(projectId, data):
     # ParametersCheck
     if not debiaiUtils.projectExist(projectId):
@@ -297,7 +287,6 @@ def post_block_tree(projectId, data):
     return str(len(blockToAdd)) + " added blocks", 200
 
 
-#@utils.traceLog
 def delete_block(projectId, blockId, blockPath):
 
     if not debiaiUtils.projectExist(projectId):

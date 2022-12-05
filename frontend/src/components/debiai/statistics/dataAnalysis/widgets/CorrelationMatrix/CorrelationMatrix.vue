@@ -84,7 +84,6 @@
 import Plotly from "plotly.js/dist/plotly";
 
 // components
-import timer from "../../../../../../services/statistics/timer";
 import ColumnSelection from "../../common/ColumnSelection";
 // import Column from "../../common/Column";
 
@@ -154,7 +153,6 @@ export default {
       });
 
       // Sending request
-      var t0 = performance.now();
       return this.$backendDialog
         .correlationMatrix(columnsData, this.selectedMatrixType)
         .finally(() => {
@@ -168,30 +166,15 @@ export default {
           }, 5000);
         })
         .then((data) => {
-          timer.logTime(
-            t0,
-            "CorrelationMatrix-Backend",
-            this.selectedData.length,
-            this.$store.state.ProjectPage.projectId,
-            "backend request - only request time"
-          );
           return data;
         });
     },
     calculate() {
-      var t0 = performance.now();
       this.fillMatrix().then((matrix) => {
         this.matrix = matrix;
         if (typeof this.matrix === "object") {
           this.drawMatrix();
           // Might change data description
-          timer.logTime(
-            t0,
-            "CorrelationMatrix",
-            this.selectedData.length,
-            this.$store.state.ProjectPage.projectId,
-            "full front-back calculation"
-          );
         } else {
           console.error("Unexpected backend matrix type " + typeof this.matrix);
           this.error = true;

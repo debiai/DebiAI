@@ -49,7 +49,6 @@ import Analysis from "./Analysis.vue";
 
 // Services
 import treeLoader from "../../../services/treeLoader";
-import timer from "../../../services/statistics/timer";
 import swal from "sweetalert";
 
 export default {
@@ -222,7 +221,6 @@ export default {
     }) {
       console.time("LOAD TREE");
       this.loading = true;
-      var t0 = performance.now();
 
       treeLoader
         .loadProjectSamples({
@@ -241,7 +239,6 @@ export default {
 
           // Perf Log
           console.timeEnd("LOAD TREE");
-          timer.logTime(t0, "LoadData", data.nbLines, projectId);
 
           // Convert the lists in str for the querry
           if (selectionIds && selectionIds.length > 0)
