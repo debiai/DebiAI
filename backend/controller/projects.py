@@ -8,6 +8,7 @@ import ujson as json
 import utils.utils as utils
 import utils.dataProviders as dataProviders
 import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 #import utils.debiai.projects as projects
 
 #dataPath = debiaiUtils.dataPath
@@ -63,11 +64,13 @@ def get_projects():
     return projectOverviews, 200
 
 
-def get_project(dataProviderId, projectId):
+def get_project(projectId):
     # return the info about datasets, models, selections & tags
-    
-    print("getting data provider")
-    print(dataProviderId)
+    if "|" not in projectId:
+        dataProviderId = PythonDataProvider.PYTHON_DATA_PROVIDER_ID
+    else:    
+        dataProviderId = projectId.split("|")[0]
+        projectId = projectId.split("|")[1]
     
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
     project = data_provider.get_project(projectId)

@@ -1,9 +1,9 @@
 import hashlib
 import ujson as json
 
-import utils
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
 
-DATA_PATH = utils.DATA_PATH
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 def hash(text: str):
@@ -19,14 +19,14 @@ def __createProjetHashMap(projectId, blockPath, hashmap, sampleLevel, curentLeve
         hashmap[sampleHash] = blockPath
 
         # Update the sample
-        utils.updateJsonFile(
+        pythonModuleUtils.updateJsonFile(
             DATA_PATH + projectId + "/blocks/" + blockPath + "info.json",
             "id",
             sampleHash,
         )
         return
 
-    for children in utils.listDir(DATA_PATH + projectId + "/blocks/" + blockPath):
+    for children in pythonModuleUtils.listDir(DATA_PATH + projectId + "/blocks/" + blockPath):
         __createProjetHashMap(
             projectId, blockPath + children, hashmap, sampleLevel, curentLevel + 1
         )
@@ -38,7 +38,7 @@ def addToSampleHashmap(projectId, hashMap):
 
     existingHm.update(hashMap)
 
-    utils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", existingHm)
+    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", existingHm)
 
 
 def getHashmap(projectId):

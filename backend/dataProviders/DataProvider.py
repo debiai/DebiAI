@@ -27,11 +27,11 @@ class DataProvider(ABC):
         pass
 
     @abstractmethod
-    def get_selections(self, id_list):
+    def get_selections(self):
         pass
 
     @abstractmethod
-    def get_selection(self, id):
+    def get_selection_id_list(self, id):
         pass
 
     @abstractmethod

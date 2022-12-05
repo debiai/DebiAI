@@ -1,8 +1,8 @@
 import os
 
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
 
-DATA_PATH = utils.DATA_PATH
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 def getRequestsIds(projectId):
@@ -21,7 +21,7 @@ def getRequests(projetId):
 
 
 def getRequest(projectId, requestId):
-    return utils.readJsonFile(
+    return pythonModuleUtils.readJsonFile(
         DATA_PATH + projectId + "/requests/" + requestId + "/info.json"
     )
 
@@ -70,13 +70,13 @@ def createRequest(projectId, requestName, requestDescription, filters):
                     return "max was expected in the interval", 400
 
     # Request ID creation
-    requestId = utils.clean_filename(requestName)
+    requestId = pythonModuleUtils.clean_filename(requestName)
     if len(requestId) == 0:
-        requestId = utils.timeNow()
+        requestId = pythonModuleUtils.timeNow()
 
     nbR = 1
     while requestId in getRequestsIds(projectId):
-        requestId = utils.clean_filename(requestName) + "_" + str(nbR)
+        requestId = pythonModuleUtils.clean_filename(requestName) + "_" + str(nbR)
         nbR += 1
 
     # Rework filter
@@ -105,10 +105,10 @@ def createRequest(projectId, requestName, requestDescription, filters):
         "description": requestDescription,
         "id": requestId,
         "filters": filtersToSave,
-        "creationDate": utils.timeNow(),
+        "creationDate": pythonModuleUtils.timeNow(),
     }
 
-    utils.writeJsonFile(
+    pythonModuleUtils.writeJsonFile(
         DATA_PATH + projectId + "/requests/" + requestId + "/info.json", requestInfo
     )
 
@@ -116,7 +116,7 @@ def createRequest(projectId, requestName, requestDescription, filters):
 
 
 def deleteRequest(projectId, requestId):
-    utils.deleteDir(DATA_PATH + projectId + "/requests/" + requestId)
+    pythonModuleUtils.deleteDir(DATA_PATH + projectId + "/requests/" + requestId)
 
 
 def createSelection(projectId, requestId, selectionName):
@@ -131,11 +131,11 @@ def createSelection(projectId, requestId, selectionName):
 
     # Create the selection
     nbS = 1
-    selectionId = utils.clean_filename(selectionName)
+    selectionId = pythonModuleUtils.clean_filename(selectionName)
     if len(selectionId) == 0:
-        selectionId = utils.timeNow()
+        selectionId = pythonModuleUtils.timeNow()
     while debiaiUtils.selectionExist(projectId, selectionId):
-        selectionId = utils.clean_filename(selectionName) + "_" + str(nbS)
+        selectionId = pythonModuleUtils.clean_filename(selectionName) + "_" + str(nbS)
         nbS += 1
 
     debiaiUtils.createSelection(

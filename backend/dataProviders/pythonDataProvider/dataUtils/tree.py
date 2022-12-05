@@ -1,9 +1,9 @@
 import ujson as json
 import os
 
-import utils, models, projects
-DATA_PATH = utils.DATA_PATH
-DATA_TYPES = utils.DATA_TYPES
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, models
+DATA_PATH = pythonModuleUtils.DATA_PATH
+DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
 # def getFirstLevelBlock(projectId, blockId):
 #     blockList = os.listdir(DATA_PATH + projectId + '/blocks')
@@ -44,7 +44,7 @@ def getBlockInfo(blockLevel, blockInfo):
     ret = {}
     ret[blockLevel["name"]] = blockInfo["name"]
 
-    for dataType in utils.DATA_TYPES:
+    for dataType in pythonModuleUtils.DATA_TYPES:
         if dataType in blockLevel:
             for (i, column) in enumerate(blockLevel[dataType]):
                 ret[column['name']] = blockInfo[dataType][i]
@@ -236,7 +236,7 @@ def addBlock(projectId, block):
     # create the block folder and his info.json file
     try:
         os.mkdir(DATA_PATH + projectId + "/blocks/" + block["path"])
-        utils.writeJsonFile(DATA_PATH + projectId + "/blocks/" +
+        pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/blocks/" +
                             block["path"] + '/info.json', block)
     except FileExistsError:
         print('Warning : The block ' +

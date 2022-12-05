@@ -1,12 +1,7 @@
-import utils
-import hash
-import tree
-import selections
-import models
-import projects
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, models, selections, tree, hash
 
-DATA_PATH = utils.DATA_PATH
-DATA_TYPES = utils.DATA_TYPES
+DATA_PATH = pythonModuleUtils.DATA_PATH
+DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
 # ID list
 def get_all_samples_id_list(project_id, _from=None, _to=None):

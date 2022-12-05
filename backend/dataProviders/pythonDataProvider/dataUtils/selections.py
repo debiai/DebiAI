@@ -1,20 +1,20 @@
 import os
 import ujson as json
-import projects
 
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, samples
-
-DATA_PATH = utils.DATA_PATH
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 # Selections
-def createSelection(
+
+
+def create_selection(
     projectId, selectionId, selectionName, sampleHashList, requestId=None
 ):
     selectionInfoFilePath = (
         DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
     )
 
-    now = utils.timeNow()
+    now = pythonModuleUtils.timeNow()
 
     selectionInfo = {
         "id": selectionId,
@@ -29,27 +29,29 @@ def createSelection(
         selectionInfo["requestId"] = requestId
 
     os.mkdir(DATA_PATH + projectId + "/selections/" + selectionId)
-    utils.writeJsonFile(selectionInfoFilePath, selectionInfo)
+    pythonModuleUtils.writeJsonFile(selectionInfoFilePath, selectionInfo)
     projects.updateProject(projectId)
     projects.updateProject(projectId)
     return selectionInfo
 
-def getSelections(projectId):
+
+def get_selections(projectId):
     # Get selections
     selections = []
-    for selectionId in getSelectionIds(projectId):
-        selections.append(getSelectionInfo(projectId, selectionId))
+    for selectionId in get_selection_ids(projectId):
+        selections.append(get_selection(projectId, selectionId))
     return selections
 
-def getSelectionIds(projectId):
+
+def get_selection_ids(projectId):
     return os.listdir(DATA_PATH + projectId + "/selections/")
 
 
-def selectionExist(projectId, selectionId):
-    return selectionId in getSelectionIds(projectId)
+def selection_exist(projectId, selectionId):
+    return os.path.exists(DATA_PATH + projectId + "/selections/" + selectionId)
 
 
-def getSelectionInfo(projectId, selectionId):
+def get_selection(projectId, selectionId):
     with open(
         DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
     ) as json_file:
@@ -67,37 +69,11 @@ def getSelectionInfo(projectId, selectionId):
         if "requestId" in data:
             ret["requestId"] = data["requestId"]
 
-        return ret
-
-
-def getSelection(projectId, selectionId):
-    # Same as getSelectionInfo but with the samples
-    # TODO : set the samples as a csv file
-    if not selectionExist(projectId, selectionId):
-        return None
-
-    with open(
-        DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
-    ) as json_file:
-        data = json.load(json_file)
-        ret = {
-            "id": data["id"],
-            "name": data["name"],
-            "filePath": data["filePath"],
-            "creationDate": data["creationDate"],
-            "updateDate": data["updateDate"],
-            "nbSamples": len(data["samples"]),
-            "samples": data["samples"],
-        }
-
-        # Add the request Id if it exist
-        if "requestId" in data:
-            ret["requestId"] = data["requestId"]
         return ret
 
 
 def getSelectionSamples(projectId, selectionId):
-    selectionData = getSelection(projectId, selectionId)
+    selectionData = get_selection(projectId, selectionId)
     if not selectionData:
         raise KeyError("Selection " + selectionId + " doesn't exist")
 
@@ -113,16 +89,19 @@ def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> s
     samples = set(getSelectionSamples(projectId, selectionIds[0]))
     for selectionId in selectionIds[1:]:
         if intersection:  # intersection of the selections samples
-            samples.intersection_update(getSelectionSamples(projectId, selectionId))
+            samples.intersection_update(
+                getSelectionSamples(projectId, selectionId))
 
             if len(samples) == 0:
                 return []
         else:  # Union of the model results samples
-            samples = samples.union(getSelectionSamples(projectId, selectionId))
+            samples = samples.union(
+                getSelectionSamples(projectId, selectionId))
 
     return samples
 
 
 def deleteSelection(projectId, selectionId):
-    utils.deleteDir(DATA_PATH + projectId + "/selections/" + selectionId)
+    pythonModuleUtils.deleteDir(
+        DATA_PATH + projectId + "/selections/" + selectionId)
     projects.updateProject(projectId)

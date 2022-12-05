@@ -1,23 +1,24 @@
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
 from dataProviders.DataProvider import DataProvider
-from utils.utils import utils as GlobalUtils
-import dataUtils.utils as utils
-import dataUtils.projects as projects
-import dataUtils.samples as samples
-import dataUtils.selections as selections
-import dataUtils.models as models
+from utils.utils import get_app_version
+from dataProviders.pythonDataProvider.dataUtils import projects, samples, selections, models
+
+PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
 
 
 class PythonDataProvider(DataProvider):
-    def _init_(self):
-        utils.init()
+    def __init__(self):
+        pythonModuleUtils.init()
+        self.name = PYTHON_DATA_PROVIDER_ID
+        print("  Python module Data Provider initialized")
 
     def get_info(self):
         # Request method to get info on data Provider
         # return Object { version, dp_name, nb_Sample_max(to load)}
         # Get DebiAI version
         return {
-            "version": GlobalUtils.get_version(),
-            "dp_name": "Python module Data Provider",
+            "version": get_app_version(),
+            "dp_name": self.name,
         }
 
     def get_projects(self):
@@ -28,7 +29,10 @@ class PythonDataProvider(DataProvider):
     def get_project(self, id):
         # Request method to get projects overview
         # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
-        return projects.getProjectOverview(id)
+        project_base_info = projects.get_project(id)
+        project_base_info["selections"] = selections.get_selections(id)
+        project_base_info["models"] = models.get_models(id)
+        return project_base_info
 
     def delete_project(self, id):
         # Request method to delete project
@@ -57,5 +61,5 @@ class PythonDataProvider(DataProvider):
     def get_models(self, project_id):
         return models.getModels(project_id)
 
-    def get_model_results(self,project_id, model_id, id_list):
+    def get_model_results(self, project_id, model_id, id_list):
         return models.getModelResults(project_id, model_id, id_list)

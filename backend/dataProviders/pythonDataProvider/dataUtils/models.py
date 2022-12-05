@@ -1,16 +1,16 @@
 import os
 import ujson as json
-import selections, projects, utils
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, projects
 
-DATA_PATH = utils.DATA_PATH
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 #  Models
-def getModelIds(projectId):
+def get_model_ids(projectId):
     return os.listdir(DATA_PATH + projectId + "/models/")
 
 
-def getModels(projectId):
+def get_models(projectId):
     ret = []
     for model in os.listdir(DATA_PATH + projectId + "/models/"):
         with open(DATA_PATH + projectId + "/models/" + model + "/info.json") as json_file:
@@ -23,32 +23,28 @@ def getModels(projectId):
                     "updateDate": info["updateDate"],
                     "version": "0.0.0",
                     "metaDataList": info["metadata"],
-                    "nbEvaluatedSamples": info["nbResults"],
+                    "nbResults": info["nbResults"],
                 }
             )
 
     return ret
 
-def modelExist(projectId, modelId):
-    return modelId in getModelIds(projectId)
+def model_exist(projectId, modelId):
+    return modelId in get_model_ids(projectId)
 
 
-def getModelsId(projectId):
-    return os.listdir(DATA_PATH + projectId + "/models/")
+def delete_model(projectId, modelId):
+    pythonModuleUtils.deleteDir(DATA_PATH + projectId + "/models/" + modelId)
 
 
-def deleteModel(projectId, modelId):
-    utils.deleteDir(DATA_PATH + projectId + "/models/" + modelId)
-
-
-def writeModelResults(projectId, modelId, results):
-    utils.writeJsonFile(
+def write_model_results(projectId, modelId, results):
+    pythonModuleUtils.writeJsonFile(
         DATA_PATH + projectId + "/models/" + modelId + "/results.json", results
     )
     projects.updateProject(projectId)
 
 
-def getModelResults(projectId, modelId, selectionId=None):
+def get_model_results(projectId, modelId, selectionId=None):
     # Get the models results from the project or a selection
     with open(
         DATA_PATH + projectId + "/models/" + modelId + "/results.json", "r"

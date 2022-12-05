@@ -1,12 +1,11 @@
 import os, shutil
 import ujson as json
 
-from backend.dataProviders.pythonDataProvider.dataUtils import utils, hash
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, hash
 
-DATA_PATH = utils.DATA_PATH
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
-
-def getProject(projectId):
+def get_project(projectId):
     try:
         # Json info file
         if not os.path.exists(DATA_PATH + projectId + "/info.json"):
@@ -81,16 +80,16 @@ def getProject(projectId):
     return projectOverview
 
 
-def getProjects():
+def get_projects():
     project = []
 
     for projectId in os.listdir(DATA_PATH):
-        project.append(getProject(projectId))
+        project.append(get_project(projectId))
 
     return project
 
 
-def createProject(projectId, projectName):
+def create_project(projectId, projectName):
     # Create the project files and folders
     os.mkdir(DATA_PATH + projectId)
     os.mkdir(DATA_PATH + projectId + "/blocks")
@@ -98,7 +97,7 @@ def createProject(projectId, projectName):
     os.mkdir(DATA_PATH + projectId + "/requests")
     os.mkdir(DATA_PATH + projectId + "/selections")
 
-    now = utils.timeNow()
+    now = pythonModuleUtils.timeNow()
     projectInfo = {
         "name": projectName,
         "id": projectId,
@@ -107,18 +106,18 @@ def createProject(projectId, projectName):
         "blockLevelInfo": [],
     }
 
-    utils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
-    utils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
+    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
+    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
 
 
-def updateProject(projectId):
+def update_project(projectId):
     # Change the update date of the project to now
-    utils.updateJsonFile(
-        DATA_PATH + projectId + "/info.json", "updateDate", utils.timeNow()
+    pythonModuleUtils.updateJsonFile(
+        DATA_PATH + projectId + "/info.json", "updateDate", pythonModuleUtils.timeNow()
     )
 
 
-def projectExist(projectId):
+def project_exist(projectId):
     return projectId in os.listdir(DATA_PATH)
 
 
