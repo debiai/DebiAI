@@ -3,7 +3,6 @@
 #############################################################################
 
 import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 #############################################################################
 # SAMPLES Management
@@ -12,22 +11,19 @@ import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 # Get the list of samples ID of the project
 def get_list(projectId, data):
-    print(projectId)
-    print("get_list")
-    print(data)
-    if "from" in data:
-        print(data["from"])
-    if "to" in data:
-        print(data["to"])
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
 
-    if debiaiUtils.projectExist(projectId):
-        return samplesUtils.get_list(projectId, data), 200
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    
+    if "from" in data and "to" in data:
+        from_index = int(data["from"])
+        to_index = int(data["to"])
+        data_id_list = data_provider.get_id_list(projectId, from_index, to_index)
+    else :
+        data_id_list = data_provider.get_id_list(projectId)
 
-    if dataProviders.projectExist(projectId):
-        return dataProviders.get_list(projectId, data), 200
-
-    return "project not found", 404
-
+    return {"samples": data_id_list}, 200
 
 # Get the list of samples ID of the project selection
 def get_selection_list(projectId, selectionId):

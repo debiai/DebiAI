@@ -67,6 +67,7 @@ def get_project(projectId):
             "nbTags": nbTags,
             "creationDate": creationDate,
             "updateDate": updateDate,
+            "blockLevelInfo": getProjectblockLevelInfo(projectId),
         }
 
     except Exception as e:

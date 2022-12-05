@@ -573,203 +573,203 @@ paths:
         404:
           description: project or selection doesn't exist
 
-  # Blocks
-  /projects/{projectId}/blocks:
-    post:
-      summary: add a tree to an existing project block tree
-      tags: [Block]
-      operationId: controller.blocks.post_block_tree
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # # Blocks
+  # /projects/{projectId}/blocks:
+  #   post:
+  #     summary: add a tree to an existing project block tree
+  #     tags: [Block]
+  #     operationId: controller.blocks.post_block_tree
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - blockTree
-            properties:
-              blockTree:
-                $ref: "#/definitions/blockTree"
-          required: true
+  #       - name: data
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - blockTree
+  #           properties:
+  #             blockTree:
+  #               $ref: "#/definitions/blockTree"
+  #         required: true
 
-      responses:
-        200:
-          description: Block tree added
-        403:
-          description: Invalid parameters
-        404:
-          description: Project not found
+  #     responses:
+  #       200:
+  #         description: Block tree added
+  #       403:
+  #         description: Invalid parameters
+  #       404:
+  #         description: Project not found
 
-    get:
-      summary: get a project block tree from a depth
-      tags: [Block]
-      operationId: controller.blocks.get_block_racine
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  #   get:
+  #     summary: get a project block tree from a depth
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_block_racine
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: depth
-          in: query
-          type: integer
-          description: depth of the wanted tree
-          minimum: 0
-          default: 0
+  #       - name: depth
+  #         in: query
+  #         type: integer
+  #         description: depth of the wanted tree
+  #         minimum: 0
+  #         default: 0
 
-      responses:
-        200:
-          description: Block tree list
-          schema:
-            type: array
-        404:
-          description: project doesn't exist
+  #     responses:
+  #       200:
+  #         description: Block tree list
+  #         schema:
+  #           type: array
+  #       404:
+  #         description: project doesn't exist
 
-  /projects/{projectId}/blocksWithModelResults:
-    post:
-      summary: get a project tree with the results of a model list
-      tags: [Block]
-      operationId: controller.blocks.get_tree_with_model_results
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/blocksWithModelResults:
+  #   post:
+  #     summary: get a project tree with the results of a model list
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_tree_with_model_results
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - modelIds
-            properties:
-              modelIds:
-                type: array
-                items:
-                  type: string
-              common:
-                type: boolean
-                default: true
-          required: true
+  #       - name: data
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - modelIds
+  #           properties:
+  #             modelIds:
+  #               type: array
+  #               items:
+  #                 type: string
+  #             common:
+  #               type: boolean
+  #               default: true
+  #         required: true
 
-      responses:
-        200:
-          description: Block tree with sample
-          schema:
-            type: object
-        403:
-          description: Invalid parameters
-        404:
-          description: Project or one of the models not found
+  #     responses:
+  #       200:
+  #         description: Block tree with sample
+  #         schema:
+  #           type: object
+  #       403:
+  #         description: Invalid parameters
+  #       404:
+  #         description: Project or one of the models not found
 
-  /projects/{projectId}/blocks/{selectionId}:
-    get:
-      summary: get a project selection block tree from a depth and a selection ID
-      tags: [Block]
-      operationId: controller.blocks.get_block_racine_from_selection
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/blocks/{selectionId}:
+  #   get:
+  #     summary: get a project selection block tree from a depth and a selection ID
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_block_racine_from_selection
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: selectionId
-          in: path
-          type: string
-          description: selection ID
-          required: true
+  #       - name: selectionId
+  #         in: path
+  #         type: string
+  #         description: selection ID
+  #         required: true
 
-        - name: depth
-          in: query
-          type: integer
-          description: depth of the wanted tree
-          minimum: 0
-          default: 0
+  #       - name: depth
+  #         in: query
+  #         type: integer
+  #         description: depth of the wanted tree
+  #         minimum: 0
+  #         default: 0
 
-      responses:
-        200:
-          description: Block tree list
-          schema:
-            type: array
-        404:
-          description: project or selection doesn't exist
+  #     responses:
+  #       200:
+  #         description: Block tree list
+  #         schema:
+  #           type: array
+  #       404:
+  #         description: project or selection doesn't exist
 
-  /projects/{projectId}/block:
-    post:
-      summary: get a block and his sub blocks from a depth
-      tags: [Block]
-      operationId: controller.blocks.get_block_tree
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/block:
+  #   post:
+  #     summary: get a block and his sub blocks from a depth
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_block_tree
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - blockId
-              - blockPath
-            properties:
-              blockId:
-                type: string
-                description: code of the block from where we want the tree to start
-              blockPath:
-                type: string
-                description: path of the block from where we want the tree to start
-              depth:
-                type: integer
-                description: depth of the wanted tree
-                minimum: 0
-                default: 1
-          required: true
+  #       - name: data
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - blockId
+  #             - blockPath
+  #           properties:
+  #             blockId:
+  #               type: string
+  #               description: code of the block from where we want the tree to start
+  #             blockPath:
+  #               type: string
+  #               description: path of the block from where we want the tree to start
+  #             depth:
+  #               type: integer
+  #               description: depth of the wanted tree
+  #               minimum: 0
+  #               default: 1
+  #         required: true
 
-      responses:
-        200:
-          description: Block tree
-          schema:
-            type: object
-        404:
-          description: block or project doesn't exist
+  #     responses:
+  #       200:
+  #         description: Block tree
+  #         schema:
+  #           type: object
+  #       404:
+  #         description: block or project doesn't exist
 
-    delete:
-      summary: remove a block from a block ID
-      tags: [Block]
-      operationId: controller.blocks.delete_block
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
+  #   delete:
+  #     summary: remove a block from a block ID
+  #     tags: [Block]
+  #     operationId: controller.blocks.delete_block
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         required: true
 
-        - name: blockId
-          in: path
-          type: string
-          description: ID of the block to delete
-          required: true
+  #       - name: blockId
+  #         in: path
+  #         type: string
+  #         description: ID of the block to delete
+  #         required: true
 
-      responses:
-        200:
-          description: block deleted
-        404:
-          description: block or project doesn't exist
+  #     responses:
+  #       200:
+  #         description: block deleted
+  #       404:
+  #         description: block or project doesn't exist
 
   /projects/{projectId}/blocksFromSampleIds:
     post:
       summary: get a project tree form a sample list
       tags: [Block]
-      operationId: controller.blocks.get_tree_from_sampleid_list
+      operationId: controller.data.get_data
       parameters:
         - name: projectId
           in: path
@@ -799,165 +799,165 @@ paths:
           description: Project or one of the models not found
 
   # Data streaming
-  /projects/{projectId}/getAvailableDataNumber:
-    get:
-      summary: get a the number of data in the project or a selection
-      tags: [Block]
-      operationId: controller.blocks.get_training_samples_number
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/getAvailableDataNumber:
+  #   get:
+  #     summary: get a the number of data in the project or a selection
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_training_samples_number
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: selectionId
-          in: query
-          type: string
-          required: false
-          description: selection number of sample, number of all data if no selectionId
+  #       - name: selectionId
+  #         in: query
+  #         type: string
+  #         required: false
+  #         description: selection number of sample, number of all data if no selectionId
 
-      responses:
-        200:
-          description: Number of sample available
-          schema:
-            type: number
-        404:
-          description: project or selection doesn't exist
+  #     responses:
+  #       200:
+  #         description: Number of sample available
+  #         schema:
+  #           type: number
+  #       404:
+  #         description: project or selection doesn't exist
 
-  /projects/{projectId}/getAvailableDataNumberWithModelResults:
-    get:
-      summary: get a the number of data in the project or a selection
-      tags: [Block]
-      operationId: controller.blocks.get_training_samples_number_with_model_results
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/getAvailableDataNumberWithModelResults:
+  #   get:
+  #     summary: get a the number of data in the project or a selection
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_training_samples_number_with_model_results
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: modelIds
-          in: query
-          type: array
-          items:
-            type: string
-          description: list of modelsIds to get the results from
-          required: true
+  #       - name: modelIds
+  #         in: query
+  #         type: array
+  #         items:
+  #           type: string
+  #         description: list of modelsIds to get the results from
+  #         required: true
 
-        - name: common
-          in: query
-          type: boolean
-          description: get common sample evaluation results or not
-          required: true
+  #       - name: common
+  #         in: query
+  #         type: boolean
+  #         description: get common sample evaluation results or not
+  #         required: true
 
-        - name: selectionId
-          in: query
-          type: string
-          required: false
-          description: selection number of sample, number of all data if no selectionId
+  #       - name: selectionId
+  #         in: query
+  #         type: string
+  #         required: false
+  #         description: selection number of sample, number of all data if no selectionId
 
-      responses:
-        200:
-          description: Number of sample available
-          schema:
-            type: number
-        404:
-          description: project or selection doesn't exist
+  #     responses:
+  #       200:
+  #         description: Number of sample available
+  #         schema:
+  #           type: number
+  #       404:
+  #         description: project or selection doesn't exist
 
-  /projects/{projectId}/trainingSamples:
-    get:
-      summary: get a sample patch ready for training
-      tags: [Block]
-      operationId: controller.blocks.get_training_samples
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/trainingSamples:
+  #   get:
+  #     summary: get a sample patch ready for training
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_training_samples
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: start
-          in: query
-          type: integer
-          description: start of the patch
-          minimum: 0
-          required: true
+  #       - name: start
+  #         in: query
+  #         type: integer
+  #         description: start of the patch
+  #         minimum: 0
+  #         required: true
 
-        - name: size
-          in: query
-          type: integer
-          description: size of the patch
-          minimum: 1
-          required: true
+  #       - name: size
+  #         in: query
+  #         type: integer
+  #         description: size of the patch
+  #         minimum: 1
+  #         required: true
 
-        - name: selectionId
-          in: query
-          type: string
-          required: false
-          description: selection to pull the data, all data if no selectionId
+  #       - name: selectionId
+  #         in: query
+  #         type: string
+  #         required: false
+  #         description: selection to pull the data, all data if no selectionId
 
-      responses:
-        200:
-          description: Block tree list
-          schema:
-            type: object
-        404:
-          description: project or selection doesn't exist
+  #     responses:
+  #       200:
+  #         description: Block tree list
+  #         schema:
+  #           type: object
+  #       404:
+  #         description: project or selection doesn't exist
 
-  /projects/{projectId}/trainingSamplesWithModelResults:
-    get:
-      summary: get a sample patch with the given model results
-      tags: [Block]
-      operationId: controller.blocks.get_training_samples_with_model_results
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/trainingSamplesWithModelResults:
+  #   get:
+  #     summary: get a sample patch with the given model results
+  #     tags: [Block]
+  #     operationId: controller.blocks.get_training_samples_with_model_results
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: start
-          in: query
-          type: integer
-          description: start of the patch
-          minimum: 0
-          required: true
+  #       - name: start
+  #         in: query
+  #         type: integer
+  #         description: start of the patch
+  #         minimum: 0
+  #         required: true
 
-        - name: size
-          in: query
-          type: integer
-          description: size of the patch
-          minimum: 1
-          required: true
+  #       - name: size
+  #         in: query
+  #         type: integer
+  #         description: size of the patch
+  #         minimum: 1
+  #         required: true
 
-        - name: modelIds
-          in: query
-          type: array
-          items:
-            type: string
-          description: list of modelsIds to get the results from
-          required: true
+  #       - name: modelIds
+  #         in: query
+  #         type: array
+  #         items:
+  #           type: string
+  #         description: list of modelsIds to get the results from
+  #         required: true
 
-        - name: common
-          in: query
-          type: boolean
-          description: get common sample evaluation results or not
-          required: true
+  #       - name: common
+  #         in: query
+  #         type: boolean
+  #         description: get common sample evaluation results or not
+  #         required: true
 
-        - name: selectionId
-          in: query
-          type: string
-          required: false
-          description: selection to pull the data, all data if no selectionId
+  #       - name: selectionId
+  #         in: query
+  #         type: string
+  #         required: false
+  #         description: selection to pull the data, all data if no selectionId
 
-      responses:
-        200:
-          description: Block tree list with model results
-          schema:
-            type: object
-        404:
-          description: project, model or selection doesn't exist
+  #     responses:
+  #       200:
+  #         description: Block tree list with model results
+  #         schema:
+  #           type: object
+  #       404:
+  #         description: project, model or selection doesn't exist
 
   # Requests
   /projects/{projectId}/requests/:

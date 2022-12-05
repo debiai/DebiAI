@@ -4,6 +4,8 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
 # ID list
+
+
 def get_all_samples_id_list(project_id, _from=None, _to=None):
     """
     Return a list of all samples id in a project
@@ -16,7 +18,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     # In case of streaming purpose
     if _from is not None and _to is not None:
-        samples = samples[_from : _to + 1]
+        samples = samples[_from: _to + 1]
 
     return samples
 
@@ -41,7 +43,7 @@ def get_list(projectId, data):
         samples = list(hashmap.keys())
         # In case of streaming purpose
         if "from" in data and "to" in data:
-            samples = samples[data["from"] : data["to"] + 1]
+            samples = samples[data["from"]: data["to"] + 1]
     else:
         # Or from the selections samples
         try:
@@ -59,7 +61,8 @@ def get_list(projectId, data):
     nbFromModels = 0
     # Then, concat with the model results if given
     if modelIds and len(modelIds) > 0:
-        modelSamples = models.getModelListResults(projectId, modelIds, commonResults)
+        modelSamples = models.getModelListResults(
+            projectId, modelIds, commonResults)
         nbFromModels = len(modelSamples)
         samples = set(samples)
         samples.intersection_update(set(modelSamples))
@@ -75,10 +78,10 @@ def get_list(projectId, data):
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
     # Get path of the samples from the hashmap
-    samplePath = hash.getPathFromHashList(project_id, id_list)
+    sample_path = hash.getPathFromHashList(project_id, id_list)[:10]
 
     # Get tree from samples
-    samples_tree = tree.getBlockTreeFromSamples(project_id, samplePath)
+    samples_tree = tree.getBlockTreeFromSamples(project_id, sample_path)
 
     # Convert tree to array
     data_array = _tree_to_array(samples_tree)
@@ -88,35 +91,40 @@ def get_data_from_sampleid_list(project_id, id_list):
     for i in range(len(id_list)):
         data[id_list[i]] = data_array[i]
 
+    return data
+
+
 def _tree_to_array(tree):
     data_array = []
     for block in tree:
-        data_array += _get_block_data_recur(block)
+        data_array += _block_to_array_recur(block)
     return data_array
+
 
 def _get_block_values(block):
     # Adding the block name into the values
-    values = [block.name]
+    values = []
 
-    #store all key-values into an array
+    # store all key-values into an array
     for data_type in DATA_TYPES:
-        if (data_type.blName in block):
-            for key in block[data_type]:
-                values.push(block[data_type][key])
+        if (data_type in block):
+            for key in range(len(block[data_type])):
+                values.append(block[data_type][key])
 
     return values
 
-def _get_block_data_recur(block):
+
+def _block_to_array_recur(block):
     # Getting bloc values
     values = _get_block_values(block)
     if "childrenInfoList" not in block or len(block["childrenInfoList"]) == 0:
         return [values]
 
-    else :
+    else:
         # Getting all child values
         child_values = []
         for child_block in block["childrenInfoList"]:
-            child_values.append(_get_block_data_recur(child_block))
+            child_values.append(_block_to_array_recur(child_block))
 
         # Mergin childs and current block values
         #     CurBlock childs
@@ -130,8 +138,9 @@ def _get_block_data_recur(block):
 
         array = []
         for child_val in child_values:
-            array.append(values + child_val)
-
+            print("========")
+            array.append(values + child_val[0])
+            print(values + child_val[0])
         return array
 
 

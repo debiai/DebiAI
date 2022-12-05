@@ -6,7 +6,6 @@ import ujson as json
 
 import utils.utils as utils
 import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 #############################################################################
 # PROJECTS Management
@@ -25,6 +24,9 @@ def get_projects():
     for data_provider in data_providers_list:
         projects = data_provider.get_projects()
         if projects is not None:
+            # TMP: merging dp ids and project ids TODO: change this
+            for project in projects:
+                project["id"] = data_provider.name + "|" + project["id"]
             projectOverviews.extend(projects)
 
     return projectOverviews, 200
@@ -32,15 +34,13 @@ def get_projects():
 
 def get_project(projectId):
     # return the info about datasets, models, selections & tags
-    if "|" not in projectId:
-        dataProviderId = PythonDataProvider.PYTHON_DATA_PROVIDER_ID
-    else:    
-        dataProviderId = projectId.split("|")[0]
-        projectId = projectId.split("|")[1]
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
     
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
     project = data_provider.get_project(projectId)
     if project is not None:
+        project["id"] = dataProviderId + "|" + project["id"]
         return project, 200
     
     return "Project " + projectId + " on data Provider " + dataProviderId + " not found", 404
