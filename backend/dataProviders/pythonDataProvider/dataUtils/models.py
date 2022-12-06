@@ -1,19 +1,19 @@
 import os
 import ujson as json
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, projects
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, projects, hash, tree
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 #  Models
-def get_model_ids(projectId):
-    return os.listdir(DATA_PATH + projectId + "/models/")
+def get_model_ids(project_id):
+    return os.listdir(DATA_PATH + project_id + "/models/")
 
 
-def get_models(projectId):
+def get_models(project_id):
     ret = []
-    for model in os.listdir(DATA_PATH + projectId + "/models/"):
-        with open(DATA_PATH + projectId + "/models/" + model + "/info.json") as json_file:
+    for model in os.listdir(DATA_PATH + project_id + "/models/"):
+        with open(DATA_PATH + project_id + "/models/" + model + "/info.json") as json_file:
             info = json.load(json_file)
             ret.append(
                 {
@@ -29,42 +29,247 @@ def get_models(projectId):
 
     return ret
 
-def model_exist(projectId, modelId):
-    return modelId in get_model_ids(projectId)
+
+def model_exist(project_id, model_id):
+    return model_id in get_model_ids(project_id)
 
 
-def delete_model(projectId, modelId):
-    pythonModuleUtils.deleteDir(DATA_PATH + projectId + "/models/" + modelId)
+def create_model(project_id, model_name, metadata=None):
+    # ParametersCheck
+    if not projects.projectExist(project_id):
+        raise Exception("Project " + project_id + " does not exist")
+
+    if not pythonModuleUtils.is_filename_clean(model_name):
+        raise Exception("Model name contain prohibed caracters")
+
+    model_id = model_name
+
+    if model_exist(project_id, model_id):
+        raise Exception("Model " + model_id + " already not exist")
+
+    metadata = {}
+    if "metadata" in data:
+        metadata = data["metadata"]
+
+    # model
+    modelFolderPath = dataPath + project_id + "/models/" + model_id
+    os.mkdir(modelFolderPath)
+
+    now = utils.timeNow()
+
+    modelInfo = {
+        "name": model_id,
+        "id": model_id,
+        "creationDate": now,
+        "updateDate": now,
+        "metadata": metadata,
+        "nbResults": 0,
+    }
+
+    utils.writeJsonFile(modelFolderPath + "/info.json", modelInfo)
+    debiaiUtils.writeModelResults(project_id, model_id, {})
 
 
-def write_model_results(projectId, modelId, results):
+def delete_model(project_id, model_id):
+    pythonModuleUtils.deleteDir(DATA_PATH + project_id + "/models/" + model_id)
+
+
+def write_model_results(project_id, model_id, results):
     pythonModuleUtils.writeJsonFile(
-        DATA_PATH + projectId + "/models/" + modelId + "/results.json", results
+        DATA_PATH + project_id + "/models/" + model_id + "/results.json", results
     )
-    projects.updateProject(projectId)
+    projects.updateProject(project_id)
 
 
-def get_model_results(projectId, modelId, selectionId=None):
-    # Get the models results from the project or a selection
+def get_model_results(project_id, model_id, sample_ids):
+    # Check parameters
+    if not projects.project_exist(project_id):
+        raise ("Project '" + project_id + "' doesn't exist")
+    if not model_exist(project_id, model_id):
+        raise ("Model " + model_id + " does not exist")
+
+    # Get model results
     with open(
-        DATA_PATH + projectId + "/models/" + modelId + "/results.json", "r"
+        DATA_PATH + project_id + "/models/" + model_id + "/results.json", "r"
     ) as jsonFile:
-        d = json.load(jsonFile)
+        model_results = json.load(jsonFile)
 
-    if not selectionId:
-        return d
+    # if not selection_id:
+    # return d
+    # else:
+    # selectionSamples = set(
+    #     selections.getSelectionSamples(project_id, selection_id))
+    # return selectionSamples.intersection_update(d)
+    #     model_results = getModelResults(project_id, model_id)
+
+    ret = {}
+    for sample_id in sample_ids:
+        if sample_id in model_results:
+            ret[sample_id] = model_results[sample_id]
+        else:
+            raise ValueError("Sample " + sample_id +
+                             " not found in model results")
+    return ret
+
+
+def get_model_id_list(project_id, model_id) -> list:
+    # Get model results
+    with open(
+        DATA_PATH + project_id + "/models/" + model_id + "/results.json", "r"
+    ) as jsonFile:
+        model_results = json.load(jsonFile)
+        return dict.keys(model_results)
+
+# def get_model_list_results(project_id, model_ids: list, common: bool) -> list:
+#     samples = set(get_model_results(project_id, model_ids[0]))
+
+#     for model_id in model_ids[1:]:
+#         if common:  # Common samples between models
+#             samples.intersection_update(
+#                 get_model_results(project_id, model_id))
+#         else:  # Union of the model results samples
+#             samples = samples.union(get_model_results(project_id, model_id))
+
+#     return list(samples)
+
+
+def add_results_dict(project_id, modelId, data):
+    tree = data["results"]
+
+    # Check parameters
+    if not projects.projectExist(project_id):
+        raise "Project '" + project_id + "' doesn't exist"
+
+    if not model_exist(project_id, modelId):
+        raise ("Model '"
+               + modelId
+               + "' in project : '"
+               + projects.getProjectNameFromId(project_id)
+               + "' doesn't exist")
+
+    # Get resultStructure & project_block_structure
+    result_structure = projects.getResultStructure(project_id)
+    if result_structure is None:
+        raise ("The project expected results need to be specified before adding results")
+
+    if "expected_results_order" in data:
+        expected_results_order = data["expected_results_order"]
     else:
-        selectionSamples = set(selections.getSelectionSamples(projectId, selectionId))
-        return selectionSamples.intersection_update(d)
+        expected_results_order = list(
+            map(lambda r: r["name"], result_structure))
+
+    project_block_structure = projects.getProjectblockLevelInfo(project_id)
+    sampleIndex = len(project_block_structure) - 1
+
+    # Check the given expected_results_order
+    for expected_result in result_structure:
+        if expected_result["name"] not in expected_results_order:
+            raise ("The expected result '"
+                   + expected_result["name"]
+                   + "' is missing from the expected_results_order Array")
+
+    giv_exp_res = {}
+    for given_expected_result in expected_results_order:
+        result_expected = False
+        for (i, expected_result) in enumerate(result_structure):
+            if given_expected_result == expected_result["name"]:
+                result_expected = True
+
+                # Map the expected_results_order indexes to result_structure
+                giv_exp_res[given_expected_result] = i
+
+        if not result_expected:
+            return (
+                "The given expected result '"
+                + given_expected_result
+                + "' is not an expected result",
+                403,
+            )
+
+    #  Check if all blocks referenced in the result tree exists
+    resultsToAdd = {}
+
+    for blockKey in tree:
+        ok, msg = __check_blocks_of_tree_exists(
+            project_id,
+            result_structure,
+            giv_exp_res,
+            tree[blockKey],
+            0,
+            sampleIndex,
+            blockKey,
+            resultsToAdd,
+        )
+        if not ok:
+            print(msg)
+            return msg, 403
+
+    # The given tree is complient, let's add the results
+    newResults = utils.addToJsonFIle(
+        dataPath + project_id + "/models/" + modelId + "/results.json", resultsToAdd
+    )
+
+    utils.addToJsonFIle(
+        dataPath + project_id + "/models/" + modelId + "/info.json",
+        {"nbResults": len(newResults), "updateDate": utils.timeNow()},
+    )
+    debiaiUtils.updateProject(project_id)
+    return 200
 
 
-def get_model_list_results(projectId, modelIds: list, common: bool) -> list:
-    samples = set(get_model_results(projectId, modelIds[0]))
+def __check_blocks_of_tree_exists(
+    project_id: str,
+    result_structure: list,
+    giv_exp_res: dict,
+    block: dict,
+    level: int,
+    sampleIndex: int,
+    path: str,
+    resultsToAdd: dict,
+):
 
-    for modelId in modelIds[1:]:
-        if common:  # Common samples between models
-            samples.intersection_update(get_model_results(projectId, modelId))
-        else:  # Union of the model results samples
-            samples = samples.union(get_model_results(projectId, modelId))
+    # Check block exist in the data
+    blockInfo = tree.getBlockInfo(project_id, path)
+    if not blockInfo:
+        return (
+            False,
+            "Error while adding the results : block '" + path + "' doesn't exist",
+        )
 
-    return list(samples)
+    if level == sampleIndex:
+        path += "/"
+        resultsToAdd[blockInfo["id"]] = []
+        #  Sample level : the results : they need to be verified
+        if len(block) != len(giv_exp_res):
+            raise ValueError(
+                "in : "
+                + path
+                + ", "
+                + str(len(block))
+                + " value where given but "
+                + str(len(giv_exp_res))
+                + "where expected"
+            )
+
+        for result in result_structure:
+            resultsToAdd[blockInfo["id"]].append(
+                block[giv_exp_res[result["name"]]])
+            # TODO Deal with defaults results and check type
+
+        return True, None
+
+    for subBlockKey in block:
+        ok, msg = __check_blocks_of_tree_exists(
+            project_id,
+            result_structure,
+            giv_exp_res,
+            block[subBlockKey],
+            level + 1,
+            sampleIndex,
+            path + "/" + str(subBlockKey),
+            resultsToAdd,
+        )
+        if not ok:
+            return False, msg
+
+    return True, ""

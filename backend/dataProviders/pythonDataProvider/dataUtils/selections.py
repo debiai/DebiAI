@@ -72,33 +72,34 @@ def get_selection(projectId, selectionId):
         return ret
 
 
-def getSelectionSamples(projectId, selectionId):
-    selectionData = get_selection(projectId, selectionId)
-    if not selectionData:
-        raise KeyError("Selection " + selectionId + " doesn't exist")
+def get_selection_id_list(projectId, selectionId):
+    if not selection_exist(projectId, selectionId):
+        raise Exception("Selection " + selectionId + " doesn't exist")
 
-    if "samples" not in selectionData:
-        return []
-    return selectionData["samples"]
+    with open(
+        DATA_PATH + projectId + "/selections/" + selectionId + "/info.json"
+    ) as json_file:
+        data = json.load(json_file)
+        return data["samples"]
 
 
-def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> set:
-    if len(selectionIds) == 0:
-        return []
+# def getSelectionsSamples(projectId, selectionIds: list, intersection: bool) -> set:
+#     if len(selectionIds) == 0:
+#         return []
 
-    samples = set(getSelectionSamples(projectId, selectionIds[0]))
-    for selectionId in selectionIds[1:]:
-        if intersection:  # intersection of the selections samples
-            samples.intersection_update(
-                getSelectionSamples(projectId, selectionId))
+#     samples = set(get_selection_id_list(projectId, selectionIds[0]))
+#     for selectionId in selectionIds[1:]:
+#         if intersection:  # intersection of the selections samples
+#             samples.intersection_update(
+#                 get_selection_id_list(projectId, selectionId))
 
-            if len(samples) == 0:
-                return []
-        else:  # Union of the model results samples
-            samples = samples.union(
-                getSelectionSamples(projectId, selectionId))
+#             if len(samples) == 0:
+#                 return []
+#         else:  # Union of the model results samples
+#             samples = samples.union(
+#                 get_selection_id_list(projectId, selectionId))
 
-    return samples
+#     return samples
 
 
 def deleteSelection(projectId, selectionId):
