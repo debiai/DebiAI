@@ -87,92 +87,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
   }
 }
 
-// Get the values / results of the blocks
-function getBlockValues(block) {
-  // Adding the block name into the values
-  var values = [block.name]
 
-  // store all key-values into an array
-  CATEGORIES.forEach(cat => {
-    if (cat.blName in block)
-      for (const [, val] of Object.entries(block[cat.blName]))
-        values.push(val)
-  });
-
-  return values
-}
-
-function getBlockValuesWithRestults(block) {
-  // In case we are loading the results
-  let modelsResults = []
-  if ("results" in block) {
-    for (const modelId of Object.keys(block["results"])) {
-      // push model Name (modelId)
-      // push each model results
-
-      modelsResults.push([modelId, ...block["results"][modelId]])
-    }
-  }
-  return modelsResults
-}
-
-function getBlockRecur(block, considerResults) {
-  // Getting bloc values
-  var values = getBlockValues(block)
-  if (block.childrenInfoList == undefined || block.childrenInfoList.length == 0) {
-    // Sample, end of tree
-
-    if (considerResults) {
-      // We need to duplicate the lane for each models
-      let modelResults = getBlockValuesWithRestults(block)
-      return modelResults.map(result => values.concat(result));
-    }
-
-    // Single value if not considerResults
-    return [values]
-  }
-  else {
-    // Getting all child values
-    let childValues = []
-    block.childrenInfoList.forEach(childBlock => childValues.push(...getBlockRecur(childBlock, considerResults)));
-
-    // Mergin childs and current block values
-    //     CurBlock childs
-    //     a        1
-    //     a        2
-    //     a        3
-
-    //     b        1
-    //     b        2
-    //     b        3
-
-    let array = []
-    childValues.forEach(cv => array.push(values.concat(cv)));
-    return array
-  }
-}
-
-function getSampleHashList(block, considerResults) {
-  if (block.childrenInfoList == undefined || block.childrenInfoList.length == 0) {
-    // Sample, end of tree, return the hash
-    if (considerResults) {
-      // We need to duplicate the lane for each models
-      let modelResults = getBlockValuesWithRestults(block)
-      return modelResults.map(() => block.id);
-    }
-
-    // Single value if not considerResults
-    return [block.id]
-  }
-  else {
-    // Getting all child values
-    let childHash = []
-    block.childrenInfoList.forEach(childBlock => childHash.push(...getSampleHashList(childBlock, considerResults)));
-    return childHash
-  }
-}
-
-// Tree to array
 async function getProjectMetadata(projectId, { considerResults }) {
   let projectInfo = await backendDialog.default.getProject(projectId)
 
@@ -185,6 +100,11 @@ async function getProjectMetadata(projectId, { considerResults }) {
     categories: [],
     type: [],
   }
+  
+  // Set the Sample_ID in the Other category
+  metaData.labels.push("Sample_ID")
+  metaData.categories.push("other")
+  metaData.type.push("unknown")
 
   projectInfo.blockLevelInfo.forEach(blockLevel => {
     // Set the block name in the Other category
@@ -255,14 +175,6 @@ async function downloadTree(projectId, timestamp, sampleIds) {
           // Add the samples ID to the array
           retArray = [...retArray, ...Object.values(map)]
           retHashlist = [...retHashlist, ...Object.keys(map)]
-        } else {
-          // Python module project, we receive a tree that we need to convert
-          let { samplesId, array } = await treeToArray(downloadedSamples, { considerResults: false })
-          retArray = [...retArray, ...array]
-          retHashlist = [...retHashlist, ...samplesId]
-          // Save data in the cache
-          let sampleToSave = array.map((data, i) => { return { sampleId: samplesId[i], data } })
-          cacheService.saveSamples(projectId, timestamp, sampleToSave)
         }
       }
 
@@ -278,18 +190,6 @@ async function downloadTree(projectId, timestamp, sampleIds) {
   return { dataArray: retArray, sampleHashList: retHashlist }
 }
 
-function treeToArray(tree, { considerResults }) {
-  // Recursive creation of the Array values
-  var array = []
-  tree.forEach(block => array.push(...getBlockRecur(block, considerResults)));
-
-  // get the samples id hash list
-  var samplesId = []
-  tree.forEach(block => samplesId.push(...getSampleHashList(block, considerResults)));
-
-  // Return the data array :  [[label 1, label 2], [value 1-1, value 1-2], ...]
-  return { array, samplesId }
-}
 
 async function downloadResults(projectId, timestamp, modelId, sampleIds) {
   const CHUNK_SIZE = 10000

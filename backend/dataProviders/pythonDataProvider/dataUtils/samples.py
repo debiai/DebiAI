@@ -78,7 +78,7 @@ def get_list(projectId, data):
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
     # Get path of the samples from the hashmap
-    sample_path = hash.getPathFromHashList(project_id, id_list)[:10]
+    sample_path = hash.getPathFromHashList(project_id, id_list)
 
     # Get tree from samples
     samples_tree = tree.getBlockTreeFromSamples(project_id, sample_path)
@@ -103,7 +103,7 @@ def _tree_to_array(tree):
 
 def _get_block_values(block):
     # Adding the block name into the values
-    values = []
+    values = [block["name"]]
 
     # store all key-values into an array
     for data_type in DATA_TYPES:
@@ -124,24 +124,21 @@ def _block_to_array_recur(block):
         # Getting all child values
         child_values = []
         for child_block in block["childrenInfoList"]:
-            child_values.append(_block_to_array_recur(child_block))
+            child_values += _block_to_array_recur(child_block)
+            # child_values.append(_block_to_array_recur(child_block))
 
-        # Mergin childs and current block values
-        #     CurBlock childs
-        #     a        1
-        #     a        2
-        #     a        3
+        # Child values : [[1,2,3], [4,5,6], [7,8,9]]
+        # values : [10, 11, 12]
+        # Goal: [[10, 11, 12, 1, 2, 3], [10, 11, 12, 4, 5, 6], [10, 11, 12, 7, 8, 9]]
 
-        #     b        1
-        #     b        2
-        #     b        3
+        # Adding the block name into the values
+        ret = [None] * len(child_values)
 
-        array = []
-        for child_val in child_values:
-            print("========")
-            array.append(values + child_val[0])
-            print(values + child_val[0])
-        return array
+        # Adding the block values to the children values
+        for i in range(len(child_values)):
+            ret[i] = values + child_values[i]
+
+        return ret
 
 
 # def projectSamplesGerenator(projectId):
