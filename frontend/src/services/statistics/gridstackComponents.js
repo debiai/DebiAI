@@ -82,10 +82,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
 function createWidget(widgetKey) {
   // A uuid is generated for the widget
-  const widget = availableWidgetsConfiguration[widgetKey]
-  widget.id = services.uuid()
-
-  return widget;
+  return { ...availableWidgetsConfiguration[widgetKey], id: services.uuid() };
 }
 
 function getAvailableWidgets() {
