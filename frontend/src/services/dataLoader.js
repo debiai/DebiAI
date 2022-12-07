@@ -1,5 +1,5 @@
 import store from '../store'
-import cacheService from '../services/cacheService'
+import cacheService from './cacheService'
 import services from "./services"
 
 const backendDialog = require("./backendDialog")
@@ -315,13 +315,14 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
         samplesToPull
       )
 
+      
+      // We now have a sample array and a list of results
+      // We need to duplicate each one of the samples for each one of the sample results
+      // ie : if a sample got evaluated on 3 models, the sample must be 3 time sample, each one
+      // with his own model results
+
       const dataAndResultsArray = [];
       const modelsSamplesToPull = [];
-
-      // We now have a sample array and a list of results
-      // We need to duplicate each one of the samples for each one of the results
-      // ie : if a sample got evaluated on 3 models, there need to be 3 of this sample, each one
-      // with his own model results
 
       sampleHashList.forEach((sampleId, i) => {
         if (sampleId in modelResults) {

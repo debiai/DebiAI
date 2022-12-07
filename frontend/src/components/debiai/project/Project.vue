@@ -48,7 +48,7 @@ import Tags from "./tags/Tags.vue";
 import Analysis from "./Analysis.vue";
 
 // Services
-import treeLoader from "../../../services/treeLoader";
+import dataLoader from "../../../services/dataLoader";
 import swal from "sweetalert";
 
 export default {
@@ -222,7 +222,7 @@ export default {
       console.time("LOAD TREE");
       this.loading = true;
 
-      treeLoader
+      dataLoader
         .loadProjectSamples({
           projectId,
           selectionIds,
