@@ -58,6 +58,10 @@ class PythonDataProvider(DataProvider):
         # Return selection ID list
         return selections.get_selection_id_list(project_id, selection_id)
 
+    def create_selection(self, project_id, name, id_list, request_id=None):
+        # Selection creation
+        return selections.create_selection(project_id, name, id_list, request_id)
+
     # Models
     def get_models(self, project_id):
         return models.get_models(project_id)
@@ -76,8 +80,6 @@ class PythonDataProvider(DataProvider):
     def create_project(self, name):
         pass
 
-    def create_selection(self, project_id, name, id_list):
-        pass
 
     def delete_selection(self, project_id, selection_id):
         pass

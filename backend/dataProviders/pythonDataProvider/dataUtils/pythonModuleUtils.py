@@ -21,7 +21,7 @@ def init():
 
 
 # File name verifications
-def clean_filename(filename, whitelist):
+def clean_filename(filename):
     # replace spaces
     filename = filename.replace(" ", "_")
 

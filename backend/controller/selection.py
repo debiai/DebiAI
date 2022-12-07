@@ -1,11 +1,8 @@
 #############################################################################
 # Imports
 #############################################################################
-#import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-import utils.dataProviders as dataProviders
 
-#dataPath = debiaiUtils.dataPath
+import dataProviders.dataProviderManager as data_provider_manager
 
 #############################################################################
 # Selections Management
@@ -13,42 +10,27 @@ import utils.dataProviders as dataProviders
 
 
 def get_selections(projectId):
-    if dataProviders.projectExist(projectId):
-        return dataProviders.get_selections(projectId)
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
 
-    return "project " + projectId + " not found", 404
+    return data_provider.get_selections(projectId), 200
 
 
 def post_selection(projectId, data):
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
 
-    # Selection creation
-    selectionId = utils.clean_filename(data["selectionName"])
-    if len(selectionId) == 0:
-        selectionId = utils.timeNow()
-
-    nbS = 1
-    while debiaiUtils.selectionExist(projectId, selectionId):
-        selectionId = utils.clean_filename(data["selectionName"]) + "_" + str(nbS)
-        nbS += 1
-
-    # Add the request id to the selection if provided
-    requestId = None
-    if "requestId" in data:
-        requestId = data["requestId"]
-
-    # Save the selection
-    selectionInfo = debiaiUtils.createSelection(
+    data_provider.create_selection(
         projectId,
-        selectionId,
         data["selectionName"],
-        list(set(data["sampleHashList"])),
-        requestId,
+        data["sampleHashList"],
+        data["requestId"] if "requestId" in data else None
     )
-
-    return selectionInfo, 200
+    return "Selection added", 200
 
 
 def delete_selection(projectId, selectionId):
