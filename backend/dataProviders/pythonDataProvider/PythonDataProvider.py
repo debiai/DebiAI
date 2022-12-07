@@ -32,6 +32,7 @@ class PythonDataProvider(DataProvider):
         # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
         project_base_info = projects.get_project(id)
         project_base_info["selections"] = selections.get_selections(id)
+        project_base_info["resultStructure"] = projects.getResultStructure(id)
         project_base_info["models"] = models.get_models(id)
         return project_base_info
 

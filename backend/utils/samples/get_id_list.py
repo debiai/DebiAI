@@ -27,13 +27,12 @@ def get_list(project_id, data_provider, data):
     else:
         # Option 1 : get samples id list
         if "from" in data and "to" in data:
-            id_list = data_provider.get_all_samples_id_list(
+            id_list = data_provider.get_id_list(
                 project_id, data["from"], data["to"])
         else:
             id_list = data_provider.get_id_list(project_id)
-            
+
         nb_from_selection = len(id_list)
-            
 
     if "modelIds" in data and len(data["modelIds"]) > 0 and len(id_list) > 0:
         # Option 3 : get samples id list from model results (common or not)

@@ -106,9 +106,10 @@ def get_model_results(project_id, model_id, sample_ids):
     for sample_id in sample_ids:
         if sample_id in model_results:
             ret[sample_id] = model_results[sample_id]
-        else:
-            raise ValueError("Sample " + sample_id +
-                             " not found in model results")
+        # Not sending error if sample not found in model results at the moment
+        # else:
+        #     raise ValueError("Sample " + sample_id +
+        #                      " not found in model results")
     return ret
 
 
