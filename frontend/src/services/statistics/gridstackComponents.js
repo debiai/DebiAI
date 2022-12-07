@@ -17,7 +17,7 @@ const defaultLayout = [
     height: 5,
   },
   {
-    key: "RepartitionPlot",
+    key: "DistributionPlot",
     x: 0,
     y: 5,
     width: 6,
@@ -53,6 +53,8 @@ availableWidgets.keys().forEach((componentFilePath) => {
       componentKey + "/configuration.json");
 
     // Check configuration
+    if (configuration.display === false) return;
+
     let widgetName = configuration.name || componentKey;
     let widgetDescription = configuration.description || "";
     let widgetSimple = configuration.simple || false;
@@ -65,14 +67,12 @@ availableWidgets.keys().forEach((componentFilePath) => {
     }
 
     // Save the component configuration
-    if (configuration.display !== false) {
-      availableWidgetsConfiguration[componentKey] = {
-        name: widgetName,
-        description: widgetDescription,
-        simple: widgetSimple,
-        key: componentKey,
-        layout: widgetLayout,
-      }
+    availableWidgetsConfiguration[componentKey] = {
+      name: widgetName,
+      description: widgetDescription,
+      simple: widgetSimple,
+      key: componentKey,
+      layout: widgetLayout,
     }
   } catch (e) {
     console.log(e);
@@ -82,11 +82,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
 function createWidget(widgetKey) {
   // A uuid is generated for the widget
-  const widget = {
-    ...availableWidgetsConfiguration[widgetKey],
-    id: services.uuid(),
-  };
-  return widget;
+  return { ...availableWidgetsConfiguration[widgetKey], id: services.uuid() };
 }
 
 function getAvailableWidgets() {
@@ -100,9 +96,14 @@ function getAvailableWidgets() {
   return widgetList;
 }
 
+function widgetExists(widgetKey) {
+  return widgetKey in availableWidgetsConfiguration;
+}
+
 
 export default {
   defaultLayout,
   createWidget,
-  getAvailableWidgets
+  getAvailableWidgets,
+  widgetExists
 }
