@@ -1,7 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 
 
 class DataProvider(ABC):
+    
+    @abstractproperty
+    def name(self):
+        pass
+    
+    @abstractproperty
+    def is_alive(self):
+        return False
+    
     @abstractmethod
     def get_info(self):
         pass
@@ -39,5 +48,10 @@ class DataProvider(ABC):
         pass
 
     @abstractmethod
+    def get_model_results_id_list(self):
+        pass
+
+    @abstractmethod
     def get_model_results(self, id_list):
         pass
+

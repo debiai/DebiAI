@@ -1,6 +1,13 @@
 import requests
 
 
+def is_alive(url):
+    try:
+        r = requests.get(url + '/ping')
+        return r.status_code == 200
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
+
 def get_info(url):
     try:
         r = requests.get(url + "/info")
@@ -61,7 +68,7 @@ def get_selections(url, id_project):
         return None
 
 
-def get_selection(url, id_project, id_selection):
+def get_selection_id(url, id_project, id_selection):
     try:
         r = requests.get(
             url + "/projects/{}/selections/{}".format(id_project, id_selection)
@@ -78,6 +85,12 @@ def get_models(url, id_project):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+def get_model_result_id_list(url, project_id, model_id):
+    try:
+        r = requests.get(url + "/projects/{}/models/{}".format(project_id, model_id))
+        return r.json()
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
 
 def get_model_result(url, id_project, id_model, id_sample_list):
     try:
