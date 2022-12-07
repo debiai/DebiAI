@@ -5,7 +5,7 @@
       <p id="debiaiLogo">
         <img src="../../../src/assets/images/DebiAI.png" alt="DebiAI" height="48" />
       </p>
-      <a id="version" href="https://github.com/debiai/debiai/" target="_blank">0.18.2</a>
+      <a id="version" href="https://github.com/debiai/debiai/" target="_blank">0.18.3</a>
       <a id="version" href="https://debiai.irt-systemx.fr/debiai/" target="_blank">Online documentation</a>
 
       <p id="irtLogo">

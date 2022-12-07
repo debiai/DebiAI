@@ -3,54 +3,115 @@
     <!--============= Modals =============-->
     <!-- customColumnCreation -->
     <modal v-if="customColumnCreation">
-      <CustomColumnCreator :data="data" @cancel="customColumnCreation = false" @create="createCustomColumn" />
+      <CustomColumnCreator
+        :data="data"
+        @cancel="customColumnCreation = false"
+        @create="createCustomColumn"
+      />
     </modal>
     <!-- saveSelectionWidget -->
     <modal v-if="saveSelectionWidget">
-      <SelectionCreator :data="data" :selectedData="selectedData" @cancel="saveSelectionWidget = false"
-        @done="saveSelectionWidget = false" />
+      <SelectionCreator
+        :data="data"
+        :selectedData="selectedData"
+        @cancel="saveSelectionWidget = false"
+        @done="saveSelectionWidget = false"
+      />
     </modal>
     <!-- tagCreationWidget -->
     <modal v-if="tagCreationWidget">
-      <TagCreator :data="data" :selectedData="selectedData" @cancel="tagCreationWidget = false"
-        @created="tagCreationWidget = false" />
+      <TagCreator
+        :data="data"
+        :selectedData="selectedData"
+        @cancel="tagCreationWidget = false"
+        @created="tagCreationWidget = false"
+      />
     </modal>
     <!-- Selection export -->
     <modal v-if="selectionExport">
-      <SelectionExportMenu :data="data" :selectedData="selectedData" @cancel="selectionExport = false"
-        @exported="selectionExport = false" />
+      <SelectionExportMenu
+        :data="data"
+        :selectedData="selectedData"
+        @cancel="selectionExport = false"
+        @exported="selectionExport = false"
+      />
     </modal>
     <!-- WidgetCatalog -->
     <modal v-if="widgetCatalog">
-      <WidgetCatalog :widgets="availableWidgets" @cancel="widgetCatalog = false" @add="addWidget" @addWithConf="
-        ({ widgetComponent, conf }) => addWidget(widgetComponent, null, conf)
-      " />
+      <WidgetCatalog
+        :widgets="availableWidgets"
+        @cancel="widgetCatalog = false"
+        @add="addWidget"
+        @addWithConf="
+          ({ widgetComponent, conf }) => addWidget(widgetComponent, null, conf)
+        "
+      />
     </modal>
 
     <!-- floating menu -->
-    <fab name="menu" bg-color="var(--primaryDark)" position="top-right" main-tooltip="Menu" main-icon="menu"
-      fixed-tooltip="true" z-index="2" :actions="menuList" @customColumn="customColumn" @saveSelection="saveSelection"
-      @tagCreation="tagCreation" @exportSelection="exportSelection" @defaultLayout="defaultLayout"
-      @clearLayout="clearLayout" @changeDefaultLayout="changeDefaultLayout"
-      @restoreDefaultLayout="restoreDefaultLayout" />
+    <fab
+      name="menu"
+      bg-color="var(--primaryDark)"
+      position="top-right"
+      main-tooltip="Menu"
+      main-icon="menu"
+      fixed-tooltip="true"
+      z-index="2"
+      :actions="menuList"
+      @customColumn="customColumn"
+      @saveSelection="saveSelection"
+      @tagCreation="tagCreation"
+      @exportSelection="exportSelection"
+      @defaultLayout="defaultLayout"
+      @clearLayout="clearLayout"
+      @changeDefaultLayout="changeDefaultLayout"
+      @restoreDefaultLayout="restoreDefaultLayout"
+    />
     <!-- floating wiget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
-      <fab name="widgetCatalog" bg-color="var(--success)" size="small" position="right" main-tooltip="Add a widget"
-        main-icon="add" z-index="2" />
+      <fab
+        name="widgetCatalog"
+        bg-color="var(--success)"
+        size="small"
+        position="right"
+        main-tooltip="Add a widget"
+        main-icon="add"
+        z-index="2"
+      />
     </div>
     <header />
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
-      <div v-for="component in components" :key="component.id" :id="component.id" :data-gs-id="component.id"
-        :data-gs-x="component.layout.x" :data-gs-y="component.layout.y" :data-gs-width="component.layout.width"
-        :data-gs-min-width="component.layout.minWidth" :data-gs-max-width="component.layout.maxWidth"
-        :data-gs-height="component.layout.height" :data-gs-min-height="component.layout.minHeight"
-        :data-gs-max-height="component.layout.maxHeight">
-        <Widget :title="component.name" :simple="component.simple" :conf="component.conf" :index="component.id"
-          v-on:remove="removeWidget(component)" v-on:copy="(conf) => copyWidget({ component, conf })">
-          <component :is="component.key" :component="component" :data="data" :selectedData="selectedData"
-            :index="component.id" />
+      <div
+        v-for="component in components"
+        :key="component.id"
+        :id="component.id"
+        :data-gs-id="component.id"
+        :data-gs-x="component.layout.x"
+        :data-gs-y="component.layout.y"
+        :data-gs-width="component.layout.width"
+        :data-gs-min-width="component.layout.minWidth"
+        :data-gs-max-width="component.layout.maxWidth"
+        :data-gs-height="component.layout.height"
+        :data-gs-min-height="component.layout.minHeight"
+        :data-gs-max-height="component.layout.maxHeight"
+      >
+        <Widget
+          :title="component.name"
+          :simple="component.simple"
+          :conf="component.conf"
+          :index="component.id"
+          v-on:remove="removeWidget(component)"
+          v-on:copy="(conf) => copyWidget({ component, conf })"
+        >
+          <component
+            :is="component.key"
+            :component="component"
+            :data="data"
+            :selectedData="selectedData"
+            :index="component.id"
+          />
         </Widget>
       </div>
     </div>
@@ -98,13 +159,13 @@ export default {
     Footer,
 
     // Other
-    fab,
+    fab, // (Floating Action Button)
   },
   data() {
     return {
       // Analysis data
-      data: null,
-      selectedData: null,
+      data: null, // Contain all the data that the widget will read
+      selectedData: null, // Index of the selected samples or results
 
       // Workspace
       gridStacklayout: [],
@@ -182,7 +243,7 @@ export default {
       let commomModelResults = this.$route.query.commomModelResults;
 
       if (projectId) {
-        // start analysis imediatly
+        // Go back to project page to start an analysis imediatly
         this.$router.push({
           path: "/project/" + projectId,
           query: {
@@ -203,7 +264,7 @@ export default {
       // Load available Widgets from the widget folder
       this.loadWidgets();
 
-      // Load local storage grid stack layout
+      // Load local storage grid stack layout or the default one if no layout is saved
       let savedGridStackLayout = window.localStorage.getItem("gridStackLayout");
       if (savedGridStackLayout) {
         savedGridStackLayout = JSON.parse(savedGridStackLayout);
@@ -265,27 +326,30 @@ export default {
       this.availableWidgets = componentsGridStackData.getAvailableWidgets();
     },
     loadLayout(layout) {
-      console.log(layout);
-      // this.clearLayout();
-      // layout.forEach((c) => {
-      //   console.log("Load layout");
-      //   console.log(c);
-      //   //get layout
-      //   var component = new componentsGridStackData.registeredComponents[
-      //     c.key
-      //   ]();
-      //   component.layout.x = c.x;
-      //   component.layout.y = c.y;
-      //   component.layout.height = c.height;
-      //   component.layout.width = c.width;
-      //   //add to model
-      //   this.components.push(component);
+      this.clearLayout();
+      layout.forEach((c) => {
+        if (!c.key || !componentsGridStackData.widgetExists(c.key)) {
+          console.warn("Component " + c.key + " not found");
+          return;
+        }
 
-      //   //wait until vue has completely rendered the new component
-      //   this.$nextTick(() => {
-      //     this.grid.makeWidget(document.getElementById(component.id));
-      //   });
-      // });
+        // get comp default layout :
+        let component = componentsGridStackData.createWidget(c.key);
+
+        // set shape from given layout
+        component.layout.x = c.x;
+        component.layout.y = c.y;
+        component.layout.height = c.height;
+        component.layout.width = c.width;
+
+        // add to model
+        this.components.push(component);
+
+        // wait until vue has completely rendered the new component
+        this.$nextTick(() => {
+          this.grid.makeWidget(document.getElementById(component.id));
+        });
+      });
     },
     addWidget(compKey, layout, conf = null) {
       this.widgetCatalog = false;
@@ -328,13 +392,19 @@ export default {
 
     // Buttons
     defaultLayout() {
-      // Load local storage grid stack default layout
+      // Check if the default layout has been overide by a local storage grid stack layout
       let savedGridStackDefaultLayout = window.localStorage.getItem(
         "gridStackDefaultLayout"
       );
       if (savedGridStackDefaultLayout) {
         savedGridStackDefaultLayout = JSON.parse(savedGridStackDefaultLayout);
         this.loadLayout(savedGridStackDefaultLayout);
+
+        // Send message to the user
+        this.$store.commit("sendMessage", {
+          title: "success",
+          msg: "Custom default layout loaded",
+        });
       } else {
         // No saved default layout
         this.loadLayout(componentsGridStackData.defaultLayout);
@@ -453,7 +523,7 @@ header #widgetList {
   display: flex;
 }
 
-header #widgetList button+button {
+header #widgetList button + button {
   margin-left: 5px;
 }
 
