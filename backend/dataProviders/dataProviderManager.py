@@ -1,5 +1,5 @@
 from config.init_config import get_config
-# from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 from dataProviders.pythonDataProvider.PythonDataProvider import PythonDataProvider
 
 data_providers_list = []
@@ -22,6 +22,7 @@ def setup_data_providers():
     # Python Data Providers
     # TODO: make it optional in the config file
     add(PythonDataProvider())
+    print(PythonDataProvider().name)
 
     return
     

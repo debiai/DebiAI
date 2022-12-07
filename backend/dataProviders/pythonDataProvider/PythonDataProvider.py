@@ -9,8 +9,14 @@ class PythonDataProvider(DataProvider):
     # Generic functions
     def __init__(self):
         pythonModuleUtils.init()
-        self.name = PYTHON_DATA_PROVIDER_ID
         print("  Python module Data Provider initialized")
+    
+    @property
+    def name(self):
+        return PYTHON_DATA_PROVIDER_ID
+    
+    def is_alive(self):
+        return True
 
     def get_info(self):
         # Request method to get info on data Provider

@@ -2,8 +2,11 @@ from dataProviders.webDataProvider.http.api import (
     get_projects,
     get_project,
     get_selections,
-    get_models,
 )
+
+from dataProviders.webDataProvider.useCases.models import get_models_info
+from dataProviders.webDataProvider.useCases.selections import get_selections
+
 from utils.utils import timeNow
 
 def get_all_projects_from_data_provider(url, name):
@@ -15,8 +18,8 @@ def get_all_projects_from_data_provider(url, name):
     
     for project in projects:
         blockInfo = format_collumns_project_overview(projects[project])
-        selections = format_selections_project_overview(url, project)
-        models = format_models_for_overview(url, project)
+        selections = get_selections(url, project)
+        models = get_models_info(url, project)
         # Samples number
         if "nbSamples" in projects[project]:
             nbSamples = projects[project]["nbSamples"]
@@ -56,8 +59,8 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     print("=================== project selected =====================")
     print(project)
     blockInfo = format_collumns_project_overview(project)
-    selections = format_selections_project_overview(url, project)
-    models = format_models_for_overview(url, project)
+    selections = get_selections(url, project)
+    models = get_models_info(url, project)
     
     if "nbSamples" in project:
         nbSamples = project["nbSamples"]
@@ -119,37 +122,3 @@ def format_collumns_project_overview(project):
     
     return blockLevelInfo
 
-def format_selections_project_overview(url, id_project):
-    # Get selections for the project
-    selections = get_selections(url, id_project)
-    
-    debiai_selections = []
-    for selection in selections:
-        debiai_selections.append(
-            {
-                "name": selection["name"] if "name" in selection else selection["id"],
-                "id": selection["id"],
-                "nbSamples": selection["nbSamples"] if "nbSamples" in selection else 0,
-                "creationDate": timeNow(),
-                "updateDate": timeNow(),
-            }
-        )
-    return debiai_selections
-
-def format_models_for_overview(url, id_project):
-    # Models
-    models = get_models(url, id_project)
-    debiai_models = []
-    for model in models:
-        debiai_models.append(
-            {
-                "name": model["name"] if "name" in model else model["id"],
-                "id": model["id"],
-                "nbResults": model["nbResults"] if "nbResults" in model else 0,
-                "creationDate": timeNow(),
-                "updateDate": timeNow(),
-                "metadata": {},
-            }
-        )
-    
-    return debiai_models    
