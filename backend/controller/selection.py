@@ -34,12 +34,10 @@ def post_selection(projectId, data):
 
 
 def delete_selection(projectId, selectionId):
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
-    if not debiaiUtils.selectionExist(projectId, selectionId):
-        return "The selection doesn't exist", 404
-
-    debiaiUtils.deleteSelection(projectId, selectionId)
-
-    return 200
+    data_provider.delete_selection(projectId, selectionId)
+    
+    return "Selection deleted", 200

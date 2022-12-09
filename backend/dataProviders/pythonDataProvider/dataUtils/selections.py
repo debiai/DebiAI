@@ -9,23 +9,24 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 
 def create_selection(project_id, selection_name, sample_ids, request_id=None):
 
-    selectionId = pythonModuleUtils.clean_filename(selection_name)
-    if len(selectionId) == 0:
-        selectionId = pythonModuleUtils.timeNow()
+    selection_id = pythonModuleUtils.clean_filename(selection_name)
+    if len(selection_id) == 0:
+        selection_id = pythonModuleUtils.timeNow()
 
     nbS = 1
-    while selection_exist(project_id, selectionId):
-        selectionId = pythonModuleUtils.clean_filename(
+    while selection_exist(project_id, selection_id):
+        selection_id = pythonModuleUtils.clean_filename(
             selection_name) + "_" + str(nbS)
         nbS += 1
 
     # Save the selection
     selectionInfoFilePath = (
-        DATA_PATH + project_id + "/selections/" + selectionId + "/info.json"
+        DATA_PATH + project_id + "/selections/" + selection_id + "/info.json"
     )
+    now = pythonModuleUtils.timeNow()
 
     selectionInfo = {
-        "id": project_id,
+        "id": selection_id,
         "name": selection_name,
         "filePath": selectionInfoFilePath,
         "creationDate": now,
@@ -33,22 +34,20 @@ def create_selection(project_id, selection_name, sample_ids, request_id=None):
         "samples": sample_ids,
     }
 
-    now = pythonModuleUtils.timeNow()
-
     if request_id is not None:
         selectionInfo["requestId"] = request_id
 
-    os.mkdir(DATA_PATH + project_id + "/selections/" + selectionId)
+    os.mkdir(DATA_PATH + project_id + "/selections/" + selection_id)
     pythonModuleUtils.writeJsonFile(selectionInfoFilePath, selectionInfo)
-    projects.updateProject(project_id)
+    projects.update_project(project_id)
     return selectionInfo
 
 
 def get_selections(project_id):
     # Get selections
     selections = []
-    for selectionId in get_selection_ids(project_id):
-        selections.append(get_selection(project_id, selectionId))
+    for selection_id in get_selection_ids(project_id):
+        selections.append(get_selection(project_id, selection_id))
     return selections
 
 
@@ -111,7 +110,7 @@ def get_selection_id_list(project_id, selectionId):
 #     return samples
 
 
-def deleteSelection(project_id, selectionId):
+def delete_selection(project_id, selection_id):
     pythonModuleUtils.deleteDir(
-        DATA_PATH + project_id + "/selections/" + selectionId)
+        DATA_PATH + project_id + "/selections/" + selection_id)
     projects.updateProject(project_id)
