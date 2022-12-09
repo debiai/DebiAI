@@ -10,6 +10,8 @@ def setup_data_providers():
     config = get_config()
     data_provider_config = config["DATA_PROVIDERS"]
     
+    internal_data_provider = data_provider_config.pop("Internal_data_provider", False)
+    
     keys = list(data_provider_config.keys())
     values = list(data_provider_config.values())
 
@@ -17,12 +19,15 @@ def setup_data_providers():
     for i in range(len(data_provider_config)):
         name = keys[i]
         url = values[i]
+        print("======== Adding external data Provider " + name + " from " + url + "========")
         add(WebDataProvider(url, name))
     
     # Python Data Providers
-    # TODO: make it optional in the config file
-    add(PythonDataProvider())
-    print(PythonDataProvider().name)
+    
+    if bool(internal_data_provider) == True:
+        print("======== Adding internal data Provider ========")
+        add(PythonDataProvider())
+        print(PythonDataProvider().name)
 
     return
     

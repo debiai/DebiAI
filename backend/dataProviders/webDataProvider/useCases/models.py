@@ -23,7 +23,8 @@ def get_models_info(url, project_id):
 def get_model_result_id(url, project_id , model_id):
     # Todo : Add route to call Id results for a Model (DP)
     # Todo : Add Some formating if data has to change
-    return get_model_result_id_list(url, project_id, model_id)
+    rsp = get_model_result_id_list(url, project_id, model_id)
+    return rsp
     
 
 def get_model_results(url, project_id, model_id, sample_list):

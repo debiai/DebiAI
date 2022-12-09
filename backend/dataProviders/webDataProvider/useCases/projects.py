@@ -27,7 +27,7 @@ def get_all_projects_from_data_provider(url, name):
             nbSamples = None
             
         project_list.append({
-            "id": name + "|" + project,
+            "id": project,
             "name": project,
             "dataProvider": name,
             "view": project,
@@ -45,7 +45,6 @@ def get_all_projects_from_data_provider(url, name):
             "models": models,
         })
         
-    print(project_list)
         
     ###### Modify rest of function with what we need
     return project_list
@@ -53,14 +52,13 @@ def get_all_projects_from_data_provider(url, name):
 
 def get_single_project_from_data_provider(url, data_provider_name, id_project):
     project = get_project(url, id_project)
-    print(project)
-    #### Todo : remove when data Provider API will be changed 
+    #### Todo : remove when data Provider API will be changed
     project = project[id_project]
     print("=================== project selected =====================")
     print(project)
     blockInfo = format_collumns_project_overview(project)
-    selections = get_selections(url, project)
-    models = get_models_info(url, project)
+    selections = get_selections(url, id_project)
+    models = get_models_info(url, id_project)
     
     if "nbSamples" in project:
         nbSamples = project["nbSamples"]
@@ -69,7 +67,7 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
 
     # Converting views to DebiAI projects
     return {
-        "id": data_provider_name + "|" + id_project,
+        "id": id_project,
         "name": project["name"],
         "dataProvider": data_provider_name,
         "view": id_project,

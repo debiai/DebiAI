@@ -31,14 +31,14 @@ def get_project(url, id_project):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
-
+#### Todo : Change url dataIdList to data-id-list
+#### optionnal : change view to projects 
 def get_id_list(url, id_project, _from=None, _to=None):
     try:
         if _from is not None and _to is not None:
-            url = url + "/projects/" + id_project + "/data-id-list"    
+            url = url + "/view/" + id_project + "/dataIdList?from={}&to={}".format(_from, _to)
         else:     
-            url = url + "/projects/" + id_project + "/data-id-list?from={}&to={}".format(_from, _to)
-            
+            url = url + "/view/" + id_project + "/dataIdList"
         r = requests.get(url)
             
         return r.json()
@@ -49,7 +49,7 @@ def get_id_list(url, id_project, _from=None, _to=None):
 
 def get_samples(url, id_project, id_list):
     try:
-        r = requests.post(url + "/projects/{}/data".format(id_project), json=id_list)
+        r = requests.post(url + "/view/{}/data".format(id_project), json=id_list)
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         raise Exception(
@@ -62,7 +62,6 @@ def get_samples(url, id_project, id_list):
 def get_selections(url, id_project):
     try:
         r = requests.get(url + "/view/{}/selections".format(id_project))
-        print(r)
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
@@ -71,7 +70,7 @@ def get_selections(url, id_project):
 def get_selection_id(url, id_project, id_selection):
     try:
         r = requests.get(
-            url + "/projects/{}/selections/{}".format(id_project, id_selection)
+            url + "/view/{}/selections/{}".format(id_project, id_selection)
         )
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
@@ -85,9 +84,11 @@ def get_models(url, id_project):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+
+### Todo : Replace model by "models" && replace evaluatedDataList by "evaluated-data-list"
 def get_model_result_id_list(url, project_id, model_id):
     try:
-        r = requests.get(url + "/projects/{}/models/{}".format(project_id, model_id))
+        r = requests.get(url + "/view/{}/model/{}/evaluatedDataIdList".format(project_id, model_id))
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
@@ -95,7 +96,7 @@ def get_model_result_id_list(url, project_id, model_id):
 def get_model_result(url, id_project, id_model, id_sample_list):
     try:
         r = requests.post(
-            url + "/projects/{}/models/{}/results".format(id_project, id_model),
+            url + "/view/{}/model/{}/results".format(id_project, id_model),
             json=id_sample_list,
         )
         return r.json()
