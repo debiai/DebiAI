@@ -69,7 +69,7 @@ Withing the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been a
   <a href="https://www.irt-systemx.fr/" title="IRT SystemX">
    <img src="https://www.irt-systemx.fr/wp-content/uploads/2013/03/system-x-logo.jpeg"  height="70">
   </a>
-  Integrated in 
+  And is integrated in 
   <a href="https://www.confiance.ai/" title="Confiance.ai">
    <img src="https://pbs.twimg.com/profile_images/1443838558549258264/EvWlv1Vq_400x400.jpg"  height="70">
   </a>
