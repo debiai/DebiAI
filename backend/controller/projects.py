@@ -6,11 +6,12 @@ import ujson as json
 
 import utils.utils as utils
 import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.pythonDataProvider.dataUtils.pythonModuleUtils as moduleUtils
+import dataProviders.pythonDataProvider.dataUtils.projects as projectUtils
 
 #############################################################################
 # PROJECTS Management
 #############################################################################
-
 
 def ping():
     return "Online v0.15.1", 200
@@ -48,25 +49,29 @@ def get_project(projectId):
     
 def post_project(data):
     projectName = data["projectName"]
+    
+    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
 
+    ### Todo : voir si les checks ici ou dans des Use Cases
+    
     # Check project name
     if len(projectName) > 50:
         return "Project name too long", 401
 
-    if not utils.is_filename_clean(projectName):
-        return "Project name contain invalid characters", 402
-
+    if not moduleUtils.is_filename_clean(projectName):
+        return "Project name contain invalid characters", 402 
+    
+    # check duplicate project
+    if projectUtils.project_exist(projectName):
+        return "A project with the name " + projectName + " already exist", 403
+      
     # Create the project ID
     projectId = projectName
-
-    # check duplicate project
-    if debiaiUtils.projectExist(projectId):
-        return "A project with the name " + projectName + " already exist", 403
-
-    debiaiUtils.createProject(projectId, projectName)
-
-    return debiaiUtils.getProjectOverview(projectId), 200
-
+    
+    data_provider.create_project(projectId)
+    
+    return data_provider.get_project(projectId), 200
+    
 
 def delete_project(projectId):
     if not debiaiUtils.projectExist(projectId):

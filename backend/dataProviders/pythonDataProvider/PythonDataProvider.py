@@ -1,7 +1,6 @@
 from dataProviders.DataProvider import DataProvider
 from utils.utils import get_app_version
 from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models
-
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
 
 
@@ -88,7 +87,7 @@ class PythonDataProvider(DataProvider):
         projects.deleteProject(id)
 
     def create_project(self, name):
-        pass
+        return projects.create_project(name, name)
 
 
 
