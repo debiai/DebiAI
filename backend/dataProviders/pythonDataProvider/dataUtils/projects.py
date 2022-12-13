@@ -109,6 +109,8 @@ def create_project(projectId, projectName):
 
     pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
     pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
+    
+    return projectInfo
 
 
 def update_project(projectId):
@@ -141,10 +143,20 @@ def getResultStructure(projectId):
             return None
 
 
-def deleteProject(projectId):
+def delete_project(projectId):
     # Delete the project files and folders
     try:
         shutil.rmtree(DATA_PATH + projectId)
     except Exception as e:
         print(e)
         raise "Something went wrong when deleting the project"
+
+
+def update_block_structure(projectId, blockStructure):
+    try:
+        pythonModuleUtils.updateJsonFile(
+        DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure)
+
+    except Exception as e:
+        print(e)
+        raise "Something went wrong updating project structure"

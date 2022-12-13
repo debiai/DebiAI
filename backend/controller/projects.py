@@ -68,17 +68,20 @@ def post_project(data):
     # Create the project ID
     projectId = projectName
     
-    data_provider.create_project(projectId)
-    
-    return data_provider.get_project(projectId), 200
+    project = data_provider.create_project(projectId)
+    print(project)
+    return project, 200
     
 
 def delete_project(projectId):
-    if not debiaiUtils.projectExist(projectId):
+    print(projectId)
+    if not projectUtils.project_exist(projectId):
         return "Project '" + projectId + "' doesn't exist", 404
-
+    
+    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
+    
     try:
-        shutil.rmtree(dataPath + projectId)
+        data_provider.delete_project(projectId)    
     except Exception as e:
         print(e)
         return "Something went wrong when deleting the project", 500
@@ -88,17 +91,23 @@ def delete_project(projectId):
 
 # Blocklevel
 def post_blocklevels(projectId, blocklevels):
-
+    #### Todo : Virer quand l'api aura update ---> Plus d'id de dp dans l'url
+    projectId = projectId.split("|")[1]
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not projectUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # TODO : check blocklevels
 
     # save blocklevels
-    utils.updateJsonFile(
-        dataPath + projectId + "/info.json", "blockLevelInfo", blocklevels
-    )
+    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
+    
+    try:
+        data_provider.update_block_structure(projectId, blocklevels)
+    except Exception as e:
+        print(e)
+        return "Something went wrong updating block structure", 500
+
 
     return blocklevels, 200
 

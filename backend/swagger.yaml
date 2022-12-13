@@ -96,10 +96,6 @@ paths:
           in: path
           type: string
           required: true
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
       responses:
         200:
           description: project deleted

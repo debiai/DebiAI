@@ -84,7 +84,7 @@ class PythonDataProvider(DataProvider):
     # Python module specific functions
     def delete_project(self, id):
         # Request method to delete project
-        projects.deleteProject(id)
+        projects.delete_project(id)
 
     def create_project(self, name):
         return projects.create_project(name, name)
@@ -103,3 +103,9 @@ class PythonDataProvider(DataProvider):
 
     def add_results_dict(self, project_id, model_id, data):
         models.add_results_dict(project_id, model_id, data)
+        
+        
+    def update_block_structure(self, projectId, blockStructure):
+        projects.update_block_structure(projectId, blockStructure)
+    
+
