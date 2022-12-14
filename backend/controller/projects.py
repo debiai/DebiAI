@@ -5,6 +5,7 @@ import shutil
 import ujson as json
 
 import utils.utils as utils
+import dataProviders.DataProviderException as DataProviderException
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.pythonDataProvider.dataUtils.pythonModuleUtils as moduleUtils
 import dataProviders.pythonDataProvider.dataUtils.projects as projectUtils
@@ -12,6 +13,7 @@ import dataProviders.pythonDataProvider.dataUtils.projects as projectUtils
 #############################################################################
 # PROJECTS Management
 #############################################################################
+
 
 def ping():
     return "Online v0.15.1", 200
@@ -37,61 +39,56 @@ def get_project(projectId):
     # return the info about datasets, models, selections & tags
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
-    
-    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-    project = data_provider.get_project(projectId)
-    if project is not None:
+
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
+
+    try:
+        project = data_provider.get_project(projectId)
         project["id"] = dataProviderId + "|" + project["id"]
         return project, 200
-    
-    return "Project " + projectId + " on data Provider " + dataProviderId + " not found", 404
-    
-    
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
+
+
 def post_project(data):
+    # Ask a data provider to create a project
+    dataProviderId = "Python module Data Provider" # TODO : deal with route
     projectName = data["projectName"]
-    
-    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
 
-    ### Todo : voir si les checks ici ou dans des Use Cases
-    
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
+
     # Check project name
-    if len(projectName) > 50:
-        return "Project name too long", 401
+    if len(projectName) > 100:
+        return "Project name too long", 400
 
-    if not moduleUtils.is_filename_clean(projectName):
-        return "Project name contain invalid characters", 402 
-    
-    # check duplicate project
-    if projectUtils.project_exist(projectName):
-        return "A project with the name " + projectName + " already exist", 403
-      
-    # Create the project ID
-    projectId = projectName
-    
-    project = data_provider.create_project(projectId)
-    print(project)
-    return project, 200
-    
+    try:
+        project = data_provider.create_project(projectName)
+        project["id"] = dataProviderId + "|" + project["id"]
+        return project, 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
+
 
 def delete_project(projectId):
-    print(projectId)
-    if not projectUtils.project_exist(projectId):
-        return "Project '" + projectId + "' doesn't exist", 404
-    
-    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
-    
-    try:
-        data_provider.delete_project(projectId)    
-    except Exception as e:
-        print(e)
-        return "Something went wrong when deleting the project", 500
+    # Delete a project
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
 
-    return "ok", 200
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
+
+    try:
+        data_provider.delete_project(projectId)
+        return "Project deleted", 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
 
 # Blocklevel
 def post_blocklevels(projectId, blocklevels):
-    #### Todo : Virer quand l'api aura update ---> Plus d'id de dp dans l'url
+    # Todo : Virer quand l'api aura update ---> Plus d'id de dp dans l'url
     projectId = projectId.split("|")[1]
     # ParametersCheck
     if not projectUtils.project_exist(projectId):
@@ -100,14 +97,14 @@ def post_blocklevels(projectId, blocklevels):
     # TODO : check blocklevels
 
     # save blocklevels
-    data_provider = data_provider_manager.get_single_data_provider("Python module Data Provider")
-    
+    data_provider = data_provider_manager.get_single_data_provider(
+        "Python module Data Provider")
+
     try:
         data_provider.update_block_structure(projectId, blocklevels)
     except Exception as e:
         print(e)
         return "Something went wrong updating block structure", 500
-
 
     return blocklevels, 200
 

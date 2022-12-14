@@ -1,4 +1,5 @@
 from dataProviders.DataProvider import DataProvider
+from dataProviders.DataProviderException import DataProviderException
 from utils.utils import get_app_version
 from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
@@ -9,11 +10,11 @@ class PythonDataProvider(DataProvider):
     def __init__(self):
         pythonModuleUtils.init()
         print("  Python module Data Provider initialized")
-    
+
     @property
     def name(self):
         return PYTHON_DATA_PROVIDER_ID
-    
+
     def is_alive(self):
         return True
 
@@ -35,6 +36,10 @@ class PythonDataProvider(DataProvider):
     def get_project(self, id):
         # Request method to get projects overview
         # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
+
+        if not projects.project_exist(id):
+            raise DataProviderException("Project not found", 404)
+
         project_base_info = projects.get_project(id)
         project_base_info["selections"] = selections.get_selections(id)
         project_base_info["resultStructure"] = projects.getResultStructure(id)
@@ -83,13 +88,19 @@ class PythonDataProvider(DataProvider):
 
     # Python module specific functions
     def delete_project(self, id):
+        # Check if project exist
+        if not projects.project_exist(id):
+            raise DataProviderException("Project does not exist", 404)
+
         # Request method to delete project
         projects.delete_project(id)
 
     def create_project(self, name):
+        # Check if project already exist
+        if projects.project_exist(name):
+            raise DataProviderException("Project already exists", 400)
+
         return projects.create_project(name, name)
-
-
 
     def create_model(self, project_id, data):
         models.create_model(
@@ -103,9 +114,6 @@ class PythonDataProvider(DataProvider):
 
     def add_results_dict(self, project_id, model_id, data):
         models.add_results_dict(project_id, model_id, data)
-        
-        
+
     def update_block_structure(self, projectId, blockStructure):
         projects.update_block_structure(projectId, blockStructure)
-    
-

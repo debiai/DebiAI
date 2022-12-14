@@ -1,9 +1,15 @@
-import os, shutil
+import os
+import shutil
 import ujson as json
 
 from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, hash
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
+
+
+def project_exist(projectId):
+    return projectId in os.listdir(DATA_PATH)
+
 
 def get_project(projectId):
     try:
@@ -15,7 +21,8 @@ def get_project(projectId):
             data = json.load(json_file)
 
         if "name" not in data:
-            raise Exception("The project name is missing from the info.json file")
+            raise Exception(
+                "The project name is missing from the info.json file")
 
         if "creationDate" not in data:
             raise Exception(
@@ -23,7 +30,8 @@ def get_project(projectId):
             )
 
         if "updateDate" not in data:
-            raise Exception("The project updateDate is missing from the info.json file")
+            raise Exception(
+                "The project updateDate is missing from the info.json file")
 
         name = data["name"]
         creationDate = data["creationDate"]
@@ -107,9 +115,11 @@ def create_project(projectId, projectName):
         "blockLevelInfo": [],
     }
 
-    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
-    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
-    
+    pythonModuleUtils.writeJsonFile(
+        DATA_PATH + projectId + "/info.json", projectInfo)
+    pythonModuleUtils.writeJsonFile(
+        DATA_PATH + projectId + "/samplesHashmap.json", {})
+
     return projectInfo
 
 
@@ -118,10 +128,6 @@ def update_project(projectId):
     pythonModuleUtils.updateJsonFile(
         DATA_PATH + projectId + "/info.json", "updateDate", pythonModuleUtils.timeNow()
     )
-
-
-def project_exist(projectId):
-    return projectId in os.listdir(DATA_PATH)
 
 
 def getProjectblockLevelInfo(projectId):
@@ -155,7 +161,7 @@ def delete_project(projectId):
 def update_block_structure(projectId, blockStructure):
     try:
         pythonModuleUtils.updateJsonFile(
-        DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure)
+            DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure)
 
     except Exception as e:
         print(e)
