@@ -169,7 +169,7 @@ def addResultsToTree(projectId, tree: list, modelIds: list, commonOnly: bool) ->
         modelResults[modelId] = models.getModelResults(projectId, modelId)
 
     # Get the project block structure
-    proBs = projects.getProjectblockLevelInfo(projectId)
+    proBs = projects.get_project_block_level_info(projectId)
     sampleLevel = len(proBs) - 1
 
     # Add in the samples the results

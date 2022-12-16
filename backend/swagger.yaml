@@ -323,7 +323,7 @@ paths:
     post:
       summary: add a model
       tags: [Model]
-      operationId: controller.models.post_model
+      operationId: controller.pythonModuleDp.post_model
       parameters:
         - name: projectId
           in: path
@@ -345,7 +345,7 @@ paths:
       responses:
         200:
           description: Model added
-        201:
+        409:
           description: Warning - Model already exist
         402:
           description: Model name contain prohibed caracters
@@ -356,7 +356,7 @@ paths:
     delete:
       summary: remove a model
       tags: [Model]
-      operationId: controller.models.delete_model
+      operationId: controller.pythonModuleDp.delete_model
       parameters:
         - name: projectId
           in: path
@@ -376,7 +376,7 @@ paths:
     post:
       summary: Add a results to a model
       tags: [Model]
-      operationId: controller.models.add_results_dict
+      operationId: controller.pythonModuleDp.add_results_dict
       parameters:
         - name: projectId
           in: path
@@ -413,7 +413,7 @@ paths:
     post:
       summary: Add a results to a model from hash
       tags: [Model]
-      operationId: controller.models.add_results_hash
+      operationId: controller.pythonModuleDp.add_results_hash
       parameters:
         - name: projectId
           in: path

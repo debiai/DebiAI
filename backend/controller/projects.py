@@ -90,10 +90,10 @@ def delete_project(projectId):
 # def post_addExpectedResult(projectId, resultColumn):
 #     # Add acolumn to the expecter results structure
 #     # ParametersCheck
-#     if not debiaiUtils.projectExist(projectId):
+#     if not debiaiUtils.project_exist(projectId):
 #         return "project " + projectId + " not found", 404
 
-#     resultStructure = debiaiUtils.getResultStructure(projectId)
+#     resultStructure = debiaiUtils.get_result_structure(projectId)
 
 #     if resultStructure is None:
 #         return "project " + projectId + " does not have a results structure", 403
@@ -116,17 +116,17 @@ def delete_project(projectId):
 
 #         debiaiUtils.writeModelResults(projectId, modelId, results)
 
-#     debiaiUtils.updateProject(projectId)
+#     debiaiUtils.update_project(projectId)
 #     return resultStructure, 200
 
 
 # def delete_expectedResult(projectId, resultColumn):
 #     # Add acolumn to the expecter results structure
 #     # ParametersCheck
-#     if not debiaiUtils.projectExist(projectId):
+#     if not debiaiUtils.project_exist(projectId):
 #         return "project " + projectId + " not found", 404
 
-#     resultStructure = debiaiUtils.getResultStructure(projectId)
+#     resultStructure = debiaiUtils.get_result_structure(projectId)
 
 #     if resultStructure is None:
 #         return "project " + projectId + " does not have a results structure", 403
@@ -160,12 +160,12 @@ def delete_project(projectId):
 
 #         debiaiUtils.writeModelResults(projectId, modelId, results)
 
-#     debiaiUtils.updateProject(projectId)
+#     debiaiUtils.update_project(projectId)
 #     return resultStructure, 200
 
 
 # def check_hash(projectId, data):
-#     if not debiaiUtils.projectExist(projectId):
+#     if not debiaiUtils.project_exist(projectId):
 #         return "Project '" + projectId + "' doesn't exist", 404
 
 #     hash_list = data["hash_list"]

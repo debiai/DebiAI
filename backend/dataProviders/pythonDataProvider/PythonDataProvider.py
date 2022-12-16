@@ -119,7 +119,7 @@ class PythonDataProvider(DataProvider):
 
     def update_results_structure(self, projectId, resultsStructure):
         # Check if project exist
-        if not projects.project_exist(id):
+        if not projects.project_exist(projectId):
             raise DataProviderException("Project does not exist", 404)
 
         # TODO : check resultStructure (type and default type ==)
@@ -131,6 +131,10 @@ class PythonDataProvider(DataProvider):
         projects.update_results_structure(projectId, resultsStructure)
 
     def create_model(self, project_id, data):
+        # Check if project exist
+        if not projects.project_exist(project_id):
+            raise DataProviderException("Project does not exist", 404)
+
         models.create_model(
             project_id,
             data["name"],

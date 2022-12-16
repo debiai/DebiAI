@@ -20,7 +20,8 @@ def get_list(projectId, data):
 
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
-    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
 
     # Call our utility function
     data_id_list = get_id_list.get_list(projectId, data_provider, data)
@@ -28,14 +29,13 @@ def get_list(projectId, data):
     return data_id_list, 200
 
 # Get the list of samples ID of the project selection
+
+
 def get_selection_list(projectId, selectionId):
-    if not debiaiUtils.projectExist(projectId):
-        return "project not found", 404
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(
+        dataProviderId)
 
-    # Load selection sample list
-    selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
-
-    if not selectionDetails:
-        return "Selection " + selectionId + " not found", 404
-
-    return selectionDetails["samples"], 200
+    return data_provider.get_selection_id_list(projectId, selectionId)
+    # TODO catch exception
