@@ -1,7 +1,7 @@
 import ujson as json
 import os
 
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, models
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, models, hash
 DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
@@ -36,11 +36,51 @@ DATA_TYPES = pythonModuleUtils.DATA_TYPES
 #     return data
 
 
+def add_block_tree(projectId, data):
+    # Loading project block info
+    bli = projects.get_project_block_level_info(projectId)
+
+    # going through the tree to check for error, store the block to add
+    blockToAdd = []
+
+    try:
+        for block in data["blockTree"]:
+            addBlockTree(projectId, block, bli, blockToAdd, 0, "")
+    except KeyError as e:
+        print(str(e))
+        print("badInputTree")
+        return str(e), 403
+
+    if len(blockToAdd) == 0:
+        return "No block added", 201
+
+    # Store the blocks and the hash map
+    sampleLevel = len(bli) - 1
+    hashToSave = {}
+    for block in blockToAdd:
+
+        if block["level"] == sampleLevel:
+            # Sample level, creating hash
+            sampleHash = hash.hash(block["path"])
+            block["id"] = sampleHash
+            hashToSave[sampleHash] = block["path"]
+
+        addBlock(projectId, block)
+
+    # Save hashmap
+    hash.addToSampleHashmap(projectId, hashToSave)
+
+    projects.update_project(projectId)
+    return str(len(blockToAdd)) + " added blocks"
+
 
 def getBlockInfo(blockLevel, blockInfo):
     """
     Convert the block info to fill the sampleInfo list with a colonName:value dict
     """
+    print("get block info")
+    print(blockLevel)
+    print(blockInfo)
     ret = {}
     ret[blockLevel["name"]] = blockInfo["name"]
 
@@ -50,6 +90,7 @@ def getBlockInfo(blockLevel, blockInfo):
                 ret[column['name']] = blockInfo[dataType][i]
 
     return ret
+
 
 def getBlockTreeFromSamples(projectId, samples: list):
     blocksData = []
@@ -159,7 +200,7 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
     __checkBlockCompliant(block, level, blockLevelInfo)
 
     # check if block exist
-    data = getBlockInfo(projectId, parentPath + block["name"])
+    data = findBlockInfo(projectId, parentPath + block["name"])
     if data is None:
         # BLock doesn't exist
         blockToAdd.append(__createBlock(projectId, block, level, parentPath))
@@ -170,6 +211,18 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
         for child in block["childrenInfoList"]:
             addBlockTree(projectId, child, blockLevelInfo,
                          blockToAdd, level + 1, path)
+
+def findBlockInfo(projectId, blockPath):
+
+    curPath = DATA_PATH + projectId + "/blocks/" + blockPath
+
+    if not os.path.isdir(curPath):
+        return None
+
+    with open(curPath + '/info.json', 'r') as json_file:
+        data = json.load(json_file)
+
+    return data
 
 
 def __checkBlockCompliant(block, level, blockLevelInfo):
@@ -237,7 +290,7 @@ def addBlock(projectId, block):
     try:
         os.mkdir(DATA_PATH + projectId + "/blocks/" + block["path"])
         pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/blocks/" +
-                            block["path"] + '/info.json', block)
+                                        block["path"] + '/info.json', block)
     except FileExistsError:
         print('Warning : The block ' +
               block["path"] + ' already exist, this is not suposed to append')

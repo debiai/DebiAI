@@ -149,7 +149,7 @@ def add_results_dict(project_id, modelId, data):
                + "' doesn't exist")
 
     # Get resultStructure & project_block_structure
-    result_structure = projects.getResultStructure(project_id)
+    result_structure = projects.get_result_structure(project_id)
     if result_structure is None:
         raise ("The project expected results need to be specified before adding results")
 
