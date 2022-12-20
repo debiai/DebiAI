@@ -189,6 +189,7 @@ export default {
     selectFilterColumn(colId) {
       this.filterColumnSelection = false;
 
+      // Add a new epty filter to the store
       let filters;
       if (this.filterSelectionType == "intervals")
         filters = [
