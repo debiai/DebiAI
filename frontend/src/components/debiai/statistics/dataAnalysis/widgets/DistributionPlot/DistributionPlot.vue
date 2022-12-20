@@ -399,7 +399,7 @@ export default {
           // Display more values in the bars
           if (this.displayDetails)
             trace.text = repartition.map(
-              (v) => "<b>" + v + "</b> / " + this.selectedData.length
+              (v) => "<b>" + v + "</b> / " + idValues.length
             );
 
           // Disabled on option the colorscale because of a plotly Bug
