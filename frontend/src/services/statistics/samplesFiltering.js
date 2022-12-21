@@ -29,6 +29,8 @@ let getSelected = (filters, data) => {
 }
 
 let getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) => {
+  // Filter the selected samples ids 
+  // If one of the column value is in the filter values, the sample is selected
   if (filter.values.length > 0) {
     if (filter.inverted)
       return selectedSampleIds.filter(sampleId =>
