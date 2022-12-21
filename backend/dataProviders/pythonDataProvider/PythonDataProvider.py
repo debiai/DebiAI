@@ -142,7 +142,15 @@ class PythonDataProvider(DataProvider):
         )
 
     def delete_model(self, project_id, model_id):
-        models.create_model(project_id, model_id)
+        # Check if project exist
+        if not projects.project_exist(project_id):
+            raise DataProviderException("Project does not exist", 404)
+
+        # Check if model exist
+        if not models.model_exist(project_id, model_id):
+            raise DataProviderException("Model does not exist", 404)
+
+        models.delete_model(project_id, model_id)
 
     def add_results_dict(self, project_id, model_id, data):
         models.add_results_dict(project_id, model_id, data)
