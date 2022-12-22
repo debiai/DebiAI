@@ -9,3 +9,4 @@ __pycache__/
 
 # Front
 frontend/node_modules/
+frontend/.vscode

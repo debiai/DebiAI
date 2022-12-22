@@ -44,32 +44,6 @@ def post_block_tree(projectId, data):
         return e.message, e.status_code
 
 
-# Models
-def post_model(projectId, data):
-    # Create a new model
-    projectId = projectId.split("|")[1]
-    dataProviderId = "Python module Data Provider"
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
-
-    try:
-        data_provider.create_model(projectId, data)
-        return "model created", 200
-    except DataProviderException.DataProviderException as e:
-        return e.message, e.status_code
-
-
-def delete_model(projectId, modelId):
-    #TODO : fix
-    # Delete a model
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
-    data_provider.delete_model(projectId, modelId)
-    return "Model deleted", 200
-
-
 # Add model results
 def add_results_dict(projectId, modelId, data):
     #TODO : fix

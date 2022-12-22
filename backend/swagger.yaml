@@ -304,26 +304,10 @@ paths:
 
   # Models
   /projects/{projectId}/models:
-    get:
-      summary: get the project models overviews
-      tags: [Model]
-      operationId: controller.models.get_models
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: List of model overviews
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/modelOverview"
     post:
       summary: add a model
       tags: [Model]
-      operationId: controller.pythonModuleDp.post_model
+      operationId: controller.models.post_model
       parameters:
         - name: projectId
           in: path
@@ -356,7 +340,7 @@ paths:
     delete:
       summary: remove a model
       tags: [Model]
-      operationId: controller.pythonModuleDp.delete_model
+      operationId: controller.models.delete_model
       parameters:
         - name: projectId
           in: path

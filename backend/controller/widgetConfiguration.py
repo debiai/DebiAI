@@ -12,6 +12,8 @@ import utils.utils as utils
 
 def get_configurations(projectId):
     # ParametersCheck
+    # TODO : fix
+    return [], 200
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
@@ -23,6 +25,7 @@ def get_configurations(projectId):
 
 def post_configuration(projectId, data):
     # ParametersCheck
+    return 200
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
@@ -44,6 +47,7 @@ def post_configuration(projectId, data):
 
 def delete_configuration(projectId, data):
     # ParametersCheck
+    return 200
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
