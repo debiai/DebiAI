@@ -5,6 +5,7 @@ from dataProviders.webDataProvider.useCases.models import get_model_results, get
 from dataProviders.webDataProvider.useCases.selections import get_project_selections, get_id_list_from_selection, create_selection
 from dataProviders.webDataProvider.http.api import get_info, is_alive
 
+from dataProviders.DataProviderException import DataProviderException
 
 
 #
@@ -40,9 +41,9 @@ class WebDataProvider(DataProvider):
         # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
         return get_single_project_from_data_provider(self.url, self.name, id_project)
 
-    # def delete_project(self, _id):
-    #     # Request method to delete project
-    #     pass
+
+    def delete_project(self, project_id):
+        raise DataProviderException("Deleting a project is not supported by this data provider", 400)
 
 
     ### API OK
@@ -74,6 +75,8 @@ class WebDataProvider(DataProvider):
     def create_selection(self, project_id, name, id_list, request_id=None):
         return create_selection(self.url, project_id, name, id_list, request_id)
 
+    def delete_selection(self, project_id, selection_id):
+        raise DataProviderException("Deleting a selection is not supported by this data provider", 400)
     ### API OK
     ### USE CASE OK
     ### CONTROLLER -> NOK
@@ -86,3 +89,6 @@ class WebDataProvider(DataProvider):
 
     def get_model_results(self, project_id, model_id, sample_list):
         return get_model_results(self.url, project_id, model_id, sample_list)
+
+    def delete_model(self, project_id, model_id):
+        raise DataProviderException("Deleting a model is not supported by this data provider", 400)

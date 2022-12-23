@@ -148,7 +148,7 @@ def _block_to_array_recur(block):
 #     """
 
 #     # Get the project block structure
-#     projectBlockStructure = projects.getProjectblockLevelInfo(projectId)
+#     projectBlockStructure = projects.get_project_block_level_info(projectId)
 #     sampleLevel = len(projectBlockStructure) - 1
 
 #     rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")

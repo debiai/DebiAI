@@ -34,7 +34,7 @@ def saveConfigurations(projectId, conf):
     utils.writeJsonFile(
         dataPath + projectId + "/analysis/widgetConfigurations.json", conf
     )
-    debiaiUtils.updateProject(projectId)
+    debiaiUtils.update_project(projectId)
 
 
 def deleteConfiguration(projectId, widgetTitle, confName):

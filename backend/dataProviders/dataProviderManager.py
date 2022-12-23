@@ -1,6 +1,7 @@
 from config.init_config import get_config
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 from dataProviders.pythonDataProvider.PythonDataProvider import PythonDataProvider
+import dataProviders.DataProviderException as DataProviderException
 
 data_providers_list = []
 
@@ -43,7 +44,8 @@ def get_single_data_provider(name):
     for d in data_providers_list:
         if d.name == name:
             return d
-    return
+    
+    raise DataProviderException.DataProviderException("Data provider not found", 404)
 
 
 def delete(name):

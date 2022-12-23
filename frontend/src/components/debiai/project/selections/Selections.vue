@@ -18,6 +18,7 @@
     </modal>
 
     <div id="selectionsPannel">
+      <!-- Pannel header -->
       <div id="title">
         <span class="aligned">
           <h2>
@@ -43,8 +44,9 @@
         <span class="aligned">
           <button
             style="margin-right: 10px"
-            title="Create a selection from a request"
+            title="Create a selection from a request, available in a futur update"
             @click="selectionCreation = !selectionCreation"
+            disabled
           >
             <inline-svg
               :src="require('../../../../assets/svg/request.svg')"

@@ -12,7 +12,7 @@ import utils.utils as utils
 
 def get_tags(projectId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     return tagsUtils.getTags(projectId), 200
@@ -20,7 +20,7 @@ def get_tags(projectId):
 
 def get_tag(projectId, tagId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     tag = tagsUtils.getTagById(projectId, tagId)
@@ -31,7 +31,7 @@ def get_tag(projectId, tagId):
 
 def post_tag(projectId, data):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # Save or update tag
@@ -40,7 +40,7 @@ def post_tag(projectId, data):
 
 def delete_tag(projectId, tagId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     if not tagsUtils.getTagById(projectId, tagId):
@@ -52,7 +52,7 @@ def delete_tag(projectId, tagId):
 
 def get_tag_sample_tree(projectId, tagId, tagValue):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     if not tagsUtils.getTagById(projectId, tagId):

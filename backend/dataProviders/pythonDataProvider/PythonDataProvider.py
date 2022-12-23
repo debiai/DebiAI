@@ -1,8 +1,25 @@
 from dataProviders.DataProvider import DataProvider
 from dataProviders.DataProviderException import DataProviderException
 from utils.utils import get_app_version
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models, tree
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
+
+
+# Wrappers
+def project_must_exist(func):
+    def wrapper(*args, **kwargs):
+        if len(args) < 2:
+            raise Exception("Project id must be provided as first argument")
+
+        project_id = args[1]
+
+        if not projects.project_exist(project_id):
+            raise DataProviderException(
+                "Project " + project_id + " not found", 404)
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 class PythonDataProvider(DataProvider):
@@ -33,75 +50,100 @@ class PythonDataProvider(DataProvider):
         # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}]
         return projects.get_projects()
 
-    def get_project(self, id):
+    def create_project(self, name):
+        # Project must not already exist
+        if projects.project_exist(name):
+            raise DataProviderException("Project already exists", 400)
+
+        return projects.create_project(name, name)
+
+    @project_must_exist
+    def get_project(self, project_id):
         # Request method to get projects overview
         # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
 
-        if not projects.project_exist(id):
-            raise DataProviderException("Project not found", 404)
-
-        project_base_info = projects.get_project(id)
-        project_base_info["selections"] = selections.get_selections(id)
-        project_base_info["resultStructure"] = projects.getResultStructure(id)
-        project_base_info["models"] = models.get_models(id)
+        project_base_info = projects.get_project(project_id)
+        project_base_info["selections"] = selections.get_selections(project_id)
+        project_base_info["resultStructure"] = projects.get_result_structure(
+            project_id)
+        project_base_info["models"] = models.get_models(project_id)
         return project_base_info
 
+    @project_must_exist
+    def delete_project(self, project_id):
+        # Request method to delete project
+        projects.delete_project(project_id)
+
     # Id list
+    @project_must_exist
     def get_id_list(self, project_id, _from=None, _to=None):
         # Get id list
         # Return Arr[id]
         return samples.get_all_samples_id_list(project_id, _from, _to)
 
+    @project_must_exist
     def get_samples(self, project_id, id_list):
         # Get full data from id list
         # Return object { id: [data]}
         return samples.get_data_from_sampleid_list(project_id, id_list)
 
     # Selections
+    @project_must_exist
     def get_selections(self, project_id):
         # Get selections on project
         # Return arr[object{ id, name, creation_time, nb_samples}]
         return selections.get_selections(project_id)
 
+    @project_must_exist
     def get_selection_id_list(self, project_id, selection_id):
         # Get selections id for a project
         # Return selection ID list
         return selections.get_selection_id_list(project_id, selection_id)
 
+    @project_must_exist
     def create_selection(self, project_id, name, id_list, request_id=None):
         # Selection creation
         return selections.create_selection(project_id, name, id_list, request_id)
 
+    @project_must_exist
     def delete_selection(self, project_id, selection_id):
         # Selection deletion
         return selections.delete_selection(project_id, selection_id)
 
     # Models
+    @project_must_exist
     def get_models(self, project_id):
         return models.get_models(project_id)
 
+    @project_must_exist
     def get_model_results_id_list(self, project_id, model_id):
         return models.get_model_id_list(project_id, model_id)
 
+    @project_must_exist
     def get_model_results(self, project_id, model_id, id_list):
         return models.get_model_results(project_id, model_id, id_list)
 
     # Python module specific functions
-    def delete_project(self, id):
-        # Check if project exist
-        if not projects.project_exist(id):
-            raise DataProviderException("Project does not exist", 404)
 
-        # Request method to delete project
-        projects.delete_project(id)
+    @project_must_exist
+    def update_block_structure(self, project_id, blockStructure):
+        projects.update_block_structure(project_id, blockStructure)
 
-    def create_project(self, name):
-        # Check if project already exist
-        if projects.project_exist(name):
-            raise DataProviderException("Project already exists", 400)
+    @project_must_exist
+    def add_block_tree(self, project_id, data):
+        return tree.add_block_tree(project_id, data)
 
-        return projects.create_project(name, name)
+    @project_must_exist
+    def update_results_structure(self, project_id, resultsStructure):
+        # TODO : check resultStructure (type and default type ==)
+        existing_result_structure = projects.get_result_structure(project_id)
+        if existing_result_structure is not None:
+            raise DataProviderException(
+                "project " + project_id + " already have a results structure", 403)
 
+        projects.update_results_structure(project_id, resultsStructure)
+
+    @project_must_exist
     def create_model(self, project_id, data):
         models.create_model(
             project_id,
@@ -109,11 +151,14 @@ class PythonDataProvider(DataProvider):
             data["metadata"] if "metadata" in data else None
         )
 
+    @project_must_exist
     def delete_model(self, project_id, model_id):
-        models.create_model(project_id, model_id)
+        # Check if model exist
+        if not models.model_exist(project_id, model_id):
+            raise DataProviderException("Model does not exist", 404)
 
+        models.delete_model(project_id, model_id)
+
+    @project_must_exist
     def add_results_dict(self, project_id, model_id, data):
         models.add_results_dict(project_id, model_id, data)
-
-    def update_block_structure(self, projectId, blockStructure):
-        projects.update_block_structure(projectId, blockStructure)

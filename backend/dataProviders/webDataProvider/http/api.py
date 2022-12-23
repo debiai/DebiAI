@@ -79,6 +79,7 @@ def get_selection_id(url, id_project, id_selection):
         r = requests.get(
             url + "/view/{}/selection/{}/selectedDataIdList".format(id_project, id_selection)
         )
+
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None

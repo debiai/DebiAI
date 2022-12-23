@@ -280,7 +280,7 @@ def get_projects():
     return projects
 
 
-def projectExist(projectId):
+def project_exist(projectId):
     projects = get_projects()  # Todo improve speed
 
     for project in projects:

@@ -86,139 +86,96 @@ def delete_project(projectId):
         return e.message, e.status_code
 
 
-# Blocklevel
-def post_blocklevels(projectId, blocklevels):
-    # Todo : Virer quand l'api aura update ---> Plus d'id de dp dans l'url
-    projectId = projectId.split("|")[1]
-    # ParametersCheck
-    if not projectUtils.project_exist(projectId):
-        return "project " + projectId + " not found", 404
 
-    # TODO : check blocklevels
+# def post_addExpectedResult(projectId, resultColumn):
+#     # Add acolumn to the expecter results structure
+#     # ParametersCheck
+#     if not debiaiUtils.project_exist(projectId):
+#         return "project " + projectId + " not found", 404
 
-    # save blocklevels
-    data_provider = data_provider_manager.get_single_data_provider(
-        "Python module Data Provider")
+#     resultStructure = debiaiUtils.get_result_structure(projectId)
 
-    try:
-        data_provider.update_block_structure(projectId, blocklevels)
-    except Exception as e:
-        print(e)
-        return "Something went wrong updating block structure", 500
+#     if resultStructure is None:
+#         return "project " + projectId + " does not have a results structure", 403
 
-    return blocklevels, 200
+#     # TODO : check resultStructure (type and default type ==)
 
+#     resultStructure.append(resultColumn)
 
-# Expected_results
-def post_resultsStructure(projectId, resultStructure):
-    # Add the expecter results structure
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+#     # save updated resultStructure
+#     utils.updateJsonFile(
+#         dataPath + projectId + "/info.json", "resultStructure", resultStructure
+#     )
 
-    # TODO : check resultStructure (type and default type ==)
+#     # add to each results the default value
+#     for modelId in debiaiUtils.getModelsId(projectId):
+#         results = debiaiUtils.getModelResults(projectId, modelId)
 
-    existingResultStructure = debiaiUtils.getResultStructure(projectId)
-    if existingResultStructure is not None:
-        return "project " + projectId + " already have a results structure", 403
+#         for key in results:
+#             results[key].append(resultColumn["default"])
 
-    # save resultStructure
-    utils.updateJsonFile(
-        dataPath + projectId + "/info.json", "resultStructure", resultStructure
-    )
-    debiaiUtils.updateProject(projectId)
-    return resultStructure, 200
+#         debiaiUtils.writeModelResults(projectId, modelId, results)
+
+#     debiaiUtils.update_project(projectId)
+#     return resultStructure, 200
 
 
-def post_addExpectedResult(projectId, resultColumn):
-    # Add acolumn to the expecter results structure
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+# def delete_expectedResult(projectId, resultColumn):
+#     # Add acolumn to the expecter results structure
+#     # ParametersCheck
+#     if not debiaiUtils.project_exist(projectId):
+#         return "project " + projectId + " not found", 404
 
-    resultStructure = debiaiUtils.getResultStructure(projectId)
+#     resultStructure = debiaiUtils.get_result_structure(projectId)
 
-    if resultStructure is None:
-        return "project " + projectId + " does not have a results structure", 403
+#     if resultStructure is None:
+#         return "project " + projectId + " does not have a results structure", 403
 
-    # TODO : check resultStructure (type and default type ==)
+#     # TODO : check resultStructure (type and default type ==)
 
-    resultStructure.append(resultColumn)
+#     length_results = len(resultStructure)
+#     idx = -1
+#     resultColumn = resultColumn["value"]
 
-    # save updated resultStructure
-    utils.updateJsonFile(
-        dataPath + projectId + "/info.json", "resultStructure", resultStructure
-    )
+#     for i in range(length_results):
+#         if resultStructure[i]["name"] == resultColumn:
+#             resultStructure.pop(i)
+#             idx = i
+#             break
 
-    # add to each results the default value
-    for modelId in debiaiUtils.getModelsId(projectId):
-        results = debiaiUtils.getModelResults(projectId, modelId)
+#     if idx == -1:
+#         return "Columns " + resultColumn + " does not exists.", 404
 
-        for key in results:
-            results[key].append(resultColumn["default"])
+#     # save updated resultStructure
+#     utils.updateJsonFile(
+#         dataPath + projectId + "/info.json", "resultStructure", resultStructure
+#     )
 
-        debiaiUtils.writeModelResults(projectId, modelId, results)
+#     # add to each results the default value
+#     for modelId in debiaiUtils.getModelsId(projectId):
+#         results = debiaiUtils.getModelResults(projectId, modelId)
 
-    debiaiUtils.updateProject(projectId)
-    return resultStructure, 200
+#         for key in results:
+#             results[key].pop(idx)
 
+#         debiaiUtils.writeModelResults(projectId, modelId, results)
 
-def delete_expectedResult(projectId, resultColumn):
-    # Add acolumn to the expecter results structure
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
-
-    resultStructure = debiaiUtils.getResultStructure(projectId)
-
-    if resultStructure is None:
-        return "project " + projectId + " does not have a results structure", 403
-
-    # TODO : check resultStructure (type and default type ==)
-
-    length_results = len(resultStructure)
-    idx = -1
-    resultColumn = resultColumn["value"]
-
-    for i in range(length_results):
-        if resultStructure[i]["name"] == resultColumn:
-            resultStructure.pop(i)
-            idx = i
-            break
-
-    if idx == -1:
-        return "Columns " + resultColumn + " does not exists.", 404
-
-    # save updated resultStructure
-    utils.updateJsonFile(
-        dataPath + projectId + "/info.json", "resultStructure", resultStructure
-    )
-
-    # add to each results the default value
-    for modelId in debiaiUtils.getModelsId(projectId):
-        results = debiaiUtils.getModelResults(projectId, modelId)
-
-        for key in results:
-            results[key].pop(idx)
-
-        debiaiUtils.writeModelResults(projectId, modelId, results)
-
-    debiaiUtils.updateProject(projectId)
-    return resultStructure, 200
+#     debiaiUtils.update_project(projectId)
+#     return resultStructure, 200
 
 
-def check_hash(projectId, data):
-    if not debiaiUtils.projectExist(projectId):
-        return "Project '" + projectId + "' doesn't exist", 404
+# def check_hash(projectId, data):
+#     if not debiaiUtils.project_exist(projectId):
+#         return "Project '" + projectId + "' doesn't exist", 404
 
-    hash_list = data["hash_list"]
+#     hash_list = data["hash_list"]
 
-    hashmap = debiaiUtils.getHashmap(projectId)
+#     hashmap = debiaiUtils.getHashmap(projectId)
 
-    not_valide = []
+#     not_valide = []
 
-    for hash in hash_list:
-        if hash not in hashmap:
-            not_valide.append(hash)
+#     for hash in hash_list:
+#         if hash not in hashmap:
+#             not_valide.append(hash)
 
-    return not_valide, 200
+#     return not_valide, 200

@@ -1,6 +1,7 @@
 TODO
 dist/
 deployment/
+.vscode/
 
 # Back
 backend/data

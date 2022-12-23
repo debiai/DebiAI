@@ -191,15 +191,6 @@ export default {
   },
 
   // Models
-  getModels(projectId) {
-    let code = startRequest("Loading models")
-    return axios.get(apiURL + 'projects/' + projectId + '/models').finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-
   getModelResults(projectId, modelId, sampleIds) {
     return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
       .then((response) => response.data)

@@ -12,7 +12,9 @@ import utils.utils as utils
 
 def get_configurations(projectId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    # TODO : fix
+    return [], 200
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # Get configurations
@@ -23,7 +25,8 @@ def get_configurations(projectId):
 
 def post_configuration(projectId, data):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    return 200
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # Save the selection
@@ -44,7 +47,8 @@ def post_configuration(projectId, data):
 
 def delete_configuration(projectId, data):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    return 200
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     configurations = widgetConfUtils.getConfigurations(projectId)

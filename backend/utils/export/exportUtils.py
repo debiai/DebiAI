@@ -146,7 +146,7 @@ def exportSelection(projectId, data):
 
     # Check if the project exists
     project_exist = False
-    if debiaiUtils.projectExist(projectId):
+    if debiaiUtils.project_exist(projectId):
         project_exist = True
         # Creation of the data selection to export
         project_name = debiaiUtils.getProjectNameFromId(projectId)
@@ -164,7 +164,7 @@ def exportSelection(projectId, data):
         for id in sample_path:
             id_list.append({"id": id})
 
-    elif dataProvider.projectExist(projectId):
+    elif dataProvider.project_exist(projectId):
         project_exist = True
 
         # Creation of the data selection to export

@@ -22,6 +22,11 @@ def test_get_bad_project():
     resp = requests.request("GET", url, headers={}, data={})
     assert resp.status_code == 404
 
+    projectId = PYTHON_DATA_PROVIDER_ID+"|I_DO_NOT_EXIST"
+    url = appUrl + "projects/" + projectId
+    resp = requests.request("DELETE", url, headers={}, data={})
+    assert resp.status_code == 404
+
 
 def test_create_project_noName():
     # create
@@ -32,6 +37,10 @@ def test_create_project_noName():
 
 def test_create_project():
     global test_project_id
+    # delete if exists
+    url = appUrl + "projects/" + test_project_name
+    resp = requests.request("DELETE", url, headers={}, data={})
+
     # create
     url = appUrl + "projects"
     resp = requests.post(url=url, headers={}, json={
