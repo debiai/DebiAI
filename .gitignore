@@ -1,6 +1,7 @@
 TODO
 dist/
 deployment/
+.vscode/
 
 # Back
 backend/data
@@ -9,4 +10,3 @@ __pycache__/
 
 # Front
 frontend/node_modules/
-frontend/.vscode
