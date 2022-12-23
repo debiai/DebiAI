@@ -1,7 +1,7 @@
 from dataProviders.DataProvider import DataProvider
 from dataProviders.DataProviderException import DataProviderException
 from utils.utils import get_app_version
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models, tree
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
 
 
@@ -42,7 +42,7 @@ class PythonDataProvider(DataProvider):
 
         project_base_info = projects.get_project(id)
         project_base_info["selections"] = selections.get_selections(id)
-        project_base_info["resultStructure"] = projects.getResultStructure(id)
+        project_base_info["resultStructure"] = projects.get_result_structure(id)
         project_base_info["models"] = models.get_models(id)
         return project_base_info
 
@@ -106,7 +106,39 @@ class PythonDataProvider(DataProvider):
 
         return projects.create_project(name, name)
 
+    def update_block_structure(self, projectId, blockStructure):
+        # Check if project exist
+        if not projects.project_exist(projectId):
+            raise DataProviderException("Project does not exist", 404)
+
+        projects.update_block_structure(projectId, blockStructure)
+
+    def add_block_tree(self, projectId, data):
+        # Paramet ersCheck
+        if not projects.project_exist(projectId):
+            raise DataProviderException("Project does not exist", 404)
+        
+        return tree.add_block_tree(projectId, data)
+
+
+    def update_results_structure(self, projectId, resultsStructure):
+        # Check if project exist
+        if not projects.project_exist(projectId):
+            raise DataProviderException("Project does not exist", 404)
+
+        # TODO : check resultStructure (type and default type ==)
+        existing_result_structure = projects.get_result_structure(projectId)
+        if existing_result_structure is not None:
+            raise DataProviderException(
+                "project " + projectId + " already have a results structure", 403)
+
+        projects.update_results_structure(projectId, resultsStructure)
+
     def create_model(self, project_id, data):
+        # Check if project exist
+        if not projects.project_exist(project_id):
+            raise DataProviderException("Project does not exist", 404)
+
         models.create_model(
             project_id,
             data["name"],
@@ -114,10 +146,15 @@ class PythonDataProvider(DataProvider):
         )
 
     def delete_model(self, project_id, model_id):
-        models.create_model(project_id, model_id)
+        # Check if project exist
+        if not projects.project_exist(project_id):
+            raise DataProviderException("Project does not exist", 404)
+
+        # Check if model exist
+        if not models.model_exist(project_id, model_id):
+            raise DataProviderException("Model does not exist", 404)
+
+        models.delete_model(project_id, model_id)
 
     def add_results_dict(self, project_id, model_id, data):
         models.add_results_dict(project_id, model_id, data)
-
-    def update_block_structure(self, projectId, blockStructure):
-        projects.update_block_structure(projectId, blockStructure)

@@ -1,6 +1,7 @@
 import os
 import ujson as json
 from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, projects, hash, tree
+from dataProviders.DataProviderException import DataProviderException
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 
@@ -36,28 +37,24 @@ def model_exist(project_id, model_id):
 
 def create_model(project_id, model_name, metadata=None):
     # ParametersCheck
-    if not projects.projectExist(project_id):
-        raise Exception("Project " + project_id + " does not exist")
-
     if not pythonModuleUtils.is_filename_clean(model_name):
-        raise Exception("Model name contain prohibed caracters")
+        raise DataProviderException("Model name contain prohibed caracters", 402)
 
     model_id = model_name
 
     if model_exist(project_id, model_id):
-        raise Exception("Model " + model_id + " already not exist")
+        raise DataProviderException("Model " + model_id + " already exists", 409)
 
-    metadata = {}
-    if "metadata" in data:
-        metadata = data["metadata"]
+    if metadata is None :
+        metadata = {}
 
     # model
-    modelFolderPath = dataPath + project_id + "/models/" + model_id
+    modelFolderPath = DATA_PATH + project_id + "/models/" + model_id
     os.mkdir(modelFolderPath)
 
-    now = utils.timeNow()
+    now = pythonModuleUtils.timeNow()
 
-    modelInfo = {
+    model_info = {
         "name": model_id,
         "id": model_id,
         "creationDate": now,
@@ -66,8 +63,10 @@ def create_model(project_id, model_name, metadata=None):
         "nbResults": 0,
     }
 
-    utils.writeJsonFile(modelFolderPath + "/info.json", modelInfo)
-    debiaiUtils.writeModelResults(project_id, model_id, {})
+    pythonModuleUtils.writeJsonFile(modelFolderPath + "/info.json", model_info)
+
+    # Add 0 results to init the file
+    write_model_results(project_id, model_id, {})
 
 
 def delete_model(project_id, model_id):
@@ -78,7 +77,7 @@ def write_model_results(project_id, model_id, results):
     pythonModuleUtils.writeJsonFile(
         DATA_PATH + project_id + "/models/" + model_id + "/results.json", results
     )
-    projects.updateProject(project_id)
+    projects.update_project(project_id)
 
 
 def get_model_results(project_id, model_id, sample_ids):
@@ -138,7 +137,7 @@ def add_results_dict(project_id, modelId, data):
     tree = data["results"]
 
     # Check parameters
-    if not projects.projectExist(project_id):
+    if not projects.project_exist(project_id):
         raise "Project '" + project_id + "' doesn't exist"
 
     if not model_exist(project_id, modelId):
@@ -149,7 +148,7 @@ def add_results_dict(project_id, modelId, data):
                + "' doesn't exist")
 
     # Get resultStructure & project_block_structure
-    result_structure = projects.getResultStructure(project_id)
+    result_structure = projects.get_result_structure(project_id)
     if result_structure is None:
         raise ("The project expected results need to be specified before adding results")
 
@@ -159,7 +158,7 @@ def add_results_dict(project_id, modelId, data):
         expected_results_order = list(
             map(lambda r: r["name"], result_structure))
 
-    project_block_structure = projects.getProjectblockLevelInfo(project_id)
+    project_block_structure = projects.get_project_block_level_info(project_id)
     sampleIndex = len(project_block_structure) - 1
 
     # Check the given expected_results_order
@@ -206,15 +205,15 @@ def add_results_dict(project_id, modelId, data):
             return msg, 403
 
     # The given tree is complient, let's add the results
-    newResults = utils.addToJsonFIle(
-        dataPath + project_id + "/models/" + modelId + "/results.json", resultsToAdd
+    newResults = pythonModuleUtils.addToJsonFIle(
+        DATA_PATH + project_id + "/models/" + modelId + "/results.json", resultsToAdd
     )
 
-    utils.addToJsonFIle(
-        dataPath + project_id + "/models/" + modelId + "/info.json",
-        {"nbResults": len(newResults), "updateDate": utils.timeNow()},
+    pythonModuleUtils.addToJsonFIle(
+        DATA_PATH + project_id + "/models/" + modelId + "/info.json",
+        {"nbResults": len(newResults), "updateDate": pythonModuleUtils.timeNow()},
     )
-    debiaiUtils.updateProject(project_id)
+    projects.update_project(project_id)
     return 200
 
 
@@ -230,7 +229,7 @@ def __check_blocks_of_tree_exists(
 ):
 
     # Check block exist in the data
-    blockInfo = tree.getBlockInfo(project_id, path)
+    blockInfo = tree.findBlockInfo(project_id, path)
     if not blockInfo:
         return (
             False,

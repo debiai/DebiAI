@@ -21,7 +21,8 @@
           </div>
         </div>
         <!-- saveRequestAsWell -->
-        <div class="data">
+        <!-- TODO : Revert for the requests update -->
+        <!-- <div class="data">
           <div class="name">Save the request as well</div>
           <div class="value">
             No
@@ -37,14 +38,14 @@
             </label>
             Yes
           </div>
-        </div>
+        </div> -->
         <!-- nb filters:  -->
-        <div :class="saveRequestAsWell ? 'data ' : 'data date'">
+        <!-- <div :class="saveRequestAsWell ? 'data ' : 'data date'">
           <div class="name">Number of filters</div>
           <div class="value">
             {{ filters.length }}
           </div>
-        </div>
+        </div> -->
       </div>
       <div style="display: flex; justify-content: flex-end">
         <button type="submit" @click="save" :disabled="!selectionNameOk">
@@ -62,7 +63,7 @@ export default {
     return {
       selectionName: "New selection",
       createdSelections: null,
-      saveRequestAsWell: true,
+      saveRequestAsWell: false,
     };
   },
   props: {

@@ -39,7 +39,7 @@ def getRequestSelections(projectId, requestId):
 
 def createRequest(projectId, requestName, requestDescription, filters):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     for filter in filters:

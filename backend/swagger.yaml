@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.18.3
+  version: 0.18.5
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -107,7 +107,7 @@ paths:
     post:
       summary: add a new data blocks level structure
       tags: [Project]
-      operationId: controller.projects.post_blocklevels
+      operationId: controller.pythonModuleDp.post_blocklevels
       parameters:
         - name: projectId
           in: path
@@ -161,7 +161,7 @@ paths:
     post:
       summary: add a new expected results structure
       tags: [Project]
-      operationId: controller.projects.post_resultsStructure
+      operationId: controller.pythonModuleDp.post_resultsStructure
       parameters:
         - name: projectId
           in: path
@@ -200,126 +200,110 @@ paths:
         403:
           description: The result structure already exist
 
-  /projects/{projectId}/expectedResult:
-    post:
-      summary: Add an expected result to the results structure, a default value is required
-      tags: [Project]
-      operationId: controller.projects.post_addExpectedResult
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: resultColumn
-          in: body
-          schema:
-            type: object
-            required:
-              - name
-              - type
-              - default
-            properties:
-              name:
-                type:
-                  - number
-                  - string
-              type:
-                type: string
-                description: text, number or bool
-              default:
-                type:
-                  - number
-                  - string
-                  - boolean
-          required: true
-      responses:
-        200:
-          schema:
-            type: object
-          description: Results structure added, the updated resultStructure is returned
-        404:
-          description: The project does not exist
+  # /projects/{projectId}/expectedResult:
+  #   post:
+  #     summary: Add an expected result to the results structure, a default value is required
+  #     tags: [Project]
+  #     operationId: controller.pythonModuleDp.post_addExpectedResult
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         required: true
+  #       - name: resultColumn
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - name
+  #             - type
+  #             - default
+  #           properties:
+  #             name:
+  #               type:
+  #                 - number
+  #                 - string
+  #             type:
+  #               type: string
+  #               description: text, number or bool
+  #             default:
+  #               type:
+  #                 - number
+  #                 - string
+  #                 - boolean
+  #         required: true
+  #     responses:
+  #       200:
+  #         schema:
+  #           type: object
+  #         description: Results structure added, the updated resultStructure is returned
+  #       404:
+  #         description: The project does not exist
 
-  /projects/{projectId}/del_expectedResult:
-    post:
-      summary: Delete an expected result to the results structure
-      tags: [Project]
-      operationId: controller.projects.delete_expectedResult
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: resultColumn
-          in: body
-          schema:
-            type: object
-            required:
-              - value
-            properties:
-              value:
-                type:
-                  - string
-          required: true
-      responses:
-        200:
-          schema:
-            type: object
-          description: Results structure removed, the updated resultStructure is returned.
-        404:
-          description: The project/column does not exist.
+  # /projects/{projectId}/del_expectedResult:
+  #   post:
+  #     summary: Delete an expected result to the results structure
+  #     tags: [Project]
+  #     operationId: controller.projects.delete_expectedResult
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         required: true
+  #       - name: resultColumn
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - value
+  #           properties:
+  #             value:
+  #               type:
+  #                 - string
+  #         required: true
+  #     responses:
+  #       200:
+  #         schema:
+  #           type: object
+  #         description: Results structure removed, the updated resultStructure is returned.
+  #       404:
+  #         description: The project/column does not exist.
 
   # Hash
-  /projects/{projectId}/check_hash:
-    post:
-      summary: Check hash and return non valide ones
-      tags: [Hash]
-      operationId: controller.projects.check_hash
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
+  # /projects/{projectId}/check_hash:
+  #   post:
+  #     summary: Check hash and return non valide ones
+  #     tags: [Hash]
+  #     operationId: controller.projects.check_hash
+  #     parameters:
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         description: project ID
+  #         required: true
 
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - hash_list
-            properties:
-              hash_list:
-                type: array
-                items:
-                  type: string
-          required: true
-      responses:
-        200:
-          description: List of non-valide hash
-          schema:
-            type: array
-            items:
-              type: string
+  #       - name: data
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - hash_list
+  #           properties:
+  #             hash_list:
+  #               type: array
+  #               items:
+  #                 type: string
+  #         required: true
+  #     responses:
+  #       200:
+  #         description: List of non-valide hash
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: string
 
   # Models
   /projects/{projectId}/models:
-    get:
-      summary: get the project models overviews
-      tags: [Model]
-      operationId: controller.models.get_models
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: List of model overviews
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/modelOverview"
     post:
       summary: add a model
       tags: [Model]
@@ -345,7 +329,7 @@ paths:
       responses:
         200:
           description: Model added
-        201:
+        409:
           description: Warning - Model already exist
         402:
           description: Model name contain prohibed caracters
@@ -376,7 +360,7 @@ paths:
     post:
       summary: Add a results to a model
       tags: [Model]
-      operationId: controller.models.add_results_dict
+      operationId: controller.pythonModuleDp.add_results_dict
       parameters:
         - name: projectId
           in: path
@@ -413,7 +397,7 @@ paths:
     post:
       summary: Add a results to a model from hash
       tags: [Model]
-      operationId: controller.models.add_results_hash
+      operationId: controller.pythonModuleDp.add_results_hash
       parameters:
         - name: projectId
           in: path
@@ -569,37 +553,37 @@ paths:
         404:
           description: project or selection doesn't exist
 
-  # # Blocks
-  # /projects/{projectId}/blocks:
-  #   post:
-  #     summary: add a tree to an existing project block tree
-  #     tags: [Block]
-  #     operationId: controller.blocks.post_block_tree
-  #     parameters:
-  #       - name: projectId
-  #         in: path
-  #         type: string
-  #         description: project ID
-  #         required: true
+  # Blocks
+  /projects/{projectId}/blocks:
+    post:
+      summary: add a tree to an existing project block tree
+      tags: [Block]
+      operationId: controller.pythonModuleDp.post_block_tree
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
 
-  #       - name: data
-  #         in: body
-  #         schema:
-  #           type: object
-  #           required:
-  #             - blockTree
-  #           properties:
-  #             blockTree:
-  #               $ref: "#/definitions/blockTree"
-  #         required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - blockTree
+            properties:
+              blockTree:
+                $ref: "#/definitions/blockTree"
+          required: true
 
-  #     responses:
-  #       200:
-  #         description: Block tree added
-  #       403:
-  #         description: Invalid parameters
-  #       404:
-  #         description: Project not found
+      responses:
+        200:
+          description: Block tree added
+        403:
+          description: Invalid parameters
+        404:
+          description: Project not found
 
   #   get:
   #     summary: get a project block tree from a depth

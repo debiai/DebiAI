@@ -75,7 +75,7 @@ def get_project(projectId):
             "nbTags": nbTags,
             "creationDate": creationDate,
             "updateDate": updateDate,
-            "blockLevelInfo": getProjectblockLevelInfo(projectId),
+            "blockLevelInfo": get_project_block_level_info(projectId),
         }
 
     except Exception as e:
@@ -130,7 +130,7 @@ def update_project(projectId):
     )
 
 
-def getProjectblockLevelInfo(projectId):
+def get_project_block_level_info(projectId):
     if not os.path.isfile(DATA_PATH + projectId + "/info.json"):
         raise Exception(
             "The project '" + projectId + "' doesn't have an info.json file"
@@ -140,7 +140,7 @@ def getProjectblockLevelInfo(projectId):
         return json.load(json_file)["blockLevelInfo"]
 
 
-def getResultStructure(projectId):
+def get_result_structure(projectId):
     with open(DATA_PATH + projectId + "/info.json") as json_file:
         projectInfo = json.load(json_file)
         if "resultStructure" in projectInfo:
@@ -162,6 +162,21 @@ def update_block_structure(projectId, blockStructure):
     try:
         pythonModuleUtils.updateJsonFile(
             DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure)
+
+        update_project(projectId)
+    except Exception as e:
+        print(e)
+        raise "Something went wrong updating project structure"
+
+
+def update_results_structure(projectId, resultStructure):
+    try:
+        # save resultStructure
+        pythonModuleUtils.updateJsonFile(
+            DATA_PATH + projectId + "/info.json", "resultStructure", resultStructure
+        )
+        update_project(projectId)
+        return resultStructure, 200
 
     except Exception as e:
         print(e)

@@ -181,8 +181,11 @@ const SatisticalAnasysis = {
     addValueToFilter(state, { filterId, value }) {
       let filter = state.filters.find(filter => filter.id === filterId);
       if (filter && filter.type == "values") {
+        // Check if value is not already in the array
+        if (filter.values.find(val => val === value)) return;
+
         filter.values.push(value)
-        // TODO: check if no duplicates
+
         // Recreating the array to trigger event
         state.filters = [...state.filters]
       }

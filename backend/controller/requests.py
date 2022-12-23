@@ -12,7 +12,7 @@ import utils.utils as utils
 
 def get_requests(projectId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # Get requests
@@ -23,7 +23,7 @@ def get_requests(projectId):
 
 def get_request(projectId, requestId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     if requestId not in requestsUtils.getRequestsIds(projectId):
@@ -41,7 +41,7 @@ def get_request(projectId, requestId):
 
 def post_request(projectId, data):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     requestDescription = data.get("requestDescription", "")
@@ -56,7 +56,7 @@ def post_request(projectId, data):
 
 def delete_request(projectId, requestId):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     if requestId not in requestsUtils.getRequestsIds(projectId):
@@ -68,7 +68,7 @@ def delete_request(projectId, requestId):
 
 def create_selection(projectId, requestId, data):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     if requestId not in requestsUtils.getRequestsIds(projectId):

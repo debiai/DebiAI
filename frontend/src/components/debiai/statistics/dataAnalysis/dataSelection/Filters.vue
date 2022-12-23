@@ -38,7 +38,9 @@
       </h2>
       <span style="flex: 1"></span>
       <!-- Load filters btn -->
-      <button @click="requestSelection = true">
+      <button @click="requestSelection = true" disabled
+      title="Available in a futur update"> 
+        <!-- TODO, revert in the filters update -->
         <inline-svg
           :src="require('../../../../../assets/svg/import.svg')"
           width="10"
@@ -50,9 +52,11 @@
       <!-- Save request btn -->
       <button
         class="green"
-        :disabled="filters.length == 0"
+        :disabled="true || filters.length == 0"
         @click="requestCreation = true"
+        title="Available in a futur update"
       >
+      <!-- TODO, revert the always disapled in the filters update -->
         <inline-svg
           :src="require('../../../../../assets/svg/save.svg')"
           width="13"
@@ -189,6 +193,7 @@ export default {
     selectFilterColumn(colId) {
       this.filterColumnSelection = false;
 
+      // Add a new epty filter to the store
       let filters;
       if (this.filterSelectionType == "intervals")
         filters = [
