@@ -18,6 +18,7 @@
     </modal>
 
     <div id="selectionsPannel">
+      <!-- Pannel header -->
       <div id="title">
         <span class="aligned">
           <h2>

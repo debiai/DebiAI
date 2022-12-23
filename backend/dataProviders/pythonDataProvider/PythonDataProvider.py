@@ -48,6 +48,10 @@ class PythonDataProvider(DataProvider):
 
     # Id list
     def get_id_list(self, project_id, _from=None, _to=None):
+        # Check if project exist
+        if not projects.project_exist(id):
+            raise DataProviderException("Project does not exist", 404)
+
         # Get id list
         # Return Arr[id]
         return samples.get_all_samples_id_list(project_id, _from, _to)
