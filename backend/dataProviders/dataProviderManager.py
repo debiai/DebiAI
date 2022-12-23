@@ -19,9 +19,16 @@ def setup_data_providers():
     for i in range(len(web_data_provider_config)):
         name = keys[i]
         url = values[i]
-        print(" - Adding external data Provider " + name + " from " + url)
-        add(WebDataProvider(url, name))
-
+        print(" - Adding external data Provider " + name + " from " + url + " - ")
+        data_provider = WebDataProvider(url, name)
+        
+        if data_provider.is_alive():
+            print("   Data Provider " + name + " added to Data Providers List")
+            add(data_provider)
+        else:
+            print("   [ERROR] : Data Provider " + name + " Is not accessible now")
+            del data_provider
+            
     # Python Data Providers
     if python_module_data_provider_config["enabled"] != False:
         print(" - Adding Python Module data Provider")

@@ -1,9 +1,9 @@
 import requests
 
-
+### Todo : change info if in not alive anymore
 def is_alive(url):
     try:
-        r = requests.get(url + '/ping')
+        r = requests.get(url + '/info')
         return r.status_code == 200
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None

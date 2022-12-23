@@ -26,7 +26,7 @@ class PythonDataProvider(DataProvider):
     # Generic functions
     def __init__(self):
         pythonModuleUtils.init()
-        print("  Python module Data Provider initialized")
+        print("   Python module Data Provider initialized")
 
     @property
     def name(self):
