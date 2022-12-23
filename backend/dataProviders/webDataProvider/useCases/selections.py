@@ -1,4 +1,4 @@
-from dataProviders.webDataProvider.http.api import get_selections, get_selection_id
+from dataProviders.webDataProvider.http.api import get_selections, get_selection_id, post_selection
 from utils.utils import timeNow
 
 
@@ -22,4 +22,19 @@ def get_project_selections(url, project_id):
 
 def get_id_list_from_selection(url, project_id, selection_id):
     return get_selection_id(url, project_id, selection_id)
+
+
+def create_selection(url, project_id, name, id_list, request_id):
+    
+    ###### Todo: format data for api
+    data = {
+        "samples_id": id_list,
+        "name": name,
+        "project_id": project_id, 
+    }
+    
+    if request_id is not None:
+        data["request"]: request_id
+        
+    return post_selection(url, project_id, data)
 

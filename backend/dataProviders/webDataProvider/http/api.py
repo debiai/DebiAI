@@ -66,16 +66,23 @@ def get_selections(url, id_project):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
-
+def post_selection(url, id_project, data):
+    try:
+        requests.post(url + "/view/{}/selections".format(id_project), json=data)
+        return 
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
+    
+### TOD0 : change Selected data Id List -> selections et non selection
 def get_selection_id(url, id_project, id_selection):
     try:
         r = requests.get(
-            url + "/view/{}/selections/{}".format(id_project, id_selection)
+            url + "/view/{}/selection/{}/selectedDataIdList".format(id_project, id_selection)
         )
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
-
+    
 
 def get_models(url, id_project):
     try:

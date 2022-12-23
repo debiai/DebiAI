@@ -2,7 +2,7 @@ from dataProviders.DataProvider import DataProvider
 from dataProviders.webDataProvider.useCases.data import get_project_id_list, get_project_samples
 from dataProviders.webDataProvider.useCases.projects import get_all_projects_from_data_provider, get_single_project_from_data_provider
 from dataProviders.webDataProvider.useCases.models import get_model_results, get_models_info, get_model_result_id
-from dataProviders.webDataProvider.useCases.selections import get_project_selections, get_id_list_from_selection
+from dataProviders.webDataProvider.useCases.selections import get_project_selections, get_id_list_from_selection, create_selection
 from dataProviders.webDataProvider.http.api import get_info, is_alive
 
 
@@ -71,6 +71,8 @@ class WebDataProvider(DataProvider):
     def get_selection_id_list(self, project_id, selection_id):
         return get_id_list_from_selection(self.url, project_id, selection_id)
 
+    def create_selection(self, project_id, name, id_list, request_id=None):
+        return create_selection(self.url, project_id, name, id_list, request_id)
 
     ### API OK
     ### USE CASE OK
