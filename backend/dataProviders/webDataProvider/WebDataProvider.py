@@ -3,7 +3,7 @@ from dataProviders.webDataProvider.useCases.data import get_project_id_list, get
 from dataProviders.webDataProvider.useCases.projects import get_all_projects_from_data_provider, get_single_project_from_data_provider
 from dataProviders.webDataProvider.useCases.models import get_model_results, get_models_info, get_model_result_id
 from dataProviders.webDataProvider.useCases.selections import get_project_selections, get_id_list_from_selection, create_selection
-from dataProviders.webDataProvider.http.api import get_info, is_alive
+from dataProviders.webDataProvider.http.api import get_info, get_status
 
 from dataProviders.DataProviderException import DataProviderException
 
@@ -16,6 +16,7 @@ class WebDataProvider(DataProvider):
     def __init__(self, url, name):
         self.url = url
         self._name = name
+        self.alive = True if get_status(url) is True else False
 
     @property
     def name(self):
@@ -23,7 +24,8 @@ class WebDataProvider(DataProvider):
     
     ## Todo api call Info (new info)
     def is_alive(self):
-        return is_alive(self.url)
+        self.alive = True if get_status(self.url) is True else False
+        return self.alive
 
     def get_info(self):
         return get_info(self.url)

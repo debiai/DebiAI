@@ -23,12 +23,11 @@ def setup_data_providers():
         data_provider = WebDataProvider(url, name)
         
         if data_provider.is_alive():
-            print("   Data Provider " + name + " added to Data Providers List")
-            add(data_provider)
+            print("   Data Provider " + name + " added to Data Providers list and already accessible")
         else:
             print("   [ERROR] : Data Provider " + name + " Is not accessible now")
-            del data_provider
-            
+        add(data_provider)
+        
     # Python Data Providers
     if python_module_data_provider_config["enabled"] != False:
         print(" - Adding Python Module data Provider")
