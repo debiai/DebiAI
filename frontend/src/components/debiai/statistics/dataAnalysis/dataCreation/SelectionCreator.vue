@@ -110,11 +110,11 @@ export default {
     saveSelection(requestId = null) {
       let projectId =
         this.$store.state.ProjectPage.projectId;
-      let selectedHash = this.selectedData.map(
-        (selectedIndex) => this.data.sampleHashList[selectedIndex]
+      let selectedIds = this.selectedData.map(
+        (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
       this.$backendDialog
-        .addSelection(projectId, selectedHash, this.selectionName, requestId)
+        .addSelection(projectId, selectedIds, this.selectionName, requestId)
         .then(() => {
           this.$backendDialog.getSelections(projectId).then((selections) => {
             this.createdSelections = selections;

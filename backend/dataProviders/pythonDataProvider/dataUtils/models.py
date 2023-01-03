@@ -38,14 +38,16 @@ def model_exist(project_id, model_id):
 def create_model(project_id, model_name, metadata=None):
     # ParametersCheck
     if not pythonModuleUtils.is_filename_clean(model_name):
-        raise DataProviderException("Model name contain prohibed caracters", 402)
+        raise DataProviderException(
+            "Model name contain prohibed caracters", 402)
 
     model_id = model_name
 
     if model_exist(project_id, model_id):
-        raise DataProviderException("Model " + model_id + " already exists", 409)
+        raise DataProviderException(
+            "Model " + model_id + " already exists", 409)
 
-    if metadata is None :
+    if metadata is None:
         metadata = {}
 
     # model
@@ -211,7 +213,8 @@ def add_results_dict(project_id, modelId, data):
 
     pythonModuleUtils.addToJsonFIle(
         DATA_PATH + project_id + "/models/" + modelId + "/info.json",
-        {"nbResults": len(newResults), "updateDate": pythonModuleUtils.timeNow()},
+        {"nbResults": len(newResults),
+         "updateDate": pythonModuleUtils.timeNow()},
     )
     projects.update_project(project_id)
     return 200

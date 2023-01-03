@@ -147,7 +147,7 @@ export default {
         let projectId = this.$store.state.SatisticalAnasysis.projectId;
         let tagHash = {};
         values.forEach((tag, sampleIndex) => {
-          tagHash[this.data.sampleHashList[sampleIndex]] = tag;
+          tagHash[this.data.sampleIdList[sampleIndex]] = tag;
         });
 
         this.$backendDialog
