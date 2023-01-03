@@ -107,7 +107,7 @@ export default {
           commomModelResults = commomModelResults === true;
 
           // Start analysis
-          this.loadTree({
+          this.loadData({
             projectId,
             selectionIds,
             selectionIntersection,
@@ -202,7 +202,7 @@ export default {
         });
         window.open(routeData.href, "_blank");
       } else {
-        this.loadTree({
+        this.loadData({
           projectId: this.projectId,
           selectionIds: this.selectedSelectionsIds,
           selectionIntersection: this.selectionIntersection,
@@ -212,7 +212,7 @@ export default {
       }
     },
 
-    loadTree({
+    loadData({
       projectId,
       selectionIds = [],
       selectionIntersection = false,

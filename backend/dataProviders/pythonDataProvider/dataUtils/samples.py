@@ -77,19 +77,25 @@ def get_list(projectId, data):
 
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
+
     # Get path of the samples from the hashmap
     sample_path = hash.getPathFromHashList(project_id, id_list)
-
-    # Get tree from samples
-    samples_tree = tree.getBlockTreeFromSamples(project_id, sample_path)
-
-    # Convert tree to array
-    data_array = _tree_to_array(samples_tree)
-
-    # Convert array to dict
     data = {}
+
+    # We age going through each samples individually because of a bug
+    # (the data aren't aligned with the requested samples id)
+    # Because of this bug, we are slowing down the process
+    # TODO : fix this bug
     for i in range(len(id_list)):
-        data[id_list[i]] = data_array[i]
+
+        # Get tree from samples
+        samples_tree = tree.getBlockTreeFromSamples(project_id, [sample_path[i]])
+
+        # Convert tree to array
+        data_array = _tree_to_array(samples_tree)
+
+        # Convert array to dict
+        data[id_list[i]] = data_array[0]
 
     return data
 
