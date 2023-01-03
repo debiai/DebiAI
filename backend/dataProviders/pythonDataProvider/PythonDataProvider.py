@@ -31,6 +31,10 @@ class PythonDataProvider(DataProvider):
     @property
     def name(self):
         return PYTHON_DATA_PROVIDER_ID
+    
+    @property
+    def type(self):
+        return PYTHON_DATA_PROVIDER_ID
 
     def is_alive(self):
         return True

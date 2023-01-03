@@ -22,6 +22,10 @@ class WebDataProvider(DataProvider):
     def name(self):
         return self._name
     
+    @property
+    def type(self):
+        return "Web"
+    
     ## Todo api call Info (new info)
     def is_alive(self):
         self.alive = True if get_status(self.url) is True else False
