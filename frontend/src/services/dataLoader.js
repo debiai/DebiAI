@@ -1,5 +1,5 @@
 import store from '../store'
-// import cacheService from './cacheService'
+import cacheService from './cacheService'
 import services from "./services"
 
 const backendDialog = require("./backendDialog")
@@ -97,10 +97,10 @@ async function getProjectMetadata(projectId, { considerResults }) {
     type: [],
   }
   
-  // Set the Sample_ID in the Other category
-  metaData.labels.push("Sample_ID")
-  metaData.categories.push("other")
-  metaData.type.push("unknown")
+  // // Set the Sample_ID in the Other category
+  // metaData.labels.push("Sample_ID")
+  // metaData.categories.push("other")
+  // metaData.type.push("unknown")
 
   projectInfo.blockLevelInfo.forEach(blockLevel => {
     // Set the block name in the Other category
@@ -151,13 +151,10 @@ async function downloadSamplesData(projectId, timestamp, sampleIds) {
       let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE)
 
       // First, pull the samples from the browser memory
-      // let cachedSamples = await cacheService.getSamplesByIds(projectId, timestamp, samplesToPull)
-      // let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
-      // retArray = [...retArray, ...Object.values(cachedSamples)]
-      // retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
-      let samplesToDownload = samplesToPull
-      retArray = [...retArray]
-      retDataIdlist = [...retDataIdlist]
+      let cachedSamples = await cacheService.getSamplesByIds(projectId, timestamp, samplesToPull)
+      let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
+      retArray = [...retArray, ...Object.values(cachedSamples)]
+      retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
 
       if (samplesToDownload.length) {
         // Then download the missing samples
@@ -167,11 +164,15 @@ async function downloadSamplesData(projectId, timestamp, sampleIds) {
 
         // We receive an map of samples
         let map = downloadedSamples.data
-        // Add the sample ID to the map and Stack the samples
+
+        // Add the sample ID to the map
         Object.keys(map).forEach(dataId => {
-          retArray.push([dataId, ...map[dataId]])
-          retDataIdlist.push(dataId)
+          map[dataId] = [dataId, ...map[dataId]]
         });
+
+        // Stack the samples
+        retArray = [...retArray, ...Object.values(map)]
+        retDataIdlist = [...retDataIdlist, ...Object.keys(map)]
 
         // Store the samples in the cache
         // await cacheService.storeSamples(projectId, timestamp, map) TODO 
@@ -325,7 +326,6 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
       sampleIdList.forEach((sampleId, i) => {
         if (sampleId in modelResults) {
           dataAndResultsArray.push([...dataArray[i], modelId, ...modelResults[sampleId]])
-          // console.log(dataArray[i], modelResults[sampleId]);
           modelsSamplesToPull.push(sampleId)
         }
       });

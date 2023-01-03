@@ -65,6 +65,11 @@ def get_project(projectId):
         if os.path.exists(DATA_PATH + projectId + "/tags/"):
             nbTags = len(os.listdir(DATA_PATH + projectId + "/tags/"))
 
+        # Block level info
+        blockLevelInfo = get_project_block_level_info(projectId)
+        # Adding the generated id to the block level info (the hash)
+        blockLevelInfo.insert(0, {"name": "Data Id"})
+
         projectOverview = {
             "id": projectId,
             "name": name,
@@ -75,7 +80,7 @@ def get_project(projectId):
             "nbTags": nbTags,
             "creationDate": creationDate,
             "updateDate": updateDate,
-            "blockLevelInfo": get_project_block_level_info(projectId),
+            "blockLevelInfo": blockLevelInfo
         }
 
     except Exception as e:
