@@ -5,7 +5,7 @@ deployment/
 
 # Back
 backend/data
-backend/.coverage
+.coverage
 __pycache__/
 
 # Front
