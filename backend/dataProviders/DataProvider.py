@@ -11,6 +11,10 @@ class DataProvider(ABC):
     def is_alive(self):
         return False
     
+    @abstractproperty
+    def type(self):
+        pass
+    
     # Info
     @abstractmethod
     def get_info(self):

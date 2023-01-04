@@ -17,6 +17,66 @@ paths:
         200:
           description: The server is online
 
+  /data-providers:
+    get:
+      summary: Get data providers list and status
+      tags: [Data Providers]
+      operationId: controller.dataProviders.get_data_providers
+      responses:
+        200:
+          description: List of data providers
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/dataProvider"
+
+    post:
+      summary: Add data provider to data providers list
+      tags: [Data Providers]
+      operationId: controller.dataProviders.post_data_providers
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - url
+              - name
+              - type
+            properties:
+              url:
+                type: string
+                description: The url of the new data Provider
+              name:
+                type: string
+                description: The name of the data Provider
+              type:
+                type: string
+                description: Type of the data Provider (web)
+      responses:
+        204:
+          description: Data provider added to the list
+        400:
+          description: Bad request on data
+
+  /data-providers/{dataProviderId}:
+    delete:
+      summary: Delete data providers from the list
+      tags: [Data Providers]
+      operationId: controller.dataProviders.delete_data_providers
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: Data provider deleted
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+          
   # Projects
   /projects:
     get:
@@ -1916,3 +1976,19 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/block"
+  
+  # Data providers
+  dataProvider:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      status:
+        type: boolean
+      type:
+        type: string
+
+
+
