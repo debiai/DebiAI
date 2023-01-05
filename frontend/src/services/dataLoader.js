@@ -165,11 +165,6 @@ async function downloadSamplesData(projectId, timestamp, sampleIds) {
         // We receive an map of samples
         let map = downloadedSamples.data
 
-        // Add the sample ID to the map
-        Object.keys(map).forEach(dataId => {
-          map[dataId] = [dataId, ...map[dataId]]
-        });
-
         // Stack the samples
         retArray = [...retArray, ...Object.values(map)]
         retDataIdlist = [...retDataIdlist, ...Object.keys(map)]
