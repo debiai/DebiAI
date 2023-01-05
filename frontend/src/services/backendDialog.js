@@ -80,11 +80,15 @@ export default {
     let code = startRequest("Creating data provider")
     return axios.post(apiURL + 'data-providers', { type, name, url }).finally(() => {
       endRequest(code)
-    }).then((response) => {
-      return response.data
     })
   },
-  
+  deleteDataProvider(id) {
+    let code = startRequest("Deleting data provider")
+    return axios.delete(apiURL + 'data-providers/' + id).finally(() => {
+      endRequest(code)
+    })
+  },
+
   // Samples
   getSampleNumber(projectId, selectionId = undefined) {
     let code = startRequest("Loading the project data")

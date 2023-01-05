@@ -54,7 +54,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          if (error.response) {
+          if (error.response && error.response.status !== 500 && error.response.data) {
             this.$store.commit("sendMessage", {
               title: "error",
               msg: error.response.data,
