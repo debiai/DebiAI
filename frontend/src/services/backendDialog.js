@@ -67,6 +67,16 @@ export default {
     })
   },
 
+  // Data providers
+  getDataProviders() {
+    let code = startRequest("Getting data providers")
+    return axios.get(apiURL + 'data-providers').finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+
   // Samples
   getSampleNumber(projectId, selectionId = undefined) {
     let code = startRequest("Loading the project data")
