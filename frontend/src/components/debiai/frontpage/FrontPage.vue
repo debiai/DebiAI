@@ -207,7 +207,7 @@
 
     <!-- Data provider modals -->
     <modal v-if="displayDataProviders">
-      <dataProviders v-on:cancel="displayDataProviders = false" />
+      <dataProviders @cancel="displayDataProviders = false" />
     </modal>
   </div>
 </template>

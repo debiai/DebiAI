@@ -1,5 +1,6 @@
 <template>
   <div id="dataProviders">
+    <!-- Title -->
     <div id="title" class="aligned spaced">
       <h2>Data providers</h2>
       <div id="controls">
@@ -10,6 +11,12 @@
             height="10"
           />
           Refresh
+        </button>
+        <button
+          id="newDataProvider"
+          @click="newDataProviderModal = !newDataProviderModal"
+        >
+          New data provider
         </button>
         <button class="red" @click="$emit('cancel')">Cancel</button>
       </div>
@@ -50,15 +57,31 @@
       </div>
     </transition>
     <div v-if="!dataProviders">Loading...</div>
+
+    <!-- new dataprovider modal -->
+    <modal v-if="newDataProviderModal">
+      <NewDataProvider
+        @cancel="newDataProviderModal = false"
+        @done="
+          newDataProviderModal = false;
+          getDataProviders();
+        "
+      />
+    </modal>
   </div>
 </template>
 
 <script>
+import NewDataProvider from "./NewDataProvider.vue";
 export default {
   name: "DataProviders",
+  components: {
+    NewDataProvider,
+  },
   data() {
     return {
       dataProviders: null,
+      newDataProviderModal: false,
     };
   },
   created() {
@@ -76,6 +99,15 @@ export default {
 </script>
 
 <style scoped>
+#title h2 {
+  text-align: left;
+  width: 300px;
+}
+#controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .dataProvider {
   min-width: 400px;
   display: flex;

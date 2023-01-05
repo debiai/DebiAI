@@ -76,7 +76,15 @@ export default {
       return response.data
     })
   },
-
+  postDataProvider(type, name, url) {
+    let code = startRequest("Creating data provider")
+    return axios.post(apiURL + 'data-providers', { type, name, url }).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  
   // Samples
   getSampleNumber(projectId, selectionId = undefined) {
     let code = startRequest("Loading the project data")
