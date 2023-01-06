@@ -26,11 +26,9 @@ def get_id_list_from_selection(url, project_id, selection_id):
 
 def create_selection(url, project_id, name, id_list, request_id):
     
-    ###### Todo: format data for api
     data = {
-        "samples_id": id_list,
-        "name": name,
-        "project_id": project_id, 
+        "idList": id_list,
+        "name": name
     }
     
     if request_id is not None:
