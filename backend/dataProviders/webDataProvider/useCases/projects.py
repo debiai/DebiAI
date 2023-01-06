@@ -5,7 +5,7 @@ from dataProviders.webDataProvider.http.api import (
 )
 
 from dataProviders.webDataProvider.useCases.models import get_models_info
-from dataProviders.webDataProvider.useCases.selections import get_selections
+from dataProviders.webDataProvider.useCases.selections import get_project_selections 
 
 from utils.utils import timeNow
 
@@ -18,7 +18,7 @@ def get_all_projects_from_data_provider(url, name):
     
     for project in projects:
         blockInfo = format_collumns_project_overview(projects[project])
-        selections = get_selections(url, project)
+        selections = get_project_selections(url, project)
         models = get_models_info(url, project)
         # Samples number
         if "nbSamples" in projects[project]:

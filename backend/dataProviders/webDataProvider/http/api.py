@@ -83,7 +83,16 @@ def get_selection_id(url, id_project, id_selection):
         return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
-    
+
+### TOD0 : change Selected data Id List -> selections et non selection
+def delete_selection(url, id_project, id_selection):
+    try:
+        requests.delete(url + "/view/{}/selections/{}".format(id_project, id_selection))
+        
+        return
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
+
 
 def get_models(url, id_project):
     try:
