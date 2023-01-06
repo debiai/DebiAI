@@ -1,6 +1,5 @@
 import connexion
 import os
-#import utils.debiaiUtils as debiaiUtils
 from flask_cors import CORS
 from flask import send_from_directory, request, Response
 import requests
@@ -61,6 +60,7 @@ def send_index():
 @app.route("/<path:path>")
 def send_supporting_elmt(path):
     return send_frontend(path)
+
 
 if __name__ == "__main__":
     # Run DebiAI init
