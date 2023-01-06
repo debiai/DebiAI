@@ -28,7 +28,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          ls
           cd backend
           python -m pip install --upgrade pip
           pip install flake8 pytest
@@ -42,6 +41,5 @@ jobs:
           # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
-          ls
           cd backend
           python websrv.py & sleep 3 && pytest tests/
