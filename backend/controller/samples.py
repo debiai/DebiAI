@@ -20,13 +20,13 @@ def get_list(projectId, data):
 
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
     # Call our utility function
     data_id_list = get_id_list.get_list(projectId, data_provider, data)
 
     return data_id_list, 200
+
 
 # Get the list of samples ID of the project selection
 
@@ -34,8 +34,7 @@ def get_list(projectId, data):
 def get_selection_list(projectId, selectionId):
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
     return data_provider.get_selection_id_list(projectId, selectionId)
     # TODO catch exception

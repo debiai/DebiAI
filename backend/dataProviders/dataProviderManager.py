@@ -21,21 +21,25 @@ def setup_data_providers():
         url = values[i]
         print(" - Adding external data Provider " + name + " from " + url + " - ")
         data_provider = WebDataProvider(url, name)
-        
+
         if data_provider.is_alive():
-            print("   Data Provider " + name + " added to Data Providers list and already accessible")
+            print(
+                "   Data Provider "
+                + name
+                + " added to Data Providers list and already accessible"
+            )
         else:
             print("   [ERROR] : Data Provider " + name + " Is not accessible now")
         add(data_provider)
-        
+
     # Python Data Providers
     if python_module_data_provider_config["enabled"] != False:
         print(" - Adding Python Module data Provider")
         add(PythonDataProvider())
 
-
     if len(data_providers_list) == 0:
         print("Warning, No data providers setup")
+
 
 def add(data_provider):
     data_providers_list.append(data_provider)
@@ -50,7 +54,7 @@ def get_single_data_provider(name):
     for d in data_providers_list:
         if d.name == name:
             return d
-    
+
     raise DataProviderException.DataProviderException("Data provider not found", 404)
 
 

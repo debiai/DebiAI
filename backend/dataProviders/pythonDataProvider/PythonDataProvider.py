@@ -1,7 +1,15 @@
 from dataProviders.DataProvider import DataProvider
 from dataProviders.DataProviderException import DataProviderException
 from utils.utils import get_app_version
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, samples, selections, models, tree
+from dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    projects,
+    samples,
+    selections,
+    models,
+    tree,
+)
+
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
 
 
@@ -14,8 +22,7 @@ def project_must_exist(func):
         project_id = args[1]
 
         if not projects.project_exist(project_id):
-            raise DataProviderException(
-                "Project " + project_id + " not found", 404)
+            raise DataProviderException("Project " + project_id + " not found", 404)
 
         return func(*args, **kwargs)
 
@@ -31,7 +38,7 @@ class PythonDataProvider(DataProvider):
     @property
     def name(self):
         return PYTHON_DATA_PROVIDER_ID
-    
+
     @property
     def type(self):
         return PYTHON_DATA_PROVIDER_ID
@@ -68,8 +75,7 @@ class PythonDataProvider(DataProvider):
 
         project_base_info = projects.get_project(project_id)
         project_base_info["selections"] = selections.get_selections(project_id)
-        project_base_info["resultStructure"] = projects.get_result_structure(
-            project_id)
+        project_base_info["resultStructure"] = projects.get_result_structure(project_id)
         project_base_info["models"] = models.get_models(project_id)
         return project_base_info
 
@@ -143,16 +149,15 @@ class PythonDataProvider(DataProvider):
         existing_result_structure = projects.get_result_structure(project_id)
         if existing_result_structure is not None:
             raise DataProviderException(
-                "project " + project_id + " already have a results structure", 403)
+                "project " + project_id + " already have a results structure", 403
+            )
 
         projects.update_results_structure(project_id, resultsStructure)
 
     @project_must_exist
     def create_model(self, project_id, data):
         models.create_model(
-            project_id,
-            data["name"],
-            data["metadata"] if "metadata" in data else None
+            project_id, data["name"], data["metadata"] if "metadata" in data else None
         )
 
     @project_must_exist

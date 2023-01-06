@@ -6,15 +6,15 @@ class DataProvider(ABC):
     @abstractproperty
     def name(self):
         pass
-    
+
     @abstractproperty
     def is_alive(self):
         return False
-    
+
     @abstractproperty
     def type(self):
         pass
-    
+
     # Info
     @abstractmethod
     def get_info(self):
@@ -75,4 +75,3 @@ class DataProvider(ABC):
     @abstractmethod
     def delete_model(self, id):
         pass
-

@@ -1,5 +1,13 @@
 import os
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, models, selections, tree, hash
+from dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    selections,
+    models,
+    selections,
+    tree,
+    hash,
+)
+
 DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
@@ -28,7 +36,9 @@ def getTagById(projectId, tagId):
     if tagId not in getTagsIds(projectId):
         return None
 
-    return pythonModuleUtils.readJsonFile(DATA_PATH + projectId + "/tags/" + tagId + "/info.json")
+    return pythonModuleUtils.readJsonFile(
+        DATA_PATH + projectId + "/tags/" + tagId + "/info.json"
+    )
 
 
 def getTagByName(projectId, tagName):

@@ -17,12 +17,12 @@ def test_get_projects():
 
 
 def test_get_bad_project():
-    projectId = PYTHON_DATA_PROVIDER_ID+"|I_DO_NOT_EXIST"
+    projectId = PYTHON_DATA_PROVIDER_ID + "|I_DO_NOT_EXIST"
     url = appUrl + "projects/" + projectId
     resp = requests.request("GET", url, headers={}, data={})
     assert resp.status_code == 404
 
-    projectId = PYTHON_DATA_PROVIDER_ID+"|I_DO_NOT_EXIST"
+    projectId = PYTHON_DATA_PROVIDER_ID + "|I_DO_NOT_EXIST"
     url = appUrl + "projects/" + projectId
     resp = requests.request("DELETE", url, headers={}, data={})
     assert resp.status_code == 404
@@ -43,9 +43,7 @@ def test_create_project():
 
     # create
     url = appUrl + "projects"
-    resp = requests.post(url=url, headers={}, json={
-        "projectName": test_project_name
-    })
+    resp = requests.post(url=url, headers={}, json={"projectName": test_project_name})
     assert resp.status_code == 200
 
     # Get Id
@@ -56,9 +54,7 @@ def test_create_project():
     assert type(test_project_id) is str
 
     # Test can't create same project
-    resp = requests.post(url=url, headers={}, json={
-        "projectName": test_project_name
-    })
+    resp = requests.post(url=url, headers={}, json={"projectName": test_project_name})
     assert resp.status_code == 400
     assert "already exists" in resp.text
 

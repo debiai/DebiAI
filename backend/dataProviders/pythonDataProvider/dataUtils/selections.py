@@ -2,6 +2,7 @@ import os
 import ujson as json
 
 from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects
+
 DATA_PATH = pythonModuleUtils.DATA_PATH
 
 # Selections
@@ -15,8 +16,7 @@ def create_selection(project_id, selection_name, sample_ids, request_id=None):
 
     nbS = 1
     while selection_exist(project_id, selection_id):
-        selection_id = pythonModuleUtils.clean_filename(
-            selection_name) + "_" + str(nbS)
+        selection_id = pythonModuleUtils.clean_filename(selection_name) + "_" + str(nbS)
         nbS += 1
 
     # Save the selection
@@ -111,6 +111,5 @@ def get_selection_id_list(project_id, selectionId):
 
 
 def delete_selection(project_id, selection_id):
-    pythonModuleUtils.deleteDir(
-        DATA_PATH + project_id + "/selections/" + selection_id)
+    pythonModuleUtils.deleteDir(DATA_PATH + project_id + "/selections/" + selection_id)
     projects.update_project(project_id)

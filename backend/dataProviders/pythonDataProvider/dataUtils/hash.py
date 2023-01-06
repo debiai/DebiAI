@@ -26,7 +26,9 @@ def __createProjetHashMap(projectId, blockPath, hashmap, sampleLevel, curentLeve
         )
         return
 
-    for children in pythonModuleUtils.listDir(DATA_PATH + projectId + "/blocks/" + blockPath):
+    for children in pythonModuleUtils.listDir(
+        DATA_PATH + projectId + "/blocks/" + blockPath
+    ):
         __createProjetHashMap(
             projectId, blockPath + children, hashmap, sampleLevel, curentLevel + 1
         )
@@ -38,7 +40,9 @@ def addToSampleHashmap(projectId, hashMap):
 
     existingHm.update(hashMap)
 
-    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", existingHm)
+    pythonModuleUtils.writeJsonFile(
+        DATA_PATH + projectId + "/samplesHashmap.json", existingHm
+    )
 
 
 def getHashmap(projectId):

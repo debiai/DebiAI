@@ -17,16 +17,14 @@ def init_config():
     # - WEB_DATA_PROVIDERS
     # - EXPORT_METHODS
 
-    print("===================== CONFIG =======================")  
+    print("===================== CONFIG =======================")
 
     # First, read the config file
     config_parser.read(config_path)
     config = {
-        "PYTHON_MODULE_DATA_PROVIDER": {
-            "enabled": True
-        },
+        "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
-        "EXPORT_METHODS": {}
+        "EXPORT_METHODS": {},
     }
 
     for section in config_parser.sections():
@@ -42,22 +40,29 @@ def init_config():
 
         if section == "WEB_DATA_PROVIDERS":
             for data_provider in config_parser[section]:
-                print("Config file: detected data provider '"
-                      + data_provider
-                      + "' from config file")
-                config["WEB_DATA_PROVIDERS"][data_provider] = config_parser[section][data_provider]
+                print(
+                    "Config file: detected data provider '"
+                    + data_provider
+                    + "' from config file"
+                )
+                config["WEB_DATA_PROVIDERS"][data_provider] = config_parser[section][
+                    data_provider
+                ]
             continue
 
         if section == "EXPORT_METHODS":
             for export_method in config_parser[section]:
-                print("Config file: detected export method '"
-                      + export_method
-                      + "' from config file")
-                config["EXPORT_METHODS"][export_method] = config_parser[section][export_method]
+                print(
+                    "Config file: detected export method '"
+                    + export_method
+                    + "' from config file"
+                )
+                config["EXPORT_METHODS"][export_method] = config_parser[section][
+                    export_method
+                ]
             continue
 
         print("Config section '" + section + "' not recognized, skipping")
-
 
     # Then deal with environment variables
     for env_var in os.environ:
@@ -76,7 +81,10 @@ def init_config():
             # Env var format: DEBIAI_DATA_PROVIDER_<name>=<url>
             if len(env_var.split("_")) != 5:
                 print(
-                    "Environment variables: invalid environment variable '" + env_var + "', skipping")
+                    "Environment variables: invalid environment variable '"
+                    + env_var
+                    + "', skipping"
+                )
                 print("Expected format: DEBIAI_WEB_DATA_PROVIDER_<name>=<url>")
                 continue
 
@@ -84,8 +92,11 @@ def init_config():
             data_provider_url = os.environ[env_var]
 
             if len(data_provider_name) == 0:
-                print("Environment variables: invalid data provider name '" +
-                      env_var + "', skipping")
+                print(
+                    "Environment variables: invalid data provider name '"
+                    + env_var
+                    + "', skipping"
+                )
                 print("Expected format: DEBIAI_WEB_DATA_PROVIDER_<name>=<url>")
                 continue
 
@@ -101,8 +112,11 @@ def init_config():
         if "DEBIAI_EXPORT_METHOD" in env_var:
             # Env var format: DEBIAI_EXPORT_METHOD_<name>=<type>, <param1>, <param2>, ..."
             if len(env_var.split("_")) != 4:
-                print("Environment variables: invalid environment variable '" +
-                      env_var + "', skipping")
+                print(
+                    "Environment variables: invalid environment variable '"
+                    + env_var
+                    + "', skipping"
+                )
                 print(
                     "Expected format: DEBIAI_EXPORT_METHOD_<name>=<type>, <param1>, <param2>, ..."
                 )
@@ -112,8 +126,11 @@ def init_config():
             export_method_type_and_parameters = os.environ[env_var]
 
             if len(export_method_name) == 0:
-                print("Environment variables: Invalid export method name " +
-                      env_var + ", skipping")
+                print(
+                    "Environment variables: Invalid export method name "
+                    + env_var
+                    + ", skipping"
+                )
                 print(
                     "Expected format: DEBIAI_EXPORT_METHOD_<name>=<type>, <param1>, <param2>, ..."
                 )
@@ -132,9 +149,9 @@ def init_config():
                 export_method_name
             ] = export_method_type_and_parameters
 
-
     print("Config loaded")
     print(config)
+
 
 def get_config():
     return config
