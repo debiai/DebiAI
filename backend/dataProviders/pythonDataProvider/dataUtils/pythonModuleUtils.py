@@ -14,7 +14,7 @@ DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 def init():
     # Create the projects data directory
     try:
-        os.mkdir(DATA_PATH)
+        os.makedirs(DATA_PATH)
     except FileExistsError:
         # Data already initiated
         pass
