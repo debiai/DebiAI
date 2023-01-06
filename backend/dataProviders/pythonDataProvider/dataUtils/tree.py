@@ -1,7 +1,13 @@
 import ujson as json
 import os
 
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects, models, hash
+from dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    projects,
+    models,
+    hash,
+)
+
 DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
@@ -60,7 +66,7 @@ def add_block_tree(projectId, data):
     for block in blockToAdd:
 
         if block["level"] == sampleLevel:
-            # Sample level, creating hash
+            # Sample level, creating hash
             sampleHash = hash.hash(block["path"])
             block["id"] = sampleHash
             hashToSave[sampleHash] = block["path"]
@@ -87,7 +93,7 @@ def getBlockInfo(blockLevel, blockInfo):
     for dataType in pythonModuleUtils.DATA_TYPES:
         if dataType in blockLevel:
             for (i, column) in enumerate(blockLevel[dataType]):
-                ret[column['name']] = blockInfo[dataType][i]
+                ret[column["name"]] = blockInfo[dataType][i]
 
     return ret
 
@@ -99,54 +105,63 @@ def getBlockTreeFromSamples(projectId, samples: list):
     for samplePath in samples:
         try:
             sampleBlocksData, endLevel = __getBlockTreeFromSample(
-                projectId, samplePath, addedBlocks)
+                projectId, samplePath, addedBlocks
+            )
 
-            if (endLevel == 0):
+            if endLevel == 0:
                 # root block, should be here after added the first sample
                 blocksData.append(sampleBlocksData)
             else:
                 # Not a root block, we need to find where to insert it
                 # First, find the root
                 cur = next(
-                    block for block in blocksData if block["path"] in sampleBlocksData["path"])
+                    block
+                    for block in blocksData
+                    if block["path"] in sampleBlocksData["path"]
+                )
 
-                # Then, find the level
+                # Then, find the level
                 for i in range(0, endLevel - 1):
                     cur = next(
-                        child for child in cur["childrenInfoList"] if child["path"] in sampleBlocksData["path"])
+                        child
+                        for child in cur["childrenInfoList"]
+                        if child["path"] in sampleBlocksData["path"]
+                    )
 
                 cur["childrenInfoList"].append(sampleBlocksData)
         except StopIteration as e:
             # TODO : Find why this happens of certain projects
-            print("Warning, the sample " + samplePath +
-                  " doesn't have a root block")
+            print("Warning, the sample " + samplePath + " doesn't have a root block")
 
     return blocksData
 
 
 def __getBlockTreeFromSample(projectId, blockPath, addedBlocks):
     """
-        Go from the botom to the top of a tree
-        if at the top or, if block already added, return
+    Go from the botom to the top of a tree
+    if at the top or, if block already added, return
 
     """
-    # Add the block we are in
+    # Add the block we are in
     addedBlocks.append(blockPath)
 
-    with open(DATA_PATH + projectId + "/blocks/" + blockPath + '/info.json') as sampleData:
+    with open(
+        DATA_PATH + projectId + "/blocks/" + blockPath + "/info.json"
+    ) as sampleData:
         info = json.load(sampleData)
 
     if info["level"] == 0:
-        # Top of the tree, end of the recursivity
+        # Top of the tree, end of the recursivity
         return info, 0
 
     if info["parentPath"] in addedBlocks:
-        # The block to the top is already added, there is no need to go further
+        # The block to the top is already added, there is no need to go further
         return info, info["level"]
 
-    # Climbing up the tree of one level
+    # Climbing up the tree of one level
     parentInfo, endLevel = __getBlockTreeFromSample(
-        projectId, info["parentPath"], addedBlocks)
+        projectId, info["parentPath"], addedBlocks
+    )
 
     # Let's add our info to the parents
     cur = parentInfo
@@ -160,7 +175,7 @@ def __getBlockTreeFromSample(projectId, blockPath, addedBlocks):
 
 def addResultsToTree(projectId, tree: list, modelIds: list, commonOnly: bool) -> dict:
     """
-        Add, in the tree samples, the results from a model id list
+    Add, in the tree samples, the results from a model id list
     """
 
     # Load all the model results
@@ -172,10 +187,9 @@ def addResultsToTree(projectId, tree: list, modelIds: list, commonOnly: bool) ->
     proBs = projects.get_project_block_level_info(projectId)
     sampleLevel = len(proBs) - 1
 
-    # Add in the samples the results
+    # Add in the samples the results
     for rootBlock in tree:
-        __addResultsToABlock(
-            rootBlock, modelResults, sampleLevel, commonOnly)
+        __addResultsToABlock(rootBlock, modelResults, sampleLevel, commonOnly)
 
     return tree
 
@@ -186,8 +200,12 @@ def __addResultsToABlock(block, modelResults, sampleLevel, commonOnly):
         # Adding the results to the sample
         block["results"] = {}
         for modelId in modelResults:
-            # If no more than 1 model and commonOnly, no need to check if sample exist in tree
-            if commonOnly or len(modelResults) == 1 or block["path"] in modelResults[modelId]:
+            # If no more than 1 model and commonOnly, no need to check if sample exist in tree
+            if (
+                commonOnly
+                or len(modelResults) == 1
+                or block["path"] in modelResults[modelId]
+            ):
                 block["results"][modelId] = modelResults[modelId][block["path"]]
         return
 
@@ -209,8 +227,8 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
 
     if level < len(blockLevelInfo) - 1:
         for child in block["childrenInfoList"]:
-            addBlockTree(projectId, child, blockLevelInfo,
-                         blockToAdd, level + 1, path)
+            addBlockTree(projectId, child, blockLevelInfo, blockToAdd, level + 1, path)
+
 
 def findBlockInfo(projectId, blockPath):
 
@@ -219,7 +237,7 @@ def findBlockInfo(projectId, blockPath):
     if not os.path.isdir(curPath):
         return None
 
-    with open(curPath + '/info.json', 'r') as json_file:
+    with open(curPath + "/info.json", "r") as json_file:
         data = json.load(json_file)
 
     return data
@@ -229,18 +247,21 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
     # Check if a block is correct (name exist, levelInfo coherence, etc)
 
     if "name" not in block:
-        raise KeyError("A block at level "
-                       + str(level) + " is missing his name")
+        raise KeyError("A block at level " + str(level) + " is missing his name")
 
     # TODO check name valid (no / & .)
 
     if "childrenInfoList" not in block and level < (len(blockLevelInfo) - 1):
         raise KeyError(
-            "Block : " + block["name"] + " has no childrenInfoList properties")
+            "Block : " + block["name"] + " has no childrenInfoList properties"
+        )
 
     if level < len(blockLevelInfo) - 1 and len(block["childrenInfoList"]) == 0:
         raise KeyError(
-            "Block : " + block["name"] + " has no child block, the tree need to be complet")
+            "Block : "
+            + block["name"]
+            + " has no child block, the tree need to be complet"
+        )
 
     levelInfo = blockLevelInfo[level]
 
@@ -248,18 +269,32 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
         if type_ in levelInfo and len(levelInfo[type_]) > 0:
             if type_ not in block:
                 raise KeyError(
-                    "At least one value of type " + type_ + " is requiered in the block : " + levelInfo["name"])
+                    "At least one value of type "
+                    + type_
+                    + " is requiered in the block : "
+                    + levelInfo["name"]
+                )
 
-            if (len(block[type_]) != len(levelInfo[type_])):
+            if len(block[type_]) != len(levelInfo[type_]):
                 raise KeyError(
-                    "Exactly " + str(len(levelInfo[type_])) + " " + type_ + " requiered in the block : " + levelInfo["name"])
+                    "Exactly "
+                    + str(len(levelInfo[type_]))
+                    + " "
+                    + type_
+                    + " requiered in the block : "
+                    + levelInfo["name"]
+                )
 
             # TODO Implement column default
 
             for (i, col) in enumerate(levelInfo[type_]):
                 if col["type"] == "integer" and type(block[type_][i]) is str:
                     raise KeyError(
-                        "Col " + col["name"] + " requier an integer in the block : " + levelInfo["name"])
+                        "Col "
+                        + col["name"]
+                        + " requier an integer in the block : "
+                        + levelInfo["name"]
+                    )
 
 
 def __createBlock(projectId, block, level, parentPath):
@@ -289,8 +324,12 @@ def addBlock(projectId, block):
     # create the block folder and his info.json file
     try:
         os.mkdir(DATA_PATH + projectId + "/blocks/" + block["path"])
-        pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/blocks/" +
-                                        block["path"] + '/info.json', block)
+        pythonModuleUtils.writeJsonFile(
+            DATA_PATH + projectId + "/blocks/" + block["path"] + "/info.json", block
+        )
     except FileExistsError:
-        print('Warning : The block ' +
-              block["path"] + ' already exist, this is not suposed to append')
+        print(
+            "Warning : The block "
+            + block["path"]
+            + " already exist, this is not suposed to append"
+        )

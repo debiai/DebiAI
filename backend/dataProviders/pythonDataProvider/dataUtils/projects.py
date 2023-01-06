@@ -21,8 +21,7 @@ def get_project(projectId):
             data = json.load(json_file)
 
         if "name" not in data:
-            raise Exception(
-                "The project name is missing from the info.json file")
+            raise Exception("The project name is missing from the info.json file")
 
         if "creationDate" not in data:
             raise Exception(
@@ -30,8 +29,7 @@ def get_project(projectId):
             )
 
         if "updateDate" not in data:
-            raise Exception(
-                "The project updateDate is missing from the info.json file")
+            raise Exception("The project updateDate is missing from the info.json file")
 
         name = data["name"]
         creationDate = data["creationDate"]
@@ -78,7 +76,7 @@ def get_project(projectId):
             "nbTags": nbTags,
             "creationDate": creationDate,
             "updateDate": updateDate,
-            "blockLevelInfo": blockLevelInfo
+            "blockLevelInfo": blockLevelInfo,
         }
 
     except Exception as e:
@@ -118,10 +116,8 @@ def create_project(projectId, projectName):
         "blockLevelInfo": [],
     }
 
-    pythonModuleUtils.writeJsonFile(
-        DATA_PATH + projectId + "/info.json", projectInfo)
-    pythonModuleUtils.writeJsonFile(
-        DATA_PATH + projectId + "/samplesHashmap.json", {})
+    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
+    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
 
     return projectInfo
 
@@ -164,7 +160,8 @@ def delete_project(projectId):
 def update_block_structure(projectId, blockStructure):
     try:
         pythonModuleUtils.updateJsonFile(
-            DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure)
+            DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure
+        )
 
         update_project(projectId)
     except Exception as e:

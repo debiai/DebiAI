@@ -1,4 +1,11 @@
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, models, selections, tree, hash
+from dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    selections,
+    models,
+    selections,
+    tree,
+    hash,
+)
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
@@ -18,7 +25,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     # In case of streaming purpose
     if _from is not None and _to is not None:
-        samples = samples[_from: _to + 1]
+        samples = samples[_from : _to + 1]
 
     return samples
 
@@ -43,7 +50,7 @@ def get_list(projectId, data):
         samples = list(hashmap.keys())
         # In case of streaming purpose
         if "from" in data and "to" in data:
-            samples = samples[data["from"]: data["to"] + 1]
+            samples = samples[data["from"] : data["to"] + 1]
     else:
         # Or from the selections samples
         try:
@@ -61,8 +68,7 @@ def get_list(projectId, data):
     nbFromModels = 0
     # Then, concat with the model results if given
     if modelIds and len(modelIds) > 0:
-        modelSamples = models.getModelListResults(
-            projectId, modelIds, commonResults)
+        modelSamples = models.getModelListResults(projectId, modelIds, commonResults)
         nbFromModels = len(modelSamples)
         samples = set(samples)
         samples.intersection_update(set(modelSamples))
@@ -113,7 +119,7 @@ def _get_block_values(block):
 
     # store all key-values into an array
     for data_type in DATA_TYPES:
-        if (data_type in block):
+        if data_type in block:
             for key in range(len(block[data_type])):
                 values.append(block[data_type][key])
 

@@ -13,7 +13,8 @@ def get_list(project_id, data_provider, data):
         selection_intersection = data["selectionIntersection"]
         for selection_id in data["selectionIds"]:
             selection_sample_ids = data_provider.get_selection_id_list(
-                project_id, selection_id)
+                project_id, selection_id
+            )
             if len(id_list) == 0:
                 id_list = selection_sample_ids
             else:
@@ -27,8 +28,7 @@ def get_list(project_id, data_provider, data):
     else:
         # Option 1 : get samples id list
         if "from" in data and "to" in data:
-            id_list = data_provider.get_id_list(
-                project_id, data["from"], data["to"])
+            id_list = data_provider.get_id_list(project_id, data["from"], data["to"])
         else:
             id_list = data_provider.get_id_list(project_id)
 
@@ -41,7 +41,8 @@ def get_list(project_id, data_provider, data):
         for model_id in data["modelIds"]:
             # First get the model results id list
             model_sample_ids = data_provider.get_model_results_id_list(
-                project_id, model_id)
+                project_id, model_id
+            )
 
             # Then get the common or not common samples id list
             if len(model_result_ids) == 0:
@@ -49,12 +50,14 @@ def get_list(project_id, data_provider, data):
             else:
                 if common_results:
                     model_result_ids = list(
-                        set(model_result_ids) & set(model_sample_ids))
+                        set(model_result_ids) & set(model_sample_ids)
+                    )
                     if len(model_result_ids) == 0:
                         break
                 else:
                     model_result_ids = list(
-                        set(model_result_ids) | set(model_sample_ids))
+                        set(model_result_ids) | set(model_sample_ids)
+                    )
 
         # Finally get the common ids between the selection and the model results
         id_list = list(set(id_list) & set(model_result_ids))

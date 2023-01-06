@@ -40,8 +40,7 @@ def get_project(projectId):
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
 
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
     try:
         project = data_provider.get_project(projectId)
@@ -53,11 +52,10 @@ def get_project(projectId):
 
 def post_project(data):
     # Ask a data provider to create a project
-    dataProviderId = "Python module Data Provider" # TODO : deal with route
+    dataProviderId = "Python module Data Provider"  # TODO : deal with route
     projectName = data["projectName"]
 
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
     # Check project name
     if len(projectName) > 100:
@@ -76,15 +74,13 @@ def delete_project(projectId):
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]
 
-    data_provider = data_provider_manager.get_single_data_provider(
-        dataProviderId)
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
     try:
         data_provider.delete_project(projectId)
         return "Project deleted", 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
-
 
 
 # def post_addExpectedResult(projectId, resultColumn):

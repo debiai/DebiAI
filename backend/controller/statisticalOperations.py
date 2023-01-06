@@ -425,7 +425,7 @@ def mixed_iterate_function(
     return result.tolist()
 
 
-#@utils.traceLogLight
+# @utils.traceLogLight
 def mutualInformation(data):
     """
      the global matrix of mutual information
@@ -510,7 +510,7 @@ def avgdigamma(points, dvec):
     return avg
 
 
-#@utils.traceLogLight
+# @utils.traceLogLight
 def higherDimensionMutualInformation(data):
     """
     permet de calculer l’information mutuelle entre plusieurs variables continues ( 3, 4 variables).

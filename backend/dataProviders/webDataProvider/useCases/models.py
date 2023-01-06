@@ -1,4 +1,8 @@
-from dataProviders.webDataProvider.http.api import get_model_result, get_models, get_model_result_id_list
+from dataProviders.webDataProvider.http.api import (
+    get_model_result,
+    get_models,
+    get_model_result_id_list,
+)
 from utils.utils import timeNow
 
 

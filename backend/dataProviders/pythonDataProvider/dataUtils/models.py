@@ -1,6 +1,12 @@
 import os
 import ujson as json
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, selections, projects, hash, tree
+from dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    selections,
+    projects,
+    hash,
+    tree,
+)
 from dataProviders.DataProviderException import DataProviderException
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
@@ -14,7 +20,9 @@ def get_model_ids(project_id):
 def get_models(project_id):
     ret = []
     for model in os.listdir(DATA_PATH + project_id + "/models/"):
-        with open(DATA_PATH + project_id + "/models/" + model + "/info.json") as json_file:
+        with open(
+            DATA_PATH + project_id + "/models/" + model + "/info.json"
+        ) as json_file:
             info = json.load(json_file)
             ret.append(
                 {
@@ -38,14 +46,12 @@ def model_exist(project_id, model_id):
 def create_model(project_id, model_name, metadata=None):
     # ParametersCheck
     if not pythonModuleUtils.is_filename_clean(model_name):
-        raise DataProviderException(
-            "Model name contain prohibed caracters", 402)
+        raise DataProviderException("Model name contain prohibed caracters", 402)
 
     model_id = model_name
 
     if model_exist(project_id, model_id):
-        raise DataProviderException(
-            "Model " + model_id + " already exists", 409)
+        raise DataProviderException("Model " + model_id + " already exists", 409)
 
     if metadata is None:
         metadata = {}
@@ -122,6 +128,7 @@ def get_model_id_list(project_id, model_id) -> list:
         model_results = json.load(jsonFile)
         return dict.keys(model_results)
 
+
 # def get_model_list_results(project_id, model_ids: list, common: bool) -> list:
 #     samples = set(get_model_results(project_id, model_ids[0]))
 
@@ -143,22 +150,25 @@ def add_results_dict(project_id, modelId, data):
         raise "Project '" + project_id + "' doesn't exist"
 
     if not model_exist(project_id, modelId):
-        raise ("Model '"
-               + modelId
-               + "' in project : '"
-               + projects.getProjectNameFromId(project_id)
-               + "' doesn't exist")
+        raise (
+            "Model '"
+            + modelId
+            + "' in project : '"
+            + projects.getProjectNameFromId(project_id)
+            + "' doesn't exist"
+        )
 
     # Get resultStructure & project_block_structure
     result_structure = projects.get_result_structure(project_id)
     if result_structure is None:
-        raise ("The project expected results need to be specified before adding results")
+        raise (
+            "The project expected results need to be specified before adding results"
+        )
 
     if "expected_results_order" in data:
         expected_results_order = data["expected_results_order"]
     else:
-        expected_results_order = list(
-            map(lambda r: r["name"], result_structure))
+        expected_results_order = list(map(lambda r: r["name"], result_structure))
 
     project_block_structure = projects.get_project_block_level_info(project_id)
     sampleIndex = len(project_block_structure) - 1
@@ -166,9 +176,11 @@ def add_results_dict(project_id, modelId, data):
     # Check the given expected_results_order
     for expected_result in result_structure:
         if expected_result["name"] not in expected_results_order:
-            raise ("The expected result '"
-                   + expected_result["name"]
-                   + "' is missing from the expected_results_order Array")
+            raise (
+                "The expected result '"
+                + expected_result["name"]
+                + "' is missing from the expected_results_order Array"
+            )
 
     giv_exp_res = {}
     for given_expected_result in expected_results_order:
@@ -213,8 +225,7 @@ def add_results_dict(project_id, modelId, data):
 
     pythonModuleUtils.addToJsonFIle(
         DATA_PATH + project_id + "/models/" + modelId + "/info.json",
-        {"nbResults": len(newResults),
-         "updateDate": pythonModuleUtils.timeNow()},
+        {"nbResults": len(newResults), "updateDate": pythonModuleUtils.timeNow()},
     )
     projects.update_project(project_id)
     return 200
@@ -255,8 +266,7 @@ def __check_blocks_of_tree_exists(
             )
 
         for result in result_structure:
-            resultsToAdd[blockInfo["id"]].append(
-                block[giv_exp_res[result["name"]]])
+            resultsToAdd[blockInfo["id"]].append(block[giv_exp_res[result["name"]]])
             # TODO Deal with defaults results and check type
 
         return True, None
