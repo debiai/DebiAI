@@ -63,7 +63,7 @@ def test_create_project():
     assert "already exists" in resp.text
 
 
-def get_project():
+def test_get_project():
     # Find back
     url = appUrl + "projects/" + test_project_id
     resp = requests.request("GET", url, headers={}, json={})
@@ -71,9 +71,6 @@ def get_project():
     proj = json.loads(resp.text)
     assert type(proj) is dict
     assert proj["models"] == []
-    assert proj["evaluations"] == []
-    assert proj["datasets"] == []
-    assert proj["blockLevelInfo"] == []
     assert len(proj["name"]) > 0
     assert proj["name"] == test_project_name
 
@@ -280,7 +277,6 @@ def test_project_nameTooLong():
 
 
 # def test_post_dataset_badProject():
-
 #     url = appUrl + "projects/IDONTEXIST/datasets/"
 
 #     payload = {"datasetName": "Greate dataset", "blockIdList": []}

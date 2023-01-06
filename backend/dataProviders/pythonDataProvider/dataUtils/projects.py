@@ -67,8 +67,6 @@ def get_project(projectId):
 
         # Block level info
         blockLevelInfo = get_project_block_level_info(projectId)
-        # Adding the generated id to the block level info (the hash)
-        blockLevelInfo.insert(0, {"name": "Data Id"})
 
         projectOverview = {
             "id": projectId,
