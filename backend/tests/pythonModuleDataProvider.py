@@ -38,8 +38,10 @@ def test_create_project_noName():
 def test_create_project():
     global test_project_id
     # delete if exists
-    url = appUrl + "projects/" + test_project_name
+    projectId = PYTHON_DATA_PROVIDER_ID+"|" + test_project_name
+    url = appUrl + "projects/" + projectId
     resp = requests.request("DELETE", url, headers={}, data={})
+    assert resp.status_code == 200 or resp.status_code == 404
 
     # create
     url = appUrl + "projects"
