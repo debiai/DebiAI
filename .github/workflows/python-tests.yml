@@ -7,8 +7,10 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - '*'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   build:
