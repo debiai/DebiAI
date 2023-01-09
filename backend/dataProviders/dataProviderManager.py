@@ -86,4 +86,3 @@ def delete(name):
         if d.name == name:
             data_providers_list.remove(d)
             return
-    return

@@ -1,6 +1,7 @@
 #############################################################################
 # Imports
 #############################################################################
+from config.init_config import get_config
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.DataProviderException as DataProviderException
@@ -28,10 +29,16 @@ def get_data_providers():
 
 
 def post_data_providers(data):
+    # Check if we are allowed to add data providers from the config file
+    config = get_config()
+    creation_allowed = config["DATA_PROVIDERS"]["creation"]
+    if not creation_allowed:
+        return "Data provider creation is not allowed", 403
+
     # Check if data provider already exists
     if data_provider_manager.data_provider_exists(data["name"]):
         return "Data provider already exists", 400
-    
+
     # Check if data provider name is valid
     if not data_provider_manager.is_valid_name(data["name"]):
         return "Invalid data provider name", 400
@@ -47,6 +54,13 @@ def post_data_providers(data):
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
 
+
 def delete_data_providers(dataProviderId):
+    # Check if we are allowed to add data providers from the config file
+    config = get_config()
+    deletion_allowed = config["DATA_PROVIDERS"]["deletion"]
+    if not deletion_allowed:
+        return "Data provider deletion is not allowed", 403
+
     data_provider_manager.delete(dataProviderId)
     return "", 204

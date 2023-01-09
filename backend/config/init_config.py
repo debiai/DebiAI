@@ -22,12 +22,25 @@ def init_config():
     # First, read the config file
     config_parser.read(config_path)
     config = {
+        "DATA_PROVIDERS": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
         "EXPORT_METHODS": {},
     }
 
     for section in config_parser.sections():
+        if section == "DATA_PROVIDERS":
+            if "creation" in config_parser[section]:
+                if str.lower(config_parser[section]["creation"]) == "false":
+                    print("Config file: Data Providers creation disabled")
+                    config["DATA_PROVIDERS"]["creation"] = False
+
+            if "deletion" in config_parser[section]:
+                if str.lower(config_parser[section]["deletion"]) == "false":
+                    print("Config file: Data Providers deletion disabled")
+                    config["DATA_PROVIDERS"]["deletion"] = False
+            continue
+
         if section == "PYTHON_MODULE_DATA_PROVIDER":
             if "enabled" in config_parser[section]:
                 if str.lower(config_parser[section]["enabled"]) == "false":
@@ -66,6 +79,19 @@ def init_config():
 
     # Then deal with environment variables
     for env_var in os.environ:
+        # Deal with DATA_PROVIDERS in env variables
+        if env_var == "DEBIAI_DATA_PROVIDERS_CREATION_ENABLED":
+            # Env var format: DEBIAI_DATA_PROVIDERS_CREATION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Data Providers creation disabled")
+                config["DATA_PROVIDERS"]["creation"] = False
+        
+        if env_var == "DEBIAI_DATA_PROVIDERS_DELETION_ENABLED":
+            # Env var format: DEBIAI_DATA_PROVIDERS_DELETION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Data Providers deletion disabled")
+                config["DATA_PROVIDERS"]["deletion"] = False
+
         # Deal with PYTHON_MODULE_DATA_PROVIDER in env variables
         if env_var == "DEBIAI_PYTHON_MODULE_DATA_PROVIDER_ENABLED":
             # Env var format: DEBIAI_PYTHON_MODULE_DATA_PROVIDER_ENABLED=<True|False>

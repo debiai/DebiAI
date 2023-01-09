@@ -100,7 +100,6 @@ export default {
       });
     },
     deleteDataProvider(name) {
-      this.dataProviders = null;
       this.$backendDialog
         .deleteDataProvider(name)
         .then(() => {
