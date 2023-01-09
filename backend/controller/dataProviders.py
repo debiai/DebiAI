@@ -2,8 +2,8 @@
 # Imports
 #############################################################################
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
-from dataProviders.pythonDataProvider.PythonDataProvider import PythonDataProvider
 import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.DataProviderException as DataProviderException
 
 #############################################################################
 # PROJECTS Management
@@ -28,13 +28,24 @@ def get_data_providers():
 
 
 def post_data_providers(data):
-    if data["type"] == "Web":
-        data_provider_manager.add(WebDataProvider(data["url"], data["name"]))
-    else:
-        data_provider_manager.add(PythonDataProvider())
+    # Check if data provider already exists
+    if data_provider_manager.data_provider_exists(data["name"]):
+        return "Data provider already exists", 400
+    
+    # Check if data provider name is valid
+    if not data_provider_manager.is_valid_name(data["name"]):
+        return "Invalid data provider name", 400
 
-    return "", 204
+    try:
+        # Add data provider
+        if data["type"] == "Web":
+            data_provider_manager.add(WebDataProvider(data["url"], data["name"]))
+        else:
+            return "Invalid data provider type", 400
 
+        return "", 204
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
 def delete_data_providers(dataProviderId):
     data_provider_manager.delete(dataProviderId)

@@ -1,4 +1,5 @@
 import requests
+from dataProviders.DataProviderException import DataProviderException
 
 ### Todo : change info if in not alive anymore
 def get_status(url):
@@ -7,6 +8,9 @@ def get_status(url):
         return r.status_code == 200
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
+    except requests.exceptions.InvalidURL:
+        raise DataProviderException("Invalid URL", 400)
+        
 
 
 def get_info(url):
