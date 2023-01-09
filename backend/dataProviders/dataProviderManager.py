@@ -20,17 +20,19 @@ def setup_data_providers():
         name = keys[i]
         url = values[i]
         print(" - Adding external data Provider " + name + " from " + url + " - ")
-        data_provider = WebDataProvider(url, name)
-
-        if data_provider.is_alive():
-            print(
-                "   Data Provider "
-                + name
-                + " added to Data Providers list and already accessible"
-            )
-        else:
-            print("   [ERROR] : Data Provider " + name + " Is not accessible now")
-        add(data_provider)
+        try:
+            data_provider = WebDataProvider(url, name)
+            if data_provider.is_alive():
+                print(
+                    "   Data Provider "
+                    + name
+                    + " added to Data Providers list and already accessible"
+                )
+            else:
+                print("   [ERROR] : Data Provider " + name + " Is not accessible now")
+            add(data_provider)
+        except DataProviderException.DataProviderException as e:
+            print("   [ERROR] : Data Provider " + e.message + " Is not accessible now")
 
     # Python Data Providers
     if python_module_data_provider_config["enabled"] != False:

@@ -1,18 +1,25 @@
 import requests
+import json
+from dataProviders.DataProviderException import DataProviderException
+
 
 ### Todo : change info if in not alive anymore
 def get_status(url):
     try:
         r = requests.get(url + "/info")
-        return r.status_code == 200
+        response = get_http_response(r)
+        if r.status_code == 200:
+            return True
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
+    # except (requests.exceptions.JSONDecodeError):
+    #     return True
 
 
 def get_info(url):
     try:
         r = requests.get(url + "/info")
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -21,7 +28,8 @@ def get_info(url):
 def get_projects(url):
     try:
         r = requests.get(url + "/info")
-        return r.json()
+        return get_http_response(r)
+        #return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -30,7 +38,7 @@ def get_projects(url):
 def get_project(url, id_project):
     try:
         r = requests.get(url + "/info")
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -50,7 +58,7 @@ def get_id_list(url, id_project, _from=None, _to=None):
             url = url + "/view/" + id_project + "/dataIdList"
         r = requests.get(url)
 
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         print("Error getting data id list from {} on view {}".format(url, id_project))
         return []
@@ -59,7 +67,7 @@ def get_id_list(url, id_project, _from=None, _to=None):
 def get_samples(url, id_project, id_list):
     try:
         r = requests.post(url + "/view/{}/data".format(id_project), json=id_list)
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         raise Exception(
             "Could not get the data provider {} data for view {}".format(
@@ -71,7 +79,7 @@ def get_samples(url, id_project, id_list):
 def get_selections(url, id_project):
     try:
         r = requests.get(url + "/view/{}/selections".format(id_project))
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -79,7 +87,7 @@ def get_selections(url, id_project):
 def post_selection(url, id_project, data):
     try:
         requests.post(url + "/view/{}/selections".format(id_project), json=data)
-        return
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -94,7 +102,7 @@ def get_selection_id(url, id_project, id_selection):
             )
         )
 
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -102,9 +110,9 @@ def get_selection_id(url, id_project, id_selection):
 ### TOD0 : change Selected data Id List -> selections et non selection
 def delete_selection(url, id_project, id_selection):
     try:
-        requests.delete(url + "/view/{}/selections/{}".format(id_project, id_selection))
+        r = requests.delete(url + "/view/{}/selections/{}".format(id_project, id_selection))
 
-        return
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -112,7 +120,7 @@ def delete_selection(url, id_project, id_selection):
 def get_models(url, id_project):
     try:
         r = requests.get(url + "/view/{}/models".format(id_project))
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -123,7 +131,7 @@ def get_model_result_id_list(url, project_id, model_id):
         r = requests.get(
             url + "/view/{}/model/{}/evaluatedDataIdList".format(project_id, model_id)
         )
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -134,6 +142,30 @@ def get_model_result(url, id_project, id_model, id_sample_list):
             url + "/view/{}/model/{}/results".format(id_project, id_model),
             json=id_sample_list,
         )
-        return r.json()
+        return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
+
+
+def get_http_response(response):
+    try:    
+        if response.raise_for_status() is None:
+            return get_valid_response(response)
+    except (requests.exceptions.HTTPError):
+            return get_error_response(response)
+        
+
+def get_valid_response(response):
+    if response.status_code == 204:
+        return True
+    try:
+        return response.json()
+    except (json.decoder.JSONDecodeError):
+        return 
+        
+        
+def get_error_response(response):
+    if (response.status_code == 500):
+        raise DataProviderException("Data Provider unexpected Error", 500)
+    
+    raise DataProviderException(response.text, response.status_code)
