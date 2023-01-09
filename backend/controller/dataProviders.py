@@ -62,5 +62,9 @@ def delete_data_providers(dataProviderId):
     if not deletion_allowed:
         return "Data provider deletion is not allowed", 403
 
-    data_provider_manager.delete(dataProviderId)
-    return "", 204
+    # Delete data provider
+    try:
+        data_provider_manager.delete(dataProviderId)
+        return "", 204
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code

@@ -84,5 +84,10 @@ def get_single_data_provider(name):
 def delete(name):
     for d in data_providers_list:
         if d.name == name:
+            if d.type == "Python module Data Provider":
+                raise DataProviderException.DataProviderException(
+                    "Python module data provider cannot be deleted", 403
+                )
+
             data_providers_list.remove(d)
             return
