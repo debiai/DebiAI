@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-import os
+import os, json
 
 
 config_path = "config/config.ini"
@@ -150,7 +150,7 @@ def init_config():
             ] = export_method_type_and_parameters
 
     print("Config loaded")
-    print(config)
+    print(json.dumps(config, sort_keys=True, indent=4))
 
 
 def get_config():
