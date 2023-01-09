@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from dataProviders.DataProviderException import DataProviderException
 
 ### Todo : change info if in not alive anymore
@@ -7,7 +7,7 @@ def get_status(url):
         r = requests.get(url + "/info")
         return r.status_code == 200
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-        return None
+        return False
     except requests.exceptions.InvalidURL:
         raise DataProviderException("Invalid URL", 400)
         
@@ -26,6 +26,8 @@ def get_projects(url):
     try:
         r = requests.get(url + "/info")
         return r.json()
+    except json.decoder.JSONDecodeError:
+        return None
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
