@@ -12,7 +12,6 @@ def get_status(url):
         return False
     except requests.exceptions.InvalidURL:
         raise DataProviderException("Invalid URL", 400)
-        
 
 
 def get_info(url):
@@ -28,7 +27,7 @@ def get_projects(url):
     try:
         r = requests.get(url + "/info")
         return get_http_response(r)
-        #return r.json()
+        # return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
@@ -109,7 +108,9 @@ def get_selection_id(url, id_project, id_selection):
 ### TOD0 : change Selected data Id List -> selections et non selection
 def delete_selection(url, id_project, id_selection):
     try:
-        r = requests.delete(url + "/view/{}/selections/{}".format(id_project, id_selection))
+        r = requests.delete(
+            url + "/view/{}/selections/{}".format(id_project, id_selection)
+        )
 
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
@@ -147,12 +148,12 @@ def get_model_result(url, id_project, id_model, id_sample_list):
 
 
 def get_http_response(response):
-    try:    
+    try:
         if response.raise_for_status() is None:
             return get_valid_response(response)
     except (requests.exceptions.HTTPError):
-            return get_error_response(response)
-        
+        return get_error_response(response)
+
 
 def get_valid_response(response):
     if response.status_code == 204:
@@ -160,11 +161,11 @@ def get_valid_response(response):
     try:
         return response.json()
     except (json.decoder.JSONDecodeError):
-        return 
-        
-        
+        return
+
+
 def get_error_response(response):
-    if (response.status_code == 500):
+    if response.status_code == 500:
         raise DataProviderException("Data Provider unexpected Error", 500)
-    
+
     raise DataProviderException(response.text, response.status_code)

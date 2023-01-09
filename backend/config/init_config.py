@@ -85,7 +85,7 @@ def init_config():
             if str.lower(os.environ[env_var]) == "false":
                 print("Environment variables: Data Providers creation disabled")
                 config["DATA_PROVIDERS"]["creation"] = False
-        
+
         if env_var == "DEBIAI_DATA_PROVIDERS_DELETION_ENABLED":
             # Env var format: DEBIAI_DATA_PROVIDERS_DELETION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
