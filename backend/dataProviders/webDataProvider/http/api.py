@@ -1,7 +1,5 @@
-import requests
-import json
+import requests, json
 from dataProviders.DataProviderException import DataProviderException
-
 
 ### Todo : change info if in not alive anymore
 def get_status(url):
@@ -11,9 +9,10 @@ def get_status(url):
         if r.status_code == 200:
             return True
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-        return None
-    # except (requests.exceptions.JSONDecodeError):
-    #     return True
+        return False
+    except requests.exceptions.InvalidURL:
+        raise DataProviderException("Invalid URL", 400)
+        
 
 
 def get_info(url):

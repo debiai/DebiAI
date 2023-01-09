@@ -43,6 +43,29 @@ def setup_data_providers():
         print("Warning, No data providers setup")
 
 
+def data_provider_exists(name):
+    for d in data_providers_list:
+        if d.name == name:
+            return True
+    return False
+
+
+def is_valid_name(name):
+    # /, &, | are not allowed in data provider names
+    if (
+        "/" in name
+        or "&" in name
+        or "|" in name
+        or len(name) == 0
+        or len(name) > 50
+        or name[0] == " "
+        or name[-1] == " "
+    ):
+        return False
+
+    return True
+
+
 def add(data_provider):
     data_providers_list.append(data_provider)
     return
@@ -63,6 +86,10 @@ def get_single_data_provider(name):
 def delete(name):
     for d in data_providers_list:
         if d.name == name:
+            if d.type == "Python module Data Provider":
+                raise DataProviderException.DataProviderException(
+                    "Python module data provider cannot be deleted", 403
+                )
+
             data_providers_list.remove(d)
             return
-    return
