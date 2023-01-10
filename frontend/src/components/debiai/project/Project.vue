@@ -288,6 +288,12 @@ export default {
               msg: "Project deleted",
             });
             this.$router.push("/");
+          }).catch((e) => {
+            console.log(e);
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Could not delete the project"
+            });
           });
       });
     },

@@ -27,21 +27,6 @@ def get_results(projectId, modelId, data):
 
 
 def post_model(projectId, data):
-    """
-    Create a new model
-    """
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
-    try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-        data_provider.create_model(projectId, data)
-        return "model created", 200
-    except DataProviderException.DataProviderException as e:
-        return e.message, e.status_code
-
-
-def post_model(projectId, data):
     # Create a new model
     projectId = projectId.split("|")[1]
     dataProviderId = "Python module Data Provider"

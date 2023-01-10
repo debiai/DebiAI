@@ -17,24 +17,29 @@ def get_all_projects_from_data_provider(url, name):
     if not projects:
         return
 
-    for project in projects:
-        blockInfo = format_collumns_project_overview(projects[project])
-        selections = get_project_selections(url, project)
-        models = get_models_info(url, project)
+    for project_id in projects:
+        blockInfo = format_collumns_project_overview(projects[project_id])
+        selections = get_project_selections(url, project_id)
+        models = get_models_info(url, project_id)
+
         # Samples number
-        if "nbSamples" in projects[project]:
-            nbSamples = projects[project]["nbSamples"]
+        if "nbSamples" in projects[project_id]:
+            nbSamples = projects[project_id]["nbSamples"]
         else:
             nbSamples = None
 
         project_list.append(
             {
-                "id": project,
-                "name": project,
+                "id": project_id,
+                "name": (
+                    project_id
+                    if "name" not in projects[project_id]
+                    else projects[project_id]["name"]
+                ),
                 "dataProvider": name,
-                "view": project,
+                "view": project_id,
                 "blockLevelInfo": blockInfo,
-                "resultStructure": projects[project]["expectedResults"],
+                "resultStructure": projects[project_id]["expectedResults"],
                 "nbModels": len(models),
                 "nbSamples": nbSamples,
                 "nbRequests": 0,
@@ -54,7 +59,8 @@ def get_all_projects_from_data_provider(url, name):
 
 def get_single_project_from_data_provider(url, data_provider_name, id_project):
     project = get_project(url, id_project)
-    #### Todo : remove when data Provider API will be changed
+    # Not called at the moment
+    #### TODO : remove when data Provider API will be changed
     project = project[id_project]
     blockInfo = format_collumns_project_overview(project)
     selections = get_project_selections(url, id_project)

@@ -5,9 +5,18 @@ from dataProviders.DataProviderException import DataProviderException
 def get_status(url):
     try:
         r = requests.get(url + "/info")
-        response = get_http_response(r)
-        if r.status_code == 200:
-            return True
+
+        if r.status_code != 200:
+            return False
+
+        # Check content type
+        content = get_http_response(r)
+
+        if content is None:
+            return False  # we are expecting a dict
+
+        return True
+
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return False
     except requests.exceptions.InvalidURL:
