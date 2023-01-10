@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask import send_from_directory, request, Response
 import requests
 from init import init
+from utils.utils import get_app_version
 
 DEV_FRONTEND_URL = "http://localhost:8080/"
 PORT = 3000
@@ -64,6 +65,9 @@ def send_supporting_elmt(path):
 
 if __name__ == "__main__":
     # Run DebiAI init
+    print(
+        "================= DebiAI " + get_app_version() + " ===================="
+    )
     init()
     print("======================== RUN =======================")
     print("App running : http://localhost:{}".format(PORT))
