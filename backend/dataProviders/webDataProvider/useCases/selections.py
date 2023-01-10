@@ -11,7 +11,7 @@ def get_project_selections(url, project_id):
             {
                 "name": selection["name"] if "name" in selection else selection["id"],
                 "id": selection["id"],
-                "nbSamples": selection["nbSamples"] if "nbSamples" in selection else 0,
+                "nbSamples": selection["nbSamples"] if "nbSamples" in selection else None,
                 "creationDate": timeNow(),
                 "updateDate": timeNow(),
             }

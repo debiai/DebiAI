@@ -57,7 +57,7 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     #### Todo : remove when data Provider API will be changed
     project = project[id_project]
     blockInfo = format_collumns_project_overview(project)
-    selections = get_selections(url, id_project)
+    selections = get_project_selections(url, id_project)
     models = get_models_info(url, id_project)
 
     if "nbSamples" in project:
