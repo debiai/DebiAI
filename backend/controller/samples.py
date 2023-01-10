@@ -22,14 +22,13 @@ def get_list(projectId, data):
     projectId = projectId.split("|")[1]
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
     try:
-            
+
         # Call our utility function
         data_id_list = get_id_list.get_list(projectId, data_provider, data)
 
         return data_id_list, 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
-
 
 
 # Get the list of samples ID of the project selection
