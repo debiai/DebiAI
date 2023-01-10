@@ -65,9 +65,7 @@ def send_supporting_elmt(path):
 
 if __name__ == "__main__":
     # Run DebiAI init
-    print(
-        "================= DebiAI " + get_app_version() + " ===================="
-    )
+    print("================= DebiAI " + get_app_version() + " ====================")
     init()
     print("======================== RUN =======================")
     print("App running : http://localhost:{}".format(PORT))
