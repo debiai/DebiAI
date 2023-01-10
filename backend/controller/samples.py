@@ -29,8 +29,6 @@ def get_list(projectId, data):
 
 
 # Get the list of samples ID of the project selection
-
-
 def get_selection_list(projectId, selectionId):
     dataProviderId = projectId.split("|")[0]
     projectId = projectId.split("|")[1]

@@ -27,7 +27,8 @@
           <input type="number" v-model="tagValue" />
         </span>
       </div>
-      <div class="data">
+      <!-- Tag saving TODO : make it work again -->
+      <!-- <div class="data">
         <span class="name">
           Save the tag on the server :
 
@@ -54,7 +55,7 @@
             <span></span>
           </label>
         </span>
-      </div>
+      </div> -->
     </form>
     <span>
       <button

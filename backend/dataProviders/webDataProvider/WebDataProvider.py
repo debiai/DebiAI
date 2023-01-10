@@ -26,7 +26,7 @@ class WebDataProvider(DataProvider):
     def __init__(self, url, name):
         self.url = url
         self._name = name
-        self.alive = True if get_status(url) is True else False
+        self.alive = None
 
     @property
     def name(self):
