@@ -24,12 +24,18 @@ def get_projects():
     data_providers_list = data_provider_manager.get_data_provider_list()
     projectOverviews = []
     for data_provider in data_providers_list:
-        projects = data_provider.get_projects()
-        if projects is not None:
-            # TMP: merging dp ids and project ids TODO: change this
-            for project in projects:
-                project["id"] = data_provider.name + "|" + project["id"]
-            projectOverviews.extend(projects)
+        try:
+
+            projects = data_provider.get_projects()
+
+            if projects is not None:
+                # TMP: merging dp ids and project ids TODO: change this
+                for project in projects:
+                    project["id"] = data_provider.name + "|" + project["id"]
+                projectOverviews.extend(projects)
+
+        except DataProviderException.DataProviderException as e:
+            print("Warning get DP projects : " + e.message)
 
     return projectOverviews, 200
 
