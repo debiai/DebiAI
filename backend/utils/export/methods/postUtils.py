@@ -29,15 +29,15 @@ class PostExportMethod(ExportMethod):
         # Expected parameters: [url]
         # Check parameters
         if len(parameters) != 1:
-            raise Exception(
-                "Post export type requires 1 parameter : the url")
+            raise Exception("Post export type requires 1 parameter : the url")
 
         self.url = parameters[0]
 
         # Check url
         if not self.url.startswith("http://") and not self.url.startswith("https://"):
-            raise Exception("Url '" + self.url +
-                            "' must start with http:// or https://")
+            raise Exception(
+                "Url '" + self.url + "' must start with http:// or https://"
+            )
 
         self.up = True
 
@@ -54,5 +54,8 @@ class PostExportMethod(ExportMethod):
             print("Post export method : Data sent")
         except Exception as e:
             print("Post export method : Error sending post request", e)
-            raise Exception("Post export method : Error sending post request on url '" +
-                            self.url + "'")
+            raise Exception(
+                "Post export method : Error sending post request on url '"
+                + self.url
+                + "'"
+            )

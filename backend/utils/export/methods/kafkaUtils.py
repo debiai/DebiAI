@@ -32,7 +32,8 @@ class KafkaExportMethod(ExportMethod):
         # Check parameters
         if len(parameters) != 2:
             raise Exception(
-                "Kafka export type requires 2 parameters : server and topic")
+                "Kafka export type requires 2 parameters : server and topic"
+            )
 
         # Create producer
         self.server = parameters[0]
@@ -41,17 +42,22 @@ class KafkaExportMethod(ExportMethod):
         # Create Kafka producer
         try:
             self.producer = KafkaProducer(
-                bootstrap_servers=self.server, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+                bootstrap_servers=self.server,
+                value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+            )
             self.up = True
         except Exception as e:
             print("Kafka producer creation failed : " + str(e))
             print("server : |" + self.server + "|")
             raise Exception(
-                "Kafka producer creation on server '" + self.server + "' failed with error : " + str(e))
+                "Kafka producer creation on server '"
+                + self.server
+                + "' failed with error : "
+                + str(e)
+            )
 
     def export(self, data):
-        print("Kafka export method : Sending data to kafka",
-              self.server, self.topic)
+        print("Kafka export method : Sending data to kafka", self.server, self.topic)
         print(data)
 
         if not self.up:

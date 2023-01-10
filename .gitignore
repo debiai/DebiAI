@@ -1,11 +1,11 @@
 TODO
-debiai.log
 dist/
 deployment/
+.vscode/
 
 # Back
 backend/data
-backend/logs/
+.coverage
 __pycache__/
 
 # Front

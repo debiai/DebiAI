@@ -1,17 +1,15 @@
 import os
-import ujson as json
-import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-import utils.debiai.samples as samplesUtils
 
-dataPath = debiaiUtils.dataPath
+from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
+
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 def getRequestsIds(projectId):
     try:
-        return os.listdir(dataPath + projectId + "/requests")
+        return os.listdir(DATA_PATH + projectId + "/requests")
     except FileNotFoundError:
-        os.mkdir(dataPath + projectId + "/requests")
+        os.mkdir(DATA_PATH + projectId + "/requests")
         return []
 
 
@@ -23,7 +21,9 @@ def getRequests(projetId):
 
 
 def getRequest(projectId, requestId):
-    return utils.readJsonFile(dataPath + projectId + "/requests/" + requestId + "/info.json")
+    return pythonModuleUtils.readJsonFile(
+        DATA_PATH + projectId + "/requests/" + requestId + "/info.json"
+    )
 
 
 def getRequestSelections(projectId, requestId):
@@ -39,7 +39,7 @@ def getRequestSelections(projectId, requestId):
 
 def createRequest(projectId, requestName, requestDescription, filters):
     # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
+    if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     for filter in filters:
@@ -70,13 +70,13 @@ def createRequest(projectId, requestName, requestDescription, filters):
                     return "max was expected in the interval", 400
 
     # Request ID creation
-    requestId = utils.clean_filename(requestName)
+    requestId = pythonModuleUtils.clean_filename(requestName)
     if len(requestId) == 0:
-        requestId = utils.timeNow()
+        requestId = pythonModuleUtils.timeNow()
 
     nbR = 1
     while requestId in getRequestsIds(projectId):
-        requestId = utils.clean_filename(requestName) + "_" + str(nbR)
+        requestId = pythonModuleUtils.clean_filename(requestName) + "_" + str(nbR)
         nbR += 1
 
     # Rework filter
@@ -88,7 +88,7 @@ def createRequest(projectId, requestName, requestDescription, filters):
         f = {
             "columnLabel": filter["columnLabel"],
             "type": filter["type"],
-            "inverted": filter["inverted"]
+            "inverted": filter["inverted"],
         }
         if f["type"] == "values":
             f["values"] = filter["values"]
@@ -98,24 +98,25 @@ def createRequest(projectId, requestName, requestDescription, filters):
         filtersToSave.append(f)
 
     # Save request
-    os.mkdir(dataPath + projectId + "/requests/" + requestId)
+    os.mkdir(DATA_PATH + projectId + "/requests/" + requestId)
 
     requestInfo = {
         "name": requestName,
         "description": requestDescription,
         "id": requestId,
         "filters": filtersToSave,
-        "creationDate": utils.timeNow()
+        "creationDate": pythonModuleUtils.timeNow(),
     }
 
-    utils.writeJsonFile(dataPath + projectId + "/requests/" +
-                        requestId + "/info.json", requestInfo)
+    pythonModuleUtils.writeJsonFile(
+        DATA_PATH + projectId + "/requests/" + requestId + "/info.json", requestInfo
+    )
 
     return requestInfo
 
 
 def deleteRequest(projectId, requestId):
-    utils.deleteDir(dataPath + projectId + "/requests/" + requestId)
+    pythonModuleUtils.deleteDir(DATA_PATH + projectId + "/requests/" + requestId)
 
 
 def createSelection(projectId, requestId, selectionName):
@@ -130,22 +131,24 @@ def createSelection(projectId, requestId, selectionName):
 
     # Create the selection
     nbS = 1
-    selectionId = utils.clean_filename(selectionName)
+    selectionId = pythonModuleUtils.clean_filename(selectionName)
     if len(selectionId) == 0:
-        selectionId = utils.timeNow()
+        selectionId = pythonModuleUtils.timeNow()
     while debiaiUtils.selectionExist(projectId, selectionId):
-        selectionId = utils.clean_filename(selectionName) + "_" + str(nbS)
+        selectionId = pythonModuleUtils.clean_filename(selectionName) + "_" + str(nbS)
         nbS += 1
 
     debiaiUtils.createSelection(
-        projectId, selectionId, selectionName, selectionSamplesIds, requestId=requestId)
+        projectId, selectionId, selectionName, selectionSamplesIds, requestId=requestId
+    )
 
 
 def isSampleInSelection(sample, filters):
     for filter in filters:
         if filter["columnLabel"] not in sample:
-            raise KeyError("columnLabel " +
-                           filter["columnLabel"] + " not found in sample")
+            raise KeyError(
+                "columnLabel " + filter["columnLabel"] + " not found in sample"
+            )
 
         if "inverted" not in filter:
             filter["inverted"] = False
@@ -161,7 +164,9 @@ def isSampleInSelection(sample, filters):
                 return False
 
         elif filter["type"] == "intervals":
-            if _is_value_in_intervals(sample[filter["columnLabel"]], filter["intervals"]):
+            if _is_value_in_intervals(
+                sample[filter["columnLabel"]], filter["intervals"]
+            ):
                 if filter["inverted"]:
                     return False
             elif not filter["inverted"]:
@@ -177,7 +182,12 @@ def _is_value_in_intervals(value, intervals):
 
     for interval in intervals:
         # Case where the interval is [min, max]
-        if "min" in interval and interval["min"] is not None and "max" in interval and interval["max"] is not None:
+        if (
+            "min" in interval
+            and interval["min"] is not None
+            and "max" in interval
+            and interval["max"] is not None
+        ):
             if value < interval["min"] or value > interval["max"]:
                 return False
         # Case where the interval is [min, None]

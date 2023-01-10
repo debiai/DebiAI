@@ -11,17 +11,32 @@
           Models
         </h2>
         <span style="display: flex; align-items: center">
-          <button class="info" @click="selectAll">
+          <button
+            class="info"
+            @click="selectAll"
+          >
             All
           </button>
-          <button class="warning" style="margin-right: 5px" @click="selecNone">
+          <button
+            class="warning"
+            style="margin-right: 5px"
+            @click="selecNone"
+          >
             None
           </button>
-          <input type="text" placeholder="Search a model" v-model="searchBar" />
+          <input
+            type="text"
+            placeholder="Search a model"
+            v-model="searchBar"
+          />
         </span>
       </div>
 
-      <div id="modelList" class="itemList" v-if="project.models.length > 0">
+      <div
+        id="modelList"
+        class="itemList"
+        v-if="project.models.length > 0"
+      >
         <div
           v-for="model in filteredModels"
           :key="model.id"
@@ -33,39 +48,63 @@
         >
           <div class="title">
             <h3 class="name">{{ model.name }}</h3>
+            <!-- date -->
             <span
               class="date"
               :title="$services.timeStampToDate(model.creationDate)"
+              v-if="model.creationDate"
             >
               Created {{ $services.prettyTimeStamp(model.creationDate) }}
+            </span>
+            <span
+              v-else
+              class="date"
+            >
+              No creation date
             </span>
           </div>
 
           <!-- sample number -->
-          <div class="sampleNumber" title="Number of samples for which we have model results ">
+          <div
+            class="sampleNumber"
+            title="Number of samples for which we have model results "
+          >
             <inline-svg
               :src="require('../../../assets/svg/data.svg')"
               width="20"
               height="20"
-            />{{ model.nbResults }}
+            />{{ "nbResults" in model ? model.nbResults : "?" }}
           </div>
 
           <!-- options -->
-          <button class="red" @click="(event) => deleteModel(model.id, event)">
+          <button
+            class="red"
+            @click="(event) => deleteModel(model.id, event)"
+          >
             Delete
           </button>
         </div>
       </div>
-      <div id="Model" v-else style="text-align: center; padding-top: 20px">
+      <div
+        id="Model"
+        v-else
+        style="text-align: center; padding-top: 20px"
+      >
         No models
       </div>
     </div>
     <!-- Controls -->
     <transition name="fade">
-      <div id="modelsControls" v-if="selectedModelIds.length > 0">
+      <div
+        id="modelsControls"
+        v-if="selectedModelIds.length > 0"
+      >
         <!-- Common results -->
         <transition name="fade">
-          <div id="commonModelResults" v-if="selectedModelIds.length > 1">
+          <div
+            id="commonModelResults"
+            v-if="selectedModelIds.length > 1"
+          >
             Multiple model results selected :
             <div class="dataGroup">
               Union
@@ -76,7 +115,10 @@
                 style="display: none"
                 v-model="commomModelResults"
               />
-              <label for="commomModelResultsToggle" class="toggle">
+              <label
+                for="commomModelResultsToggle"
+                class="toggle"
+              >
                 <span></span>
               </label>
               Intersection
@@ -87,7 +129,10 @@
         <!-- nb evaluated and results -->
         <div id="nbEvaluatedSamples">
           Evaluated samples :
-          <div class="dataGroup" v-if="selectedModelIds.length">
+          <div
+            class="dataGroup"
+            v-if="selectedModelIds.length"
+          >
             <!-- Nb evaluated samples -->
             <span style="padding-right: 5px">
               {{ nbEvaluatedSamples }}
@@ -108,7 +153,7 @@
           </div>
           Number of results :
           <div class="dataGroup">
-              {{ nbResults === null ? "?" : nbResults }}
+            {{ nbResults === null ? "?" : nbResults }}
           </div>
         </div>
       </div>
@@ -131,7 +176,7 @@ export default {
       commomModelResults: true,
     };
   },
-  mounted() {},
+  mounted() { },
   methods: {
     selectModel(modelId) {
       if (this.selectedModelIds.includes(modelId))
@@ -199,6 +244,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 #modelsPannel {
   flex: 1;
   padding: 10px;
@@ -209,7 +255,8 @@ export default {
   border-radius: 10px;
   margin: 5px;
   transition: height 0.2s;
-  height: 0%; /* Do not remove, very important for some reason */
+  height: 0%;
+  /* Do not remove, very important for some reason */
 }
 
 #title {
@@ -230,9 +277,11 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .model .date {
   opacity: 0.7;
 }
+
 .model .sampleNumber {
   flex: 1;
   display: flex;
@@ -262,12 +311,14 @@ export default {
   font-weight: bold;
   background: #707070;
 }
+
 #modelsControls #commonModelResults {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
 }
+
 #modelsControls #nbEvaluatedSamples {
   display: flex;
   align-items: center;

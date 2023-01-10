@@ -7,7 +7,7 @@
     <div class="left">
       <!-- selectionName & request id  -->
       <div class="name">
-        <h3>{{ selection.name }}</h3>
+        <h3>{{ selection.name || selection.id }}</h3>
         <!-- Request if it exist -->
         <a
           title="Request that has created this selection"
@@ -21,21 +21,35 @@
       <span
         class="date"
         :title="$services.timeStampToDate(selection.creationDate)"
+        v-if="selection.creationDate"
       >
         Created {{ $services.prettyTimeStamp(selection.creationDate) }}
       </span>
+      <span
+        v-else
+        class="date"
+      >
+        No creation date
+      </span>
     </div>
     <!-- sample number -->
-    <div class="sampleNumber" title="Selection sample number">
+    <div
+      class="sampleNumber"
+      title="Selection sample number"
+    >
       <inline-svg
         :src="require('../../../../assets/svg/data.svg')"
         width="20"
         height="20"
-      />{{ selection.nbSamples }}
+      />{{ "nbSamples" in selection ? selection.nbSamples : "?" }}
+
     </div>
 
     <!-- options -->
-    <button class="red" @click="(event) => deleteSelection(event)">
+    <button
+      class="red"
+      @click="(event) => deleteSelection(event)"
+    >
       Delete
     </button>
   </div>
@@ -65,17 +79,21 @@ export default {
   flex-direction: column;
   min-width: 70%;
 }
+
 .Selection .left .name {
   display: flex;
 }
+
 .Selection .left a {
   padding-left: 10px;
   color: #1068bf;
 }
+
 .Selection .left a:hover {
   color: #0056b3;
   text-decoration: underline;
 }
+
 .Selection .sampleNumber {
   flex: 1;
   display: flex;

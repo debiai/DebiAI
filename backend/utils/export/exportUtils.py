@@ -1,6 +1,4 @@
-import utils.debiaiUtils as debiaiUtils
-import utils.dataProviders as dataProvider
-import utils.config as configUtils
+import config.init_config as configUtils
 import time
 from utils.export.methods.kafkaUtils import KafkaExportType
 from utils.export.methods.postUtils import PostExportType
@@ -16,10 +14,7 @@ from utils.export.methods.postUtils import PostExportType
 #############################################################################
 
 
-export_types = [
-    KafkaExportType(),
-    PostExportType()
-]
+export_types = [KafkaExportType(), PostExportType()]
 
 export_methods = []
 
@@ -59,12 +54,13 @@ def load_export_methods():
     # Load the export methods from the config file
     config = configUtils.get_config()
 
-    if 'EXPORT_METHODS' in config:
-        config_export_methods = config['EXPORT_METHODS']
+    if "EXPORT_METHODS" in config:
+        config_export_methods = config["EXPORT_METHODS"]
 
         for method in config_export_methods:
-            print("Configuring method " + method,
-                  "[", config_export_methods[method], "]")
+            print(
+                "Configuring method " + method, "[", config_export_methods[method], "]"
+            )
 
             try:
                 parameters = config_export_methods[method].split(",")
@@ -77,7 +73,8 @@ def load_export_methods():
 
                 export_type_name = parameters[0]
                 export_method = create_export_method(
-                    method, export_type_name, parameters[1:])
+                    method, export_type_name, parameters[1:]
+                )
 
                 export_methods.append(export_method)
             except Exception as e:
@@ -91,11 +88,10 @@ def load_export_methods():
 
 def add_export_method(data):
     # Check the method type
-    if not type_exist(data['type']):
-        raise Exception("Method type " + data['type'] + " not found")
+    if not type_exist(data["type"]):
+        raise Exception("Method type " + data["type"] + " not found")
 
-    export_method = create_export_method(
-        data['name'], data['type'], data['parameters'])
+    export_method = create_export_method(data["name"], data["type"], data["parameters"])
 
     # The export method created from the dashboard are deletable
     export_method.deletable = True
@@ -108,8 +104,13 @@ def add_export_method(data):
 def create_export_method(name, type, parameters):
     # Check the method type
     if not type_exist(type):
-        raise Exception("Export type '" + type + "' isn't supported, only " +
-                        str([type.name for type in export_types]) + " are supported")
+        raise Exception(
+            "Export type '"
+            + type
+            + "' isn't supported, only "
+            + str([type.name for type in export_types])
+            + " are supported"
+        )
 
     # Get the export type
     export_type = get_export_type(type)
@@ -125,15 +126,15 @@ def delete_export_method(method_id):
         raise Exception("The expons method wasn't found")
 
     # Delete the method
-    export_methods = [
-        method for method in export_methods if method.id != method_id]
+    export_methods = [method for method in export_methods if method.id != method_id]
     return "method " + method_id + " deleted"
+
 
 # Export methods
 
 
 def exportSelection(projectId, data):
-    method_id = data['exportMethodId']
+    method_id = data["exportMethodId"]
 
     # Check the method id
     if not method_exist(method_id):
@@ -143,7 +144,7 @@ def exportSelection(projectId, data):
 
     # Check if the project exists
     project_exist = False
-    if debiaiUtils.projectExist(projectId):
+    if debiaiUtils.project_exist(projectId):
         project_exist = True
         # Creation of the data selection to export
         project_name = debiaiUtils.getProjectNameFromId(projectId)
@@ -151,7 +152,7 @@ def exportSelection(projectId, data):
         project_sample_hashmap = debiaiUtils.getHashmap(projectId)
         new_project_Id = projectId
         sample_path = []
-        for sample_hash in data['sampleHashList']:
+        for sample_hash in data["sampleHashList"]:
             # Removing the '/' at the end of the hash
             id = project_sample_hashmap[sample_hash][:-1]
             sample_path.append(id)
@@ -161,7 +162,7 @@ def exportSelection(projectId, data):
         for id in sample_path:
             id_list.append({"id": id})
 
-    elif dataProvider.projectExist(projectId):
+    elif dataProvider.project_exist(projectId):
         project_exist = True
 
         # Creation of the data selection to export
@@ -170,25 +171,25 @@ def exportSelection(projectId, data):
 
         id_list = []
 
-        for id in data['sampleHashList']:
+        for id in data["sampleHashList"]:
             id_list.append({"id": id})
 
     if not project_exist:
         raise Exception("Project " + projectId + " not found")
 
     data_to_export = {
-        'origin': 'DebiAI',
-        'type': 'selection',
-        'project_id': new_project_Id,
-        'project_name': project_name,
-        'selection_name': data["selectionName"],
-        'date': time.time(),
-        'sample_ids': id_list,
+        "origin": "DebiAI",
+        "type": "selection",
+        "project_id": new_project_Id,
+        "project_name": project_name,
+        "selection_name": data["selectionName"],
+        "date": time.time(),
+        "sample_ids": id_list,
     }
 
     # Annotation extra value
-    if 'annotationValue' in data and data['annotationValue'] != "":
-        data_to_export['value'] = data['annotationValue']
+    if "annotationValue" in data and data["annotationValue"] != "":
+        data_to_export["value"] = data["annotationValue"]
 
     # Export the data
     export_method.export(data_to_export)

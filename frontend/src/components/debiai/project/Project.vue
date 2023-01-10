@@ -48,8 +48,7 @@ import Tags from "./tags/Tags.vue";
 import Analysis from "./Analysis.vue";
 
 // Services
-import treeLoader from "../../../services/treeLoader";
-import timer from "../../../services/statistics/timer";
+import dataLoader from "../../../services/dataLoader";
 import swal from "sweetalert";
 
 export default {
@@ -108,7 +107,7 @@ export default {
           commomModelResults = commomModelResults === true;
 
           // Start analysis
-          this.loadTree({
+          this.loadData({
             projectId,
             selectionIds,
             selectionIntersection,
@@ -203,7 +202,7 @@ export default {
         });
         window.open(routeData.href, "_blank");
       } else {
-        this.loadTree({
+        this.loadData({
           projectId: this.projectId,
           selectionIds: this.selectedSelectionsIds,
           selectionIntersection: this.selectionIntersection,
@@ -213,7 +212,7 @@ export default {
       }
     },
 
-    loadTree({
+    loadData({
       projectId,
       selectionIds = [],
       selectionIntersection = false,
@@ -222,9 +221,8 @@ export default {
     }) {
       console.time("LOAD TREE");
       this.loading = true;
-      var t0 = performance.now();
 
-      treeLoader
+      dataLoader
         .loadProjectSamples({
           projectId,
           selectionIds,
@@ -241,7 +239,6 @@ export default {
 
           // Perf Log
           console.timeEnd("LOAD TREE");
-          timer.logTime(t0, "LoadData", data.nbLines, projectId);
 
           // Convert the lists in str for the querry
           if (selectionIds && selectionIds.length > 0)
@@ -291,6 +288,12 @@ export default {
               msg: "Project deleted",
             });
             this.$router.push("/");
+          }).catch((e) => {
+            console.log(e);
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Could not delete the project"
+            });
           });
       });
     },

@@ -1,13 +1,9 @@
 #############################################################################
 # Imports
 #############################################################################
-
-import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-import utils.debiai.samples as samplesUtils
-import utils.dataProviders as dataProviders
-
-dataPath = debiaiUtils.dataPath
+import dataProviders.DataProviderException as DataProviderException
+import dataProviders.dataProviderManager as data_provider_manager
+import utils.samples.get_id_list as get_id_list
 
 #############################################################################
 # SAMPLES Management
@@ -15,33 +11,32 @@ dataPath = debiaiUtils.dataPath
 
 
 # Get the list of samples ID of the project
-@utils.traceLogLight
 def get_list(projectId, data):
-    print(projectId)
-    print("get_list")
-    print(data)
-    if "from" in data: print(data["from"])
-    if "to" in data: print(data["to"])
+    # Option 1 : get samples id list
+    # Option 2 : get samples id list from selections (intersection or union)
+    # Option 3 : get samples id list from model results (common or not)
+    # Option 4 : mix of 2 and 3
+    # Return option : from and to for streaming purpose
 
-    if debiaiUtils.projectExist(projectId):
-        return samplesUtils.get_list(projectId, data), 200
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    try:
 
-    if dataProviders.projectExist(projectId):
-        return dataProviders.get_list(projectId, data), 200
+        # Call our utility function
+        data_id_list = get_id_list.get_list(projectId, data_provider, data)
 
-    return "project not found", 404
+        return data_id_list, 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
 
 # Get the list of samples ID of the project selection
-@utils.traceLogLight
 def get_selection_list(projectId, selectionId):
-    if not debiaiUtils.projectExist(projectId):
-        return "project not found", 404
-
-    # Load selection sample list
-    selectionDetails = debiaiUtils.getSelection(projectId, selectionId)
-
-    if not selectionDetails:
-        return "Selection " + selectionId + " not found", 404
-
-    return selectionDetails["samples"], 200
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    try:
+        return data_provider.get_selection_id_list(projectId, selectionId)
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code

@@ -67,6 +67,28 @@ export default {
     })
   },
 
+  // Data providers
+  getDataProviders() {
+    let code = startRequest("Getting data providers")
+    return axios.get(apiURL + 'data-providers').finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data
+    })
+  },
+  postDataProvider(type, name, url) {
+    let code = startRequest("Creating data provider")
+    return axios.post(apiURL + 'data-providers', { type, name, url }).finally(() => {
+      endRequest(code)
+    })
+  },
+  deleteDataProvider(id) {
+    let code = startRequest("Deleting data provider")
+    return axios.delete(apiURL + 'data-providers/' + id).finally(() => {
+      endRequest(code)
+    })
+  },
+
   // Samples
   getSampleNumber(projectId, selectionId = undefined) {
     let code = startRequest("Loading the project data")
@@ -191,15 +213,6 @@ export default {
   },
 
   // Models
-  getModels(projectId) {
-    let code = startRequest("Loading models")
-    return axios.get(apiURL + 'projects/' + projectId + '/models').finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-
   getModelResults(projectId, modelId, sampleIds) {
     return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
       .then((response) => response.data)

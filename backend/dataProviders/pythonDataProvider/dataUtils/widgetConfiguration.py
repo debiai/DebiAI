@@ -8,7 +8,9 @@ dataPath = debiaiUtils.dataPath
 
 def getConfigurations(projectId):
     try:
-        with open(dataPath + projectId + "/analysis/widgetConfigurations.json") as json_file:
+        with open(
+            dataPath + projectId + "/analysis/widgetConfigurations.json"
+        ) as json_file:
             return json.load(json_file)
     except FileNotFoundError:
         try:
@@ -29,9 +31,10 @@ def createConfiguration(projectId, widgetTitle, confName, conf):
 
 
 def saveConfigurations(projectId, conf):
-    utils.writeJsonFile(dataPath + projectId +
-                        "/analysis/widgetConfigurations.json", conf)
-    debiaiUtils.updateProject(projectId)
+    utils.writeJsonFile(
+        dataPath + projectId + "/analysis/widgetConfigurations.json", conf
+    )
+    debiaiUtils.update_project(projectId)
 
 
 def deleteConfiguration(projectId, widgetTitle, confName):

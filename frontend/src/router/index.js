@@ -8,7 +8,7 @@ let router = new Router({
     {
       name: 'frontPage',
       path: '/',
-      component: () => import("../components/debiai/FrontPage"),
+      component: () => import("../components/debiai/frontpage/FrontPage"),
     },
 
     // === Project

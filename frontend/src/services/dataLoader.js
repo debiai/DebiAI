@@ -1,5 +1,5 @@
 import store from '../store'
-import cacheService from '../services/cacheService'
+import cacheService from './cacheService'
 import services from "./services"
 
 const backendDialog = require("./backendDialog")
@@ -23,11 +23,9 @@ function startProgressRequest(name) {
   store.commit("startRequest", { name, code: requestCode, progress: 0 })
   return requestCode
 }
-
 function updateRequestProgress(code, progress) {
   store.commit("updateRequestProgress", { code, progress })
 }
-
 function endRequest(code) {
   store.commit("endRequest", code)
 }
@@ -86,93 +84,6 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     return samplesIdList
   }
 }
-
-// Get the values / results of the blocks
-function getBlockValues(block) {
-  // Adding the block name into the values
-  var values = [block.name]
-
-  // store all key-values into an array
-  CATEGORIES.forEach(cat => {
-    if (cat.blName in block)
-      for (const [, val] of Object.entries(block[cat.blName]))
-        values.push(val)
-  });
-
-  return values
-}
-
-function getBlockValuesWithRestults(block) {
-  // In case we are loading the results
-  let modelsResults = []
-  if ("results" in block) {
-    for (const modelId of Object.keys(block["results"])) {
-      // push model Name (modelId)
-      // push each model results
-
-      modelsResults.push([modelId, ...block["results"][modelId]])
-    }
-  }
-  return modelsResults
-}
-
-function getBlockRecur(block, considerResults) {
-  // Getting bloc values
-  var values = getBlockValues(block)
-  if (block.childrenInfoList == undefined || block.childrenInfoList.length == 0) {
-    // Sample, end of tree
-
-    if (considerResults) {
-      // We need to duplicate the lane for each models
-      let modelResults = getBlockValuesWithRestults(block)
-      return modelResults.map(result => values.concat(result));
-    }
-
-    // Single value if not considerResults
-    return [values]
-  }
-  else {
-    // Getting all child values
-    let childValues = []
-    block.childrenInfoList.forEach(childBlock => childValues.push(...getBlockRecur(childBlock, considerResults)));
-
-    // Mergin childs and current block values
-    //     CurBlock childs
-    //     a        1
-    //     a        2
-    //     a        3
-
-    //     b        1
-    //     b        2
-    //     b        3
-
-    let array = []
-    childValues.forEach(cv => array.push(values.concat(cv)));
-    return array
-  }
-}
-
-function getSampleHashList(block, considerResults) {
-  if (block.childrenInfoList == undefined || block.childrenInfoList.length == 0) {
-    // Sample, end of tree, return the hash
-    if (considerResults) {
-      // We need to duplicate the lane for each models
-      let modelResults = getBlockValuesWithRestults(block)
-      return modelResults.map(() => block.id);
-    }
-
-    // Single value if not considerResults
-    return [block.id]
-  }
-  else {
-    // Getting all child values
-    let childHash = []
-    block.childrenInfoList.forEach(childBlock => childHash.push(...getSampleHashList(childBlock, considerResults)));
-    return childHash
-  }
-}
-
-// Tree to array
 async function getProjectMetadata(projectId, { considerResults }) {
   let projectInfo = await backendDialog.default.getProject(projectId)
 
@@ -185,6 +96,11 @@ async function getProjectMetadata(projectId, { considerResults }) {
     categories: [],
     type: [],
   }
+  
+  // // Set the Sample_ID in the Other category
+  // metaData.labels.push("Sample_ID")
+  // metaData.categories.push("other")
+  // metaData.type.push("unknown")
 
   projectInfo.blockLevelInfo.forEach(blockLevel => {
     // Set the block name in the Other category
@@ -217,7 +133,7 @@ async function getProjectMetadata(projectId, { considerResults }) {
 
   return metaData
 }
-async function downloadTree(projectId, timestamp, sampleIds) {
+async function downloadSamplesData(projectId, timestamp, sampleIds) {
   const CHUNK_SIZE = 2000
   let pulledData = 0
   let nbSamples = sampleIds.length
@@ -227,7 +143,7 @@ async function downloadTree(projectId, timestamp, sampleIds) {
   console.time('Loading the project data')
   // Pull the tree
   let retArray = []
-  let retHashlist = []
+  let retDataIdlist = []
 
   try {
     while (pulledData < nbSamples) {
@@ -238,7 +154,7 @@ async function downloadTree(projectId, timestamp, sampleIds) {
       let cachedSamples = await cacheService.getSamplesByIds(projectId, timestamp, samplesToPull)
       let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
       retArray = [...retArray, ...Object.values(cachedSamples)]
-      retHashlist = [...retHashlist, ...Object.keys(cachedSamples)]
+      retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
 
       if (samplesToDownload.length) {
         // Then download the missing samples
@@ -246,24 +162,15 @@ async function downloadTree(projectId, timestamp, sampleIds) {
 
         let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(projectId, samplesToDownload)
 
-        if (downloadedSamples.dataMap) {
-          // Dataprovider project, we derectly receive an map of samples
-          let map = downloadedSamples.data
-          Object.keys(map).forEach(dataId => {
-            map[dataId] = [dataId, ...map[dataId]]
-          });
-          // Add the samples ID to the array
-          retArray = [...retArray, ...Object.values(map)]
-          retHashlist = [...retHashlist, ...Object.keys(map)]
-        } else {
-          // Python module project, we receive a tree that we need to convert
-          let { samplesId, array } = await treeToArray(downloadedSamples, { considerResults: false })
-          retArray = [...retArray, ...array]
-          retHashlist = [...retHashlist, ...samplesId]
-          // Save data in the cache
-          let sampleToSave = array.map((data, i) => { return { sampleId: samplesId[i], data } })
-          cacheService.saveSamples(projectId, timestamp, sampleToSave)
-        }
+        // We receive an map of samples
+        let map = downloadedSamples.data
+
+        // Stack the samples
+        retArray = [...retArray, ...Object.values(map)]
+        retDataIdlist = [...retDataIdlist, ...Object.keys(map)]
+
+        // Store the samples in the cache
+        // await cacheService.storeSamples(projectId, timestamp, map) TODO 
       }
 
       // Update the progress
@@ -275,21 +182,9 @@ async function downloadTree(projectId, timestamp, sampleIds) {
     console.timeEnd('Loading the project data')
   }
 
-  return { dataArray: retArray, sampleHashList: retHashlist }
+  return { dataArray: retArray, sampleIdList: retDataIdlist }
 }
 
-function treeToArray(tree, { considerResults }) {
-  // Recursive creation of the Array values
-  var array = []
-  tree.forEach(block => array.push(...getBlockRecur(block, considerResults)));
-
-  // get the samples id hash list
-  var samplesId = []
-  tree.forEach(block => samplesId.push(...getSampleHashList(block, considerResults)));
-
-  // Return the data array :  [[label 1, label 2], [value 1-1, value 1-2], ...]
-  return { array, samplesId }
-}
 
 async function downloadResults(projectId, timestamp, modelId, sampleIds) {
   const CHUNK_SIZE = 10000
@@ -355,7 +250,7 @@ const max = (arr) => {
  * @param {string} projectId
  * @returns
  */
-async function loadTree(projectId, selectionIds, selectionIntersection) {
+async function loadData(projectId, selectionIds, selectionIntersection) {
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: false })
 
@@ -363,7 +258,7 @@ async function loadTree(projectId, selectionIds, selectionIntersection) {
   let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection)
 
   // Download and convert the tree
-  const { dataArray, sampleHashList } = await downloadTree(
+  const { dataArray, sampleIdList } = await downloadSamplesData(
     projectId,
     projectMetadata.timestamp,
     samplesToPull
@@ -372,7 +267,7 @@ async function loadTree(projectId, selectionIds, selectionIntersection) {
   return {
     metaData: projectMetadata,
     array: [projectMetadata.labels, ...dataArray],
-    sampleHashList
+    sampleIdList
   }
 }
 /**
@@ -381,7 +276,7 @@ async function loadTree(projectId, selectionIds, selectionIntersection) {
  * @param {boolean} common get the common sample or not
  * @param {string?} selectionId Get model on the selection if provided
  */
-async function loadTreeAndModelResults(projectId, selectionIds, selectionIntersection, modelIds, commonResults) {
+async function loadDataAndModelResults(projectId, selectionIds, selectionIntersection, modelIds, commonResults) {
 
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: true })
@@ -390,7 +285,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
   let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection, modelIds, commonResults)
 
   // Download and convert the tree
-  const { dataArray, sampleHashList } = await downloadTree(
+  const { dataArray, sampleIdList } = await downloadSamplesData(
     projectId,
     projectMetadata.timestamp,
     samplesToPull
@@ -398,8 +293,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
 
   // =========== Then add the model results
   // Create a request
-  let requestCode = services.uuid()
-  store.commit("startRequest", { name: 'Loading the model results', code: requestCode, progress: 0 })
+  let requestCode = startProgressRequest('Loading the model results')
 
   try {
     let dataArrayFull = []
@@ -415,15 +309,16 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
         samplesToPull
       )
 
+      
+      // We now have a sample array and a list of results
+      // We need to duplicate each one of the samples for each one of the sample results
+      // ie : if a sample got evaluated on 3 models, the sample must be 3 time sample, each one
+      // with his own model results
+
       const dataAndResultsArray = [];
       const modelsSamplesToPull = [];
 
-      // We now have a sample array and a list of results
-      // We need to duplicate each one of the samples for each one of the results
-      // ie : if a sample got evaluated on 3 models, there need to be 3 of this sample, each one
-      // with his own model results
-
-      sampleHashList.forEach((sampleId, i) => {
+      sampleIdList.forEach((sampleId, i) => {
         if (sampleId in modelResults) {
           dataAndResultsArray.push([...dataArray[i], modelId, ...modelResults[sampleId]])
           modelsSamplesToPull.push(sampleId)
@@ -439,7 +334,7 @@ async function loadTreeAndModelResults(projectId, selectionIds, selectionInterse
     return {
       metaData: projectMetadata,
       array: [projectMetadata.labels, ...dataArrayFull],
-      sampleHashList: samplesToPullFull
+      sampleIdList: samplesToPullFull
     }
   } catch (error) {
     store.commit("endRequest", requestCode)
@@ -560,7 +455,7 @@ async function loadProjectSamples({
   let data, projectSamples
   try {
     if (modelIds && modelIds.length > 0) {
-      projectSamples = await loadTreeAndModelResults(
+      projectSamples = await loadDataAndModelResults(
         projectId,
         selectionIds,
         selectionIntersection,
@@ -568,7 +463,7 @@ async function loadProjectSamples({
         commomModelResults,
       )
     } else {
-      projectSamples = await loadTree(
+      projectSamples = await loadData(
         projectId,
         selectionIds,
         selectionIntersection
@@ -576,11 +471,11 @@ async function loadProjectSamples({
     }
     let metaData = projectSamples.metaData
     let array = projectSamples.array
-    let sampleHashList = projectSamples.sampleHashList
+    let sampleIdList = projectSamples.sampleIdList
 
     // Convert the the array in an column lists ready for analysing
     data = await arrayToJson(array, metaData);
-    data.sampleHashList = sampleHashList
+    data.sampleIdList = sampleIdList
 
   }
   finally { endRequest(requestCode) }

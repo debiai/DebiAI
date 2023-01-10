@@ -22,8 +22,6 @@ import ColumnSelection from "../../common/ColumnSelection";
 import swal from "sweetalert";
 
 // services
-import timer from "@/services/statistics/timer";
-
 export default {
   components: {
     ColumnSelection,
@@ -85,8 +83,6 @@ export default {
 
     // Plot
     checkPlot() {
-      let t0 = performance.now();
-
       // Color
       let coloredColIndex =
         this.$store.state.SatisticalAnasysis.coloredColumnIndex;
@@ -114,11 +110,11 @@ export default {
           buttons: true,
           dangerMode: true,
         }).then((validate) => {
-          if (validate) this.drawPlot(t0, selectedColumns, colColor);
+          if (validate) this.drawPlot(selectedColumns, colColor);
         });
-      } else this.drawPlot(t0, selectedColumns, colColor);
+      } else this.drawPlot(selectedColumns, colColor);
     },
-    drawPlot(t0, selectedColumns, colColor) {
+    drawPlot(selectedColumns, colColor) {
       let colorscale = "Portland";
       let showscale = false;
       this.settings = false;
@@ -175,15 +171,6 @@ export default {
 
       this.currentDrawedColorIndex = colColor ? colColor.index : null;
       this.$parent.selectedDataWarning = false;
-
-      // Might change data description
-      var others_data = this.selectedColumnsIds.length + " contexts";
-      timer.logTime(
-        t0,
-        "ParallelCategories",
-        this.$store.state.ProjectPage.projectId,
-        others_data
-      );
     },
 
     selectColumns(selectedColumnsId) {

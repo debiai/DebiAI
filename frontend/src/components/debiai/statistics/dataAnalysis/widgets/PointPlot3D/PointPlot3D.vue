@@ -119,7 +119,6 @@ import Plotly from "plotly.js/dist/plotly";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
-import timer from "../../../../../../services/statistics/timer";
 import Column from "../../common/Column";
 
 export default {
@@ -219,8 +218,6 @@ export default {
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
     },
     drawPlot() {
-      var t0 = performance.now();
-
       var colX = this.data.columns[this.columnXindex];
       var colY = this.data.columns[this.columnYindex];
       var colZ = this.data.columns[this.columnZindex];
@@ -327,14 +324,6 @@ export default {
       this.plotDrawed = true;
       this.$parent.selectedDataWarning = false;
       this.currentDrawedColorIndex = this.coloredColumnIndex;
-
-      // Might change data description
-      timer.logTime(
-        t0,
-        "PointPlot3D",
-        valuesX.length,
-        this.$store.state.ProjectPage.projectId
-      );
     },
 
     // axies selection

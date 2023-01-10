@@ -15,10 +15,7 @@ class ExportType:
     export_method_class = None
 
     def to_dict(self):
-        return {
-            'name': self.name,
-            'parameters': self.parameters_definition
-        }
+        return {"name": self.name, "parameters": self.parameters_definition}
 
 
 class ExportMethod:
@@ -37,10 +34,10 @@ class ExportMethod:
 
     def to_dict(self):
         return {
-            'id': self.id,
-            'type': self.type.name,
-            'name': self.name,
-            'parameters': self.parameters,
-            'parameterNames': self.type.parameters_definition,
-            'deletable': self.deletable
+            "id": self.id,
+            "type": self.type.name,
+            "name": self.name,
+            "parameters": self.parameters,
+            "parameterNames": self.type.parameters_definition,
+            "deletable": self.deletable,
         }

@@ -98,7 +98,7 @@ export default {
     exportSamples(methodId) {
       let projectId = this.$store.state.ProjectPage.projectId;
       let selectedHash = this.selectedData.map(
-        (selectedIndex) => this.data.sampleHashList[selectedIndex]
+        (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
 
       this.exporting = true;

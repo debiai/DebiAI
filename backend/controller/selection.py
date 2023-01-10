@@ -1,76 +1,49 @@
 #############################################################################
 # Imports
 #############################################################################
-import utils.debiaiUtils as debiaiUtils
-import utils.utils as utils
-import utils.dataProviders as dataProviders
 
-dataPath = debiaiUtils.dataPath
+import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.DataProviderException as DataProviderException
 
 #############################################################################
 # Selections Management
 #############################################################################
 
 
-@utils.traceLogLight
 def get_selections(projectId):
-    # ParametersCheck
-    if debiaiUtils.projectExist(projectId):
-        # Get selections
-        selections = []
-        for selectionId in debiaiUtils.getSelectionIds(projectId):
-            selections.append(
-                debiaiUtils.getSelectionInfo(projectId, selectionId))
-        return selections, 200
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
-    if dataProviders.projectExist(projectId):
-        return dataProviders.get_selections(projectId)
-
-    return "project " + projectId + " not found", 404
+    try:
+        return data_provider.get_selections(projectId), 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
 
-@utils.traceLogLight
 def post_selection(projectId, data):
-    # ParametersCheck
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
-    # Selection creation
-    selectionId = utils.clean_filename(data['selectionName'])
-    if len(selectionId) == 0:
-        selectionId = utils.timeNow()
-
-    nbS = 1
-    while debiaiUtils.selectionExist(projectId, selectionId):
-        selectionId = utils.clean_filename(
-            data['selectionName']) + "_" + str(nbS)
-        nbS += 1
-
-    # Add the request id to the selection if provided
-    requestId = None
-    if 'requestId' in data:
-        requestId = data['requestId']
-
-    # Save the selection
-    selectionInfo = debiaiUtils.createSelection(
-        projectId,
-        selectionId,
-        data['selectionName'],
-        list(set(data['sampleHashList'])),
-        requestId
-    )
-
-    return selectionInfo, 200
+    try:
+        data_provider.create_selection(
+            projectId,
+            data["selectionName"],
+            data["sampleHashList"],
+            data["requestId"] if "requestId" in data else None,
+        )
+        return "Selection added", 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
 
-@utils.traceLog
 def delete_selection(projectId, selectionId):
-    if not debiaiUtils.projectExist(projectId):
-        return "project " + projectId + " not found", 404
-
-    if not debiaiUtils.selectionExist(projectId, selectionId):
-        return "The selection doesn't exist", 404
-
-    debiaiUtils.deleteSelection(projectId, selectionId)
-
-    return 200
+    dataProviderId = projectId.split("|")[0]
+    projectId = projectId.split("|")[1]
+    data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    try:
+        data_provider.delete_selection(projectId, selectionId)
+        return "Selection deleted", 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
