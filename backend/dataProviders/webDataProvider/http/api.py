@@ -93,7 +93,7 @@ def get_selections(url, id_project):
 
 def post_selection(url, id_project, data):
     try:
-        requests.post(url + "/view/{}/selections".format(id_project), json=data)
+        r = requests.post(url + "/view/{}/selections".format(id_project), json=data)
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
