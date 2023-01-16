@@ -31,7 +31,7 @@ def get_data_providers():
 def post_data_providers(data):
     # Check if we are allowed to add data providers from the config file
     config = get_config()
-    creation_allowed = config["DATA_PROVIDERS"]["creation"]
+    creation_allowed = config["DATA_PROVIDERS_CONFIG"]["creation"]
     if not creation_allowed:
         return "Data provider creation is not allowed", 403
 
@@ -58,7 +58,7 @@ def post_data_providers(data):
 def delete_data_providers(dataProviderId):
     # Check if we are allowed to add data providers from the config file
     config = get_config()
-    deletion_allowed = config["DATA_PROVIDERS"]["deletion"]
+    deletion_allowed = config["DATA_PROVIDERS_CONFIG"]["deletion"]
     if not deletion_allowed:
         return "Data provider deletion is not allowed", 403
 

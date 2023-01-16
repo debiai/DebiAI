@@ -1,4 +1,4 @@
-import config.init_config as configUtils
+from config.init_config import get_config
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.DataProviderException as DataProviderException
 import time
@@ -57,13 +57,14 @@ def load_export_methods():
     print("================== EXPORT METHODS ==================")
 
     # Load the export methods from the config file
-    config = configUtils.get_config()
+    config = get_config()
 
-    if "EXPORT_METHODS" in config:
-        config_export_methods = config["EXPORT_METHODS"]
+    if "EXPORT_METHODS_LIST" in config:
+        print(" - Loading export methods from config file")
+        config_export_methods = config["EXPORT_METHODS_LIST"]
 
         for method in config_export_methods:
-            print(" - Adding method " + method, "[", config_export_methods[method], "]")
+            print("     Adding method " + method, "[", config_export_methods[method], "]")
 
             try:
                 parameters = config_export_methods[method].split(",")
@@ -78,6 +79,10 @@ def load_export_methods():
                 export_method = create_export_method(
                     method, export_type_name, parameters[1:]
                 )
+
+                if config["EXPORT_METHODS_CONFIG"]["deletion"]:
+                    # The export method created from the config file are deletable
+                    export_method.deletable = True
 
                 export_methods.append(export_method)
             except Exception as e:
@@ -94,8 +99,10 @@ def add_export_method(data):
 
     export_method = create_export_method(data["name"], data["type"], data["parameters"])
 
-    # The export method created from the dashboard are deletable
-    export_method.deletable = True
+    config = get_config()
+    if config["EXPORT_METHODS_CONFIG"]["deletion"]:
+        # The export method created from the config file are deletable
+        export_method.deletable = True
 
     export_methods.append(export_method)
 
@@ -122,6 +129,7 @@ def create_export_method(name, type, parameters):
 
 def delete_export_method(method_id):
     global export_methods
+
     # Check the method id
     if not method_exist(method_id):
         raise Exception("The expons method wasn't found")

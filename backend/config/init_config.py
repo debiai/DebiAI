@@ -13,32 +13,36 @@ def init_config():
     global config
 
     # Expected sections:
+    # - DATA_PROVIDERS_CONFIG
     # - PYTHON_MODULE_DATA_PROVIDER
     # - WEB_DATA_PROVIDERS
-    # - EXPORT_METHODS
+    # - EXPORT_METHODS_CONFIG
+    # - EXPORT_METHODS_LIST
 
     print("===================== CONFIG =======================")
 
     # First, read the config file
     config_parser.read(config_path)
     config = {
-        "DATA_PROVIDERS": {"creation": True, "deletion": True},
+        "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
-        "EXPORT_METHODS": {},
+        "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
+        "EXPORT_METHODS_LIST": {},
     }
 
     for section in config_parser.sections():
-        if section == "DATA_PROVIDERS":
+        # Data providers
+        if section == "DATA_PROVIDERS_CONFIG":
             if "creation" in config_parser[section]:
                 if str.lower(config_parser[section]["creation"]) == "false":
                     print("Config file: Data Providers creation disabled")
-                    config["DATA_PROVIDERS"]["creation"] = False
+                    config["DATA_PROVIDERS_CONFIG"]["creation"] = False
 
             if "deletion" in config_parser[section]:
                 if str.lower(config_parser[section]["deletion"]) == "false":
                     print("Config file: Data Providers deletion disabled")
-                    config["DATA_PROVIDERS"]["deletion"] = False
+                    config["DATA_PROVIDERS_CONFIG"]["deletion"] = False
             continue
 
         if section == "PYTHON_MODULE_DATA_PROVIDER":
@@ -63,14 +67,27 @@ def init_config():
                 ]
             continue
 
-        if section == "EXPORT_METHODS":
+        # Export methods
+        if section == "EXPORT_METHODS_CONFIG":
+            if "creation" in config_parser[section]:
+                if str.lower(config_parser[section]["creation"]) == "false":
+                    print("Config file: Export method creation disabled")
+                    config["EXPORT_METHODS_CONFIG"]["creation"] = False
+
+            if "deletion" in config_parser[section]:
+                if str.lower(config_parser[section]["deletion"]) == "false":
+                    print("Config file: Export method deletion disabled")
+                    config["EXPORT_METHODS_CONFIG"]["deletion"] = False
+            continue
+
+        if section == "EXPORT_METHODS_LIST":
             for export_method in config_parser[section]:
                 print(
                     "Config file: detected export method '"
                     + export_method
                     + "' from config file"
                 )
-                config["EXPORT_METHODS"][export_method] = config_parser[section][
+                config["EXPORT_METHODS_LIST"][export_method] = config_parser[section][
                     export_method
                 ]
             continue
@@ -84,13 +101,15 @@ def init_config():
             # Env var format: DEBIAI_DATA_PROVIDERS_CREATION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
                 print("Environment variables: Data Providers creation disabled")
-                config["DATA_PROVIDERS"]["creation"] = False
+                config["DATA_PROVIDERS_CONFIG"]["creation"] = False
+            continue
 
         if env_var == "DEBIAI_DATA_PROVIDERS_DELETION_ENABLED":
             # Env var format: DEBIAI_DATA_PROVIDERS_DELETION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
                 print("Environment variables: Data Providers deletion disabled")
-                config["DATA_PROVIDERS"]["deletion"] = False
+                config["DATA_PROVIDERS_CONFIG"]["deletion"] = False
+            continue
 
         # Deal with PYTHON_MODULE_DATA_PROVIDER in env variables
         if env_var == "DEBIAI_PYTHON_MODULE_DATA_PROVIDER_ENABLED":
@@ -101,6 +120,7 @@ def init_config():
             elif str.lower(os.environ[env_var]) == "true":
                 print("Environment variables: Python Module Data Provider enabled")
                 config["PYTHON_MODULE_DATA_PROVIDER"]["enabled"] = True
+            continue
 
         # Deal with Data Providers in env variables
         if "DEBIAI_WEB_DATA_PROVIDER" in env_var:
@@ -134,8 +154,23 @@ def init_config():
 
             config["WEB_DATA_PROVIDERS"][data_provider_name] = data_provider_url
 
-        # Deal with Export Methods
-        if "DEBIAI_EXPORT_METHOD" in env_var:
+        # Deal with Export Methods in env variables
+        if env_var == "DEBIAI_EXPORT_METHODS_CREATION_ENABLED":
+            # Env var format: DEBIAI_EXPORT_METHODS_CREATION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Export method creation disabled")
+                config["EXPORT_METHODS_CONFIG"]["creation"] = False
+            continue
+
+        if env_var == "DEBIAI_EXPORT_METHODS_DELETION_ENABLED":
+            # Env var format: DEBIAI_EXPORT_METHODS_DELETION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Export method deletion disabled")
+                config["EXPORT_METHODS_CONFIG"]["deletion"] = False
+            continue
+
+        # Deal with Export Methods list in env variables
+        if "DEBIAI_EXPORT_METHOD_" in env_var:
             # Env var format: DEBIAI_EXPORT_METHOD_<name>=<type>, <param1>, <param2>, ..."
             if len(env_var.split("_")) != 4:
                 print(
@@ -168,10 +203,7 @@ def init_config():
                 + "' from environment variables"
             )
 
-            if "EXPORT_METHODS" not in config:
-                config["EXPORT_METHODS"] = {}
-
-            config["EXPORT_METHODS"][
+            config["EXPORT_METHODS_LIST"][
                 export_method_name
             ] = export_method_type_and_parameters
 
