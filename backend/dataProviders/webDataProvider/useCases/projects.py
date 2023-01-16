@@ -1,8 +1,4 @@
-from dataProviders.webDataProvider.http.api import (
-    get_projects,
-    get_project,
-    get_selections,
-)
+import dataProviders.webDataProvider.http.api as api
 
 from dataProviders.webDataProvider.useCases.models import get_models_info
 from dataProviders.webDataProvider.useCases.selections import get_project_selections
@@ -11,18 +7,14 @@ from utils.utils import timeNow
 
 
 def get_all_projects_from_data_provider(url, name):
-    projects = get_projects(url)
+    projects = api.get_projects(url)
     project_list = []
 
     if not projects:
         return
 
     for project_id in projects:
-        blockInfo = format_collumns_project_overview(projects[project_id])
-        selections = get_project_selections(url, project_id)
-        models = get_models_info(url, project_id)
-
-        # Samples number
+        
         if "nbSamples" in projects[project_id]:
             nbSamples = projects[project_id]["nbSamples"]
         else:
@@ -38,30 +30,23 @@ def get_all_projects_from_data_provider(url, name):
                 ),
                 "dataProvider": name,
                 "view": project_id,
-                "blockLevelInfo": blockInfo,
-                "resultStructure": projects[project_id]["expectedResults"],
-                "nbModels": len(models),
+                "nbModels": projects[project_id]["nbModels"],
                 "nbSamples": nbSamples,
                 "nbRequests": 0,
                 "nbTags": 0,
-                "nbSelections": len(selections),
+                "nbSelections": projects[project_id]["nbSelections"],
                 "creationDate": timeNow(),
                 "updateDate": timeNow(),
                 "modelOverviews": [],
-                "selections": selections,
-                "models": models,
             }
         )
 
-    ###### Modify rest of function with what we need
     return project_list
 
 
 def get_single_project_from_data_provider(url, data_provider_name, id_project):
-    project = get_project(url, id_project)
-    # Not called at the moment
-    #### TODO : remove when data Provider API will be changed
-    project = project[id_project]
+    project = api.get_project(url, id_project)
+    
     blockInfo = format_collumns_project_overview(project)
     selections = get_project_selections(url, id_project)
     models = get_models_info(url, id_project)

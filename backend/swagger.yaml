@@ -77,7 +77,22 @@ paths:
           description: The Data provider id must not be null
         404:
           description: The data provider doesn't exist
-          
+    get:
+      summary: Get general informations about a data provider, like his version or the max number sample by request
+      tags: [Data Providers]
+      operationId: controller.dataProviders.get_data_provider_info
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The info of the data provider
+        400:
+          description: The Data provider id must not be null
+        404: 
+          description: The data provider doesn't exist
   # Projects
   /projects:
     get:

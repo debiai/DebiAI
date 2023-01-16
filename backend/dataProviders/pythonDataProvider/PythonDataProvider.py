@@ -10,6 +10,8 @@ from dataProviders.pythonDataProvider.dataUtils import (
     tree,
 )
 
+from utils.utils import get_app_version
+
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
 
 
@@ -53,6 +55,9 @@ class PythonDataProvider(DataProvider):
         return {
             "version": get_app_version(),
             "dp_name": self.name,
+            "maxSampleIdByRequest": 10000,
+            "maxSampleDataByRequest": 2000,
+            "maxResultByRequest": 5000
         }
 
     # Projects

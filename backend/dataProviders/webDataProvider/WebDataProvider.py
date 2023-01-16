@@ -43,10 +43,7 @@ class WebDataProvider(DataProvider):
 
     def get_info(self):
         return get_info(self.url)
-
-    ### API OK
-    ### USE CASE OK
-    ### CONTROLLER OK
+    
     def get_projects(self):
         # Request method to get projects overview
         # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}]
@@ -62,9 +59,6 @@ class WebDataProvider(DataProvider):
             "Deleting a project is not supported by this data provider", 400
         )
 
-    ### API OK
-    ### USE CASE OK
-    ### CONTROLLER -> NOK
     def get_id_list(self, project_id, _from=None, _to=None):
         # http Request on dp to get id list
         # Return Arr[id]
@@ -82,10 +76,7 @@ class WebDataProvider(DataProvider):
         for sample_id in samples:
             samples[sample_id].insert(0, sample_id)
         return samples
-
-    ### API NOK
-    ### USE CASE NOK
-    ### CONTROLLER -> NOK
+    
     def get_selections(self, project_id):
         # Get selections on project
         # Return arr[object{ id, name, creation_time, nb_samples}]
@@ -103,10 +94,7 @@ class WebDataProvider(DataProvider):
 
     def delete_selection(self, project_id, selection_id):
         return useCaseSelections.delete_selection(self.url, project_id, selection_id)
-
-    ### API OK
-    ### USE CASE OK
-    ### CONTROLLER -> NOK
+    
     def get_models(self, project_id):
         return get_models_info(self.url, project_id)
 
