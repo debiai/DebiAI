@@ -51,7 +51,7 @@ class PythonDataProvider(DataProvider):
         # Request method to get info on data Provider
         # return Object { version, dp_name, nb_Sample_max(to load)}
         return {
-            "dp_name": self.name,
+            "version": get_app_version(),
             "maxSampleIdByRequest": 10000,
             "maxSampleDataByRequest": 2000,
             "maxResultByRequest": 5000,
@@ -73,7 +73,7 @@ class PythonDataProvider(DataProvider):
     @project_must_exist
     def get_project(self, project_id):
         # Request method to get projects overview
-        # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
+        # Return object{ id, name, , nb_models, nb_selections, update_time, creation_time}
 
         project_base_info = projects.get_project(project_id)
         project_base_info["selections"] = selections.get_selections(project_id)
