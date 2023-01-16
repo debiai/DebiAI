@@ -19,6 +19,11 @@ def setup_data_providers():
     for i in range(len(web_data_provider_config)):
         name = keys[i]
         url = values[i]
+
+        # Remove trailing slash
+        if url[-1] == "/":
+            url = url[:-1]
+
         print(" - Adding external data Provider " + name + " from " + url + " - ")
         try:
             data_provider = WebDataProvider(url, name)

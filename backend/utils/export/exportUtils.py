@@ -1,5 +1,3 @@
-# import utils.debiaiUtils as debiaiUtils
-import utils.dataProviders as dataProvider
 import config.init_config as configUtils
 import time
 from utils.export.methods.kafkaUtils import KafkaExportType

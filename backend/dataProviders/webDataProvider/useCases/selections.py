@@ -7,17 +7,19 @@ def get_project_selections(url, project_id):
 
     debiai_selections = []
     for selection in selections:
-        debiai_selections.append(
-            {
-                "name": selection["name"] if "name" in selection else selection["id"],
-                "id": selection["id"],
-                "nbSamples": selection["nbSamples"]
-                if "nbSamples" in selection
-                else None,
-                "creationDate": timeNow(),
-                "updateDate": timeNow(),
-            }
-        )
+        selection_to_add = {
+            "name": selection["name"] if "name" in selection else selection["id"],
+            "id": selection["id"],
+        }
+
+        if "nbSamples" in selection:
+            selection_to_add["nbSamples"] = selection["nbSamples"]
+        if "creationDate" in selection:
+            selection_to_add["creationDate"] = selection["creationDate"]
+        if "updateDate" in selection:
+            selection_to_add["updateDate"] = selection["updateDate"]
+
+        debiai_selections.append(selection_to_add)
     return debiai_selections
 
 
