@@ -54,7 +54,7 @@ class PythonDataProvider(DataProvider):
             "dp_name": self.name,
             "maxSampleIdByRequest": 10000,
             "maxSampleDataByRequest": 2000,
-            "maxResultByRequest": 5000
+            "maxResultByRequest": 5000,
         }
 
     # Projects

@@ -30,6 +30,7 @@ def get_info(url):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+
 def get_projects(url):
     try:
         r = requests.get(url + "/projects")
@@ -38,12 +39,14 @@ def get_projects(url):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+
 def get_project(url, id_project):
     try:
         r = requests.get(url + "/projects/" + id_project)
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
+
 
 def get_id_list(url, id_project, _from=None, _to=None):
     try:
@@ -60,7 +63,9 @@ def get_id_list(url, id_project, _from=None, _to=None):
 
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-        print("Error getting data id list from {} on project {}".format(url, id_project))
+        print(
+            "Error getting data id list from {} on project {}".format(url, id_project)
+        )
         return []
 
 
@@ -91,6 +96,7 @@ def post_selection(url, id_project, data):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+
 def get_selection_id(url, id_project, id_selection):
     try:
         r = requests.get(
@@ -103,6 +109,7 @@ def get_selection_id(url, id_project, id_selection):
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
+
 
 def delete_selection(url, id_project, id_selection):
     try:
@@ -122,10 +129,14 @@ def get_models(url, id_project):
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 
+
 def get_model_result_id_list(url, project_id, model_id):
     try:
         r = requests.get(
-            url + "/projects/{}/models/{}/evaluated-data-id-list".format(project_id, model_id)
+            url
+            + "/projects/{}/models/{}/evaluated-data-id-list".format(
+                project_id, model_id
+            )
         )
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):

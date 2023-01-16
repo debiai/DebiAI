@@ -43,7 +43,7 @@ class WebDataProvider(DataProvider):
 
     def get_info(self):
         return get_info(self.url)
-    
+
     def get_projects(self):
         # Request method to get projects overview
         # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}]
@@ -76,7 +76,7 @@ class WebDataProvider(DataProvider):
         for sample_id in samples:
             samples[sample_id].insert(0, sample_id)
         return samples
-    
+
     def get_selections(self, project_id):
         # Get selections on project
         # Return arr[object{ id, name, creation_time, nb_samples}]
@@ -94,7 +94,7 @@ class WebDataProvider(DataProvider):
 
     def delete_selection(self, project_id, selection_id):
         return useCaseSelections.delete_selection(self.url, project_id, selection_id)
-    
+
     def get_models(self, project_id):
         return get_models_info(self.url, project_id)
 

@@ -27,12 +27,13 @@ def get_data_providers():
 
     return providers_formatted, 200
 
+
 def get_data_provider_info(dataProviderId):
-    
+
     try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)  
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         info = data_provider.get_info()
-        
+
         return info, 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
