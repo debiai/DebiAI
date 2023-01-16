@@ -1,6 +1,5 @@
 from dataProviders.DataProvider import DataProvider
 from dataProviders.DataProviderException import DataProviderException
-from utils.utils import get_app_version
 from dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
     projects,
@@ -51,9 +50,7 @@ class PythonDataProvider(DataProvider):
     def get_info(self):
         # Request method to get info on data Provider
         # return Object { version, dp_name, nb_Sample_max(to load)}
-        # Get DebiAI version
         return {
-            "version": get_app_version(),
             "dp_name": self.name,
             "maxSampleIdByRequest": 10000,
             "maxSampleDataByRequest": 2000,
