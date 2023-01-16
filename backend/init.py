@@ -1,6 +1,5 @@
 import dataProviders.dataProviderManager as dataProviderManager
-
-# import export.exportUtils as exportUtils
+import exportMethods.exportUtils as exportUtils
 import config.init_config as config
 
 
@@ -12,4 +11,4 @@ def init():
     dataProviderManager.setup_data_providers()
 
     # Init export methods
-    # exportUtils.load_export_methods()
+    exportUtils.load_export_methods()

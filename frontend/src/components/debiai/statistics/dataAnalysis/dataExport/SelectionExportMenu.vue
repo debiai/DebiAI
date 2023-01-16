@@ -74,6 +74,10 @@ export default {
   components: { ExportMethodSelection },
   name: "SelectionExportMenu",
   data() {
+    // TODO: add the real data provider id
+    const project_id_and_dp_id =this.$store.state.ProjectPage.projectId
+    const project_id = project_id_and_dp_id.split('|')[0]
+    const data_provider_id = project_id_and_dp_id.split('|')[1]
     return {
       selectionName: "DebiAI Selection",
       extraValue: null,
@@ -81,8 +85,9 @@ export default {
       exporting: false,
       selectionToExportDisplay: {
         origin: 'DebiAI',
-        type: 'selection',
-        project_id: this.$store.state.ProjectPage.projectId,
+        type: 'selection lolo',
+        project_id,
+        data_provider_id,
         selection_name: 'DebiAI Selection',
         date: 'timestamp',
         sample_ids: [{ id: 'sample id 1' }, { id: 'sample id 2' }, { id: '...' }],

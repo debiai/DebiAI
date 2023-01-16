@@ -1,7 +1,10 @@
 import config.init_config as configUtils
+import dataProviders.dataProviderManager as data_provider_manager
+import dataProviders.DataProviderException as DataProviderException
 import time
-from utils.export.methods.kafkaUtils import KafkaExportType
-from utils.export.methods.postUtils import PostExportType
+
+from exportMethods.methods.kafkaUtils import KafkaExportType
+from exportMethods.methods.postUtils import PostExportType
 
 #############################################################################
 #
@@ -13,9 +16,12 @@ from utils.export.methods.postUtils import PostExportType
 #
 #############################################################################
 
-
+# The export types are the different types of export methods that we can create
+# They are used to create the export methods
 export_types = [KafkaExportType(), PostExportType()]
 
+# The export methods are the different methods created from the types
+# They we can used to export data
 export_methods = []
 
 
@@ -48,8 +54,7 @@ def method_exist(methodId):
 
 def load_export_methods():
     global export_methods
-
-    print("========= Exports =========")
+    print("================== EXPORT METHODS ==================")
 
     # Load the export methods from the config file
     config = configUtils.get_config()
@@ -58,9 +63,7 @@ def load_export_methods():
         config_export_methods = config["EXPORT_METHODS"]
 
         for method in config_export_methods:
-            print(
-                "Configuring method " + method, "[", config_export_methods[method], "]"
-            )
+            print(" - Adding method " + method, "[", config_export_methods[method], "]")
 
             try:
                 parameters = config_export_methods[method].split(",")
@@ -81,9 +84,7 @@ def load_export_methods():
                 print("Error while configuring method " + method + ": " + str(e))
 
     if len(export_methods) == 0:
-        print("No export method configured")
-
-    print("===========================")
+        print("   No export method configured")
 
 
 def add_export_method(data):
@@ -130,9 +131,7 @@ def delete_export_method(method_id):
     return "method " + method_id + " deleted"
 
 
-# Export methods
-
-
+# Export data
 def exportSelection(projectId, data):
     method_id = data["exportMethodId"]
 
@@ -142,50 +141,35 @@ def exportSelection(projectId, data):
 
     export_method = get_export_method(method_id)
 
-    # Check if the project exists
-    project_exist = False
-    if debiaiUtils.project_exist(projectId):
-        project_exist = True
-        # Creation of the data selection to export
-        project_name = debiaiUtils.getProjectNameFromId(projectId)
+    # Creation of the data selection to export
+    dataProvider_id = projectId.split("|")[0]
+    project_id = projectId.split("|")[1]
 
-        project_sample_hashmap = debiaiUtils.getHashmap(projectId)
-        new_project_Id = projectId
-        sample_path = []
-        for sample_hash in data["sampleHashList"]:
-            # Removing the '/' at the end of the hash
-            id = project_sample_hashmap[sample_hash][:-1]
-            sample_path.append(id)
+    data_provider = data_provider_manager.get_single_data_provider(dataProvider_id)
 
-        id_list = []
+    try:
+        project = data_provider.get_project(project_id)
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
 
-        for id in sample_path:
-            id_list.append({"id": id})
+    id_list = []
 
-    elif dataProvider.project_exist(projectId):
-        project_exist = True
-
-        # Creation of the data selection to export
-        project_name = dataProvider.getProjectName(projectId)
-        new_project_Id = projectId.split("|")[1]
-
-        id_list = []
-
-        for id in data["sampleHashList"]:
-            id_list.append({"id": id})
-
-    if not project_exist:
-        raise Exception("Project " + projectId + " not found")
+    for id in data["sampleHashList"]:
+        id_list.append({"id": id})
 
     data_to_export = {
         "origin": "DebiAI",
         "type": "selection",
-        "project_id": new_project_Id,
-        "project_name": project_name,
+        "project_id": project_id,
+        "data_provider_id": dataProvider_id,
         "selection_name": data["selectionName"],
         "date": time.time(),
         "sample_ids": id_list,
     }
+
+    # Project name
+    if "name" in project:
+        data_to_export["project_name"] = project["name"]
 
     # Annotation extra value
     if "annotationValue" in data and data["annotationValue"] != "":

@@ -1,14 +1,8 @@
 #############################################################################
 # Imports
 #############################################################################
-import shutil
-import ujson as json
-
-import utils.utils as utils
 import dataProviders.DataProviderException as DataProviderException
 import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.pythonDataProvider.dataUtils.pythonModuleUtils as moduleUtils
-import dataProviders.pythonDataProvider.dataUtils.projects as projectUtils
 
 #############################################################################
 # PROJECTS Management
