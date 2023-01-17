@@ -64,7 +64,9 @@ def load_export_methods():
         config_export_methods = config["EXPORT_METHODS_LIST"]
 
         for method in config_export_methods:
-            print("     Adding method " + method, "[", config_export_methods[method], "]")
+            print(
+                "     Adding method " + method, "[", config_export_methods[method], "]"
+            )
 
             try:
                 parameters = config_export_methods[method].split(",")
