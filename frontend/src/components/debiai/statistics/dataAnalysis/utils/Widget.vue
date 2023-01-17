@@ -289,7 +289,20 @@ export default {
 
     // Export
     setExport(exportData) {
-      this.exportData = exportData;
+      const projectIdAndDpId =this.$store.state.ProjectPage.projectId
+      const projectId = projectIdAndDpId.split('|')[0]
+      const dataProviderId = projectIdAndDpId.split('|')[1]
+      const selectionIds = this.$store.state.ProjectPage.selectionsIds
+
+      // Add project and data provider id to the export data
+      this.exportData = {
+        origin: "DebiAI",
+        project_id: projectId,
+        data_provider_id: dataProviderId,
+        selection_ids: selectionIds,
+        ...exportData,
+      }
+
     },
 
     startExport() {

@@ -453,19 +453,13 @@ export default {
       // Export boundaries
       // Goal format :
       // {
-      //   origin: "DebiAI",
       //   type: "1Drange",
-      //   project_id: ProjectID,
-      //   selection_ids: [SelectionID, ...],
       //   colX : colName
       //   x : [min, max],
       // }
 
       const exportData = {
-        origin: "DebiAI",
         type: "1Drange",
-        project_id: this.$store.state.ProjectPage.projectId,
-        selection_ids: this.$store.state.ProjectPage.selectionsIds,
         colX: colx.label,
         x: [min, max],
       };
