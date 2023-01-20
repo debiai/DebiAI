@@ -77,7 +77,7 @@ paths:
           description: The Data provider id must not be null
         404:
           description: The data provider doesn't exist
-          
+
   # Projects
   /projects:
     get:
@@ -459,7 +459,7 @@ paths:
               commonResults:
                 type: boolean
                 description: To get only the the samples that have been evaluated on a common sample
-              
+
               from:
                 type: integer
                 description: Where we start the selection in case of over 10 000 samples
@@ -778,99 +778,111 @@ paths:
           description: selection deleted
 
   # Widget configuration
-  /projects/{projectId}/widgetconf:
+  /app/widgetconfigurations/{widgetTitle}:
     get:
-      summary: Get the project widget configurations
-      tags: [Widget configuration]
-      operationId: controller.widgetConfiguration.get_configurations
+      summary: Get the widget configurations
+      tags: [Widget configurations]
+      operationId: controller.widgetConfigurations.get_configurations
       parameters:
-        - name: projectId
+        - name: widgetTitle
           in: path
           type: string
           required: true
       responses:
         200:
-          description: Project widget configurations, one key in one widget, the values are a list of configurations
+          description: Widget configurations list
           schema:
-            type: object
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - name
+                - projectId
+                - dataProviderId
+                - configuration
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                projectId:
+                  type: string
+                  description: Id of the project linked to the configuration
+                dataProviderId:
+                  type: string
+                  description: Id of the data provider linked to the project id
+                creationDate:
+                  type: string
+                configuration:
+                  type: object
+                  description: Key value list with the configuration, specific to the widget
     post:
       summary: Add a widget configuration to a project
-      tags: [Widget configuration]
-      operationId: controller.widgetConfiguration.post_configuration
+      tags: [Widget configurations]
+      operationId: controller.widgetConfigurations.post_configuration
       parameters:
-        - name: projectId
+        - name: widgetTitle
           in: path
-          type: string
-          description: project ID
           required: true
+          type: string
+          description: Title of the wigdet linked to the configuration
 
         - name: data
           in: body
+          required: true
           schema:
             type: object
             required:
-              - widgetTitle
-              - configuration
               - name
-              - description
+              - projectId
+              - dataProviderId
+              - configuration
             properties:
-              widgetTitle:
-                type: string
-                description: Title of the wigdet linked to the configuration
-                minLength: 1
-              configuration:
-                type: object
-                description: Key value list with the configuration
               name:
                 type: string
-                description: Name of the preset choosen by the user
+                description: Name of the configuration, no special characters
+                maxLength: 50
                 minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
               description:
                 type: string
-                description: Description of the preset choosen by the user
-          required: true
+              configuration:
+                type: object
+                description: Key value list with the configuration, specific to the widget
+                maxProperties: 15
 
       responses:
-        200:
+        204:
           description: Widget configuration saved
-        404:
-          description: Project not found
 
-  /projects/{projectId}/widgetconf/delete:
-    post:
+  /app/widgetconfigurations/{widgetTitle}/configuration/{id}:
+    delete:
       summary: Delete a widget configuration
-      tags: [Widget configuration]
-      operationId: controller.widgetConfiguration.delete_configuration
+      tags: [Widget configurations]
+      operationId: controller.widgetConfigurations.delete_configuration
       parameters:
-        - name: projectId
+        - name: widgetTitle
           in: path
           type: string
-          description: project ID
           required: true
-
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - widgetTitle
-              - name
-            properties:
-              widgetTitle:
-                type: string
-                description: Title of the wigdet linked to the configuration
-                minLength: 1
-              name:
-                type: string
-                description: Name of the preset choosen by the user
-                minLength: 1
+        - name: id
+          in: path
+          type: string
           required: true
-
+          description: Id of the configuration to delete
       responses:
         200:
           description: Widget configuration saved
         404:
-          description: Project or configuration not found
+          description: Widget title or configuration not found
 
   # Tags
   /projects/{projectId}/tags:
@@ -1554,7 +1566,7 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/block"
-  
+
   # Data providers
   dataProvider:
     type: object
@@ -1567,6 +1579,3 @@ definitions:
         type: boolean
       type:
         type: string
-
-
-
