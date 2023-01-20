@@ -8,7 +8,12 @@ import utils.debiai.widgetConfigurations as widgetConfUtils
 #############################################################################
 
 
-def get_configurations(widgetTitle):
+def get_all_configurations():
+    configurations_overview = widgetConfUtils.get_configurations_overview()
+    return configurations_overview, 200
+
+
+def get_widget_configurations(widgetTitle):
     configurations = widgetConfUtils.get_configurations(widgetTitle)
     return configurations, 200
 

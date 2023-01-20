@@ -58,6 +58,15 @@ def test_add_configuration():
     assert len(configurations[0]["id"]) > 0
     testConfigurantionId = configurations[0]["id"]
 
+def test_get_configurations_overview():
+    url = appUrl + "app/widgetconfigurations/"
+    resp = requests.request("GET", url, headers={}, data={})
+    configurations = json.loads(resp.text)
+    assert resp.status_code == 200
+    assert type(configurations) is dict
+    assert testWidgetTitle in configurations
+    assert configurations[testWidgetTitle] == 1
+
 def test_delete_configuration():
     # Remove the configuration
     delete_configuration(testConfigurantionId)

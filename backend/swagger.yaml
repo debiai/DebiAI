@@ -778,16 +778,35 @@ paths:
           description: selection deleted
 
   # Widget configuration
+  /app/widgetconfigurations/:
+    get:
+      summary: Get all widget configurations overview,
+        return the number of configurations for each widget
+      tags: [Widget configurations]
+      operationId: controller.widgetConfigurations.get_all_configurations
+      responses:
+        200:
+          description: Widget configurations number for each widget
+          schema:
+            type: object
+            description: Object with widget title as key and number of
+              configurations as value
+            additionalProperties:
+              type: integer
+              minimum: 0
+
   /app/widgetconfigurations/{widgetTitle}:
     get:
       summary: Get the widget configurations
       tags: [Widget configurations]
-      operationId: controller.widgetConfigurations.get_configurations
+      operationId: controller.widgetConfigurations.get_widget_configurations
       parameters:
         - name: widgetTitle
           in: path
+          description: Title of the wigdet linked to the configuration
           type: string
           required: true
+          minLength: 1
       responses:
         200:
           description: Widget configurations list
@@ -828,7 +847,7 @@ paths:
           in: path
           required: true
           type: string
-          description: Title of the wigdet linked to the configuration
+          minLength: 1
 
         - name: data
           in: body
@@ -873,11 +892,13 @@ paths:
           in: path
           type: string
           required: true
+          minLength: 1
         - name: id
           in: path
           type: string
           required: true
           description: Id of the configuration to delete
+          minLength: 1
       responses:
         204:
           description: Widget configuration saved

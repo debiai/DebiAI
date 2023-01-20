@@ -33,36 +33,31 @@ def setup_widget_configurations():
         _save_configurations({})
 
 
+def get_configurations_overview():
+    # Return the number of configurations for each widget
+    all_configurations = _get_all_configurations()
+
+    configurations_overview = {}
+    for widget_title in all_configurations:
+        configurations_overview[widget_title] = len(all_configurations[widget_title])
+
+    return configurations_overview
+
+
 def get_configurations(widget_title):
     # Return the configurations list of the widget
-    all_configurations = get_all_configurations()
-    
+    all_configurations = _get_all_configurations()
+
     if widget_title in all_configurations:
         return all_configurations[widget_title]
     else:
         return []
 
-def get_all_configurations():
-    # Return the configurations list of all widgets
-    try:
-        with open(CONF_PATH) as json_file:
-            return json.load(json_file)
-
-    except FileNotFoundError:
-        setup_widget_configurations()
-        return {}
-    except json.decoder.JSONDecodeError as e:
-        print("Error while reading the widget configurations file")
-        print(e)
-        print("The file will be reset")
-        _save_configurations({})
-        return {}
-
 
 def add_configuration(widget_title, data):
     # project_id, data_provider_id, conf_description, conf_name, conf
     # Add a new widget configuration
-    configurations = get_all_configurations()
+    configurations = _get_all_configurations()
 
     if widget_title not in configurations:
         configurations[widget_title] = []
@@ -87,7 +82,7 @@ def add_configuration(widget_title, data):
 
 def delete_configuration(widget_title, id):
     # Delete the widget configuration by its name
-    configurations = get_all_configurations()
+    configurations = _get_all_configurations()
 
     if widget_title in configurations:
         for configuration in configurations[widget_title]:
@@ -95,7 +90,24 @@ def delete_configuration(widget_title, id):
                 configurations[widget_title].remove(configuration)
 
         _save_configurations(configurations)
-    
+
+
+def _get_all_configurations():
+    # Return the configurations list of all widgets
+    try:
+        with open(CONF_PATH) as json_file:
+            return json.load(json_file)
+
+    except FileNotFoundError:
+        setup_widget_configurations()
+        return {}
+    except json.decoder.JSONDecodeError as e:
+        print("Error while reading the widget configurations file")
+        print(e)
+        print("The file will be reset")
+        _save_configurations({})
+        return {}
+
 
 def _save_configurations(conf):
     # Update the json file
