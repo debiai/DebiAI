@@ -820,7 +820,7 @@ paths:
                   type: object
                   description: Key value list with the configuration, specific to the widget
     post:
-      summary: Add a widget configuration to a project
+      summary: Add a widget configuration
       tags: [Widget configurations]
       operationId: controller.widgetConfigurations.post_configuration
       parameters:
@@ -863,7 +863,7 @@ paths:
         204:
           description: Widget configuration saved
 
-  /app/widgetconfigurations/{widgetTitle}/configuration/{id}:
+  /app/widgetconfigurations/{widgetTitle}/{id}:
     delete:
       summary: Delete a widget configuration
       tags: [Widget configurations]
@@ -879,7 +879,7 @@ paths:
           required: true
           description: Id of the configuration to delete
       responses:
-        200:
+        204:
           description: Widget configuration saved
         404:
           description: Widget title or configuration not found

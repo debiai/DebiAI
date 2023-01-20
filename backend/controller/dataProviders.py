@@ -50,7 +50,7 @@ def post_data_providers(data):
         else:
             return "Invalid data provider type", 400
 
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
 
@@ -65,6 +65,6 @@ def delete_data_providers(dataProviderId):
     # Delete data provider
     try:
         data_provider_manager.delete(dataProviderId)
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code

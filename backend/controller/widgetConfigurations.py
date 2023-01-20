@@ -15,9 +15,9 @@ def get_configurations(widgetTitle):
 
 def post_configuration(widgetTitle, data):
     widgetConfUtils.add_configuration(widgetTitle, data)
-    return 204
+    return None, 204
 
 
 def delete_configuration(widgetTitle, id):
     widgetConfUtils.delete_configuration(widgetTitle, id)
-    return 204
+    return None, 204
