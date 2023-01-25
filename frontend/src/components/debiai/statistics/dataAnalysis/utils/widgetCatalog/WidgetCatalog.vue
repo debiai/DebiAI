@@ -6,25 +6,16 @@
         v-for="(widget, i) in widgets"
         :key="i"
         :widget="widget"
-        :configurations="widgetConfigurations[widget.componentKey]"
+        :nbConfigurations="widgetConfigurationsOverview[widget.componentKey]"
         v-on:add="addWidget"
         v-on:addWithConf="addWidgetWithConf"
         v-on:selected="selectedWidgetNumber = i"
-        v-on:deleteConf="deleteConf"
       />
     </div>
 
     <!-- Widget details -->
     <div id="widgetDetails">
       <div id="controls">
-        <button class="warning" @click="loadWidgetConfigurations">
-          <inline-svg
-            :src="require('../../../../../../assets/svg/update.svg')"
-            width="10"
-            height="10"
-          />
-          Refresh
-        </button>
         <button class="red" @click="$emit('cancel')">Cancel</button>
       </div>
       <div id="content">
@@ -46,7 +37,7 @@ export default {
     return {
       selectedWidgetNumber: 0,
       widgetDescriptions: {},
-      widgetConfigurations: {},
+      widgetConfigurationsOverview: {}, // { <widgetTitle>: <nbOfConfigurations> }
     };
   },
   mounted() {
@@ -54,7 +45,8 @@ export default {
     this.widgets.forEach((widget) => {
       try {
         const widgetGuide = require("raw-loader!../../widgets/" +
-        widget.componentKey + "/guide.md").default;
+          widget.componentKey +
+          "/guide.md").default;
         this.widgetDescriptions[widget.componentKey] = widgetGuide;
       } catch (error) {
         console.warn("No guide for " + widget.componentKey);
@@ -62,7 +54,7 @@ export default {
     });
 
     // Load widget configurations
-    this.loadWidgetConfigurations();
+    this.loadWidgetConfigurationsOverview();
   },
   methods: {
     addWidget(widget) {
@@ -74,23 +66,15 @@ export default {
         conf,
       });
     },
-    loadWidgetConfigurations() {
-      this.widgetConfigurations = {};
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+    loadWidgetConfigurationsOverview() {
+      this.widgetConfigurationsOverview = {};
 
-      this.$backendDialog
-        .getWidgetConfiguration(projectId)
-        .then((confList) => {
-          this.widgetConfigurations = confList;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      this.$backendDialog.getWidgetConfigurationsOverview().then((conf) => {
+        this.widgetConfigurationsOverview = conf;
+      });
     },
     deleteConf({ widgetTitle, name, creationDate }) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      let projectId = this.$store.state.ProjectPage.projectId;
 
       this.$backendDialog
         .deleteWidgetConfiguration(projectId, {
@@ -118,7 +102,7 @@ export default {
   },
   computed: {
     widgetDescription() {
-      if (this.widgets.length == 0) return ""
+      if (this.widgets.length == 0) return "";
       return this.widgetDescriptions[
         this.widgets[this.selectedWidgetNumber].componentKey
       ];
@@ -131,7 +115,7 @@ export default {
       else return null;
     },
     iconPath() {
-      if (this.widgets.length == 0) return null
+      if (this.widgets.length == 0) return null;
       return (
         "documentation/images/" +
         this.widgets[this.selectedWidgetNumber].name +
@@ -176,6 +160,7 @@ export default {
 #controls {
   grid-area: controls;
   text-align: right;
+  padding-right: 10px;
 }
 #content {
   grid-area: content;

@@ -7,7 +7,12 @@
       @dblclick="$emit('add', widget)"
     >
       <!-- Widget icon image -->
-      <progressive-img :src="require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)" class="icon" />
+      <progressive-img
+        :src="
+          require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)
+        "
+        class="icon"
+      />
 
       <div id="title">
         <div class="name">{{ widget.name }}</div>
@@ -18,11 +23,11 @@
         <!-- configurations -->
         <transition name="fade">
           <span
-            v-if="configurations && Object.keys(configurations).length > 0"
+            v-if="nbConfigurations && nbConfigurations > 0"
             style="display: flex; align-items: center; padding: 5px"
             title="Custom settings"
           >
-            {{ Object.keys(configurations).length }}
+            {{ nbConfigurations }}
             <inline-svg
               :src="require('../../../../../../assets/svg/preset.svg')"
               width="18"
@@ -58,19 +63,26 @@ export default {
   components: { WidgetConfiguration },
   props: {
     widget: { requiered: true, type: Object },
-    configurations: { type: Object },
+    nbConfigurations: { type: Number, default: 0 },
   },
   data() {
     return {
       description: "",
       displayConfigurations: false,
+      configurations: null, // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
     };
   },
   methods: {
     clicked() {
       this.$emit("selected");
-      if (this.configurations && Object.keys(this.configurations).length)
-        this.displayConfigurations = !this.displayConfigurations;
+      // Load widget configurations
+      this.$backendDialog
+        .getWidgetConfigurations(this.widget.componentKey)
+        .then((confList) => {
+          this.configurations = confList;
+          if (this.configurations && this.configurations.length)
+            this.displayConfigurations = !this.displayConfigurations;
+        });
     },
     deleteConf(name) {
       this.$emit("deleteConf", {

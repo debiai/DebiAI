@@ -340,22 +340,26 @@ export default {
   },
 
   // Widget configurations
-  getWidgetConfiguration(projectId) {
+  getWidgetConfigurationsOverview() {
+    return axios.get(apiURL + 'app/widgetconfigurations/')
+      .then((response) => response.data)
+  },
+  getWidgetConfigurations(widgetTitle) {
     let code = startRequest("Loading widget configurations")
-    return axios.get(apiURL + 'projects/' + projectId + '/widgetconf')
+    return axios.get(apiURL + 'app/widgetconfigurations/' + widgetTitle)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  saveWidgetConfiguration(projectId, { widgetTitle, configuration, name, description }) {
+  saveWidgetConfiguration(widgetTitle, { projectId, dataProviderId, configuration, name, description }) {
     let code = startRequest("Saving widget configuration")
-    return axios.post(apiURL + 'projects/' + projectId + '/widgetconf',
-      { widgetTitle, configuration, name, description })
+    return axios.post(apiURL + 'app/widgetconfigurations/' + widgetTitle,
+      { projectId, dataProviderId, configuration, name, description })
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  deleteWidgetConfiguration(projectId, { widgetTitle, name }) {
+  deleteWidgetConfiguration(configurationId) {
     let code = startRequest("Deleting widget configuration")
-    return axios.post(apiURL + 'projects/' + projectId + '/widgetconf/delete', { widgetTitle, name })
+    return axios.delete(apiURL + 'app/widgetconfigurations/' + configurationId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
