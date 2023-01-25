@@ -16,7 +16,7 @@
       </span>
     </div>
     <div id="content">
-      <!-- Widget name form & conf creator -->
+      <!-- Widget name form & configuration creator -->
       <div id="left">
         <!-- Change widget name form -->
         <form id="widgetNameForm" class="card">
@@ -35,7 +35,7 @@
             </button>
           </span>
         </form>
-        <!-- Widget conf creator -->
+        <!-- Widget configuration creator -->
         <WidgetConfCreator
           :widgetConf="confToSave"
           :widgetTitle="widgetTitle"
@@ -46,17 +46,17 @@
           class="card"
         />
       </div>
-      <!-- Widget conf selector -->
+      <!-- Widget conconfigurationf selector -->
       <div id="WidgetConfSelector" class="card">
         <h3>Select a widget configuration</h3>
         <transition name="fade">
           <div id="configurations">
             <WidgetConfiguration
-              v-for="(conf, i) in configurations"
+              v-for="(configuration, i) in configurations"
               :key="i"
-              :conf="conf"
-              v-on:selected="$emit('confSelected', conf)"
-              v-on:delete="deleteConf(conf.name)"
+              :configuration="configuration"
+              v-on:selected="$emit('confSelected', configuration)"
+              v-on:delete="deleteConf(configuration.name)"
             />
           </div>
         </transition>

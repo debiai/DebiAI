@@ -23,8 +23,8 @@
             placeholder="Configuration name"
           />
           <select v-model="confName">
-            <option v-for="conf in createdConf" :key="conf.name">
-              {{ conf.name }}
+            <option v-for="configuration in createdConf" :key="configuration.id">
+              {{ configuration.name }}
             </option>
           </select>
         </div>
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!-- widget conf -->
+      <!-- widget configuration -->
       <div class="data" id="widgetConf">
         <div class="name">Configuration</div>
         <div class="value">
@@ -143,7 +143,7 @@ export default {
   computed: {
     confNameAlreadyExists() {
       const confWithSameName = this.createdConf.find(
-        (conf) => conf.name === this.confName
+        (configuration) => configuration.name === this.confName
       );
       return confWithSameName !== undefined;
     },

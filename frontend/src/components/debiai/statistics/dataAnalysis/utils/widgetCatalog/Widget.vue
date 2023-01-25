@@ -40,11 +40,11 @@
     <transition name="scale">
       <div id="configurations" v-if="displayConfigurations">
         <WidgetConfiguration
-          v-for="(conf, i) in configurations"
+          v-for="(configuration, i) in configurations"
           :key="i"
-          :conf="conf"
-          v-on:selected="$emit('addWithConf', { widget, conf })"
-          v-on:delete="deleteConf(conf.name)"
+          :configuration="configuration"
+          v-on:selected="$emit('addWithConf', { widget, configuration })"
+          v-on:delete="deleteConf(configuration.name)"
         />
       </div>
     </transition>
@@ -77,10 +77,14 @@ export default {
       this.$emit("selected");
       this.configurations = [];
 
+      console.log("clicked");
+
       // Load widget configurations
       this.$backendDialog
         .getWidgetConfigurations(this.widget.componentKey)
         .then((confList) => {
+          console.log("confList", confList);
+          console.log(confList);
           this.configurations = confList;
           if (this.configurations && this.configurations.length)
             this.displayConfigurations = !this.displayConfigurations;

@@ -2,20 +2,20 @@
   <div class="configuration">
     <div class="left">
       <div class="name">
-        <h4>{{ conf.name }}</h4>
+        <h4>{{ configuration.name }}</h4>
         <span
           class="creationDate"
-          :title="$services.timeStampToDate(conf.creationDate)"
+          :title="$services.timeStampToDate(configuration.creationDate)"
         >
-          Created {{ $services.prettyTimeStamp(conf.creationDate) }}
+          Created {{ $services.prettyTimeStamp(configuration.creationDate) }}
         </span>
       </div>
-      <div class="description">{{ conf.description }}</div>
+      <div class="description">{{ configuration.description }}</div>
     </div>
     <table class="confDetails">
-      <tr v-for="key in Object.keys(conf.conf)" :key="key">
+      <tr v-for="key in Object.keys(configuration.configuration)" :key="key">
         <th class="key">{{ key }}</th>
-        <th class="value">{{ conf.conf[key] }}</th>
+        <th class="value">{{ configuration.configuration[key] }}</th>
       </tr>
     </table>
     <div class="controls">
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  props: { conf: { type: Object, required: true } },
+  props: { configuration: { type: Object, required: true } }, // { id, name, description, configuration, projectId, dataProviderId, creatinDate }
 };
 </script>
 

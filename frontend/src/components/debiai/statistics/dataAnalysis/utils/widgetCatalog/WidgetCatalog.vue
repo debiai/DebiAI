@@ -60,17 +60,17 @@ export default {
     addWidget(widget) {
       this.$emit("add", widget.componentKey);
     },
-    addWidgetWithConf({ widget, conf }) {
+    addWidgetWithConf({ widget, configuration }) {
       this.$emit("addWithConf", {
         componentKey: widget.componentKey,
-        conf,
+        configuration,
       });
     },
     loadWidgetConfigurationsOverview() {
       this.widgetConfigurationsOverview = {};
 
-      this.$backendDialog.getWidgetConfigurationsOverview().then((conf) => {
-        this.widgetConfigurationsOverview = conf;
+      this.$backendDialog.getWidgetConfigurationsOverview().then((configuration) => {
+        this.widgetConfigurationsOverview = configuration;
       });
     },
     deleteConf({ widgetTitle, name, creationDate }) {
