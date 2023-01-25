@@ -2,16 +2,16 @@ import requests
 import ujson as json
 
 appUrl = "http://localhost:3000/"
-testWidgetTitle = "testWidgetTitle"
+testWidgetKey = "testWidgetKey"
 testConfigurantionId = None
 
 def delete_configuration(id):
-    url = appUrl + "app/widgetconfigurations/" + testWidgetTitle + "/" + id
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey + "/" + id
     resp = requests.request("DELETE", url, headers={}, data={})
     assert resp.status_code == 204
 
 def test_get_configurations():
-    url = appUrl + "app/widgetconfigurations/" + testWidgetTitle
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     print(configurations)
@@ -26,7 +26,7 @@ def test_get_configurations():
 
 def test_add_configuration():
     global testConfigurantionId
-    url = appUrl + "app/widgetconfigurations/" + testWidgetTitle 
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey 
     data = {
         "name": "testName",
         "description": "testDescription",
@@ -40,7 +40,7 @@ def test_add_configuration():
     assert resp.status_code == 204
 
     # Check if the configuration was added
-    url = appUrl + "app/widgetconfigurations/" + testWidgetTitle
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     assert resp.status_code == 200
@@ -64,15 +64,15 @@ def test_get_configurations_overview():
     configurations = json.loads(resp.text)
     assert resp.status_code == 200
     assert type(configurations) is dict
-    assert testWidgetTitle in configurations
-    assert configurations[testWidgetTitle] == 1
+    assert testWidgetKey in configurations
+    assert configurations[testWidgetKey] == 1
 
 def test_delete_configuration():
     # Remove the configuration
     delete_configuration(testConfigurantionId)
 
     # Check if the configuration was removed
-    url = appUrl + "app/widgetconfigurations/" + testWidgetTitle
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     assert resp.status_code == 200

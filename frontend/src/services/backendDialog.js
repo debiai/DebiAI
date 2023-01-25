@@ -344,15 +344,15 @@ export default {
     return axios.get(apiURL + 'app/widgetconfigurations/')
       .then((response) => response.data)
   },
-  getWidgetConfigurations(widgetTitle) {
+  getWidgetConfigurations(widgetKey) {
     let code = startRequest("Loading widget configurations")
-    return axios.get(apiURL + 'app/widgetconfigurations/' + widgetTitle)
+    return axios.get(apiURL + 'app/widgetconfigurations/' + widgetKey)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  saveWidgetConfiguration(widgetTitle, { projectId, dataProviderId, configuration, name, description }) {
+  saveWidgetConfiguration(widgetKey, { projectId, dataProviderId, configuration, name, description }) {
     let code = startRequest("Saving widget configuration")
-    return axios.post(apiURL + 'app/widgetconfigurations/' + widgetTitle,
+    return axios.post(apiURL + 'app/widgetconfigurations/' + widgetKey,
       { projectId, dataProviderId, configuration, name, description })
       .finally(() => endRequest(code))
       .then((response) => response.data)

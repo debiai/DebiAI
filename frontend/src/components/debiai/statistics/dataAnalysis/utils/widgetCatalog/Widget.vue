@@ -69,12 +69,14 @@ export default {
     return {
       description: "",
       displayConfigurations: false,
-      configurations: null, // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
     };
   },
   methods: {
     clicked() {
       this.$emit("selected");
+      this.configurations = [];
+
       // Load widget configurations
       this.$backendDialog
         .getWidgetConfigurations(this.widget.componentKey)
@@ -86,7 +88,7 @@ export default {
     },
     deleteConf(name) {
       this.$emit("deleteConf", {
-        widgetTitle: this.widget.componentKey,
+        widgetKey: this.widget.componentKey,
         name,
       });
     },

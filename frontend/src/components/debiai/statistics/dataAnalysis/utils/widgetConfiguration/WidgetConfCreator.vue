@@ -101,7 +101,8 @@ export default {
   props: {
     widgetConf: { type: Object, required: true },
     widgetTitle: { type: String, required: true },
-    createdConf: { type: Object, required: true },
+    widgetKey: { type: String, required: true },
+    createdConf: { type: Array, required: true },
     suggestedConfName: { type: String, default: "" },
   },
   mounted(){
@@ -109,12 +110,17 @@ export default {
   },
   methods: {
     save() {
-      let projectId =
+      // TOTO : update when fixed
+      let projectIdWithDpId =
         this.$store.state.ProjectPage.projectId;
 
+      const projectId = projectIdWithDpId.split("|")[0];
+      const dataProviderId = projectIdWithDpId.split("|")[1];
+
       this.$backendDialog
-        .saveWidgetConfiguration(projectId, {
-          widgetTitle: this.widgetTitle,
+        .saveWidgetConfiguration(this.widgetKey, {
+          projectId: projectId,
+          dataProviderId : dataProviderId,
           configuration: this.widgetConf,
           name: this.confName,
           description: this.confDescription,
@@ -136,7 +142,10 @@ export default {
   },
   computed: {
     confNameAlreadyExists() {
-      return this.confName in this.createdConf;
+      const confWithSameName = this.createdConf.find(
+        (conf) => conf.name === this.confName
+      );
+      return confWithSameName !== undefined;
     },
   },
 };

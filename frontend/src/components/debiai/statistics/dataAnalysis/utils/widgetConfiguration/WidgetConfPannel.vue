@@ -40,6 +40,7 @@
           :widgetConf="confToSave"
           :widgetTitle="widgetTitle"
           :createdConf="configurations"
+          :widgetKey="widgetKey"
           :suggestedConfName="suggestedConfName"
           @saved="(confName) => $emit('saved', confName)"
           class="card"
@@ -72,6 +73,7 @@ export default {
   components: { WidgetConfCreator, WidgetConfiguration },
   props: {
     confToSave: { type: Object, required: true },
+    widgetKey: { type: String, required: true },
     widgetTitle: { type: String, required: true },
     widgetName: { type: String, default: "" },
     suggestedConfName: { type: String, default: "" },
@@ -79,7 +81,7 @@ export default {
   data() {
     return {
       newWidgetName: "",
-      configurations: {},
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
     };
   },
   created() {
@@ -88,26 +90,23 @@ export default {
   },
   methods: {
     loadWidgetConfigurations() {
-      this.configurations = {};
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      this.configurations = [];
 
       this.$backendDialog
-        .getWidgetConfiguration(projectId)
+        .getWidgetConfigurations(this.widgetKey)
         .then((confList) => {
-          this.configurations = confList[this.widgetTitle] || {};
+          this.configurations = confList;
         })
         .catch((e) => {
           console.log(e);
         });
     },
     deleteConf(name) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      let projectId = this.$store.state.ProjectPage.projectId;
 
       this.$backendDialog
         .deleteWidgetConfiguration(projectId, {
-          widgetTitle: this.widgetTitle,
+          widgetKey: this.widgetKey,
           name,
         })
         .then((confList) => {
@@ -117,7 +116,7 @@ export default {
             msg: "Configuration deleted",
           });
 
-          this.configurations = confList[this.widgetTitle];
+          this.configurations = confList[this.widgetKey];
         })
         .catch((e) => {
           console.log(e);

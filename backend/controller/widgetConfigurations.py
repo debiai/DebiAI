@@ -13,16 +13,16 @@ def get_all_configurations():
     return configurations_overview, 200
 
 
-def get_widget_configurations(widgetTitle):
-    configurations = widgetConfUtils.get_configurations(widgetTitle)
+def get_widget_configurations(widgetKey):
+    configurations = widgetConfUtils.get_configurations(widgetKey)
     return configurations, 200
 
 
-def post_configuration(widgetTitle, data):
-    widgetConfUtils.add_configuration(widgetTitle, data)
+def post_configuration(widgetKey, data):
+    widgetConfUtils.add_configuration(widgetKey, data)
     return None, 204
 
 
-def delete_configuration(widgetTitle, id):
-    widgetConfUtils.delete_configuration(widgetTitle, id)
+def delete_configuration(widgetKey, id):
+    widgetConfUtils.delete_configuration(widgetKey, id)
     return None, 204

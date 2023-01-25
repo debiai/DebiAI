@@ -7,7 +7,7 @@ CONF_PATH = "data/widgetConfigurations.json"
 
 # Configuration file structure
 # {
-#     "widgetTitle": [
+#     "widgetKey": [
 #         {
 #             "id": ""
 #             "name": ""
@@ -38,29 +38,29 @@ def get_configurations_overview():
     all_configurations = _get_all_configurations()
 
     configurations_overview = {}
-    for widget_title in all_configurations:
-        configurations_overview[widget_title] = len(all_configurations[widget_title])
+    for widget_key in all_configurations:
+        configurations_overview[widget_key] = len(all_configurations[widget_key])
 
     return configurations_overview
 
 
-def get_configurations(widget_title):
+def get_configurations(widget_key):
     # Return the configurations list of the widget
     all_configurations = _get_all_configurations()
 
-    if widget_title in all_configurations:
-        return all_configurations[widget_title]
+    if widget_key in all_configurations:
+        return all_configurations[widget_key]
     else:
         return []
 
 
-def add_configuration(widget_title, data):
+def add_configuration(widget_key, data):
     # project_id, data_provider_id, conf_description, conf_name, conf
     # Add a new widget configuration
     configurations = _get_all_configurations()
 
-    if widget_title not in configurations:
-        configurations[widget_title] = []
+    if widget_key not in configurations:
+        configurations[widget_key] = []
 
     # Generate id
     id = str(uuid.uuid1())
@@ -76,18 +76,18 @@ def add_configuration(widget_title, data):
     }
 
     # Save configuration
-    configurations[widget_title].append(configuration_to_add)
+    configurations[widget_key].append(configuration_to_add)
     _save_configurations(configurations)
 
 
-def delete_configuration(widget_title, id):
+def delete_configuration(widget_key, id):
     # Delete the widget configuration by its name
     configurations = _get_all_configurations()
 
-    if widget_title in configurations:
-        for configuration in configurations[widget_title]:
+    if widget_key in configurations:
+        for configuration in configurations[widget_key]:
             if configuration["id"] == id:
-                configurations[widget_title].remove(configuration)
+                configurations[widget_key].remove(configuration)
 
         _save_configurations(configurations)
 

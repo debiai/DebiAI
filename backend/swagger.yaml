@@ -795,13 +795,13 @@ paths:
               type: integer
               minimum: 0
 
-  /app/widgetconfigurations/{widgetTitle}:
+  /app/widgetconfigurations/{widgetKey}:
     get:
       summary: Get the widget configurations
       tags: [Widget configurations]
       operationId: controller.widgetConfigurations.get_widget_configurations
       parameters:
-        - name: widgetTitle
+        - name: widgetKey
           in: path
           description: Title of the wigdet linked to the configuration
           type: string
@@ -843,7 +843,7 @@ paths:
       tags: [Widget configurations]
       operationId: controller.widgetConfigurations.post_configuration
       parameters:
-        - name: widgetTitle
+        - name: widgetKey
           in: path
           required: true
           type: string
@@ -882,13 +882,13 @@ paths:
         204:
           description: Widget configuration saved
 
-  /app/widgetconfigurations/{widgetTitle}/{id}:
+  /app/widgetconfigurations/{widgetKey}/{id}:
     delete:
       summary: Delete a widget configuration
       tags: [Widget configurations]
       operationId: controller.widgetConfigurations.delete_configuration
       parameters:
-        - name: widgetTitle
+        - name: widgetKey
           in: path
           type: string
           required: true

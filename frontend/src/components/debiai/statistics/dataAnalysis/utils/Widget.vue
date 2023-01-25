@@ -3,9 +3,11 @@
     <!-- Wigdet conf load or save modal -->
     <modal v-if="confSettings">
       <WidgetConfPannel :widgetTitle="title" :widgetName="name" :confToSave="confToSave"
-        :suggestedConfName="suggestedConfName" @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
+        :suggestedConfName="suggestedConfName" :widgetKey="widgetKey"
+        @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
         @setWidgetName="setName" />
     </modal>
+
     <!-- Export data modal -->
     <modal v-if="exportModal">
       <DataExportMenu :dataToExport="exportData" @exported="exportModal = false" @cancel="exportModal = false" />
@@ -122,6 +124,7 @@ export default {
   name: "Widget",
   components: { WidgetConfPannel, DataExportMenu },
   props: {
+    widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     simple: { type: Boolean, default: false },

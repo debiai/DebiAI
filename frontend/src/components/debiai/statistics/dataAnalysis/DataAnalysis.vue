@@ -98,6 +98,7 @@
         :data-gs-max-height="component.layout.maxHeight"
       >
         <Widget
+          :widgetKey="component.key"
           :title="component.name"
           :simple="component.simple"
           :conf="component.conf"
