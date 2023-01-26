@@ -778,7 +778,7 @@ paths:
           description: selection deleted
 
   # Widget configuration
-  /app/widgetconfigurations/:
+  /app/widget-configurations/:
     get:
       summary: Get all widget configurations overview,
         return the number of configurations for each widget
@@ -795,7 +795,7 @@ paths:
               type: integer
               minimum: 0
 
-  /app/widgetconfigurations/{widgetKey}:
+  /app/widgets/{widgetKey}/configurations:
     get:
       summary: Get the widget configurations
       tags: [Widget configurations]
@@ -882,7 +882,7 @@ paths:
         204:
           description: Widget configuration saved
 
-  /app/widgetconfigurations/{widgetKey}/{id}:
+  /app/widgets/{widgetKey}/configurations/{id}:
     delete:
       summary: Delete a widget configuration
       tags: [Widget configurations]

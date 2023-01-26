@@ -4,10 +4,7 @@
     <h4>
       Save a
       <u>{{ widgetTitle }}</u>
-      configuration for the project
-      <u>
-        {{ $store.state.ProjectPage.projectId }}
-      </u>
+      configuration
     </h4>
 
     <!-- form -->
@@ -22,11 +19,11 @@
             style="flex: 1"
             placeholder="Configuration name"
           />
-          <select v-model="confName">
+          <!-- <select v-model="confName">
             <option v-for="configuration in createdConf" :key="configuration.id">
               {{ configuration.name }}
             </option>
-          </select>
+          </select> -->
         </div>
       </div>
 
@@ -60,7 +57,7 @@
       </div>
       <!-- Controls -->
       <div id="controls">
-        <button
+        <!-- <button
           v-if="confNameAlreadyExists"
           class="warning"
           type="submit"
@@ -74,8 +71,8 @@
             fill="black"
           />
           Update the configuration
-        </button>
-        <button v-else type="submit" @click="save" :disabled="!confName">
+        </button> -->
+        <button type="submit" @click="save" :disabled="!confName">
           <inline-svg
             :src="require('../../../../../../assets/svg/save.svg')"
             width="10"
@@ -102,7 +99,7 @@ export default {
     widgetConf: { type: Object, required: true },
     widgetTitle: { type: String, required: true },
     widgetKey: { type: String, required: true },
-    createdConf: { type: Array, required: true },
+    // createdConf: { type: Array, required: true },
     suggestedConfName: { type: String, default: "" },
   },
   mounted(){
@@ -114,8 +111,8 @@ export default {
       let projectIdWithDpId =
         this.$store.state.ProjectPage.projectId;
 
-      const projectId = projectIdWithDpId.split("|")[0];
-      const dataProviderId = projectIdWithDpId.split("|")[1];
+      const dataProviderId = projectIdWithDpId.split("|")[0];
+      const projectId = projectIdWithDpId.split("|")[1];
 
       this.$backendDialog
         .saveWidgetConfiguration(this.widgetKey, {
@@ -141,12 +138,12 @@ export default {
     },
   },
   computed: {
-    confNameAlreadyExists() {
-      const confWithSameName = this.createdConf.find(
-        (configuration) => configuration.name === this.confName
-      );
-      return confWithSameName !== undefined;
-    },
+    // confNameAlreadyExists() {
+    //   const confWithSameName = this.createdConf.find(
+    //     (configuration) => configuration.name === this.confName
+    //   );
+    //   return confWithSameName !== undefined;
+    // },
   },
 };
 </script>

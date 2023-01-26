@@ -341,25 +341,25 @@ export default {
 
   // Widget configurations
   getWidgetConfigurationsOverview() {
-    return axios.get(apiURL + 'app/widgetconfigurations/')
+    return axios.get(apiURL + 'app/widget-configurations/')
       .then((response) => response.data)
   },
   getWidgetConfigurations(widgetKey) {
     let code = startRequest("Loading widget configurations")
-    return axios.get(apiURL + 'app/widgetconfigurations/' + widgetKey)
+    return axios.get(apiURL + 'app/widgets/' + widgetKey + '/configurations')
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
   saveWidgetConfiguration(widgetKey, { projectId, dataProviderId, configuration, name, description }) {
     let code = startRequest("Saving widget configuration")
-    return axios.post(apiURL + 'app/widgetconfigurations/' + widgetKey,
+    return axios.post(apiURL + 'app/widgets/' + widgetKey + '/configurations',
       { projectId, dataProviderId, configuration, name, description })
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  deleteWidgetConfiguration(configurationId) {
+  deleteWidgetConfiguration(widgetKey, configurationId) {
     let code = startRequest("Deleting widget configuration")
-    return axios.delete(apiURL + 'app/widgetconfigurations/' + configurationId)
+    return axios.delete(apiURL + 'app/widgets/' + widgetKey + '/configurations/' + configurationId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },

@@ -10,6 +10,7 @@
         v-on:add="addWidget"
         v-on:addWithConf="addWidgetWithConf"
         v-on:selected="selectedWidgetNumber = i"
+        v-on:confDeleted="loadWidgetConfigurationsOverview"
       />
     </div>
 
@@ -72,32 +73,6 @@ export default {
       this.$backendDialog.getWidgetConfigurationsOverview().then((configuration) => {
         this.widgetConfigurationsOverview = configuration;
       });
-    },
-    deleteConf({ widgetTitle, name, creationDate }) {
-      let projectId = this.$store.state.ProjectPage.projectId;
-
-      this.$backendDialog
-        .deleteWidgetConfiguration(projectId, {
-          widgetTitle,
-          name,
-          creationDate,
-        })
-        .then((confList) => {
-          this.$backendDialog;
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Configuration deleted",
-          });
-
-          this.widgetConfigurations = confList;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't delete the configuration",
-          });
-        });
     },
   },
   computed: {

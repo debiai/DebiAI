@@ -38,13 +38,16 @@
       </div>
     </div>
     <transition name="scale">
-      <div id="configurations" v-if="displayConfigurations">
-        <WidgetConfiguration
-          v-for="(configuration, i) in configurations"
-          :key="i"
-          :configuration="configuration"
-          v-on:selected="$emit('addWithConf', { widget, configuration })"
-          v-on:delete="deleteConf(configuration.name)"
+      <div id="configurations" class="itemList" v-if="displayConfigurations">
+        <WidgetConfList
+          :widgetKey="widget.componentKey"
+          :configurations="configurations"
+          v-on:selected="
+            (configuration) => {
+              $emit('addWithConf', { widget, configuration });
+            }
+          "
+          v-on:deleted="confDeleted()"
         />
       </div>
     </transition>
@@ -53,14 +56,14 @@
 </template>
 
 <script>
-import WidgetConfiguration from "../widgetConfiguration/WidgetConfiguration.vue";
+import WidgetConfList from "../widgetConfiguration/WidgetConfList.vue";
 import Vue from "vue";
 import VueProgressiveImage from "vue-progressive-image";
 
 Vue.use(VueProgressiveImage);
 
 export default {
-  components: { WidgetConfiguration },
+  components: { WidgetConfList },
   props: {
     widget: { requiered: true, type: Object },
     nbConfigurations: { type: Number, default: 0 },
@@ -68,33 +71,29 @@ export default {
   data() {
     return {
       description: "",
-      displayConfigurations: false,
       configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
+      displayConfigurations: false,
     };
   },
   methods: {
     clicked() {
       this.$emit("selected");
+      this.getConfigurations().then(() => {
+        if (this.configurations.length > 0)
+          this.displayConfigurations = !this.displayConfigurations;
+      });
+    },
+    async getConfigurations() {
       this.configurations = [];
 
-      console.log("clicked");
-
       // Load widget configurations
-      this.$backendDialog
-        .getWidgetConfigurations(this.widget.componentKey)
-        .then((confList) => {
-          console.log("confList", confList);
-          console.log(confList);
-          this.configurations = confList;
-          if (this.configurations && this.configurations.length)
-            this.displayConfigurations = !this.displayConfigurations;
-        });
+      this.configurations = await this.$backendDialog.getWidgetConfigurations(
+        this.widget.componentKey
+      );
     },
-    deleteConf(name) {
-      this.$emit("deleteConf", {
-        widgetKey: this.widget.componentKey,
-        name,
-      });
+    confDeleted() {
+      this.getConfigurations();
+      this.$emit("confDeleted");
     },
   },
 };

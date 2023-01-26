@@ -39,26 +39,26 @@
         <WidgetConfCreator
           :widgetConf="confToSave"
           :widgetTitle="widgetTitle"
-          :createdConf="configurations"
           :widgetKey="widgetKey"
           :suggestedConfName="suggestedConfName"
           @saved="(confName) => $emit('saved', confName)"
           class="card"
         />
       </div>
-      <!-- Widget conconfigurationf selector -->
+      <!-- Widget configuration selector -->
       <div id="WidgetConfSelector" class="card">
-        <h3>Select a widget configuration</h3>
+        <h3>Saved widget configuration</h3>
         <transition name="fade">
-          <div id="configurations">
-            <WidgetConfiguration
-              v-for="(configuration, i) in configurations"
-              :key="i"
-              :configuration="configuration"
-              v-on:selected="$emit('confSelected', configuration)"
-              v-on:delete="deleteConf(configuration.name)"
-            />
-          </div>
+          <WidgetConfList
+            :configurations="configurations"
+            :widgetKey="widgetKey"
+            v-on:selected="
+              (configuration) => {
+                $emit('confSelected', configuration);
+              }
+            "
+            v-on:deleted="loadWidgetConfigurations()"
+          />
         </transition>
       </div>
     </div>
@@ -67,10 +67,10 @@
 
 <script>
 import WidgetConfCreator from "./WidgetConfCreator";
-import WidgetConfiguration from "./WidgetConfiguration";
+import WidgetConfList from "./WidgetConfList";
 
 export default {
-  components: { WidgetConfCreator, WidgetConfiguration },
+  components: { WidgetConfCreator, WidgetConfList },
   props: {
     confToSave: { type: Object, required: true },
     widgetKey: { type: String, required: true },
@@ -101,31 +101,6 @@ export default {
           console.log(e);
         });
     },
-    deleteConf(name) {
-      let projectId = this.$store.state.ProjectPage.projectId;
-
-      this.$backendDialog
-        .deleteWidgetConfiguration(projectId, {
-          widgetKey: this.widgetKey,
-          name,
-        })
-        .then((confList) => {
-          this.$backendDialog;
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Configuration deleted",
-          });
-
-          this.configurations = confList[this.widgetKey];
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't delete the configuration",
-          });
-        });
-    },
   },
 };
 </script>
@@ -150,6 +125,7 @@ export default {
   flex: 1;
 }
 #WidgetConfSelector {
+  min-width: 400px;
   text-align: left;
 }
 #WidgetConfSelector #configurations {
