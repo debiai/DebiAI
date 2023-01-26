@@ -7,13 +7,13 @@ testConfigurantionId = None
 
 
 def delete_configuration(id):
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey + "/" + id
+    url = appUrl + "app/widgets/" + testWidgetKey + "/configurations/" + id
     resp = requests.request("DELETE", url, headers={}, data={})
     assert resp.status_code == 204
 
 
 def test_get_configurations():
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
+    url = appUrl + "app/widgets/" + testWidgetKey + "/configurations"
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     print(configurations)
@@ -29,7 +29,7 @@ def test_get_configurations():
 
 def test_add_configuration():
     global testConfigurantionId
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
+    url = appUrl + "app/widgets/" + testWidgetKey + "/configurations"
     data = {
         "name": "testName",
         "description": "testDescription",
@@ -41,7 +41,6 @@ def test_add_configuration():
     assert resp.status_code == 204
 
     # Check if the configuration was added
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     assert resp.status_code == 200
@@ -64,7 +63,7 @@ def test_add_configuration():
 
 
 def test_get_configurations_overview():
-    url = appUrl + "app/widgetconfigurations/"
+    url = appUrl + "app/widget-configurations"
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     assert resp.status_code == 200
@@ -78,7 +77,7 @@ def test_delete_configuration():
     delete_configuration(testConfigurantionId)
 
     # Check if the configuration was removed
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
+    url = appUrl + "app/widgets/" + testWidgetKey + "/configurations"
     resp = requests.request("GET", url, headers={}, data={})
     configurations = json.loads(resp.text)
     assert resp.status_code == 200
