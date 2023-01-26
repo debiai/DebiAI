@@ -67,7 +67,7 @@
 
 <script>
 import WidgetConfCreator from "./WidgetConfCreator";
-import WidgetConfList from "./WidgetConfList";
+import WidgetConfList from "../widgetConfiguration/WidgetConfList";
 
 export default {
   components: { WidgetConfCreator, WidgetConfList },

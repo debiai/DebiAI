@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import WidgetConfPannel from "./widgetConfiguration/WidgetConfPannel";
+import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 
 import swal from "sweetalert";

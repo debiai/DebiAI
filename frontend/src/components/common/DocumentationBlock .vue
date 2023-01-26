@@ -2,14 +2,16 @@
   <div id="DocumentationBlock">
     <div id="questionMark">
       <b id="i" @mouseenter="show = true" @mouseleave="show = false">i</b>
-      <p
-        id="docBlock"
-        @mouseenter="show = true"
-        @mouseleave="show = false"
-        v-show="show"
-      >
-        <slot />
-      </p>
+      <transition name="fade">
+        <p
+          id="docBlock"
+          @mouseenter="show = true"
+          @mouseleave="show = false"
+          v-show="show"
+        >
+          <slot />
+        </p>
+      </transition>
     </div>
   </div>
 </template>

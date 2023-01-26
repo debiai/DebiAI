@@ -107,7 +107,7 @@ export default {
   },
   methods: {
     save() {
-      // TOTO : update when fixed
+      // TODO : update when fixed
       let projectIdWithDpId =
         this.$store.state.ProjectPage.projectId;
 
