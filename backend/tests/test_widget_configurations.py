@@ -5,10 +5,12 @@ appUrl = "http://localhost:3000/"
 testWidgetKey = "testWidgetKey"
 testConfigurantionId = None
 
+
 def delete_configuration(id):
     url = appUrl + "app/widgetconfigurations/" + testWidgetKey + "/" + id
     resp = requests.request("DELETE", url, headers={}, data={})
     assert resp.status_code == 204
+
 
 def test_get_configurations():
     url = appUrl + "app/widgetconfigurations/" + testWidgetKey
@@ -24,17 +26,16 @@ def test_get_configurations():
         assert "id" in conf
         delete_configuration(conf["id"])
 
+
 def test_add_configuration():
     global testConfigurantionId
-    url = appUrl + "app/widgetconfigurations/" + testWidgetKey 
+    url = appUrl + "app/widgetconfigurations/" + testWidgetKey
     data = {
         "name": "testName",
         "description": "testDescription",
         "projectId": "testProjectId",
         "dataProviderId": "testDataProviderId",
-        "configuration": {
-            "testKey": "testValue"
-        }
+        "configuration": {"testKey": "testValue"},
     }
     resp = requests.request("POST", url, headers={}, json=data)
     assert resp.status_code == 204
@@ -51,12 +52,16 @@ def test_add_configuration():
     assert configurations[0]["projectId"] == data["projectId"]
     assert configurations[0]["dataProviderId"] == data["dataProviderId"]
     assert type(configurations[0]["configuration"]) is dict
-    assert configurations[0]["configuration"]["testKey"] == data["configuration"]["testKey"]
+    assert (
+        configurations[0]["configuration"]["testKey"]
+        == data["configuration"]["testKey"]
+    )
 
     assert "id" in configurations[0]
     assert type(configurations[0]["id"]) is str
     assert len(configurations[0]["id"]) > 0
     testConfigurantionId = configurations[0]["id"]
+
 
 def test_get_configurations_overview():
     url = appUrl + "app/widgetconfigurations/"
@@ -66,6 +71,7 @@ def test_get_configurations_overview():
     assert type(configurations) is dict
     assert testWidgetKey in configurations
     assert configurations[testWidgetKey] == 1
+
 
 def test_delete_configuration():
     # Remove the configuration

@@ -17,4 +17,3 @@ def init():
 
     # Init widget configurations
     widgetConfUtils.setup_widget_configurations()
-
