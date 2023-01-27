@@ -862,7 +862,7 @@ paths:
             properties:
               name:
                 type: string
-                description: Name of the configuration, no special characters
+                description: Name of the configuration
                 maxLength: 50
                 minLength: 1
               projectId:
