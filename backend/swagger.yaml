@@ -382,41 +382,6 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /projects/{projectId}/models/{modelId}/resultsHash:
-    post:
-      summary: Add a results to a model from hash
-      tags: [Model]
-      operationId: controller.pythonModuleDp.add_results_hash
-      parameters:
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: modelId
-          in: path
-          type: string
-          required: true
-        - name: data
-          description: Dictionnary of hash-results
-          in: body
-          required: true
-          schema:
-            type: object
-            required:
-              - results
-            properties:
-              results:
-                type: object
-              expected_results_order:
-                description: order of the given results array, by default is the project result structure
-                type: array
-
-      responses:
-        200:
-          description: model results added
-        404:
-          description: model or project doesn't exist
-
   /projects/{projectId}/models/{modelId}/getModelResults:
     post:
       summary: Get the model results from a sample list
@@ -1052,7 +1017,7 @@ paths:
     get:
       summary: Get the application export methods
       tags: [Export]
-      operationId: controller.exports.get_export_methods
+      operationId: controller.exportMethods.get_export_methods
       responses:
         200:
           description: Export method list
@@ -1083,7 +1048,7 @@ paths:
     post:
       summary: Create an export method for the app
       tags: [Export]
-      operationId: controller.exports.post_export_method
+      operationId: controller.exportMethods.post_export_method
       parameters:
         - name: data
           in: body
@@ -1115,7 +1080,7 @@ paths:
     delete:
       summary: Remove an export method for the app
       tags: [Export]
-      operationId: controller.exports.delete_export_method
+      operationId: controller.exportMethods.delete_export_method
       parameters:
         - name: exportMethodId
           in: path
@@ -1131,7 +1096,7 @@ paths:
     post:
       summary: Export data with an export method
       tags: [Export]
-      operationId: controller.exports.exportData
+      operationId: controller.exportMethods.exportData
       parameters:
         - name: exportMethodId
           in: path
@@ -1149,7 +1114,7 @@ paths:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
-      operationId: controller.exports.exportSelection
+      operationId: controller.exportMethods.exportSelection
       parameters:
         - name: projectId
           in: path

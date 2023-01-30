@@ -787,10 +787,7 @@ export default {
 
         // Goal format :
         // {
-        //   origin: "DebiAI",
         //   type: "2Drange",
-        //   project_id: ProjectID,
-        //   selection_ids: [SelectionID, ...],
         //   colX : colName
         //   colY : colName
         //   x : [min, max],
@@ -814,10 +811,7 @@ export default {
           const rangeY = getRangeFromFilter(filters[1]);
 
           const exportData = {
-            origin: "DebiAI",
             type: "2Drange",
-            project_id: this.$store.state.ProjectPage.projectId,
-            selection_ids: this.$store.state.ProjectPage.selectionsIds,
             colX: colx.label,
             colY: coly.label,
             x: rangeX,
