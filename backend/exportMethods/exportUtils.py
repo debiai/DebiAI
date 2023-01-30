@@ -155,9 +155,8 @@ def exportSelection(projectId, data):
     dataProvider_id = projectId.split("|")[0]
     project_id = projectId.split("|")[1]
 
-    data_provider = data_provider_manager.get_single_data_provider(dataProvider_id)
-
     try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProvider_id)
         project = data_provider.get_project(project_id)
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
