@@ -1,6 +1,7 @@
 import dataProviders.dataProviderManager as dataProviderManager
 
 # import export.exportUtils as exportUtils
+import utils.debiai.widgetConfigurations as widgetConfUtils
 import config.init_config as config
 
 
@@ -13,3 +14,6 @@ def init():
 
     # Init export methods
     # exportUtils.load_export_methods()
+
+    # Init widget configurations
+    widgetConfUtils.setup_widget_configurations()

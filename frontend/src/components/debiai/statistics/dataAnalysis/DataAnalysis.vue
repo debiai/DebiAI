@@ -43,7 +43,7 @@
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
-          ({ widgetComponent, conf }) => addWidget(widgetComponent, null, conf)
+          ({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
         "
       />
     </modal>
@@ -98,12 +98,13 @@
         :data-gs-max-height="component.layout.maxHeight"
       >
         <Widget
+          :widgetKey="component.key"
           :title="component.name"
           :simple="component.simple"
-          :conf="component.conf"
+          :configuration="component.configuration"
           :index="component.id"
           v-on:remove="removeWidget(component)"
-          v-on:copy="(conf) => copyWidget({ component, conf })"
+          v-on:copy="(configuration) => copyWidget({ component, configuration })"
         >
           <component
             :is="component.key"
@@ -351,13 +352,13 @@ export default {
         });
       });
     },
-    addWidget(compKey, layout, conf = null) {
+    addWidget(compKey, layout, configuration = null) {
       this.widgetCatalog = false;
 
       // get layout
       let component = componentsGridStackData.createWidget(compKey);
       if (layout) component.layout = { ...component.layout, ...layout };
-      if (conf) component.conf = conf;
+      if (configuration) component.configuration = configuration;
 
       // Add the component to the grid
       this.components.push(component);
@@ -371,12 +372,12 @@ export default {
       this.grid.removeWidget(document.getElementById(component.id), false);
       this.components = this.components.filter((c) => c.id !== component.id);
     },
-    copyWidget({ component, conf }) {
+    copyWidget({ component, configuration }) {
       // Find the layout of the component
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 
       // Create the componen with its configuration if possible
-      this.addWidget(component.key, gsComp, conf);
+      this.addWidget(component.key, gsComp, configuration);
     },
     getLayout() {
       if (this.grid) {
@@ -429,7 +430,7 @@ export default {
     saveLayout() {
       const layout = this.getLayout();
       if (layout) {
-        // Save curent conf into local storage
+        // Save curent configuration into local storage
         window.localStorage.setItem("gridStackLayout", layout);
       }
     },
@@ -452,7 +453,7 @@ export default {
         if (validate) {
           const layout = this.getLayout();
           if (layout) {
-            // Save curent conf into local storage
+            // Save curent configuration into local storage
             window.localStorage.setItem("gridStackDefaultLayout", layout);
             this.$store.commit("sendMessage", {
               title: "success",

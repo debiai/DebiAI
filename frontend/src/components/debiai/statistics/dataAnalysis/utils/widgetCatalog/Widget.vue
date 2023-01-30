@@ -7,7 +7,12 @@
       @dblclick="$emit('add', widget)"
     >
       <!-- Widget icon image -->
-      <progressive-img :src="require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)" class="icon" />
+      <progressive-img
+        :src="
+          require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)
+        "
+        class="icon"
+      />
 
       <div id="title">
         <div class="name">{{ widget.name }}</div>
@@ -18,11 +23,11 @@
         <!-- configurations -->
         <transition name="fade">
           <span
-            v-if="configurations && Object.keys(configurations).length > 0"
+            v-if="nbConfigurations && nbConfigurations > 0"
             style="display: flex; align-items: center; padding: 5px"
             title="Custom settings"
           >
-            {{ Object.keys(configurations).length }}
+            {{ nbConfigurations }}
             <inline-svg
               :src="require('../../../../../../assets/svg/preset.svg')"
               width="18"
@@ -33,13 +38,16 @@
       </div>
     </div>
     <transition name="scale">
-      <div id="configurations" v-if="displayConfigurations">
-        <WidgetConfiguration
-          v-for="(conf, i) in configurations"
-          :key="i"
-          :conf="conf"
-          v-on:selected="$emit('addWithConf', { widget, conf })"
-          v-on:delete="deleteConf(conf.name)"
+      <div id="configurationList" class="itemList" v-if="displayConfigurations">
+        <WidgetConfList
+          :widgetKey="widget.componentKey"
+          :configurations="configurations"
+          v-on:selected="
+            (configuration) => {
+              $emit('addWithConf', { widget, configuration });
+            }
+          "
+          v-on:deleted="confDeleted()"
         />
       </div>
     </transition>
@@ -48,35 +56,44 @@
 </template>
 
 <script>
-import WidgetConfiguration from "../widgetConfiguration/WidgetConfiguration.vue";
+import WidgetConfList from "../widgetConfiguration/WidgetConfList.vue";
 import Vue from "vue";
 import VueProgressiveImage from "vue-progressive-image";
 
 Vue.use(VueProgressiveImage);
 
 export default {
-  components: { WidgetConfiguration },
+  components: { WidgetConfList },
   props: {
     widget: { requiered: true, type: Object },
-    configurations: { type: Object },
+    nbConfigurations: { type: Number, default: 0 },
   },
   data() {
     return {
       description: "",
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
       displayConfigurations: false,
     };
   },
   methods: {
     clicked() {
       this.$emit("selected");
-      if (this.configurations && Object.keys(this.configurations).length)
-        this.displayConfigurations = !this.displayConfigurations;
-    },
-    deleteConf(name) {
-      this.$emit("deleteConf", {
-        widgetTitle: this.widget.componentKey,
-        name,
+      this.getConfigurations().then(() => {
+        if (this.configurations.length > 0)
+          this.displayConfigurations = !this.displayConfigurations;
       });
+    },
+    async getConfigurations() {
+      this.configurations = [];
+
+      // Load widget configurations
+      this.configurations = await this.$backendDialog.getWidgetConfigurations(
+        this.widget.componentKey
+      );
+    },
+    confDeleted() {
+      this.getConfigurations();
+      this.$emit("confDeleted");
     },
   },
 };
@@ -125,6 +142,13 @@ export default {
   grid-area: description;
   text-align: left;
   opacity: 0.6;
+}
+
+#configurationList {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) inset;
+  margin: 5px;
+  padding: 5px;
 }
 .control {
   grid-area: control;
