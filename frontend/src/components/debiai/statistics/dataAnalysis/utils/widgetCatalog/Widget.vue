@@ -38,7 +38,7 @@
       </div>
     </div>
     <transition name="scale">
-      <div id="configurations" class="itemList" v-if="displayConfigurations">
+      <div id="configurationList" class="itemList" v-if="displayConfigurations">
         <WidgetConfList
           :widgetKey="widget.componentKey"
           :configurations="configurations"
@@ -142,6 +142,13 @@ export default {
   grid-area: description;
   text-align: left;
   opacity: 0.6;
+}
+
+#configurationList {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) inset;
+  margin: 5px;
+  padding: 5px;
 }
 .control {
   grid-area: control;

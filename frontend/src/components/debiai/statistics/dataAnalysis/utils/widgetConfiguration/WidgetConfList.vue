@@ -13,19 +13,6 @@
         />
       </div>
     </div>
-    <div v-if="sameDataProviderConfigurations.length > 0">
-      <h4 class="configurationType">Data provider configurations:</h4>
-      <div class="itemList">
-        <WidgetConf
-          v-for="configuration in sameDataProviderConfigurations"
-          :key="configuration.id"
-          :configuration="configuration"
-          :widgetKey="widgetKey"
-          v-on:selected="$emit('selected', configuration)"
-          v-on:deleted="$emit('deleted')"
-        />
-      </div>
-    </div>
     <div v-if="otherConfigurations.length > 0">
       <h4 class="configurationType">Other configurations:</h4>
       <div class="itemList">
@@ -38,6 +25,15 @@
           v-on:deleted="$emit('deleted')"
         />
       </div>
+    </div>
+
+    <div
+      v-if="
+        sameProjectConfigurations.length === 0 &&
+        otherConfigurations.length === 0
+      "
+    >
+      <h4 class="configurationType">No configuration saved</h4>
     </div>
   </div>
 </template>
@@ -64,18 +60,6 @@ export default {
       );
     },
 
-    sameDataProviderConfigurations() {
-      // TODO : update when fixed
-      let projectIdWithDpId = this.$store.state.ProjectPage.projectId;
-      const dataProviderId = projectIdWithDpId.split("|")[0];
-      const projectId = projectIdWithDpId.split("|")[1];
-
-      return this.configurations.filter(
-        (conf) =>
-          conf.dataProviderId === dataProviderId && conf.projectId !== projectId
-      );
-    },
-
     otherConfigurations() {
       // TODO : update when fixed
       let projectIdWithDpId = this.$store.state.ProjectPage.projectId;
@@ -84,7 +68,7 @@ export default {
 
       return this.configurations.filter(
         (conf) =>
-          conf.projectId !== projectId && conf.dataProviderId !== dataProviderId
+          conf.dataProviderId !== dataProviderId || conf.projectId !== projectId
       );
     },
   },
