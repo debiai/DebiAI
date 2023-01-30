@@ -29,14 +29,30 @@ function updateRequestProgress(code, progress) {
 function endRequest(code) {
   store.commit("endRequest", code)
 }
+async function getDataProviderLimit(dataProviderId) {
+  try {
+    let dataProviderInfo = await backendDialog.default.getSingleDataProvider(dataProviderId);
 
+    const dataProviderLimit = {
+        maxIdLimit : dataProviderInfo.maxSampleIdByRequest || 10000,
+        maxDataLimit : dataProviderInfo.maxSampleDataByRequest || 2000,
+        maxResultLimit : dataProviderInfo.maxResultByRequest || 5000
+    }
+
+    return dataProviderLimit;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+
+}
 // Get project samples Id list functions
 async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selectionIntersection = false, modelIds = [], commonResults = false) {
   // Returns the list of samples id for a project
   // this need to be done in a sequential way to avoid
   // too big requests
-
-  const accepteSize = 10000
+  const accepteSize = projectMetadata.dataProvider.maxIdLimit;
   const projectNbSamples = projectMetadata.nbSamples
 
   if (projectNbSamples === 0) { return [] }
@@ -254,6 +270,11 @@ async function loadData(projectId, selectionIds, selectionIntersection) {
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: false })
 
+  //Temporary Use to get data Provider Id, TODO : CHANGE ID WHEN 
+  const dataProviderId = projectId.split("|");
+  let dataProviderInfo = await getDataProviderLimit(dataProviderId[0]);
+  projectMetadata['dataProvider'] = dataProviderInfo;
+
   // Get the samples to pull
   let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection)
 
@@ -280,6 +301,10 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
 
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata(projectId, { considerResults: true })
+  //Temporary Use to get data Provider Id, TODO : CHANGE ID WHEN 
+  const dataProviderId = projectId.split("|");
+  let dataProviderInfo = await getDataProviderLimit(dataProviderId[0]);
+  projectMetadata['dataProvider'] = dataProviderInfo;
 
   // Get the samples ID to pull
   let samplesToPull = await getProjectSamplesIdList(projectMetadata, selectionIds, selectionIntersection, modelIds, commonResults)
