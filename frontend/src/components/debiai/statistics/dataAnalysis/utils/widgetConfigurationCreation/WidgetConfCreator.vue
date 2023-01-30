@@ -4,10 +4,7 @@
     <h4>
       Save a
       <u>{{ widgetTitle }}</u>
-      configuration for the project
-      <u>
-        {{ $store.state.ProjectPage.projectId }}
-      </u>
+      configuration
     </h4>
 
     <!-- form -->
@@ -22,11 +19,11 @@
             style="flex: 1"
             placeholder="Configuration name"
           />
-          <select v-model="confName">
-            <option v-for="conf in createdConf" :key="conf.name">
-              {{ conf.name }}
+          <!-- <select v-model="confName">
+            <option v-for="configuration in createdConf" :key="configuration.id">
+              {{ configuration.name }}
             </option>
-          </select>
+          </select> -->
         </div>
       </div>
 
@@ -46,7 +43,7 @@
         </div>
       </div>
 
-      <!-- widget conf -->
+      <!-- widget configuration -->
       <div class="data" id="widgetConf">
         <div class="name">Configuration</div>
         <div class="value">
@@ -60,7 +57,7 @@
       </div>
       <!-- Controls -->
       <div id="controls">
-        <button
+        <!-- <button
           v-if="confNameAlreadyExists"
           class="warning"
           type="submit"
@@ -74,8 +71,8 @@
             fill="black"
           />
           Update the configuration
-        </button>
-        <button v-else type="submit" @click="save" :disabled="!confName">
+        </button> -->
+        <button type="submit" @click="save" :disabled="!confName">
           <inline-svg
             :src="require('../../../../../../assets/svg/save.svg')"
             width="10"
@@ -101,7 +98,8 @@ export default {
   props: {
     widgetConf: { type: Object, required: true },
     widgetTitle: { type: String, required: true },
-    createdConf: { type: Object, required: true },
+    widgetKey: { type: String, required: true },
+    // createdConf: { type: Array, required: true },
     suggestedConfName: { type: String, default: "" },
   },
   mounted(){
@@ -109,12 +107,17 @@ export default {
   },
   methods: {
     save() {
-      let projectId =
+      // TODO : update when fixed
+      let projectIdWithDpId =
         this.$store.state.ProjectPage.projectId;
 
+      const dataProviderId = projectIdWithDpId.split("|")[0];
+      const projectId = projectIdWithDpId.split("|")[1];
+
       this.$backendDialog
-        .saveWidgetConfiguration(projectId, {
-          widgetTitle: this.widgetTitle,
+        .saveWidgetConfiguration(this.widgetKey, {
+          projectId: projectId,
+          dataProviderId : dataProviderId,
           configuration: this.widgetConf,
           name: this.confName,
           description: this.confDescription,
@@ -135,9 +138,12 @@ export default {
     },
   },
   computed: {
-    confNameAlreadyExists() {
-      return this.confName in this.createdConf;
-    },
+    // confNameAlreadyExists() {
+    //   const confWithSameName = this.createdConf.find(
+    //     (configuration) => configuration.name === this.confName
+    //   );
+    //   return confWithSameName !== undefined;
+    // },
   },
 };
 </script>

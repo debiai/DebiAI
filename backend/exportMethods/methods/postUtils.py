@@ -1,4 +1,4 @@
-from utils.export.exportClass import ExportType, ExportMethod
+from exportMethods.exportClass import ExportType, ExportMethod
 import requests
 
 #############################################################################
@@ -55,7 +55,5 @@ class PostExportMethod(ExportMethod):
         except Exception as e:
             print("Post export method : Error sending post request", e)
             raise Exception(
-                "Post export method : Error sending post request on url '"
-                + self.url
-                + "'"
+                "Post export method : Error sending post request on url" + str(e)
             )

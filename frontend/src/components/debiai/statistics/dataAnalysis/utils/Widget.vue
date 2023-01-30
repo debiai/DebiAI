@@ -1,11 +1,13 @@
 <template>
   <div class="card">
-    <!-- Wigdet conf load or save modal -->
+    <!-- Wigdet configuration load or save modal -->
     <modal v-if="confSettings">
       <WidgetConfPannel :widgetTitle="title" :widgetName="name" :confToSave="confToSave"
-        :suggestedConfName="suggestedConfName" @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
+        :suggestedConfName="suggestedConfName" :widgetKey="widgetKey"
+        @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
         @setWidgetName="setName" />
     </modal>
+
     <!-- Export data modal -->
     <modal v-if="exportModal">
       <DataExportMenu :dataToExport="exportData" @exported="exportModal = false" @cancel="exportModal = false" />
@@ -80,7 +82,7 @@
           :title="'Start filtering samples with the ' + title + ' widget'" @click="startFiltering = !startFiltering">
           <inline-svg :src="require('../../../../../assets/svg/filter.svg')" width="14" height="14" fill="white" />
         </button>
-        <!-- save conf btn -->
+        <!-- save configuration btn -->
         <button v-if="canSaveConfiguration" :class="'info ' + (confAsChanged ? 'highlighted' : '')"
           :title="'Save ' + title + ' widget configuration'" @click="saveConfiguration">
           <inline-svg :src="
@@ -113,7 +115,7 @@
 </template>
 
 <script>
-import WidgetConfPannel from "./widgetConfiguration/WidgetConfPannel";
+import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 
 import swal from "sweetalert";
@@ -122,10 +124,11 @@ export default {
   name: "Widget",
   components: { WidgetConfPannel, DataExportMenu },
   props: {
+    widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     simple: { type: Boolean, default: false },
-    conf: { type: Object },
+    configuration: { type: Object },
   },
   data() {
     return {
@@ -179,12 +182,12 @@ export default {
         if ("selectDataOnPlot" in slotCom.componentInstance)
           this.canFilterSamples = true;
 
-        // Apply given conf
-        if (this.canSaveConfiguration && this.conf) this.setConf(this.conf);
+        // Apply given configuration
+        if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
         this.loading = false;
       } else {
         // No component instance
-        // try to get the conf from the slot after a delay
+        // try to get the configuration from the slot after a delay
         setTimeout(() => this.getWidgetProperties(), 20);
       }
     },
@@ -233,18 +236,18 @@ export default {
     },
     copy() {
       if (this.canSaveConfiguration) {
-        // Load conf to copy
+        // Load configuration to copy
         let slotCom = this.$slots.default[0].componentInstance;
-        let conf = slotCom.getConf();
-        this.$emit("copy", { conf, name: this.name + " copy" });
+        let configuration = slotCom.getConf();
+        this.$emit("copy", { configuration, name: this.name + " copy" });
       } else this.$emit("copy");
     },
 
-    // Conf
-    setConf(conf) {
+    // configuration
+    setConf(configuration) {
       let slotCom = this.$slots.default[0];
-      slotCom.componentInstance.setConf(conf.conf);
-      this.name = conf.name;
+      slotCom.componentInstance.setConf(configuration.configuration);
+      this.name = configuration.name;
       this.confSettings = false;
       setTimeout(() => {
         this.confAsChanged = false;
@@ -255,7 +258,7 @@ export default {
       this.confSettings = false;
     },
     saveConfiguration() {
-      // Load conf to save
+      // Load configuration to save
       let slotCom = this.$slots.default[0].componentInstance;
       this.confToSave = slotCom.getConf();
 
@@ -265,7 +268,7 @@ export default {
       else if ("getConfNameSuggestion" in slotCom)
         this.suggestedConfName = slotCom.getConfNameSuggestion();
 
-      // Open the conf creator modal
+      // Open the configuration creator modal
       this.confSettings = true;
     },
     confSaved(confName) {
@@ -289,7 +292,20 @@ export default {
 
     // Export
     setExport(exportData) {
-      this.exportData = exportData;
+      const projectIdAndDpId =this.$store.state.ProjectPage.projectId
+      const projectId = projectIdAndDpId.split('|')[0]
+      const dataProviderId = projectIdAndDpId.split('|')[1]
+      const selectionIds = this.$store.state.ProjectPage.selectionsIds
+
+      // Add project and data provider id to the export data
+      this.exportData = {
+        origin: "DebiAI",
+        project_id: projectId,
+        data_provider_id: dataProviderId,
+        selection_ids: selectionIds,
+        ...exportData,
+      }
+
     },
 
     startExport() {

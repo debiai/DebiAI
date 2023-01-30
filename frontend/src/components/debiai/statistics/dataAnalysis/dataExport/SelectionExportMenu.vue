@@ -74,6 +74,10 @@ export default {
   components: { ExportMethodSelection },
   name: "SelectionExportMenu",
   data() {
+    // TODO: Remove data provider id split when the backend will be updated
+    const projectIdAndDataProviderId =this.$store.state.ProjectPage.projectId
+    const projectId = projectIdAndDataProviderId.split('|')[0]
+    const dataProviderId = projectIdAndDataProviderId.split('|')[1]
     return {
       selectionName: "DebiAI Selection",
       extraValue: null,
@@ -82,7 +86,8 @@ export default {
       selectionToExportDisplay: {
         origin: 'DebiAI',
         type: 'selection',
-        project_id: this.$store.state.ProjectPage.projectId,
+        project_id: projectId,
+        data_provider_id: dataProviderId,
         selection_name: 'DebiAI Selection',
         date: 'timestamp',
         sample_ids: [{ id: 'sample id 1' }, { id: 'sample id 2' }, { id: '...' }],
