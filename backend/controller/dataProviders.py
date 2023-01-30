@@ -28,6 +28,17 @@ def get_data_providers():
     return providers_formatted, 200
 
 
+def get_data_provider_info(dataProviderId):
+
+    try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+        info = data_provider.get_info()
+
+        return info, 200
+    except DataProviderException.DataProviderException as e:
+        return e.message, e.status_code
+
+
 def post_data_providers(data):
     # Check if we are allowed to add data providers from the config file
     config = get_config()
@@ -50,7 +61,7 @@ def post_data_providers(data):
         else:
             return "Invalid data provider type", 400
 
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
 
@@ -65,6 +76,6 @@ def delete_data_providers(dataProviderId):
     # Delete data provider
     try:
         data_provider_manager.delete(dataProviderId)
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code

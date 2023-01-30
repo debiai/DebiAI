@@ -1,8 +1,17 @@
 <template>
   <div id="DocumentationBlock">
     <div id="questionMark">
-      <b id="i">i</b>
-      <p id="docBlock"><slot /></p>
+      <b id="i" @mouseenter="show = true" @mouseleave="show = false">i</b>
+      <transition name="fade">
+        <p
+          id="docBlock"
+          @mouseenter="show = true"
+          @mouseleave="show = false"
+          v-show="show"
+        >
+          <slot />
+        </p>
+      </transition>
     </div>
   </div>
 </template>
@@ -10,30 +19,29 @@
 <script>
 export default {
   name: "DocumentationBlock",
+  props: {
+    followCursor: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      show: false,
+    };
+  },
+  mounted() {
+    if (this.followCursor) {
+      this.$el.addEventListener("mousemove", (e) => {
+        this.$el.querySelector("#docBlock").style.left = e.clientX + 10 + "px";
+        this.$el.querySelector("#docBlock").style.top = e.clientY + 10 + "px";
+      });
+    }
+  },
 };
 </script>
 
 <style scoped>
-#docBlock {
-  position: absolute;
-  padding: 20px;
-  margin: 0px;
-  border: dashed 1px var(--infoDark);
-  border-radius: 10px;
-  color: var(--infoDark);
-  background-color: rgb(213, 251, 255);
-  text-align: left;
-  z-index: 10;
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s, opacity 0.1s linear;
-  font-size: initial;
-  text-decoration: none;
-  align-self: flex-start;
-  font-weight: normal;
-  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-}
 #questionMark #i {
   margin: 0 7px 0 7px;
   cursor: pointer;
@@ -50,8 +58,30 @@ export default {
   text-decoration: none;
   font-size: initial;
 }
-#questionMark:hover > #docBlock {
+
+/* #questionMark:hover > #docBlock {
   visibility: visible;
   opacity: 1;
+} */
+
+#docBlock {
+  /* opacity: 0; */
+  /* visibility: hidden; */
+  position: absolute;
+  padding: 20px;
+  margin: 0px;
+  border: dashed 1px var(--infoDark);
+  border-radius: 10px;
+  color: var(--infoDark);
+  background-color: rgb(213, 251, 255);
+  text-align: left;
+  z-index: 1000;
+  /* transition: visibility 0s, opacity 0.1s linear; */
+  font-size: initial;
+  text-decoration: none;
+  align-self: flex-start;
+  font-weight: normal;
+  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
 }
 </style>

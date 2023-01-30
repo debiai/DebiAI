@@ -16,7 +16,7 @@
       </span>
     </div>
     <div id="content">
-      <!-- Widget name form & conf creator -->
+      <!-- Widget name form & configuration creator -->
       <div id="left">
         <!-- Change widget name form -->
         <form id="widgetNameForm" class="card">
@@ -35,29 +35,30 @@
             </button>
           </span>
         </form>
-        <!-- Widget conf creator -->
+        <!-- Widget configuration creator -->
         <WidgetConfCreator
           :widgetConf="confToSave"
           :widgetTitle="widgetTitle"
-          :createdConf="configurations"
+          :widgetKey="widgetKey"
           :suggestedConfName="suggestedConfName"
           @saved="(confName) => $emit('saved', confName)"
           class="card"
         />
       </div>
-      <!-- Widget conf selector -->
+      <!-- Widget configuration selector -->
       <div id="WidgetConfSelector" class="card">
-        <h3>Select a widget configuration</h3>
+        <h3>Saved widget configuration</h3>
         <transition name="fade">
-          <div id="configurations">
-            <WidgetConfiguration
-              v-for="(conf, i) in configurations"
-              :key="i"
-              :conf="conf"
-              v-on:selected="$emit('confSelected', conf)"
-              v-on:delete="deleteConf(conf.name)"
-            />
-          </div>
+          <WidgetConfList
+            :configurations="configurations"
+            :widgetKey="widgetKey"
+            v-on:selected="
+              (configuration) => {
+                $emit('confSelected', configuration);
+              }
+            "
+            v-on:deleted="loadWidgetConfigurations()"
+          />
         </transition>
       </div>
     </div>
@@ -66,12 +67,13 @@
 
 <script>
 import WidgetConfCreator from "./WidgetConfCreator";
-import WidgetConfiguration from "./WidgetConfiguration";
+import WidgetConfList from "../widgetConfiguration/WidgetConfList";
 
 export default {
-  components: { WidgetConfCreator, WidgetConfiguration },
+  components: { WidgetConfCreator, WidgetConfList },
   props: {
     confToSave: { type: Object, required: true },
+    widgetKey: { type: String, required: true },
     widgetTitle: { type: String, required: true },
     widgetName: { type: String, default: "" },
     suggestedConfName: { type: String, default: "" },
@@ -79,7 +81,7 @@ export default {
   data() {
     return {
       newWidgetName: "",
-      configurations: {},
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
     };
   },
   created() {
@@ -88,43 +90,15 @@ export default {
   },
   methods: {
     loadWidgetConfigurations() {
-      this.configurations = {};
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      this.configurations = [];
 
       this.$backendDialog
-        .getWidgetConfiguration(projectId)
+        .getWidgetConfigurations(this.widgetKey)
         .then((confList) => {
-          this.configurations = confList[this.widgetTitle] || {};
+          this.configurations = confList;
         })
         .catch((e) => {
           console.log(e);
-        });
-    },
-    deleteConf(name) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
-
-      this.$backendDialog
-        .deleteWidgetConfiguration(projectId, {
-          widgetTitle: this.widgetTitle,
-          name,
-        })
-        .then((confList) => {
-          this.$backendDialog;
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Configuration deleted",
-          });
-
-          this.configurations = confList[this.widgetTitle];
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't delete the configuration",
-          });
         });
     },
   },
@@ -151,6 +125,7 @@ export default {
   flex: 1;
 }
 #WidgetConfSelector {
+  min-width: 400px;
   text-align: left;
 }
 #WidgetConfSelector #configurations {
