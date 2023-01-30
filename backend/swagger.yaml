@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.19.1
+  version: 0.20.0
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -77,7 +77,37 @@ paths:
           description: The Data provider id must not be null
         404:
           description: The data provider doesn't exist
-          
+  
+    get:
+      summary: Get general informations about a data provider, like his version or the max number sample for each type of request
+      tags: [Data Providers]
+      operationId: controller.dataProviders.get_data_provider_info
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The info of the data provider
+          schema:
+            type: object
+            required:
+              - version
+            properties:
+              version:
+                type: string
+              maxSampleIdByRequest:
+                type: integer
+              maxSampleDataByRequest:
+                type: integer
+              maxResultByRequest:
+                type: integer
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+  
   # Projects
   /projects:
     get:
@@ -459,7 +489,7 @@ paths:
               commonResults:
                 type: boolean
                 description: To get only the the samples that have been evaluated on a common sample
-              
+
               from:
                 type: integer
                 description: Where we start the selection in case of over 10 000 samples
@@ -1554,7 +1584,7 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/block"
-  
+
   # Data providers
   dataProvider:
     type: object
@@ -1567,6 +1597,3 @@ definitions:
         type: boolean
       type:
         type: string
-
-
-
