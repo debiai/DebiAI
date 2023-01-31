@@ -124,7 +124,7 @@ def init_config():
 
         # Deal with Data Providers in env variables
         if "DEBIAI_WEB_DATA_PROVIDER" in env_var:
-            # Env var format: DEBIAI_DATA_PROVIDER_<name>=<url>
+            # Env var format: DEBIAI_WEB_DATA_PROVIDER_<name>=<url>
             if len(env_var.split("_")) != 5:
                 print(
                     "Environment variables: invalid environment variable '"
@@ -134,7 +134,7 @@ def init_config():
                 print("Expected format: DEBIAI_WEB_DATA_PROVIDER_<name>=<url>")
                 continue
 
-            data_provider_name = env_var.split("_")[3]
+            data_provider_name = env_var.split("_")[4]
             data_provider_url = os.environ[env_var]
 
             if len(data_provider_name) == 0:
