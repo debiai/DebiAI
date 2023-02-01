@@ -20,8 +20,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - name: Check that the version in back and front are the same
-        uses: actions/checkout@v2
         run: |
           cd frontend
           FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
@@ -34,13 +35,22 @@ jobs:
           echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
           echo "::set-env name=BRANCH_VERSION::$FRONTEND_VERSION"
 
-      - name: Check that the version is greater than the previous commit version
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           path: "main"
+
+      - name: Check that the version is greater than the previous commit version
         run: |
+          ls
           cd frontend
+          ls
+          cat package.json
           PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+
+          if [ "$PREVIOUS_VERSION" == "" ]; then
+            echo "Version mismatch: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
+            exit 1
+          fi
 
           if [ "$PREVIOUS_VERSION" == "$BRANCH_VERSION" ]; then
             echo "Version match: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
