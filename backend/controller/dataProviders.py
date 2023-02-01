@@ -42,7 +42,7 @@ def get_data_provider_info(dataProviderId):
 def post_data_providers(data):
     # Check if we are allowed to add data providers from the config file
     config = get_config()
-    creation_allowed = config["DATA_PROVIDERS"]["creation"]
+    creation_allowed = config["DATA_PROVIDERS_CONFIG"]["creation"]
     if not creation_allowed:
         return "Data provider creation is not allowed", 403
 
@@ -61,7 +61,7 @@ def post_data_providers(data):
         else:
             return "Invalid data provider type", 400
 
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
 
@@ -69,13 +69,13 @@ def post_data_providers(data):
 def delete_data_providers(dataProviderId):
     # Check if we are allowed to add data providers from the config file
     config = get_config()
-    deletion_allowed = config["DATA_PROVIDERS"]["deletion"]
+    deletion_allowed = config["DATA_PROVIDERS_CONFIG"]["deletion"]
     if not deletion_allowed:
         return "Data provider deletion is not allowed", 403
 
     # Delete data provider
     try:
         data_provider_manager.delete(dataProviderId)
-        return "", 204
+        return None, 204
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code

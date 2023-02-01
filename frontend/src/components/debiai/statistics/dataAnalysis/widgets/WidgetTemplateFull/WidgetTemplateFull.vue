@@ -138,14 +138,10 @@ export default {
     // Exporting data
     // You can emit the following event to export and data with an export method
     this.$parent.$emit("setExport", {
-      // Some standard DebAI export data:
-      origin: "DebiAI",
+      // The only required field is the export type
       type: "MyDataExportType (bounding box, 1Drange, 2Drange, IdList, csv, ...)",
-      project_id: this.$store.state.ProjectPage.projectId,
-      selection_ids: this.$store.state.ProjectPage.selectionsIds,
 
-      // Your data:
-      // Make sure the object is a valid JSON
+      // Then you can add any data you want, just make sure the object is a valid JSON
       myData1: 0,
       myData2: "data",
       myData3: [null, null, null]

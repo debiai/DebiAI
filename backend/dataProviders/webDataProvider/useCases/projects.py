@@ -20,6 +20,12 @@ def get_all_projects_from_data_provider(url, name):
         else:
             nbSamples = None
 
+        if "nbModels" not in projects[project_id]:
+            projects[project_id]["nbModels"] = 0
+
+        if "nbSelections" not in projects[project_id]:
+            projects[project_id]["nbSelections"] = 0
+
         project_list.append(
             {
                 "id": project_id,
@@ -48,6 +54,8 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     project = api.get_project(url, id_project)
 
     blockInfo = format_collumns_project_overview(project)
+
+    # TODO: prevent crash if no selections or models routes in data provider
     selections = get_project_selections(url, id_project)
     models = get_models_info(url, id_project)
 

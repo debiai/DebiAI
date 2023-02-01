@@ -236,9 +236,18 @@ export default {
   methods: {
     loadProjects() {
       this.projects = null;
-      this.$backendDialog.getProjects().then((projects) => {
-        this.projects = projects.sort((a, b) => b.updateDate - a.updateDate);
-      });
+      this.$backendDialog
+        .getProjects()
+        .then((projects) => {
+          this.projects = projects.sort((a, b) => b.updateDate - a.updateDate);
+        })
+        .catch((e) => {
+          console.error(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Unexpected error while loading projects",
+          });
+        });
     },
     selectProject(projectId) {
       this.$router.push({

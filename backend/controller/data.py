@@ -15,9 +15,9 @@ def get_data(projectId, data):
     projectId = projectId.split("|")[1]
     sampleIds = data["sampleIds"]
 
-    # Find the data provider
-    data_provider = data_provider_manager.get_single_data_provider(data_provider_id)
     try:
+        # Find the data provider
+        data_provider = data_provider_manager.get_single_data_provider(data_provider_id)
 
         # Ask for the data
         samples = data_provider.get_samples(projectId, sampleIds)

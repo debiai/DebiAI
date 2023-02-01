@@ -74,7 +74,7 @@ export default {
       selectionIntersection: true,
       nbSelectedSamples: 0,
       //    Models
-      selectedModelIds: [],
+      selectedModelIds: [], // TODO: fix bug when starting analysis with a model selected, if there is an error, the model is still in the list but look unselected
       commomModelResults: true,
       nbEvaluatedSamples: 0,
       nbResults: 0,
