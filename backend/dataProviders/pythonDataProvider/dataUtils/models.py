@@ -185,7 +185,7 @@ def add_results_dict(project_id, modelId, data):
     giv_exp_res = {}
     for given_expected_result in expected_results_order:
         result_expected = False
-        for (i, expected_result) in enumerate(result_structure):
+        for i, expected_result in enumerate(result_structure):
             if given_expected_result == expected_result["name"]:
                 result_expected = True
 
@@ -241,7 +241,6 @@ def __check_blocks_of_tree_exists(
     path: str,
     resultsToAdd: dict,
 ):
-
     # Check block exist in the data
     blockInfo = tree.findBlockInfo(project_id, path)
     if not blockInfo:

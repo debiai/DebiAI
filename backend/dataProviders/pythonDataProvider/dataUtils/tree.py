@@ -64,7 +64,6 @@ def add_block_tree(projectId, data):
     sampleLevel = len(bli) - 1
     hashToSave = {}
     for block in blockToAdd:
-
         if block["level"] == sampleLevel:
             # Sample level, creating hash
             sampleHash = hash.hash(block["path"])
@@ -92,7 +91,7 @@ def getBlockInfo(blockLevel, blockInfo):
 
     for dataType in pythonModuleUtils.DATA_TYPES:
         if dataType in blockLevel:
-            for (i, column) in enumerate(blockLevel[dataType]):
+            for i, column in enumerate(blockLevel[dataType]):
                 ret[column["name"]] = blockInfo[dataType][i]
 
     return ret
@@ -195,7 +194,6 @@ def addResultsToTree(projectId, tree: list, modelIds: list, commonOnly: bool) ->
 
 
 def __addResultsToABlock(block, modelResults, sampleLevel, commonOnly):
-
     if block["level"] == sampleLevel:
         # Adding the results to the sample
         block["results"] = {}
@@ -231,7 +229,6 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
 
 
 def findBlockInfo(projectId, blockPath):
-
     curPath = DATA_PATH + projectId + "/blocks/" + blockPath
 
     if not os.path.isdir(curPath):
@@ -287,7 +284,7 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
 
             # TODO Implement column default
 
-            for (i, col) in enumerate(levelInfo[type_]):
+            for i, col in enumerate(levelInfo[type_]):
                 if col["type"] == "integer" and type(block[type_][i]) is str:
                     raise KeyError(
                         "Col "
@@ -298,7 +295,6 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
 
 
 def __createBlock(projectId, block, level, parentPath):
-
     blockPath = parentPath + block["name"] + "/"
 
     debiaiBlock = {

@@ -5,11 +5,6 @@ import exportMethods.exportUtils as exportUtils
 # Export API Management
 #############################################################################
 
-# exports.get_export_methods
-# exports.post_export_method
-# exports.delete_export_method
-# exports.export
-
 
 def get_export_methods():
     # ParametersCheck

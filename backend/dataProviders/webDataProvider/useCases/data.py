@@ -13,7 +13,6 @@ def get_project_id_list(url, id_project, _from=None, _to=None):
 
 
 def get_project_samples(url, id_project, id_list):
-
     data = api.get_samples(url, id_project, id_list)
 
     return data
