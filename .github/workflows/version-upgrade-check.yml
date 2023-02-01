@@ -53,14 +53,9 @@ jobs:
             exit 1
           fi
 
-          if [ "$PREVIOUS_VERSION" == "$BRANCH_VERSION" ]; then
-            echo "Version match: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
-            exit 0
-          fi
-
-          if [ "$PREVIOUS_VERSION" > "$BRANCH_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$PREVIOUS_VERSION' > branch version '$BRANCH_VERSION'."
+          if [ "$PREVIOUS_VERSION" >= "$BRANCH_VERSION" ]; then
+            echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' >= branch version '$BRANCH_VERSION'."
             exit 1
           fi
 
-          echo "Version match: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
+          echo "Version upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
