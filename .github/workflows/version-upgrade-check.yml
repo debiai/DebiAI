@@ -47,8 +47,13 @@ jobs:
 
           BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
 
+          if [ "$BRANCH_VERSION" == "" ]; then
+            echo "No version found in current branch."
+            exit 1
+          fi
+
           if [ "$PREVIOUS_VERSION" == "" ]; then
-            echo "Version mismatch: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
+            echo "No version found in main branch."
             exit 1
           fi
 
