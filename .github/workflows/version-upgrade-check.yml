@@ -31,7 +31,6 @@ jobs:
             exit 1
           fi
           echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
-          echo "BRANCH_VERSION=$FRONTEND_VERSION"
 
       - uses: actions/checkout@v2
         with:
@@ -39,13 +38,8 @@ jobs:
 
       - name: Check that the version is greater than the previous commit version
         run: |
-          ls
-          cd frontend
-          ls
-          cat package.json
           PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-
-          BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
+          BRANCH_VERSION=${{ steps.version-check.outputs.FRONTEND_VERSION }}
 
           if [ "$BRANCH_VERSION" == "" ]; then
             echo "No version found in current branch."
