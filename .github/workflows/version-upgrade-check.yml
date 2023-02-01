@@ -33,15 +33,15 @@ jobs:
           echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v2
-        with:
-          path: "main"
+      - uses: actions/checkout@v3
+        ref: main
 
       - name: Check that the version is greater than the previous commit version
         run: |
           # Get the version from the current branch
           BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
           cd frontend
+          cat package.json
           PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
 
           if [ "$BRANCH_VERSION" == "" ]; then
