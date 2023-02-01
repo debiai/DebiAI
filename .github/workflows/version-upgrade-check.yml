@@ -34,7 +34,8 @@ jobs:
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
-        ref: main
+        with:
+          ref: main
 
       - name: Check that the version is greater than the previous commit version
         run: |
