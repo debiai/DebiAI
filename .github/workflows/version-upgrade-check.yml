@@ -39,46 +39,50 @@ jobs:
 
       - name: Check that the version is greater than the previous commit version
         run: |
-          # Get the version from the current branch
           BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
           cd frontend
-          cat package.json
           PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+          echo "PREVIOUS_VERSION=$PREVIOUS_VERSION"
+          echo "BRANCH_VERSION=$BRANCH_VERSION"
 
           if [ "$BRANCH_VERSION" == "" ]; then
             echo "No version found in current branch."
             exit 1
           fi
 
+          echo "ok1"
+
           if [ "$PREVIOUS_VERSION" == "" ]; then
             echo "No version found in main branch."
             exit 1
           fi
 
+          echo "ok2"
+
           if [[ $PREVIOUS_VERSION == $BRANCH_VERSION ]]; then
             echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
             exit 1
           fi
-          local IFS=.
-          local i ver1=($PREVIOUS_VERSION) ver2=($BRANCH_VERSION)
-          # fill empty fields in ver1 with zeros
-          for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+
+          echo "ok3"
+
+          for ((i=${$PREVIOUS_VERSION[@]}; i<${$BRANCH_VERSION[@]}; i++))
           do
-              ver1[i]=0
+              $PREVIOUS_VERSION[i]=0
           done
-          for ((i=0; i<${#ver1[@]}; i++))
+          for ((i=0; i<${$PREVIOUS_VERSION[@]}; i++))
           do
-              if [[ -z ${ver2[i]} ]]
+              if [[ -z ${$BRANCH_VERSION[i]} ]]
               then
-                  # fill empty fields in ver2 with zeros
-                  ver2[i]=0
+                  # fill empty fields in $BRANCH_VERSION with zeros
+                  $BRANCH_VERSION[i]=0
               fi
-              if ((10#${ver1[i]} > 10#${ver2[i]}))
+              if ((10#${$PREVIOUS_VERSION[i]} > 10#${$BRANCH_VERSION[i]}))
               then
                 echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
                 exit 1
               fi
-              if ((10#${ver1[i]} < 10#${ver2[i]}))
+              if ((10#${$PREVIOUS_VERSION[i]} < 10#${$BRANCH_VERSION[i]}))
               then
                   echo "Version upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
                   exit 0
