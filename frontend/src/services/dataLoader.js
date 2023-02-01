@@ -149,8 +149,8 @@ async function getProjectMetadata(projectId, { considerResults }) {
 
   return metaData
 }
-async function downloadSamplesData(projectId, timestamp, sampleIds) {
-  const CHUNK_SIZE = 2000
+async function downloadSamplesData(projectId, projectMetadata, sampleIds) {
+  const CHUNK_SIZE = projectMetadata.dataProvider.maxDataLimit
   let pulledData = 0
   let nbSamples = sampleIds.length
 
@@ -167,7 +167,7 @@ async function downloadSamplesData(projectId, timestamp, sampleIds) {
       let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE)
 
       // First, pull the samples from the browser memory
-      let cachedSamples = await cacheService.getSamplesByIds(projectId, timestamp, samplesToPull)
+      let cachedSamples = await cacheService.getSamplesByIds(projectId, projectMetadata.timestamp, samplesToPull)
       let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
       retArray = [...retArray, ...Object.values(cachedSamples)]
       retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
@@ -202,8 +202,8 @@ async function downloadSamplesData(projectId, timestamp, sampleIds) {
 }
 
 
-async function downloadResults(projectId, timestamp, modelId, sampleIds) {
-  const CHUNK_SIZE = 10000
+async function downloadResults(projectId, projectMetadata, modelId, sampleIds) {
+  const CHUNK_SIZE = projectMetadata.dataProvider.maxResultLimit;
   let pulledData = 0
   // Create a request
   let requestCode = services.uuid()
@@ -281,7 +281,7 @@ async function loadData(projectId, selectionIds, selectionIntersection) {
   // Download and convert the tree
   const { dataArray, sampleIdList } = await downloadSamplesData(
     projectId,
-    projectMetadata.timestamp,
+    projectMetadata,
     samplesToPull
   )
 
@@ -312,7 +312,7 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
   // Download and convert the tree
   const { dataArray, sampleIdList } = await downloadSamplesData(
     projectId,
-    projectMetadata.timestamp,
+    projectMetadata,
     samplesToPull
   )
 
@@ -329,7 +329,7 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
 
       let modelResults = await downloadResults(
         projectId,
-        projectMetadata.timestamp,
+        projectMetadata,
         modelId,
         samplesToPull
       )
