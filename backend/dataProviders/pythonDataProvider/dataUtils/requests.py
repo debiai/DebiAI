@@ -125,7 +125,7 @@ def createSelection(projectId, requestId, selectionName):
 
     # Find the samples that match the request
     selectionSamplesIds = []
-    for (sample, sampleId) in samplesUtils.projectSamplesGerenator(projectId):
+    for sample, sampleId in samplesUtils.projectSamplesGerenator(projectId):
         if isSampleInSelection(sample, request["filters"]):
             selectionSamplesIds.append(sampleId)
 

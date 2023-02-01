@@ -4,7 +4,6 @@ from yaml.loader import SafeLoader
 
 
 def get_app_version():
-
     # Read the version from the API YAML file
     try:
         with open("swagger.yaml") as f:

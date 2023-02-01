@@ -14,7 +14,6 @@ def get_all_projects_from_data_provider(url, name):
         return
 
     for project_id in projects:
-
         if "nbSamples" in projects[project_id]:
             nbSamples = projects[project_id]["nbSamples"]
         else:

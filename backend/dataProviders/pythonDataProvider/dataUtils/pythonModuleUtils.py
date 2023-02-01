@@ -10,6 +10,7 @@ DATA_PATH = "data/pythonDataProvider/"
 
 DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 
+
 # Init, called at the server start
 def init():
     # Create the projects data directory

@@ -76,6 +76,14 @@ export default {
       return response.data
     })
   },
+  getSingleDataProvider(dataProviderId) {
+    let code = startRequest("Getting data provider limit");
+    return axios.get(apiURL + 'data-providers/' + dataProviderId).finally(() => {
+      endRequest(code)
+    }).then((response) => {
+      return response.data;
+    })
+  },
   postDataProvider(type, name, url) {
     let code = startRequest("Creating data provider")
     return axios.post(apiURL + 'data-providers', { type, name, url }).finally(() => {

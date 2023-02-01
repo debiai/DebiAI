@@ -1,6 +1,7 @@
 import requests, json
 from dataProviders.DataProviderException import DataProviderException
 
+
 ### Todo : change info if in not alive anymore
 def get_status(url):
     try:
@@ -158,7 +159,7 @@ def get_http_response(response):
     try:
         if response.raise_for_status() is None:
             return get_valid_response(response)
-    except (requests.exceptions.HTTPError):
+    except requests.exceptions.HTTPError:
         return get_error_response(response)
 
 
@@ -167,7 +168,7 @@ def get_valid_response(response):
         return True
     try:
         return response.json()
-    except (json.decoder.JSONDecodeError):
+    except json.decoder.JSONDecodeError:
         return
 
 
