@@ -19,20 +19,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Check that the version is greater than the previous commit version
+      - name: Check that the version in back and front are the same
         run: |
           cd frontend
           FRONTEND_VERSION=$(cat package.json | grep version | cut -d '"' -f 4)
           cd ../backend
           BACKEND_VERSION=$(cat swagger.yaml | grep version | cut -d ':' -f 2 | sed 's/ //g')
           if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version $FRONTEND_VERSION != backend/swagger.yaml version $BACKEND_VERSION"
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'"
             exit 1
           fi
+      - uses: actions/checkout@v2
+      - name: Check that the version is greater than the previous commit version
+        run: |
+          cd frontend
+          FRONTEND_VERSION=$(cat package.json | grep version | cut -d '"' -f 4)
           cd ..
           git fetch --prune --unshallow
           PREVIOUS_COMMIT_VERSION=$(git log -1 --pretty=format:%B | grep version | cut -d ':' -f 2 | sed 's/ //g')
           if [ "$FRONTEND_VERSION" = "$PREVIOUS_COMMIT_VERSION" ]; then
-            echo "Version not upgraded: frontend/package.json version $FRONTEND_VERSION = previous commit version $PREVIOUS_COMMIT_VERSION"
+            echo "Version not upgraded: frontend/package.json version '$FRONTEND_VERSION' == previous commit version '$PREVIOUS_COMMIT_VERSION'"
+            exit 1
+          fi
+          if [ "$FRONTEND_VERSION" < "$PREVIOUS_COMMIT_VERSION" ]; then
+            echo "Version not upgraded: frontend/package.json version '$FRONTEND_VERSION' < previous commit version '$PREVIOUS_COMMIT_VERSION'"
             exit 1
           fi
