@@ -28,7 +28,6 @@ def get_id_list_from_selection(url, project_id, selection_id):
 
 
 def create_selection(url, project_id, name, id_list, request_id):
-
     data = {"idList": id_list, "name": name}
 
     if request_id is not None:

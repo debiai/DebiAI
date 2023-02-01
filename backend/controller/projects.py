@@ -19,7 +19,6 @@ def get_projects():
     projectOverviews = []
     for data_provider in data_providers_list:
         try:
-
             projects = data_provider.get_projects()
 
             if projects is not None:
