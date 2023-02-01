@@ -29,6 +29,7 @@ jobs:
             echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'."
             exit 1
           fi
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
       - uses: actions/checkout@v2
       - name: Check that the version is greater than the previous commit version
         run: |
@@ -45,3 +46,4 @@ jobs:
             echo "Version not upgraded: frontend/package.json version '$FRONTEND_VERSION' < previous commit version '$PREVIOUS_COMMIT_VERSION'"
             exit 1
           fi
+          echo "Version upgraded: frontend/package.json version '$FRONTEND_VERSION' > previous commit version '$PREVIOUS_COMMIT_VERSION'"
