@@ -32,6 +32,7 @@ jobs:
           fi
           echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v2
         with:
           path: "main"
@@ -82,4 +83,3 @@ jobs:
                   exit 0
               fi
           done
-          return 0
