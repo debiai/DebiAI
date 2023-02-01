@@ -3,7 +3,6 @@ from utils.utils import timeNow
 
 
 def get_models_info(url, project_id):
-
     # Models
     models = api.get_models(url, project_id)
     debiai_models = []
@@ -34,5 +33,4 @@ def get_model_result_id(url, project_id, model_id):
 
 
 def get_model_results(url, project_id, model_id, sample_list):
-
     return api.get_model_result(url, project_id, model_id, sample_list)

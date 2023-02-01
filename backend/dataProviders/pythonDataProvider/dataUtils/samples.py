@@ -83,7 +83,6 @@ def get_list(projectId, data):
 
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
-
     # Get path of the samples from the hashmap
     sample_path = hash.getPathFromHashList(project_id, id_list)
     data = {}
@@ -93,7 +92,6 @@ def get_data_from_sampleid_list(project_id, id_list):
     # Because of this bug, we are slowing down the process
     # TODO : fix this bug
     for i in range(len(id_list)):
-
         # Get tree from samples
         samples_tree = tree.getBlockTreeFromSamples(project_id, [sample_path[i]])
 
