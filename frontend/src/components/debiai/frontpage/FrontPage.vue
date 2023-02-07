@@ -117,7 +117,7 @@
             </div>
           </div>
           <!-- Project items -->
-          <div class="items" v-if="!project.error">
+          <div class="items">
             <!-- Nb samples -->
             <div class="nbSamples" title="Number of samples">
               <inline-svg
@@ -168,13 +168,8 @@
               {{ project.nbModels }}
             </div>
           </div>
-          <div class="items error" v-else>
-            Something is wrong with the project :
-            <br />
-            {{ project.exeption }}
-          </div>
           <!-- Dates -->
-          <div class="dates" v-if="!project.error">
+          <div class="dates">
             <span
               class="createdDate"
               :title="$services.timeStampToDate(project.creationDate)"
@@ -223,7 +218,8 @@ export default {
   },
   data: () => {
     return {
-      projects: null,
+      projects: null, // List of projects
+      dataProviders: null, // List of data providers that contains the projects
       searchBar: "",
       appVersion: version,
       displayDataProviders: false,

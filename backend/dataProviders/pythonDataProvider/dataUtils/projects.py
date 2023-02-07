@@ -80,11 +80,11 @@ def get_project(projectId):
         }
 
     except Exception as e:
+        print("Error while getting the project overview: " + projectId)
+        print(e)
         projectOverview = {
             "id": projectId,
             "name": projectId,
-            "error": True,
-            "exeption": str(e),
         }
 
     return projectOverview
