@@ -33,11 +33,8 @@ def get_projects():
     return projectOverviews, 200
 
 
-def get_project(projectId):
+def get_project(dataProviderId, projectId):
     # return the info about datasets, models, selections & tags
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
@@ -48,30 +45,8 @@ def get_project(projectId):
         return e.message, e.status_code
 
 
-def post_project(data):
-    # Ask a data provider to create a project
-    dataProviderId = "Python module Data Provider"  # TODO : deal with route
-    projectName = data["projectName"]
-
-    # Check project name
-    if len(projectName) > 100:
-        return "Project name too long", 400
-
-    try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-
-        project = data_provider.create_project(projectName)
-        project["id"] = dataProviderId + "|" + project["id"]
-        return project, 200
-    except DataProviderException.DataProviderException as e:
-        return e.message, e.status_code
-
-
-def delete_project(projectId):
+def delete_project(dataProviderId, projectId):
     # Delete a project
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 

@@ -37,9 +37,9 @@ def delete_export_method(exportMethodId):
         return str(e), 400
 
 
-def exportSelection(projectId, data):
+def exportSelection(dataProviderId, projectId, data):
     try:
-        return exportUtils.exportSelection(projectId, data), 200
+        return exportUtils.exportSelection(dataProviderId, projectId, data), 200
     except Exception as e:
         return str(e), 400
 

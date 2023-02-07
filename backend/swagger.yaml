@@ -125,7 +125,7 @@ paths:
     post:
       summary: Post a new project
       tags: [Project]
-      operationId: controller.projects.post_project
+      operationId: controller.pythonModuleDp.post_project
       parameters:
         - name: data
           in: body
@@ -162,12 +162,16 @@ paths:
         403:
           description: A project with the same name already exist
 
-  /projects/{projectId}:
+  /data-providers/{dataProviderId}/projects/{projectId}:
     get:
       summary: Get project name, nb of models & nb of selections (overviews of a project)
       tags: [Project]
       operationId: controller.projects.get_project
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -183,6 +187,10 @@ paths:
       tags: [Project]
       operationId: controller.projects.delete_project
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -194,12 +202,16 @@ paths:
           description: project doesn't exist
 
   # BlockLevels
-  /projects/{projectId}/blocklevels:
+  /data-providers/{dataProviderId}/projects/{projectId}/blocklevels:
     post:
       summary: add a new data blocks level structure
       tags: [Project]
       operationId: controller.pythonModuleDp.post_blocklevels
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -248,12 +260,16 @@ paths:
             type: object
           description: Block tructure added, the block structure is returned
 
-  /projects/{projectId}/resultsStructure:
+  /data-providers/{dataProviderId}/projects/{projectId}/resultsStructure:
     post:
       summary: add a new expected results structure
       tags: [Project]
       operationId: controller.pythonModuleDp.post_resultsStructure
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -292,12 +308,16 @@ paths:
           description: The result structure already exist
 
   # Models
-  /projects/{projectId}/models:
+  /data-providers/{dataProviderId}/projects/{projectId}/models:
     post:
       summary: add a model
       tags: [Model]
       operationId: controller.models.post_model
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -325,12 +345,16 @@ paths:
         404:
           description: Project not found
 
-  /projects/{projectId}/models/{modelId}:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}:
     delete:
       summary: remove a model
       tags: [Model]
       operationId: controller.models.delete_model
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -345,12 +369,16 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /projects/{projectId}/models/{modelId}/resultsDict:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict:
     post:
       summary: Add a results to a model
       tags: [Model]
       operationId: controller.pythonModuleDp.add_results_dict
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -382,12 +410,16 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /projects/{projectId}/models/{modelId}/getModelResults:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
     post:
       summary: Get the model results from a sample list
       tags: [Model]
       operationId: controller.models.get_results
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -420,12 +452,16 @@ paths:
           description: model or project doesn't exist
 
   # Samples
-  /projects/{projectId}/samples:
+  /data-providers/{dataProviderId}/projects/{projectId}/samples:
     post:
       summary: get the project sampleId list, can be filtered by selections, models, or both
       tags: [Samples]
       operationId: controller.samples.get_list
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -480,12 +516,16 @@ paths:
         404:
           description: project doesn't exist
 
-  /projects/{projectId}/selectionSamples/{selectionId}:
+  /data-providers/{dataProviderId}/projects/{projectId}/selectionSamples/{selectionId}:
     get:
       summary: get the project selection sampleId list
       tags: [Samples]
       operationId: controller.samples.get_selection_list
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -508,12 +548,16 @@ paths:
           description: project or selection doesn't exist
 
   # Blocks
-  /projects/{projectId}/blocks:
+  /data-providers/{dataProviderId}/projects/{projectId}/blocks:
     post:
       summary: add a tree to an existing project block tree
       tags: [Block]
       operationId: controller.pythonModuleDp.post_block_tree
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -539,12 +583,16 @@ paths:
         404:
           description: Project not found
 
-  /projects/{projectId}/blocksFromSampleIds:
+  /data-providers/{dataProviderId}/projects/{projectId}/blocksFromSampleIds:
     post:
       summary: get a project tree form a sample list
       tags: [Block]
       operationId: controller.data.get_data
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -573,12 +621,16 @@ paths:
           description: Project or one of the models not found
 
   # Requests
-  /projects/{projectId}/requests/:
+  /data-providers/{dataProviderId}/projects/{projectId}/requests/:
     get:
       summary: Get the project requests
       tags: [Requests]
       operationId: controller.requests.get_requests
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -596,6 +648,10 @@ paths:
       tags: [Requests]
       operationId: controller.requests.post_request
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -635,12 +691,16 @@ paths:
             $ref: "#/definitions/request"
           description: request added, the request is returned
 
-  /projects/{projectId}/requests/{requestId}/newSelection:
+  /data-providers/{dataProviderId}/projects/{projectId}/requests/{requestId}/newSelection:
     post:
       summary: Create a selection from a request filters
       tags: [Requests]
       operationId: controller.requests.create_selection
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -662,12 +722,16 @@ paths:
         200:
           description: selection created
 
-  /projects/{projectId}/requests/{requestId}:
+  /data-providers/{dataProviderId}/projects/{projectId}/requests/{requestId}:
     get:
       summary: Get a project request
       tags: [Requests]
       operationId: controller.requests.get_request
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -686,6 +750,10 @@ paths:
       tags: [Requests]
       operationId: controller.requests.delete_request
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -699,12 +767,16 @@ paths:
           description: request deleted
 
   # Selections
-  /projects/{projectId}/selections/:
+  /data-providers/{dataProviderId}/projects/{projectId}/selections/:
     get:
       summary: Get the project selections
       tags: [Selection]
       operationId: controller.selection.get_selections
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -722,6 +794,10 @@ paths:
       tags: [Selection]
       operationId: controller.selection.post_selection
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -754,12 +830,16 @@ paths:
           schema:
             type: object
 
-  /projects/{projectId}/selections/{selectionId}:
+  /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
     delete:
       summary: delete a selection
       tags: [Selection]
       operationId: controller.selection.delete_selection
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -901,12 +981,16 @@ paths:
           description: Widget title or configuration not found
 
   # Tags
-  /projects/{projectId}/tags:
+  /data-providers/{dataProviderId}/projects/{projectId}/tags:
     post:
       summary: Add a tag to a project
       tags: [Tags]
       operationId: controller.tags.post_tag
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -938,6 +1022,10 @@ paths:
       tags: [Tags]
       operationId: controller.tags.get_tags
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -950,12 +1038,16 @@ paths:
             items:
               $ref: "#/definitions/tag"
 
-  /projects/{projectId}/tags/{tagId}:
+  /data-providers/{dataProviderId}/projects/{projectId}/tags/{tagId}:
     get:
       summary: Get a tag from Id
       tags: [Tags]
       operationId: controller.tags.get_tag
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -974,6 +1066,10 @@ paths:
       tags: [Tags]
       operationId: controller.tags.delete_tag
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -988,12 +1084,16 @@ paths:
         404:
           description: Project or tag not found
 
-  /projects/{projectId}/tags/{tagId}/samples/{tagValue}:
+  /data-providers/{dataProviderId}/projects/{projectId}/tags/{tagId}/samples/{tagValue}:
     get:
       summary: Get a sample tree from a tag and a value
       tags: [Tags]
       operationId: controller.tags.get_tag_sample_tree
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string
@@ -1110,12 +1210,16 @@ paths:
         200:
           description: Data exported
 
-  /projects/{projectId}/exportSelection:
+  /data-providers/{dataProviderId}/projects/{projectId}/exportSelection:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
       operationId: controller.exportMethods.exportSelection
       parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
         - name: projectId
           in: path
           type: string

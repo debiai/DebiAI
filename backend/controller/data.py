@@ -9,15 +9,13 @@ import dataProviders.DataProviderException as DataProviderException
 #############################################################################
 
 
-def get_data(projectId, data):
+def get_data(dataProviderId, projectId, data):
     # return a project data from a list of ids
-    data_provider_id = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
     sampleIds = data["sampleIds"]
 
     try:
         # Find the data provider
-        data_provider = data_provider_manager.get_single_data_provider(data_provider_id)
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
         # Ask for the data
         samples = data_provider.get_samples(projectId, sampleIds)
@@ -32,7 +30,7 @@ def get_data(projectId, data):
             "Can't find samples for project "
             + projectId
             + " on data provider : "
-            + data_provider_id,
+            + dataProviderId,
             404,
         )
     except DataProviderException.DataProviderException as e:

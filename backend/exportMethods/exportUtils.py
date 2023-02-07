@@ -142,7 +142,7 @@ def delete_export_method(method_id):
 
 
 # Export data
-def exportSelection(projectId, data):
+def exportSelection(dataProviderId, projectId, data):
     method_id = data["exportMethodId"]
 
     # Check the method id
@@ -152,12 +152,9 @@ def exportSelection(projectId, data):
     export_method = get_export_method(method_id)
 
     # Creation of the data selection to export
-    dataProvider_id = projectId.split("|")[0]
-    project_id = projectId.split("|")[1]
-
     try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProvider_id)
-        project = data_provider.get_project(project_id)
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+        project = data_provider.get_project(projectId)
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
 
@@ -169,8 +166,8 @@ def exportSelection(projectId, data):
     data_to_export = {
         "origin": "DebiAI",
         "type": "selection",
-        "project_id": project_id,
-        "data_provider_id": dataProvider_id,
+        "projectId": projectId,
+        "data_provider_id": dataProviderId,
         "selection_name": data["selectionName"],
         "date": time.time(),
         "sample_ids": id_list,

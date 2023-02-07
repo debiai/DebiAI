@@ -1,12 +1,17 @@
 from config.init_config import get_config
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
-from dataProviders.pythonDataProvider.PythonDataProvider import PythonDataProvider
+from dataProviders.pythonDataProvider.PythonDataProvider import (
+    PythonDataProvider,
+    PYTHON_DATA_PROVIDER_ID,
+)
 import dataProviders.DataProviderException as DataProviderException
 
 data_providers_list = []
+python_data_provider_disabled = True
 
 
 def setup_data_providers():
+    global python_data_provider_disabled
     print("================== DATA PROVIDERS ==================")
     config = get_config()
     web_data_provider_config = config["WEB_DATA_PROVIDERS"]
@@ -43,6 +48,7 @@ def setup_data_providers():
     if python_module_data_provider_config["enabled"] != False:
         print(" - Adding Python Module data Provider")
         add(PythonDataProvider())
+        python_data_provider_disabled = False
 
     if len(data_providers_list) == 0:
         print("Warning, No data providers setup")
@@ -81,6 +87,13 @@ def get_data_provider_list():
 
 
 def get_single_data_provider(name):
+    # Check if the data provider is not disabled
+    if name == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
+        raise DataProviderException.DataProviderException(
+            "Python module data provider is disabled", 403
+        )
+
+    # Return the data provider with the given name
     for d in data_providers_list:
         if d.name == name:
             return d
