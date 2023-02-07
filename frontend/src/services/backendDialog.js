@@ -17,8 +17,6 @@ function endRequest(code) {
 
 export default {
 
-  ping() { return axios.get(apiURL) },
-
   log(projectId, data) {
     return axios.post(apiURL + "projects/" + projectId + "/log", data);
   },

@@ -13,72 +13,24 @@
         </div>
       </div>
     </transition-group>
-    <!-- Displaying the server connection status -->
-    <div id="connectionStatus">
-      <span
-        id="status"
-        @click="pingServer"
-        :title="serverUrl"
-        :class="serverStatus"
-        >{{ serverStatus }}</span
-      >
-    </div>
   </div>
 </template>
 
 <script>
-import config from "../../../config";
-
 export default {
   name: "Loading",
   data: () => {
-    return {
-      serverStatus: "unknown",
-      serverUrl: null,
-    };
+    return {};
   },
-  created() {
-    this.serverUrl = config.API_URL;
-
-    this.pingServer();
-    setInterval(() => {
-      this.pingServer();
-    }, 100000);
-  },
+  created() {},
   methods: {
     removeMsg(msg) {
       this.$store.commit("removeMessage", msg);
-    },
-    pingServer() {
-      this.$backendDialog
-        .ping()
-        .then(() => {
-          this.serverStatus = "Online";
-        })
-        .catch(() => {
-          this.serverStatus = "Offline";
-        });
     },
   },
   computed: {
     requests() {
       return this.$store.state.Dashboard.requests;
-    },
-  },
-  watch: {
-    serverStatus(n) {
-      if (n == "Online") {
-        this.$store.commit("sendMessage", {
-          title: "success",
-          msg: "The server is Online",
-        });
-      }
-      if (n == "Offline") {
-        this.$store.commit("sendMessage", {
-          title: "error",
-          msg: "The server is Offline",
-        });
-      }
     },
   },
 };
@@ -168,30 +120,5 @@ export default {
 .list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
   transform: translateY(30px);
-}
-
-/* connection Status */
-#connectionStatus {
-  text-align: right;
-}
-#connectionStatus #srvUrl {
-  text-shadow: 0 0 3px #fff;
-}
-#connectionStatus #status {
-  padding: 3px;
-  margin: 2px;
-  border: solid black 1px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-#connectionStatus #status.Online {
-  background: var(--success);
-  border-color: var(--success);
-  color: white;
-}
-#connectionStatus #status.Offline {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: white;
 }
 </style>
