@@ -20,7 +20,10 @@ def post_project(data):
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
         project = data_provider.create_project(projectName)
-        project["id"] = dataProviderId + "|" + project["id"]
+        
+        # Adding data provider id to project
+        project["dataProviderId"] = dataProviderId
+
         return project, 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code

@@ -49,6 +49,7 @@ const Dashboard = {
 const ProjectPage = {
   state: {
     projectId: null,
+    dataProviderId: null,
     selectionsIds: [],
     blockLevels: [],
     columns: [],
@@ -57,6 +58,9 @@ const ProjectPage = {
     setProjectId(state, projectId) {
       state.projectId = projectId
     },
+    setDataProviderId(state, dataProviderId) {
+      state.dataProviderId = dataProviderId
+    },
     setBlockLevels(state, blockLevels) {
       state.blockLevels = blockLevels
 
@@ -64,8 +68,6 @@ const ProjectPage = {
 
       let columns = [];
       if (blockLevels) {
-
-
         blockLevels.forEach((block) => {
           // Add id columns
           columns.push({ name: block.name, type: 'text', isId: true })
@@ -79,15 +81,7 @@ const ProjectPage = {
             }
           });
         });
-
-        // sort columns by name
-        // columns.sort((a, b) => {
-        //   if (a.name.toUpperCase() > b.name.toUpperCase()) return 1;
-        //   if (a.name.toUpperCase() < b.name.toUpperCase()) return -1;
-        //   return 0;
-        // });
       }
-
 
       state.columns = columns;
     },

@@ -106,8 +106,8 @@
         <div
           class="project"
           v-for="project in filteredProject"
-          :key="project.id"
-          @click="selectProject(project.id)"
+          :key="project.dataProviderId + ' / ' + project.id"
+          @click="selectProject(project.dataProviderId, project.id)"
         >
           <!-- Project name & description -->
           <div class="nameDesc">
@@ -245,10 +245,10 @@ export default {
           });
         });
     },
-    selectProject(projectId) {
+    selectProject(dataProviderId, projectId) {
       this.$router.push({
-        path: "/project/" + projectId,
-        params: { projectId }, // tu put the name in the title
+        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+        params: { projectId, dataProviderId },
       });
     },
   },

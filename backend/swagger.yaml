@@ -1460,11 +1460,16 @@ definitions:
     type: object
     required:
       - id
+      - dataProviderId
       - name
     properties:
       id:
         type: string
         description: project ID
+
+      dataProviderId:
+        type: string
+        description: project data provider ID
 
       name:
         type: string

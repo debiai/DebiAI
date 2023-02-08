@@ -22,9 +22,10 @@ def get_projects():
             projects = data_provider.get_projects()
 
             if projects is not None:
-                # TMP: merging dp ids and project ids TODO: change this
+                # Adding data provider id to projects
                 for project in projects:
-                    project["id"] = data_provider.name + "|" + project["id"]
+                    project["dataProviderId"] = data_provider.name
+
                 projectOverviews.extend(projects)
 
         except DataProviderException.DataProviderException as e:
@@ -39,7 +40,10 @@ def get_project(dataProviderId, projectId):
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
         project = data_provider.get_project(projectId)
-        project["id"] = dataProviderId + "|" + project["id"]
+
+        # Adding data provider id to project
+        project["dataProviderId"] = dataProviderId
+
         return project, 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code

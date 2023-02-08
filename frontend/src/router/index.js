@@ -14,7 +14,7 @@ let router = new Router({
     // === Project
     {
       name: 'project',
-      path: '/project/:projectId',
+      path: '/dataprovider/:dataProviderId/project/:projectId',
       component: () => import("../components/debiai/project/Project")
     },
 
