@@ -1,11 +1,16 @@
+import store from '../store'
+
 // The browser cache service
-//
 // Used to store samples and results for faster loading with the indexed db cache system
 const DB_VERSION = 1;
 
-async function getDb(projectId, timestamp) {
+async function getDb(timestamp) {
+  const projectId = store.state.ProjectPage.projectId
+  const dataProviderId = store.state.ProjectPage.dataProviderId
+  const dbName = `${dataProviderId}_${projectId}`
+
   return new Promise((resolve, reject) => {
-    let request = window.indexedDB.open(projectId, DB_VERSION);
+    let request = window.indexedDB.open(dbName, DB_VERSION);
 
     request.onerror = e => {
       console.log('Error opening db', e);
@@ -75,9 +80,9 @@ async function getDb(projectId, timestamp) {
 }
 
 
-async function saveSamples(projectId, timestamp, samples) {
+async function saveSamples(timestamp, samples) {
   try {
-    let db = await getDb(projectId, timestamp);
+    let db = await getDb(timestamp);
     console.time("Saving data to the cache");
 
     return new Promise(resolve => {
@@ -103,9 +108,9 @@ async function saveSamples(projectId, timestamp, samples) {
   }
 }
 
-async function getSamplesByIds(projectId, timestamp, sampleIds) {
+async function getSamplesByIds(timestamp, sampleIds) {
   try {
-    let db = await getDb(projectId, timestamp);
+    let db = await getDb(timestamp);
 
     return new Promise(resolve => {
       let trans = db.transaction('samples', 'readonly');
@@ -137,8 +142,8 @@ async function getSamplesByIds(projectId, timestamp, sampleIds) {
   }
 }
 
-async function saveResults(projectId, timestamp, modelId, results) {
-  let db = await getDb(projectId, timestamp);
+async function saveResults(timestamp, modelId, results) {
+  let db = await getDb(timestamp);
   console.time("Saving results to the cache");
 
   return new Promise(resolve => {
@@ -160,8 +165,8 @@ async function saveResults(projectId, timestamp, modelId, results) {
   });
 }
 
-async function getModelResultsByIds(projectId, timestamp, modelId, sampleIds) {
-  let db = await getDb(projectId, timestamp);
+async function getModelResultsByIds(timestamp, modelId, sampleIds) {
+  let db = await getDb(timestamp);
 
   return new Promise(resolve => {
     let trans = db.transaction('results', 'readonly');

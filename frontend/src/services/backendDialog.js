@@ -55,14 +55,6 @@ export default {
       return response.data
     })
   },
-  saveProjectlevels(blockLevels) {
-    let code = startRequest("Creating project")
-    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocklevels', blockLevels).finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
 
   // Data providers
   getDataProviders() {
@@ -73,9 +65,9 @@ export default {
       return response.data
     })
   },
-  getSingleDataProvider(dataProviderId) {
+  getSingleDataProvider() {
     let code = startRequest("Getting data provider limit");
-    return axios.get(apiURL + 'data-providers/' + dataProviderId).finally(() => {
+    return axios.get(apiURL + 'data-providers/' + dataProviderId()).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data;

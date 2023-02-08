@@ -81,6 +81,7 @@ export default {
   },
   data: () => {
     return {
+      dataProviderId: null,
       projectId: null,
       project: null,
       loading: false,
@@ -113,6 +114,8 @@ export default {
     if (dataProviderId && projectId) {
       this.$store.commit("setDataProviderId", dataProviderId);
       this.$store.commit("setProjectId", projectId);
+      this.dataProviderId = dataProviderId;
+      this.projectId = projectId;
 
       // Load the project data
       this.loadProject().then(() => {
@@ -171,13 +174,8 @@ export default {
           this.$router.push("/");
         });
     },
-    createBlockLevels(levelsInfo) {
-      this.blockLevelCreation = false;
-      this.project.blockLevelInfo = levelsInfo;
-    },
 
     // Analysis Parameters
-
     selectionSelected(selectedSelectionsIds) {
       this.selectedSelectionsIds = selectedSelectionsIds;
       this.updateNbSamples();
@@ -218,7 +216,7 @@ export default {
     startAnalysis({ newTab }) {
       if (newTab) {
         let routeData = this.$router.resolve({
-          path: "/project/" + this.projectId,
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
           query: {
             selectionIds: this.selectedSelectionsIds,
             selectionIntersection: this.selectionIntersection,
@@ -230,6 +228,7 @@ export default {
         window.open(routeData.href, "_blank");
       } else {
         this.loadData({
+          dataProviderId: this.dataProviderId,
           projectId: this.projectId,
           selectionIds: this.selectedSelectionsIds,
           selectionIntersection: this.selectionIntersection,
