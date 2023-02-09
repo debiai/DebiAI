@@ -30,25 +30,28 @@
       </div>
       <!-- Annotation Value -->
       <div class="data">
-        <span class="name"> Annotation value
+        <span class="name">
+          Annotation value
           <DocumentationBlock>
             Add an extra value to the exported Json data.
-            <br>
+            <br />
             This value can be used for anotation or for object creation purpose.
           </DocumentationBlock>
         </span>
         <span class="value">
-          <input type="text" v-model="extraValue">
+          <input type="text" v-model="extraValue" />
         </span>
       </div>
       <!-- Exported data -->
       <div class="data">
-        <span class="name"> Exported Json <br> format
+        <span class="name">
+          Exported Json <br />
+          format
           <DocumentationBlock>
-            This is not the exact exported Json file. It is only
-            here to give you an idea of the structure of the exported Json file.
+            This is not the exact exported Json file. It is only here to give
+            you an idea of the structure of the exported Json file.
 
-            <br><br>
+            <br /><br />
 
             The exported Json file will be filled with the selected samples ids.
           </DocumentationBlock>
@@ -62,8 +65,10 @@
     </form>
 
     <!-- Export method list -->
-    <ExportMethodSelection :disableExport="exporting" @exportMethodSelected="exportSamples" />
-
+    <ExportMethodSelection
+      :disableExport="exporting"
+      @exportMethodSelected="exportSamples"
+    />
   </div>
 </template>
 
@@ -74,34 +79,36 @@ export default {
   components: { ExportMethodSelection },
   name: "SelectionExportMenu",
   data() {
-    // TODO: Remove data provider id split when the backend will be updated
-    const projectIdAndDataProviderId =this.$store.state.ProjectPage.projectId
-    const projectId = projectIdAndDataProviderId.split('|')[0]
-    const dataProviderId = projectIdAndDataProviderId.split('|')[1]
+    const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+    const projectId = this.$store.state.ProjectPage.projectId;
+    
     return {
       selectionName: "DebiAI Selection",
       extraValue: null,
 
       exporting: false,
       selectionToExportDisplay: {
-        origin: 'DebiAI',
-        type: 'selection',
+        origin: "DebiAI",
+        type: "selection",
         project_id: projectId,
         data_provider_id: dataProviderId,
-        selection_name: 'DebiAI Selection',
-        date: 'timestamp',
-        sample_ids: [{ id: 'sample id 1' }, { id: 'sample id 2' }, { id: '...' }],
-      }
+        selection_name: "DebiAI Selection",
+        date: "timestamp",
+        sample_ids: [
+          { id: "sample id 1" },
+          { id: "sample id 2" },
+          { id: "..." },
+        ],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     selectedData: { type: Array, required: true },
   },
-  created() { },
+  created() {},
   methods: {
     exportSamples(methodId) {
-      let projectId = this.$store.state.ProjectPage.projectId;
       let selectedHash = this.selectedData.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
@@ -109,7 +116,12 @@ export default {
       this.exporting = true;
 
       this.$backendDialog
-        .exportSelection(projectId, this.selectionName, methodId, selectedHash, this.extraValue)
+        .exportSelection(
+          this.selectionName,
+          methodId,
+          selectedHash,
+          this.extraValue
+        )
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",
@@ -130,7 +142,8 @@ export default {
               msg: "Error while exporting the selection",
             });
           }
-        }).finally(() => {
+        })
+        .finally(() => {
           this.exporting = false;
         });
     },
@@ -144,7 +157,7 @@ export default {
       this.selectionToExportDisplay.value = this.extraValue;
       if (this.extraValue === "") delete this.selectionToExportDisplay.value;
     },
-  }
+  },
 };
 </script>
 
@@ -155,7 +168,7 @@ export default {
   align-items: center;
 }
 
-.dataGroup .data+.data {
+.dataGroup .data + .data {
   padding-top: 4px;
 }
 

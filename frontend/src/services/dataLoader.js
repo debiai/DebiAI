@@ -237,7 +237,6 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
       let modelResults = await backendDialog.default.getModelResults(modelId, samplesToPull)
       modelResultsRet = Object.assign({}, modelResultsRet, modelResults)
 
-      // TODO : Save restults in the cache, save {} in case of not evaluated
       // let resultsToSave = {}
       // samplesToPull.forEach(sampleId => {
       //   resultsToSave[sampleId] = sampleId in modelResultsRet ? modelResultsRet[sampleId] : null

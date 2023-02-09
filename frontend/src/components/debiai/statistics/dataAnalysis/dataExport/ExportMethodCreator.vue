@@ -76,10 +76,6 @@ export default {
       kafkaTopic: "",
     };
   },
-  created() {
-    // Load the exportMethods
-    // TODO
-  },
   methods: {
     createMethod(type, parameters) {
       console.log(type, parameters);

@@ -53,14 +53,8 @@ export default {
   props: {},
   methods: {
     save() {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
-
-      console.log(this.filters);
-
       this.$backendDialog
         .addRequest(
-          projectId,
           this.requestName,
           this.requestDescription,
           this.filters

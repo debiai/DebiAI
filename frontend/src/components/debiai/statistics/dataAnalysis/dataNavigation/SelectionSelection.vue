@@ -62,18 +62,19 @@ export default {
     };
   },
   created() {
-    this.projectId = this.$store.state.ProjectPage.projectId;
-    this.$backendDialog.getSelections(this.projectId).then((selections) => {
+    this.$backendDialog.getSelections().then((selections) => {
       this.selections = selections;
     });
   },
   methods: {
     selectSelection(selectionId) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      let dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      let projectId = this.$store.state.ProjectPage.projectId;
+
       this.$router.push({
-        path: "/project/" + projectId,
+        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
         query: {
+          dataProviderId,
           projectId,
           selectionIds: selectionId,
           startAnalysis: true,
@@ -81,11 +82,13 @@ export default {
       });
     },
     selectSelectionNewTab(selectionId) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
+      let dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      let projectId = this.$store.state.ProjectPage.projectId;
+
       let routeData = this.$router.resolve({
-        path: "/project/" + projectId,
+        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
         query: {
+          dataProviderId,
           projectId,
           selectionIds: selectionId,
           startAnalysis: true,
@@ -94,12 +97,9 @@ export default {
       window.open(routeData.href, "_blank");
     },
     deleteSelection(selectionId) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
       this.$backendDialog
-        .delSelection(projectId, selectionId)
+        .delSelection(selectionId)
         .then(() => {
-          this.$backendDialog;
           this.$store.commit("sendMessage", {
             title: "success",
             msg: "Selection deleted",

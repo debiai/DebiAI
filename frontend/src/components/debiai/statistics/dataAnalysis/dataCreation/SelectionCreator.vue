@@ -71,8 +71,7 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
-    let projectId = this.$store.state.ProjectPage.projectId;
-    this.$backendDialog.getSelections(projectId).then((selections) => {
+    this.$backendDialog.getSelections().then((selections) => {
       this.createdSelections = selections;
       // this.$store.commit("setProjectSelections", selections);
     });
@@ -87,11 +86,9 @@ export default {
     },
 
     saveRequest() {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
       // Save the request first
       this.$backendDialog
-        .addRequest(projectId, this.selectionName, "", this.filters)
+        .addRequest(this.selectionName, "", this.filters)
         .then((request) => {
           this.$store.commit("sendMessage", {
             title: "success",
@@ -108,15 +105,13 @@ export default {
     },
 
     saveSelection(requestId = null) {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
       let selectedIds = this.selectedData.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
       this.$backendDialog
-        .addSelection(projectId, selectedIds, this.selectionName, requestId)
+        .addSelection(selectedIds, this.selectionName, requestId)
         .then(() => {
-          this.$backendDialog.getSelections(projectId).then((selections) => {
+          this.$backendDialog.getSelections().then((selections) => {
             this.createdSelections = selections;
             // this.$store.commit("setProjectSelections", selections);
             this.$store.commit("sendMessage", {

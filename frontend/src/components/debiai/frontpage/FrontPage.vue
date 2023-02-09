@@ -109,13 +109,9 @@
           :key="project.dataProviderId + ' / ' + project.id"
           @click="selectProject(project.dataProviderId, project.id)"
         >
-          <!-- Project name & description -->
-          <div class="nameDesc">
-            <div class="name">{{ project.name }}</div>
-            <div class="description">
-              <!-- TODO -->
-            </div>
-          </div>
+          <!-- Project name -->
+          <div class="name">{{ project.name }}</div>
+
           <!-- Project items -->
           <div class="items">
             <!-- Nb samples -->
@@ -356,7 +352,7 @@ export default {
   display: grid;
   grid-template-columns: 3fr 1fr 1fr;
   grid-template-rows: 1fr;
-  grid-template-areas: "nameDesc items dates";
+  grid-template-areas: "name items dates";
 
   padding: 15px;
   margin: 0 20px 0 20px;
@@ -378,27 +374,11 @@ export default {
 }
 
 /* Name & desc  */
-.nameDesc {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 0fr 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "name"
-    "description";
-  grid-area: nameDesc;
-}
-
 .name {
   grid-area: name;
-  text-align: left;
+  display: flex;
+  align-items: flex-start;
   font-weight: bold;
-}
-
-.description {
-  grid-area: description;
-  text-align: left;
-  opacity: 0.8;
 }
 
 /* Items */

@@ -21,7 +21,7 @@
             {{ tag.nbSamples }}
           </div>
           <!-- Dates -->
-          <div class="dates" v-if="!project.error">
+          <div class="dates">
             <span
               class="date createdDate"
               :title="$services.timeStampToDate(tag.creationDate)"
@@ -49,7 +49,6 @@
 
 <script>
 export default {
-  props: { project: { type: Object, required: true } },
   data() {
     return {
       tags: null,
@@ -63,7 +62,7 @@ export default {
     loadTags() {
       this.tags = null;
       this.$backendDialog
-        .getTags(this.project.id)
+        .getTags()
         .then((tags) => {
           this.tags = tags;
         })
@@ -77,7 +76,7 @@ export default {
     },
     deleteTag(tagId) {
       this.$backendDialog
-        .deleteTag(this.project.id, tagId)
+        .deleteTag(tagId)
         .then(() => {
           this.loadTags();
           this.$store.commit("sendMessage", {

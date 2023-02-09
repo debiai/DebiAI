@@ -198,7 +198,7 @@ const SatisticalAnasysis = {
         let filter = state.filters.find(filter => filter.id === filterId);
         if (filter && filter.type == "intervals") {
           filter.intervals.push(interval)
-          // TODO: check if no duplicates or redondent
+
           // Recreating the array to trigger event
           state.filters = [...state.filters]
         }

@@ -49,10 +49,8 @@ export default {
   },
   computed: {
     sameProjectConfigurations() {
-      // TODO : update when fixed
-      let projectIdWithDpId = this.$store.state.ProjectPage.projectId;
-      const dataProviderId = projectIdWithDpId.split("|")[0];
-      const projectId = projectIdWithDpId.split("|")[1];
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      const projectId = this.$store.state.ProjectPage.projectId;
 
       return this.configurations.filter(
         (conf) =>
@@ -61,10 +59,8 @@ export default {
     },
 
     otherConfigurations() {
-      // TODO : update when fixed
-      let projectIdWithDpId = this.$store.state.ProjectPage.projectId;
-      const dataProviderId = projectIdWithDpId.split("|")[0];
-      const projectId = projectIdWithDpId.split("|")[1];
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      const projectId = this.$store.state.ProjectPage.projectId;
 
       return this.configurations.filter(
         (conf) =>

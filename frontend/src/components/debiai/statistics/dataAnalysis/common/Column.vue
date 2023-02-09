@@ -41,8 +41,6 @@ Click to set column as the main color"
 </template>
 
 <script>
-// TODO add min, max & aveg visu
-
 export default {
   props: {
     column: { type: Object, required: true },

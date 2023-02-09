@@ -127,9 +127,8 @@ export default {
   },
   methods: {
     getRequests() {
-      let projectId = this.$store.state.ProjectPage.projectId;
       this.requests = null;
-      this.$backendDialog.getRequests(projectId).then((requests) => {
+      this.$backendDialog.getRequests().then((requests) => {
         this.requests = requests;
         // sort requests by creation date
         this.requests.sort((a, b) => b.creationDate - a.creationDate);
@@ -140,10 +139,8 @@ export default {
       else this.selectedRequestId = request.id;
     },
     removeRequest(event, requestId) {
-      let projectId = this.$store.state.ProjectPage.projectId;
-
       this.$backendDialog
-        .delRequest(projectId, requestId)
+        .delRequest(requestId)
         .then(() => {
           this.requests = this.requests.filter(
             (request) => request.id !== requestId

@@ -43,7 +43,8 @@
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
-          ({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
+          ({ componentKey, configuration }) =>
+            addWidget(componentKey, null, configuration)
         "
       />
     </modal>
@@ -104,7 +105,9 @@
           :configuration="component.configuration"
           :index="component.id"
           v-on:remove="removeWidget(component)"
-          v-on:copy="(configuration) => copyWidget({ component, configuration })"
+          v-on:copy="
+            (configuration) => copyWidget({ component, configuration })
+          "
         >
           <component
             :is="component.key"
@@ -237,6 +240,7 @@ export default {
     // check data integrity
     if (!this.$route.params.data) {
       // No data sended, checking url references
+      let dataProviderId = this.$route.query.dataProviderId;
       let projectId = this.$route.query.projectId;
       let selectionIds = this.$route.query.selectionIds;
       let selectionIntersection = this.$route.query.selectionIntersection;
@@ -246,9 +250,10 @@ export default {
       if (projectId) {
         // Go back to project page to start an analysis imediatly
         this.$router.push({
-          path: "/project/" + projectId,
+          path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
           query: {
             projectId: projectId,
+            dataProviderId: dataProviderId,
             selectionIds: selectionIds,
             selectionIntersection: selectionIntersection,
             modelIds: modelIds,

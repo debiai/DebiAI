@@ -12,7 +12,7 @@
       />
     </modal>
     <!-- Selection selection modal -->
-    <modal v-show="selectDataset">
+    <modal v-if="selectDataset">
       <SelectionSelection @cancel="selectDataset = false" />
     </modal>
     <!-- Filters modal -->

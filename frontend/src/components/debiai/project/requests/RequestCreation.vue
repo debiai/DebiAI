@@ -117,10 +117,8 @@ export default {
   },
   methods: {
     saveRequest() {
-      let projectId = this.$store.state.ProjectPage.projectId;
       this.$backendDialog
         .addRequest(
-          projectId,
           this.requestName,
           this.requestDescription,
           this.filters
