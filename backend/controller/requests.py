@@ -33,7 +33,9 @@ def get_request(dataProviderId, projectId, requestId):
     request = requestsUtils.getRequest(dataProviderId, projectId, requestId)
 
     # Add the request selections to the request
-    requestSelections = requestsUtils.getRequestSelections(dataProviderId, projectId, requestId)
+    requestSelections = requestsUtils.getRequestSelections(
+        dataProviderId, projectId, requestId
+    )
     request["selections"] = requestSelections
 
     return request, 200
@@ -76,7 +78,9 @@ def create_selection(dataProviderId, projectId, requestId, data):
 
     # Create the selection
     try:
-        requestsUtils.createSelection(dataProviderId, projectId, requestId, data["selectionName"])
+        requestsUtils.createSelection(
+            dataProviderId, projectId, requestId, data["selectionName"]
+        )
     except KeyError as e:
         return str(e), 403
     return 200

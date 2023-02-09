@@ -35,7 +35,9 @@ def post_tag(dataProviderId, projectId, data):
         return "project " + projectId + " not found", 404
 
     # Save or update tag
-    return tagsUtils.updateTag(dataProviderId, projectId, data["tagName"], data["tagHash"])
+    return tagsUtils.updateTag(
+        dataProviderId, projectId, data["tagName"], data["tagHash"]
+    )
 
 
 def delete_tag(dataProviderId, projectId, tagId):
