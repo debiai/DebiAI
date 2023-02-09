@@ -41,19 +41,18 @@ paths:
           schema:
             type: object
             required:
-              - url
               - name
               - type
             properties:
-              url:
-                type: string
-                description: The url of the new data Provider
               name:
                 type: string
                 description: The name of the data Provider
               type:
                 type: string
-                description: Type of the data Provider (web)
+                description: Type of the data Provider (Web)
+              url:
+                type: string
+                description: The url of the new data Provider if type is Web
       responses:
         204:
           description: Data provider added to the list
