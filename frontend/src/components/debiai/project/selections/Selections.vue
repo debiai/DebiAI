@@ -3,7 +3,6 @@
     <!-- selectionCreation modal -->
     <modal v-if="selectionCreation">
       <Requests
-        :project="project"
         @close="selectionCreation = false"
         @newSelection="$emit('newSelection')"
       />
@@ -198,9 +197,7 @@ export default {
   },
   methods: {
     loadSelections() {
-      let projectId =
-        this.$store.state.ProjectPage.projectId;
-      this.$backendDialog.getSelections(projectId).then((selections) => {
+      this.$backendDialog.getSelections().then((selections) => {
         this.project = {};
         this.project.selections = selections;
       });
@@ -224,9 +221,8 @@ export default {
     },
     deleteSelection(selectionId) {
       this.$backendDialog
-        .delSelection(this.project.id, selectionId)
+        .delSelection(selectionId)
         .then(() => {
-          this.$backendDialog;
           this.$store.commit("sendMessage", {
             title: "success",
             msg: "Selection deleted",

@@ -3,6 +3,7 @@
 #############################################################################
 from config.init_config import get_config
 from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from utils.utils import is_url_valid
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.DataProviderException as DataProviderException
 
@@ -55,10 +56,17 @@ def post_data_providers(data):
 
     try:
         # Add data provider
-        if data["type"] == "Web":
+        if data["type"].lower() == "web":
+            # Check if url is valid
+            if "url" not in data:
+                return "A url must be provided", 400
+
+            if not is_url_valid(data["url"]):
+                return "Invalid url", 400
+
             data_provider_manager.add(WebDataProvider(data["url"], data["name"]))
         else:
-            return "Invalid data provider type", 400
+            return "Invalid data provider type, valid types are: Web", 400
 
         return None, 204
     except DataProviderException.DataProviderException as e:

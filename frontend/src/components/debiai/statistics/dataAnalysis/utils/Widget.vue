@@ -292,9 +292,8 @@ export default {
 
     // Export
     setExport(exportData) {
-      const projectIdAndDpId =this.$store.state.ProjectPage.projectId
-      const projectId = projectIdAndDpId.split('|')[0]
-      const dataProviderId = projectIdAndDpId.split('|')[1]
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      const projectId = this.$store.state.ProjectPage.projectId;
       const selectionIds = this.$store.state.ProjectPage.selectionsIds
 
       // Add project and data provider id to the export data

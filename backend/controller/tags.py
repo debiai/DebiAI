@@ -10,7 +10,7 @@ import utils.utils as utils
 #############################################################################
 
 
-def get_tags(projectId):
+def get_tags(dataProviderId, projectId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -18,48 +18,50 @@ def get_tags(projectId):
     return tagsUtils.getTags(projectId), 200
 
 
-def get_tag(projectId, tagId):
+def get_tag(dataProviderId, projectId, tagId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
-    tag = tagsUtils.getTagById(projectId, tagId)
+    tag = tagsUtils.getTagById(dataProviderId, projectId, tagId)
     if not tag:
         return "tag " + tagId + " not found", 404
     return tag, 200
 
 
-def post_tag(projectId, data):
+def post_tag(dataProviderId, projectId, data):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
     # Save or update tag
-    return tagsUtils.updateTag(projectId, data["tagName"], data["tagHash"])
+    return tagsUtils.updateTag(
+        dataProviderId, projectId, data["tagName"], data["tagHash"]
+    )
 
 
-def delete_tag(projectId, tagId):
+def delete_tag(dataProviderId, projectId, tagId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
-    if not tagsUtils.getTagById(projectId, tagId):
+    if not tagsUtils.getTagById(dataProviderId, projectId, tagId):
         return "tag " + tagId + " not found", 404
 
     # Delete tag
-    return tagsUtils.deleteTag(projectId, tagId)
+    return tagsUtils.deleteTag(dataProviderId, projectId, tagId)
 
 
-def get_tag_sample_tree(projectId, tagId, tagValue):
+def get_tag_sample_tree(dataProviderId, projectId, tagId, tagValue):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
 
-    if not tagsUtils.getTagById(projectId, tagId):
+    if not tagsUtils.getTagById(dataProviderId, projectId, tagId):
         return "tag " + tagId + " not found", 404
 
     # Get samples hash
-    samplesHash = tagsUtils.getSamplesHash(projectId, tagId, tagValue)
+    samplesHash = tagsUtils.getSamplesHash(dataProviderId, projectId, tagId, tagValue)
 
     # Converting samples hash into path
     hashList = debiaiUtils.getHashmap(projectId)
@@ -67,5 +69,5 @@ def get_tag_sample_tree(projectId, tagId, tagValue):
         samplesHash[i] = hashList[samplesHash[i]]
 
     # Get tree
-    tree = debiaiUtils.getBlockTreeFromSamples(projectId, samplesHash)
+    tree = debiaiUtils.getBlockTreeFromSamples(dataProviderId, projectId, samplesHash)
     return tree, 200

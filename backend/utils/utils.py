@@ -1,6 +1,7 @@
 import time
 import yaml
 from yaml.loader import SafeLoader
+from urllib.parse import urlparse
 
 
 def get_app_version():
@@ -17,3 +18,12 @@ def get_app_version():
 # Date
 def timeNow():
     return time.time() * 1000
+
+
+# Url
+def is_url_valid(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except:
+        return False

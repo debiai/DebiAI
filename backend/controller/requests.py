@@ -10,7 +10,7 @@ import utils.utils as utils
 #############################################################################
 
 
-def get_requests(projectId):
+def get_requests(dataProviderId, projectId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -21,7 +21,7 @@ def get_requests(projectId):
     return requests, 200
 
 
-def get_request(projectId, requestId):
+def get_request(dataProviderId, projectId, requestId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -30,16 +30,18 @@ def get_request(projectId, requestId):
         return "Request  " + requestId + " not found", 404
 
     # Get request
-    request = requestsUtils.getRequest(projectId, requestId)
+    request = requestsUtils.getRequest(dataProviderId, projectId, requestId)
 
     # Add the request selections to the request
-    requestSelections = requestsUtils.getRequestSelections(projectId, requestId)
+    requestSelections = requestsUtils.getRequestSelections(
+        dataProviderId, projectId, requestId
+    )
     request["selections"] = requestSelections
 
     return request, 200
 
 
-def post_request(projectId, data):
+def post_request(dataProviderId, projectId, data):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -54,7 +56,7 @@ def post_request(projectId, data):
     return requestInfo, 200
 
 
-def delete_request(projectId, requestId):
+def delete_request(dataProviderId, projectId, requestId):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -63,10 +65,10 @@ def delete_request(projectId, requestId):
         return "Request  " + requestId + " not found", 404
 
     # Delete the request
-    requestsUtils.deleteRequest(projectId, requestId)
+    requestsUtils.deleteRequest(dataProviderId, projectId, requestId)
 
 
-def create_selection(projectId, requestId, data):
+def create_selection(dataProviderId, projectId, requestId, data):
     # ParametersCheck
     if not debiaiUtils.project_exist(projectId):
         return "project " + projectId + " not found", 404
@@ -76,7 +78,9 @@ def create_selection(projectId, requestId, data):
 
     # Create the selection
     try:
-        requestsUtils.createSelection(projectId, requestId, data["selectionName"])
+        requestsUtils.createSelection(
+            dataProviderId, projectId, requestId, data["selectionName"]
+        )
     except KeyError as e:
         return str(e), 403
     return 200

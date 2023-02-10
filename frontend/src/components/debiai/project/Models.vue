@@ -197,14 +197,14 @@ export default {
     },
     deleteModel(modelId, event) {
       this.$backendDialog
-        .delModel(this.project.id, modelId)
+        .delModel(modelId)
         .then(() => {
-          this.$backendDialog;
           this.$store.commit("sendMessage", {
             title: "success",
             msg: "Model deleted",
           });
 
+          // Remove the model from the selected models
           this.selectedModelIds = this.selectedModelIds.filter(
             (mId) => mId !== modelId
           );

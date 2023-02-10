@@ -1,5 +1,5 @@
 # Get the list of samples ID of the project
-def get_list(project_id, data_provider, data):
+def get_list(data_provider, project_id, data):
     # Option 1 : get samples id list
     # Option 2 : get samples id list from selections (intersection or union)
     # Option 3 : get samples id list from model results (common or not)

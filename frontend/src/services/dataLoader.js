@@ -1,5 +1,5 @@
 import store from '../store'
-import cacheService from './cacheService'
+// import cacheService from './cacheService'
 import services from "./services"
 
 const backendDialog = require("./backendDialog")
@@ -29,21 +29,27 @@ function updateRequestProgress(code, progress) {
 function endRequest(code) {
   store.commit("endRequest", code)
 }
-async function getDataProviderLimit(dataProviderId) {
+async function getDataProviderLimit() {
   try {
-    let dataProviderInfo = await backendDialog.default.getSingleDataProvider(dataProviderId);
+    let dataProviderInfo = await backendDialog.default.getSingleDataProvider();
 
     const dataProviderLimit = {
-        maxIdLimit : dataProviderInfo.maxSampleIdByRequest || 10000,
-        maxDataLimit : dataProviderInfo.maxSampleDataByRequest || 2000,
-        maxResultLimit : dataProviderInfo.maxResultByRequest || 5000
+      maxIdLimit: dataProviderInfo.maxSampleIdByRequest || 10000,
+      maxDataLimit: dataProviderInfo.maxSampleDataByRequest || 2000,
+      maxResultLimit: dataProviderInfo.maxResultByRequest || 5000
     }
 
     return dataProviderLimit;
 
   } catch (error) {
+    console.log("Error while getting data provider limit, using default values");
     console.log(error);
-    throw error;
+
+    return {
+      maxIdLimit: 10000,
+      maxDataLimit: 2000,
+      maxResultLimit: 5000
+    }
   }
 
 }
@@ -61,7 +67,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
-    const res = await backendDialog.default.getProjectSamples(projectMetadata.projectId, {
+    const res = await backendDialog.default.getProjectSamples({
       selectionIds, selectionIntersection, modelIds, commonResults
     })
     return res.samples
@@ -80,7 +86,7 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
         const from = i * accepteSize
         const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1
 
-        const res = await backendDialog.default.getProjectSamples(projectMetadata.projectId, { from, to })
+        const res = await backendDialog.default.getProjectSamples({ from, to })
 
         if (res.samples.length === 0) throw ("No samples found while loading project samples ID list from " + from + " to " + to)
         if (res.samples.length !== to - from + 1) throw ("Wrong number of samples while loading project samples ID list from " + from + " to " + to +
@@ -100,19 +106,18 @@ async function getProjectSamplesIdList(projectMetadata, selectionIds = [], selec
     return samplesIdList
   }
 }
-async function getProjectMetadata(projectId, { considerResults }) {
-  let projectInfo = await backendDialog.default.getProject(projectId)
+async function getProjectMetadata({ considerResults }) {
+  let projectInfo = await backendDialog.default.getProject()
 
   // Labels creation from block level info
   var metaData = {
-    projectId: projectInfo.id,
     timestamp: projectInfo.creationDate,
     nbSamples: projectInfo.nbSamples,
     labels: [],
     categories: [],
     type: [],
   }
-  
+
   // // Set the Sample_ID in the Other category
   // metaData.labels.push("Sample_ID")
   // metaData.categories.push("other")
@@ -149,7 +154,7 @@ async function getProjectMetadata(projectId, { considerResults }) {
 
   return metaData
 }
-async function downloadSamplesData(projectId, projectMetadata, sampleIds) {
+async function downloadSamplesData(projectMetadata, sampleIds) {
   const CHUNK_SIZE = projectMetadata.dataProvider.maxDataLimit
   let pulledData = 0
   let nbSamples = sampleIds.length
@@ -167,16 +172,17 @@ async function downloadSamplesData(projectId, projectMetadata, sampleIds) {
       let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE)
 
       // First, pull the samples from the browser memory
-      let cachedSamples = await cacheService.getSamplesByIds(projectId, projectMetadata.timestamp, samplesToPull)
-      let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
-      retArray = [...retArray, ...Object.values(cachedSamples)]
-      retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
+      // let cachedSamples = await cacheService.getSamplesByIds(projectMetadata.timestamp, samplesToPull)
+      // let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
+      // retArray = [...retArray, ...Object.values(cachedSamples)]
+      // retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
+      let samplesToDownload = samplesToPull
 
       if (samplesToDownload.length) {
         // Then download the missing samples
         console.log(samplesToDownload.length + " samples to download")
 
-        let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(projectId, samplesToDownload)
+        let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(samplesToDownload)
 
         // We receive an map of samples
         let map = downloadedSamples.data
@@ -186,7 +192,7 @@ async function downloadSamplesData(projectId, projectMetadata, sampleIds) {
         retDataIdlist = [...retDataIdlist, ...Object.keys(map)]
 
         // Store the samples in the cache
-        // await cacheService.storeSamples(projectId, timestamp, map) TODO 
+        // await cacheService.storeSamples(timestamp, map) TODO 
       }
 
       // Update the progress
@@ -202,7 +208,7 @@ async function downloadSamplesData(projectId, projectMetadata, sampleIds) {
 }
 
 
-async function downloadResults(projectId, projectMetadata, modelId, sampleIds) {
+async function downloadResults(projectMetadata, modelId, sampleIds) {
   const CHUNK_SIZE = projectMetadata.dataProvider.maxResultLimit;
   let pulledData = 0
   // Create a request
@@ -212,7 +218,7 @@ async function downloadResults(projectId, projectMetadata, modelId, sampleIds) {
 
   try {
     // Not done because more time is spent storing the cache : First, pull the tree from the browser memory
-    // let cachedResults = await cacheService.getModelResultsByIds(projectId, timestamp, modelId, sampleIds)
+    // let cachedResults = await cacheService.getModelResultsByIds(timestamp, modelId, sampleIds)
     // let resutlsToDownload = sampleIds.filter(sampleId => !(sampleId in cachedResults))
 
     // add the cached results to our results without empty one
@@ -228,15 +234,14 @@ async function downloadResults(projectId, projectMetadata, modelId, sampleIds) {
 
       let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE)
 
-      let modelResults = await backendDialog.default.getModelResults(projectId, modelId, samplesToPull)
+      let modelResults = await backendDialog.default.getModelResults(modelId, samplesToPull)
       modelResultsRet = Object.assign({}, modelResultsRet, modelResults)
 
-      // TODO : Save restults in the cache, save {} in case of not evaluated
       // let resultsToSave = {}
       // samplesToPull.forEach(sampleId => {
       //   resultsToSave[sampleId] = sampleId in modelResultsRet ? modelResultsRet[sampleId] : null
       // });
-      // cacheService.saveResults(projectId, timestamp, modelId, resultsToSave)
+      // cacheService.saveResults(timestamp, modelId, resultsToSave)
 
       pulledData += CHUNK_SIZE
       store.commit("updateRequestProgress", { code: requestCode, progress: pulledData / nbSamples })
@@ -262,17 +267,12 @@ const max = (arr) => {
 }
 
 // Main methods :
-/**
- * @param {string} projectId
- * @returns
- */
-async function loadData(projectId, selectionIds, selectionIntersection) {
+async function loadData(selectionIds, selectionIntersection) {
   // Downloading project meta data, requiered to interprate the tree
-  let projectMetadata = await getProjectMetadata(projectId, { considerResults: false })
+  let projectMetadata = await getProjectMetadata({ considerResults: false })
 
-  //Temporary Use to get data Provider Id, TODO : CHANGE ID WHEN 
-  const dataProviderId = projectId.split("|");
-  let dataProviderInfo = await getDataProviderLimit(dataProviderId[0]);
+  // Get the data provider info (pull limitations)
+  let dataProviderInfo = await getDataProviderLimit();
   projectMetadata['dataProvider'] = dataProviderInfo;
 
   // Get the samples to pull
@@ -280,7 +280,6 @@ async function loadData(projectId, selectionIds, selectionIntersection) {
 
   // Download and convert the tree
   const { dataArray, sampleIdList } = await downloadSamplesData(
-    projectId,
     projectMetadata,
     samplesToPull
   )
@@ -292,18 +291,17 @@ async function loadData(projectId, selectionIds, selectionIntersection) {
   }
 }
 /**
- * @param {string} projectId
  * @param {Array<string>} modelIds
  * @param {boolean} common get the common sample or not
  * @param {string?} selectionId Get model on the selection if provided
  */
-async function loadDataAndModelResults(projectId, selectionIds, selectionIntersection, modelIds, commonResults) {
+async function loadDataAndModelResults(selectionIds, selectionIntersection, modelIds, commonResults) {
 
   // Downloading project meta data, requiered to interprate the tree
-  let projectMetadata = await getProjectMetadata(projectId, { considerResults: true })
-  //Temporary Use to get data Provider Id, TODO : CHANGE ID WHEN 
-  const dataProviderId = projectId.split("|");
-  let dataProviderInfo = await getDataProviderLimit(dataProviderId[0]);
+  let projectMetadata = await getProjectMetadata({ considerResults: true })
+
+  // Get the data provider info (pull limitations)
+  let dataProviderInfo = await getDataProviderLimit();
   projectMetadata['dataProvider'] = dataProviderInfo;
 
   // Get the samples ID to pull
@@ -311,7 +309,6 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
 
   // Download and convert the tree
   const { dataArray, sampleIdList } = await downloadSamplesData(
-    projectId,
     projectMetadata,
     samplesToPull
   )
@@ -328,13 +325,12 @@ async function loadDataAndModelResults(projectId, selectionIds, selectionInterse
       const modelId = modelIds[i];
 
       let modelResults = await downloadResults(
-        projectId,
         projectMetadata,
         modelId,
         samplesToPull
       )
 
-      
+
       // We now have a sample array and a list of results
       // We need to duplicate each one of the samples for each one of the sample results
       // ie : if a sample got evaluated on 3 models, the sample must be 3 time sample, each one
@@ -467,7 +463,6 @@ async function arrayToJson(array, metaData) {
 }
 
 async function loadProjectSamples({
-  projectId,
   selectionIds = null,
   selectionIntersection = false,
   modelIds = null,
@@ -481,7 +476,6 @@ async function loadProjectSamples({
   try {
     if (modelIds && modelIds.length > 0) {
       projectSamples = await loadDataAndModelResults(
-        projectId,
         selectionIds,
         selectionIntersection,
         modelIds,
@@ -489,7 +483,6 @@ async function loadProjectSamples({
       )
     } else {
       projectSamples = await loadData(
-        projectId,
         selectionIds,
         selectionIntersection
       )

@@ -15,14 +15,19 @@ function endRequest(code) {
   store.commit("endRequest", code)
 }
 
+function dataProviderId() {
+  const dpId = store.state.ProjectPage.dataProviderId
+  if (dpId === null || dpId === undefined) throw new Error("Data provider ID not set")
+  return dpId
+}
+
+function projectId() {
+  const pId = store.state.ProjectPage.projectId
+  if (pId === null || pId === undefined) throw new Error("Project ID not set")
+  return pId
+}
+
 export default {
-
-  ping() { return axios.get(apiURL) },
-
-  log(projectId, data) {
-    return axios.post(apiURL + "projects/" + projectId + "/log", data);
-  },
-
   // ====== Menu
 
   // Projects
@@ -34,33 +39,17 @@ export default {
       return response.data
     })
   },
-  addProject(project) {
-    let code = startRequest("Creating project")
-    return axios.post(apiURL + 'projects', project).finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-  getProject(id) {
+  getProject() {
     let code = startRequest("Getting project data")
-    return axios.get(apiURL + 'projects/' + id).finally(() => {
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId()).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
     })
   },
-  deleteProject(id) {
+  deleteProject() {
     let code = startRequest("Deleting project")
-    return axios.delete(apiURL + 'projects/' + id).finally(() => {
-      endRequest(code)
-    }).then((response) => {
-      return response.data
-    })
-  },
-  saveProjectlevels(projectId, blockLevels) {
-    let code = startRequest("Creating project")
-    return axios.post(apiURL + 'projects/' + projectId + '/blocklevels', blockLevels).finally(() => {
+    return axios.delete(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId()).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
@@ -76,9 +65,9 @@ export default {
       return response.data
     })
   },
-  getSingleDataProvider(dataProviderId) {
+  getSingleDataProvider() {
     let code = startRequest("Getting data provider limit");
-    return axios.get(apiURL + 'data-providers/' + dataProviderId).finally(() => {
+    return axios.get(apiURL + 'data-providers/' + dataProviderId()).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data;
@@ -98,22 +87,22 @@ export default {
   },
 
   // Samples
-  getSampleNumber(projectId, selectionId = undefined) {
+  getSampleNumber(selectionId = undefined) {
     let code = startRequest("Loading the project data")
-    let request = apiURL + 'projects/' + projectId + '/getAvailableDataNumber'
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/getAvailableDataNumber'
     if (selectionId) request += '?selectionId=' + selectionId
 
     return axios.get(request).finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  getSampleNumberWithModelResults(projectId, modelIds, common) {
+  getSampleNumberWithModelResults(modelIds, common) {
     let code = startRequest("Loading the project data")
-    let request = apiURL + 'projects/' + projectId + '/getAvailableDataNumberWithModelResults?modelIds=' + modelIds + '&common=' + common
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/getAvailableDataNumberWithModelResults?modelIds=' + modelIds + '&common=' + common
 
     return axios.get(request).finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  getProjectSamples(projectId, {
+  getProjectSamples({
     selectionIds = [],
     selectionIntersection = false,
     modelIds = [],
@@ -123,9 +112,7 @@ export default {
   }) {
     let code;
     if (from === null) code = startRequest("Loading the project samples list")
-    let request = apiURL + 'projects/' + projectId + '/samples'
-
-    console.log("getProjectSamples", projectId, selectionIds, selectionIntersection, modelIds, commonResults);
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/samples'
 
     const requestBody = {
       selectionIds,
@@ -142,58 +129,58 @@ export default {
     return axios.post(request, requestBody).finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  getSelectionSamples(projectId, selectionId) {
+  getSelectionSamples(selectionId) {
     let code = startRequest("Loading the project samples list")
-    let request = apiURL + 'projects/' + projectId + '/selectionSamples/' + selectionId
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/selectionSamples/' + selectionId
 
     return axios.get(request).finally(() => endRequest(code))
       .then((response) => response.data)
   },
 
   // Blocks
-  addBlock(projectId, block) {
+  addBlock(block) {
     let code = startRequest("Adding Block")
-    return axios.post(apiURL + 'projects/' + projectId + '/blocks', block).finally(() => {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocks', block).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
     })
   },
-  getBlocks(projectId, depth = 1) {
+  getBlocks(depth = 1) {
     let code = startRequest("Loading the project data")
 
-    return axios.get(apiURL + 'projects/' + projectId + '/blocks?depth=' + depth).finally(() => {
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocks?depth=' + depth).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
     })
   },
-  getBlocksChunk(projectId, start, size, selectionId = undefined) {
-    let request = apiURL + 'projects/' + projectId + '/trainingSamples?start=' + start + '&size=' + size
+  getBlocksChunk(start, size, selectionId = undefined) {
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/trainingSamples?start=' + start + '&size=' + size
     if (selectionId) request += '&selectionId=' + selectionId
 
     return axios.get(request).then((response) => response.data)
   },
-  getBlocksChunkWithModelResults(projectId, start, size, modelIds, common, selectionId = undefined) {
-    let request = apiURL + 'projects/' + projectId +
+  getBlocksChunkWithModelResults(start, size, modelIds, common, selectionId = undefined) {
+    let request = apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() +
       '/trainingSamplesWithModelResults?start=' + start + '&size=' + size + '&modelIds=' + modelIds + '&common=' + common
     if (selectionId) request += '&selectionId=' + selectionId
 
     return axios.get(request).then((response) => response.data)
   },
-  getBlocksFromSelection(projectId, selectionId, depth = 1) {
+  getBlocksFromSelection(selectionId, depth = 1) {
     let code = startRequest("Loading the request data")
 
-    return axios.get(apiURL + 'projects/' + projectId + '/blocks/' + selectionId + '?depth=' + depth).finally(() => {
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocks/' + selectionId + '?depth=' + depth).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
     })
   },
-  getBlocksTree(projectId, blockId, blockPath, depth = 1) {
+  getBlocksTree(blockId, blockPath, depth = 1) {
     let code = startRequest("Loading the project data")
 
-    return axios.post(apiURL + 'projects/' + projectId + '/block', {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/block', {
       blockId,
       blockPath,
       depth,
@@ -203,10 +190,10 @@ export default {
       return response.data
     })
   },
-  getBlocksTreeWithModelResults(projectId, modelIds, common) {
+  getBlocksTreeWithModelResults(modelIds, common) {
     let code = startRequest("Loading the project data and the model results")
 
-    return axios.post(apiURL + 'projects/' + projectId + '/blocksWithModelResults', {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocksWithModelResults', {
       modelIds,
       common,
     }).finally(() => {
@@ -215,45 +202,45 @@ export default {
       return response.data
     })
   },
-  getBlocksFromSampleIds(projectId, sampleIds) {
-    return axios.post(apiURL + 'projects/' + projectId + '/blocksFromSampleIds', { sampleIds })
+  getBlocksFromSampleIds(sampleIds) {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/blocksFromSampleIds', { sampleIds })
       .then((response) => response.data)
   },
 
   // Models
-  getModelResults(projectId, modelId, sampleIds) {
-    return axios.post(apiURL + 'projects/' + projectId + '/models/' + modelId + '/getModelResults', { sampleIds })
+  getModelResults(modelId, sampleIds) {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/models/' + modelId + '/getModelResults', { sampleIds })
       .then((response) => response.data)
   },
 
-  delModel(projectId, modelId) {
+  delModel(modelId) {
     let code = startRequest("Deleting selection")
-    return axios.delete(apiURL + 'projects/' + projectId + '/models/' + modelId)
+    return axios.delete(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/models/' + modelId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
 
 
   // Selections
-  getSelections(projectId) {
+  getSelections() {
     let code = startRequest("Loading selections")
-    return axios.get(apiURL + 'projects/' + projectId + '/selections/')
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/selections/')
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  addSelection(projectId, sampleHashList, selectionName, requestId = null) {
+  addSelection(sampleHashList, selectionName, requestId = null) {
     console.log(requestId);
     let code = startRequest("Saving selection")
-    return axios.post(apiURL + 'projects/' + projectId + '/selections/',
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/selections/',
       { sampleHashList, selectionName, requestId }).finally(() => {
         endRequest(code)
       }).then((response) => {
         return response.data
       })
   },
-  delSelection(projectId, selectionId) {
+  delSelection(selectionId) {
     let code = startRequest("Deleting selection")
-    return axios.delete(apiURL + 'projects/' + projectId + '/selections/' + selectionId).finally(() => {
+    return axios.delete(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/selections/' + selectionId).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
@@ -261,38 +248,38 @@ export default {
   },
 
   // Requests
-  getRequests(projectId) {
+  getRequests() {
     let code = startRequest("Loading requests")
-    return axios.get(apiURL + 'projects/' + projectId + '/requests/')
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/requests/')
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  getRequest(projectId, requestId) {
+  getRequest(requestId) {
     let code = startRequest("Loading request")
-    return axios.get(apiURL + 'projects/' + projectId + '/requests/' + requestId)
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/requests/' + requestId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  addRequest(projectId, requestName, requestDescription, filters) {
+  addRequest(requestName, requestDescription, filters) {
     let code = startRequest("Saving the request")
-    return axios.post(apiURL + 'projects/' + projectId + '/requests/',
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/requests/',
       { requestName, requestDescription, filters }).finally(() => {
         endRequest(code)
       }).then((response) => {
         return response.data
       })
   },
-  createSelectionFromRequest(projectId, requestId, selectionName) {
+  createSelectionFromRequest(requestId, selectionName) {
     let code = startRequest("Creating a selection")
-    return axios.post(apiURL + 'projects/' + projectId + '/requests/' + requestId + '/newSelection', { selectionName }).finally(() => {
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/requests/' + requestId + '/newSelection', { selectionName }).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
     })
   },
-  delRequest(projectId, requestId) {
+  delRequest(requestId) {
     let code = startRequest("Deleting request")
-    return axios.delete(apiURL + 'projects/' + projectId + '/requests/' + requestId).finally(() => {
+    return axios.delete(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/requests/' + requestId).finally(() => {
       endRequest(code)
     }).then((response) => {
       return response.data
@@ -373,21 +360,21 @@ export default {
   },
 
   // Tags
-  updateTag(projectId, tagName, tagHash) {
+  updateTag(tagName, tagHash) {
     let code = startRequest("Updating tag")
-    return axios.post(apiURL + 'projects/' + projectId + '/tags', { tagName, tagHash })
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/tags', { tagName, tagHash })
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  getTags(projectId) {
+  getTags() {
     let code = startRequest("Loading tags")
-    return axios.get(apiURL + 'projects/' + projectId + '/tags')
+    return axios.get(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/tags')
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  deleteTag(projectId, tagId) {
+  deleteTag(tagId) {
     let code = startRequest("Deleting tag")
-    return axios.delete(apiURL + 'projects/' + projectId + '/tags/' + tagId)
+    return axios.delete(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/tags/' + tagId)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
@@ -414,14 +401,14 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },
-  exportSelection(projectId, selectionName, exportMethodId, sampleHashList, annotationValue) {
+  exportSelection(selectionName, exportMethodId, sampleHashList, annotationValue) {
     let toSend
 
     if (annotationValue) toSend = { selectionName, sampleHashList, exportMethodId, annotationValue }
     else toSend = { selectionName, sampleHashList, exportMethodId }
 
     let code = startRequest("Exporting the selection " + selectionName)
-    return axios.post(apiURL + 'projects/' + projectId + '/exportSelection', toSend)
+    return axios.post(apiURL + 'data-providers/' + dataProviderId() + '/projects/' + projectId() + '/exportSelection', toSend)
       .finally(() => endRequest(code))
       .then((response) => response.data)
   },

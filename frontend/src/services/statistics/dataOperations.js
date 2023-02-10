@@ -23,11 +23,6 @@ const columnsCreation = function (columns, selectedSamplesIds) {
           v.length > MAX_STRING_LENGTH ? v.substring(0, MAX_STRING_LENGTH) + "..." : v
         );
 
-      // TODO : fix many name clearance
-      // ticktext = col.uniques.map(s => s.length > MAX_STRING_LENGTH ? s.toString()
-      //   .substring(0, MAX_STRING_LENGTH - 3) + '...' : s);
-
-
       return {
         label: col.label,
         values: selectedSamplesIds.map(sId => col.valuesIndex[sId]),

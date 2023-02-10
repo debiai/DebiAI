@@ -7,7 +7,7 @@
         Block structure
         <button class="red" @click="settings = false">Close</button>
       </h2>
-      <BlockStructrureCreation :projectId="project.id" v-on:create="createBlockLevels" />
+      <BlockStructrureVisu />
       <!-- TODO results structure -->
 
       <!-- Tags -->
@@ -15,24 +15,42 @@
     </Modal>
 
     <!-- ProjectInfo -->
-    <ProjectInfo :project="project" v-on:settings="settings = !settings" v-on:refresh="loadProject"
-      v-on:deleteProject="deleteProject" />
+    <ProjectInfo
+      :project="project"
+      v-on:settings="settings = !settings"
+      v-on:refresh="loadProject"
+      v-on:deleteProject="deleteProject"
+    />
     <transition name="fade">
       <div id="projectContent" v-if="project">
         <div id="selectionAndModels">
           <!-- Data selection selection -->
-          <Selections :project="project" :nbSelectedSamples="nbSelectedSamples"
-            v-on:selectionSelected="selectionSelected" v-on:selectionDeleted="selectionDeleted"
-            v-on:setSelectionIntersection="(si) => (selectionIntersection = si)" v-on:newSelection="loadProject" />
+          <Selections
+            :project="project"
+            :nbSelectedSamples="nbSelectedSamples"
+            v-on:selectionSelected="selectionSelected"
+            v-on:selectionDeleted="selectionDeleted"
+            v-on:setSelectionIntersection="(si) => (selectionIntersection = si)"
+            v-on:newSelection="loadProject"
+          />
 
           <!-- Model selection -->
-          <Models :project="project" :nbEvaluatedSamples="nbEvaluatedSamples" :nbSelectedSamples="nbSelectedSamples"
-            :nbResults="nbResults" v-on:modelSelected="modelSelected" v-on:modelDeleted="modelDeleted"
-            v-on:setCommomModelResults="(cmr) => (commomModelResults = cmr)" />
+          <Models
+            :project="project"
+            :nbEvaluatedSamples="nbEvaluatedSamples"
+            :nbSelectedSamples="nbSelectedSamples"
+            :nbResults="nbResults"
+            v-on:modelSelected="modelSelected"
+            v-on:modelDeleted="modelDeleted"
+            v-on:setCommomModelResults="(cmr) => (commomModelResults = cmr)"
+          />
         </div>
 
         <!-- Start analysis -->
-        <Analysis :disabled="!readyToAnalyse" v-on:startAnalysis="startAnalysis" />
+        <Analysis
+          :disabled="!readyToAnalyse"
+          v-on:startAnalysis="startAnalysis"
+        />
       </div>
     </transition>
   </div>
@@ -41,7 +59,7 @@
 <script>
 // Components
 import ProjectInfo from "./ProjectInfo";
-import BlockStructrureCreation from "./blockStructure/BlockStructrureCreation.vue";
+import BlockStructrureVisu from "./blockStructure/BlockStructrureVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
 import Tags from "./tags/Tags.vue";
@@ -55,7 +73,7 @@ export default {
   name: "Project",
   components: {
     ProjectInfo,
-    BlockStructrureCreation,
+    BlockStructrureVisu,
     Models,
     Selections,
     Tags,
@@ -63,6 +81,7 @@ export default {
   },
   data: () => {
     return {
+      dataProviderId: null,
       projectId: null,
       project: null,
       loading: false,
@@ -81,15 +100,24 @@ export default {
     };
   },
   created() {
-    // get project ID from url path or router params
+    // get data-provider ID and project ID from url path or router params
+    let dataProviderId = this.$route.params.dataProviderId
+      ? this.$route.params.dataProviderId
+      : this.$route.query.dataProviderId;
     let projectId = this.$route.params.projectId
       ? this.$route.params.projectId
       : this.$route.query.projectId;
+
+    // Check if we need to start analysis right away
     let startAns = this.$route.query.startAnalysis;
 
-    if (projectId) {
-      // Load the project data
+    if (dataProviderId && projectId) {
+      this.$store.commit("setDataProviderId", dataProviderId);
+      this.$store.commit("setProjectId", projectId);
+      this.dataProviderId = dataProviderId;
       this.projectId = projectId;
+
+      // Load the project data
       this.loadProject().then(() => {
         if (startAns) {
           console.log("Start analysis");
@@ -116,13 +144,16 @@ export default {
           });
         }
       });
-    } else this.$router.push("/");
+    } else {
+      console.log("No project ID or no data provider ID");
+      this.$router.push("/");
+    }
   },
   methods: {
     async loadProject() {
       this.project = null;
       return this.$backendDialog
-        .getProject(this.projectId)
+        .getProject()
         .then((project) => {
           this.project = project;
           this.nbSelectedSamples = this.project.nbSamples;
@@ -136,7 +167,6 @@ export default {
           );
 
           // store some info
-          this.$store.commit("setProjectId", this.project.id);
           this.$store.commit("setBlockLevels", this.project.blockLevelInfo);
         })
         .catch((e) => {
@@ -144,13 +174,8 @@ export default {
           this.$router.push("/");
         });
     },
-    createBlockLevels(levelsInfo) {
-      this.blockLevelCreation = false;
-      this.project.blockLevelInfo = levelsInfo;
-    },
 
     // Analysis Parameters
-
     selectionSelected(selectedSelectionsIds) {
       this.selectedSelectionsIds = selectedSelectionsIds;
       this.updateNbSamples();
@@ -163,7 +188,7 @@ export default {
       // Let the backend told us the common or grouped selections and evaluations
       this.loading = true;
       this.$backendDialog
-        .getProjectSamples(this.project.id, {
+        .getProjectSamples({
           selectionIds: this.selectedSelections.map((s) => s.id),
           selectionIntersection: this.selectionIntersection,
           modelIds: this.selectedModels.map((m) => m.id),
@@ -191,7 +216,7 @@ export default {
     startAnalysis({ newTab }) {
       if (newTab) {
         let routeData = this.$router.resolve({
-          path: "/project/" + this.projectId,
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
           query: {
             selectionIds: this.selectedSelectionsIds,
             selectionIntersection: this.selectionIntersection,
@@ -203,6 +228,7 @@ export default {
         window.open(routeData.href, "_blank");
       } else {
         this.loadData({
+          dataProviderId: this.dataProviderId,
           projectId: this.projectId,
           selectionIds: this.selectedSelectionsIds,
           selectionIntersection: this.selectionIntersection,
@@ -282,19 +308,22 @@ export default {
         dangerMode: true,
       }).then((validate) => {
         if (validate)
-          this.$backendDialog.deleteProject(this.projectId).then(() => {
-            this.$store.commit("sendMessage", {
-              title: "success",
-              msg: "Project deleted",
+          this.$backendDialog
+            .deleteProject()
+            .then(() => {
+              this.$store.commit("sendMessage", {
+                title: "success",
+                msg: "Project deleted",
+              });
+              this.$router.push("/");
+            })
+            .catch((e) => {
+              console.log(e);
+              this.$store.commit("sendMessage", {
+                title: "error",
+                msg: "Could not delete the project",
+              });
             });
-            this.$router.push("/");
-          }).catch((e) => {
-            console.log(e);
-            this.$store.commit("sendMessage", {
-              title: "error",
-              msg: "Could not delete the project"
-            });
-          });
       });
     },
     selectionDeleted(selectionId) {

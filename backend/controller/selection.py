@@ -10,10 +10,7 @@ import dataProviders.DataProviderException as DataProviderException
 #############################################################################
 
 
-def get_selections(projectId):
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
+def get_selections(dataProviderId, projectId):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         return data_provider.get_selections(projectId), 200
@@ -21,10 +18,7 @@ def get_selections(projectId):
         return e.message, e.status_code
 
 
-def post_selection(projectId, data):
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
+def post_selection(dataProviderId, projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data_provider.create_selection(
@@ -38,10 +32,7 @@ def post_selection(projectId, data):
         return e.message, e.status_code
 
 
-def delete_selection(projectId, selectionId):
-    dataProviderId = projectId.split("|")[0]
-    projectId = projectId.split("|")[1]
-
+def delete_selection(dataProviderId, projectId, selectionId):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data_provider.delete_selection(projectId, selectionId)

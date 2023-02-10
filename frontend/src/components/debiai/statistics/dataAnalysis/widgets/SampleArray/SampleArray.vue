@@ -113,7 +113,6 @@ export default {
       this.settings = false;
 
       this.params.data = data;
-      // TODO : Fix order by somehow not displaying
       this.params.sort = this.selectedColumnsIds.map((c, i) => i);
       this.$parent.selectedDataWarning = false;
     },

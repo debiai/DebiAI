@@ -279,7 +279,6 @@ export default {
     },
 
     drawMatrix(matrixList, allUniques) {
-      // TODO : Add the name to the plot
       const colorscale = [
         [0, "rgb(255,255,255)"],
         [1, "rgb(255,0,0)"],

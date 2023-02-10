@@ -135,7 +135,6 @@ export default {
         },
       };
 
-      // TODO : Try to display per chunk
       Plotly.newPlot(this.divParCord, [trace], layout, {
         displayModeBar: false,
         responsive: true,

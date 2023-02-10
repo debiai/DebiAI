@@ -48,7 +48,7 @@ class KafkaExportMethod(ExportMethod):
             self.up = True
         except Exception as e:
             print("Kafka producer creation failed : " + str(e))
-            print("server : |" + self.server + "|")
+            print("server : '" + self.server + "'")
             raise Exception(
                 "Kafka producer creation on server '"
                 + self.server

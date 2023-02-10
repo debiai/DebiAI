@@ -106,18 +106,14 @@
         <div
           class="project"
           v-for="project in filteredProject"
-          :key="project.id"
-          @click="selectProject(project.id)"
+          :key="project.dataProviderId + ' / ' + project.id"
+          @click="selectProject(project.dataProviderId, project.id)"
         >
-          <!-- Project name & description -->
-          <div class="nameDesc">
-            <div class="name">{{ project.name }}</div>
-            <div class="description">
-              <!-- TODO -->
-            </div>
-          </div>
+          <!-- Project name -->
+          <div class="name">{{ project.name }}</div>
+
           <!-- Project items -->
-          <div class="items" v-if="!project.error">
+          <div class="items">
             <!-- Nb samples -->
             <div class="nbSamples" title="Number of samples">
               <inline-svg
@@ -168,13 +164,8 @@
               {{ project.nbModels }}
             </div>
           </div>
-          <div class="items error" v-else>
-            Something is wrong with the project :
-            <br />
-            {{ project.exeption }}
-          </div>
           <!-- Dates -->
-          <div class="dates" v-if="!project.error">
+          <div class="dates">
             <span
               class="createdDate"
               :title="$services.timeStampToDate(project.creationDate)"
@@ -223,7 +214,8 @@ export default {
   },
   data: () => {
     return {
-      projects: null,
+      projects: null, // List of projects
+      dataProviders: null, // List of data providers that contains the projects
       searchBar: "",
       appVersion: version,
       displayDataProviders: false,
@@ -249,10 +241,10 @@ export default {
           });
         });
     },
-    selectProject(projectId) {
+    selectProject(dataProviderId, projectId) {
       this.$router.push({
-        path: "/project/" + projectId,
-        params: { projectId }, // tu put the name in the title
+        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+        params: { projectId, dataProviderId },
       });
     },
   },
@@ -360,7 +352,7 @@ export default {
   display: grid;
   grid-template-columns: 3fr 1fr 1fr;
   grid-template-rows: 1fr;
-  grid-template-areas: "nameDesc items dates";
+  grid-template-areas: "name items dates";
 
   padding: 15px;
   margin: 0 20px 0 20px;
@@ -382,27 +374,11 @@ export default {
 }
 
 /* Name & desc  */
-.nameDesc {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 0fr 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "name"
-    "description";
-  grid-area: nameDesc;
-}
-
 .name {
   grid-area: name;
-  text-align: left;
+  display: flex;
+  align-items: flex-start;
   font-weight: bold;
-}
-
-.description {
-  grid-area: description;
-  text-align: left;
-  opacity: 0.8;
 }
 
 /* Items */

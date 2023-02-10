@@ -130,10 +130,9 @@ export default {
   },
   methods: {
     getRequest() {
-      let projectId = this.$store.state.ProjectPage.projectId;
       this.request = null;
       this.$backendDialog
-        .getRequest(projectId, this.requestId)
+        .getRequest(this.requestId)
         .then((request) => {
           this.request = request;
           // sort request selections by creation date
@@ -154,10 +153,8 @@ export default {
     },
 
     newSelection() {
-      let projectId = this.$store.state.ProjectPage.projectId;
       this.$backendDialog
         .createSelectionFromRequest(
-          projectId,
           this.request.id,
           this.newSelectionName
         )
@@ -187,11 +184,9 @@ export default {
         });
     },
     deleteSelection(selectionId) {
-      let projectId = this.$store.state.ProjectPage.projectId;
       this.$backendDialog
-        .delSelection(projectId, selectionId)
+        .delSelection(selectionId)
         .then(() => {
-          this.$backendDialog;
           this.$store.commit("sendMessage", {
             title: "success",
             msg: "Selection deleted",

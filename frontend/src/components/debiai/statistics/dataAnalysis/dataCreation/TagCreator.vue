@@ -145,14 +145,13 @@ export default {
       }
 
       if (this.saveTagBackend) {
-        let projectId = this.$store.state.SatisticalAnasysis.projectId;
         let tagHash = {};
         values.forEach((tag, sampleIndex) => {
           tagHash[this.data.sampleIdList[sampleIndex]] = tag;
         });
 
         this.$backendDialog
-          .updateTag(projectId, this.tagName, tagHash)
+          .updateTag(this.tagName, tagHash)
           .then(() => {
             this.$store.commit("sendMessage", {
               title: "success",
