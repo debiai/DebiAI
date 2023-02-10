@@ -2,8 +2,6 @@ import dataProviders.DataProviderException as DataProviderException
 import dataProviders.dataProviderManager as data_provider_manager
 import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
-PYTHON_DATA_PROVIDER_ID = PythonDataProvider.PYTHON_DATA_PROVIDER_ID
-
 
 # Project
 def post_project(data):
