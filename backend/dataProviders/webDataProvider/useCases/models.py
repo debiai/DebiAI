@@ -28,6 +28,7 @@ def get_models_info(url, project_id):
         # The route may not be implemented in the data provider
         return []
 
+
 def get_model_result_id(url, project_id, model_id):
     # Todo : Add route to call Id results for a Model (DP)
     # Todo : Add Some formating if data has to change
