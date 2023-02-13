@@ -1501,12 +1501,6 @@ definitions:
         type: string
         description: project ID
 
-      modelOverviews:
-        type: array
-        items:
-          $ref: "#/definitions/modelOverview"
-        description: list of the model overviews
-
       blockLevelInfo:
         type: array
         items:
