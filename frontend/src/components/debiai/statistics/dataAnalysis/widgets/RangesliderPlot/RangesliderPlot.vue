@@ -1,13 +1,27 @@
 <template>
   <div id="RangesliderPlot" class="dataVisualisationWidget">
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection">
-      <ColumnSelection title="Select the X axis" :data="data" :validateRequiered="false" :colorSelection="true"
-        :defaultSelected="[columnXindex]" v-on:cancel="xAxisSelection = false" v-on:colSelect="xAxiesSelect" />
+    <modal v-if="xAxisSelection" @close="xAxisSelection = false">
+      <ColumnSelection
+        title="Select the X axis"
+        :data="data"
+        :validateRequiered="false"
+        :colorSelection="true"
+        :defaultSelected="[columnXindex]"
+        v-on:cancel="xAxisSelection = false"
+        v-on:colSelect="xAxiesSelect"
+      />
     </modal>
-    <modal v-if="yAxisSelection">
-      <ColumnSelection title="Select the Y axis" :data="data" :validateRequiered="false" :colorSelection="true"
-        v-on:cancel="yAxisSelection = false" :defaultSelected="[columnYindex]" v-on:colSelect="yAxiesSelect" />
+    <modal v-if="yAxisSelection" @close="yAxisSelection = false">
+      <ColumnSelection
+        title="Select the Y axis"
+        :data="data"
+        :validateRequiered="false"
+        :colorSelection="true"
+        v-on:cancel="yAxisSelection = false"
+        :defaultSelected="[columnYindex]"
+        v-on:colSelect="yAxiesSelect"
+      />
     </modal>
 
     <div id="settings" v-if="settings">
@@ -17,16 +31,22 @@
           <div class="data">
             <div class="name">X axis</div>
             <div class="value">
-              <Column :column="data.columns.find((c) => c.index == columnXindex)" :colorSelection="true"
-                v-on:selected="xAxisSelection = true" />
+              <Column
+                :column="data.columns.find((c) => c.index == columnXindex)"
+                :colorSelection="true"
+                v-on:selected="xAxisSelection = true"
+              />
             </div>
           </div>
           <button class="warning" @click="swap">Swap</button>
           <div class="data">
             <div class="name">Y axis</div>
             <div class="value">
-              <Column :column="data.columns.find((c) => c.index == columnYindex)" :colorSelection="true"
-                v-on:selected="yAxisSelection = true" />
+              <Column
+                :column="data.columns.find((c) => c.index == columnYindex)"
+                :colorSelection="true"
+                v-on:selected="yAxisSelection = true"
+              />
             </div>
           </div>
         </div>
@@ -34,15 +54,19 @@
           <div class="data">
             <div class="name">Group by color</div>
             <div class="value">
-              <input type="checkbox" :id="'avegareAsBar' + index" class="customCbx" style="display: none"
-                v-model="dividePerColor" />
+              <input
+                type="checkbox"
+                :id="'avegareAsBar' + index"
+                class="customCbx"
+                style="display: none"
+                v-model="dividePerColor"
+              />
               <label :for="'avegareAsBar' + index" class="toggle">
                 <span></span>
               </label>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Draw -->
@@ -53,12 +77,11 @@
 
     <!-- Plot -->
     <div class="plot" :id="'rangesliderPlot_' + this.index"></div>
-
   </div>
 </template>
 
 <script>
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import Plotly from "plotly.js/dist/plotly";
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
@@ -84,7 +107,6 @@ export default {
       // Other
       currentDrawedColorIndex: null,
       plotDrawed: false,
-
     };
   },
   props: {
@@ -93,7 +115,6 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
-
     // Widget events
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
@@ -102,8 +123,8 @@ export default {
     this.$parent.$on("redraw", this.drawPlot);
 
     // Filtering
-    this.border1 = null
-    this.border2 = null
+    this.border1 = null;
+    this.border2 = null;
     // Filters events
     this.$parent.$on("filterStarted", this.filterStarted);
     this.$parent.$on("filterEnded", this.filterEnded);
@@ -154,12 +175,10 @@ export default {
     },
     defConfChangeUpdate() {
       this.$watch(
-        (vm) => (
-          vm.columnXindex,
-          vm.columnYindex,
-          Date.now()
-        ),
-        () => { this.$parent.confAsChanged = true }
+        (vm) => (vm.columnXindex, vm.columnYindex, Date.now()),
+        () => {
+          this.$parent.confAsChanged = true;
+        }
       );
     },
     getConfNameSuggestion() {
@@ -179,7 +198,7 @@ export default {
       let valuesX = this.selectedData.map((i) => colX.values[i]);
       let valuesY = this.selectedData.map((i) => colY.values[i]);
 
-      const lines = []
+      const lines = [];
 
       if (this.dividePerColor && this.coloredColumnIndex !== null) {
         // Color
@@ -202,18 +221,19 @@ export default {
           if (rep != "continue") return;
         }
 
-        let selectedColorsValues = colColor.type == String
-          ? this.selectedData.map((i) => colColor.valuesIndex[i])
-          : this.selectedData.map((i) => colColor.values[i]);
-        let selectorUniques = colColor.type == String
-          ? colColor.valuesIndexUniques
-          : colColor.uniques;
+        let selectedColorsValues =
+          colColor.type == String
+            ? this.selectedData.map((i) => colColor.valuesIndex[i])
+            : this.selectedData.map((i) => colColor.values[i]);
+        let selectorUniques =
+          colColor.type == String
+            ? colColor.valuesIndexUniques
+            : colColor.uniques;
 
         let groupedValues = dataOperations.groupBy(
           selectedColorsValues,
           selectorUniques
         );
-
 
         groupedValues.forEach((idValues, i) => {
           let colorX = idValues.map((i) => valuesX[i]);
@@ -222,31 +242,33 @@ export default {
           lines.push({
             x: colorX,
             y: colorY,
-            type: 'line',
+            type: "line",
             name: colColor.uniques[i],
-            transforms: [{
-              type: 'sort',
-              target: 'x',
-              order: 'descending'
-            }],
+            transforms: [
+              {
+                type: "sort",
+                target: "x",
+                order: "descending",
+              },
+            ],
           });
-        })
-      }
-      else {
+        });
+      } else {
         // No color
         lines.push({
           x: valuesX,
           y: valuesY,
-          type: 'line',
+          type: "line",
           name: "line1",
-          transforms: [{
-            type: 'sort',
-            target: 'x',
-            order: 'descending'
-          }],
+          transforms: [
+            {
+              type: "sort",
+              target: "x",
+              order: "descending",
+            },
+          ],
         });
       }
-
 
       const layout = {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
@@ -269,14 +291,14 @@ export default {
             autorange: true,
           },
         },
-        selectdirection: 'h',
+        selectdirection: "h",
         margin: {
           l: 50,
           r: 20,
           b: 50,
           t: 50,
         },
-        shapes: []
+        shapes: [],
       };
 
       // Draw
@@ -285,11 +307,10 @@ export default {
         responsive: true,
       });
 
-
       // Deal with point click to select data
       // Goal : place two lines and export bondaries
       this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
-      this.plotDiv.on('plotly_click', this.selectDataOnPlot);
+      this.plotDiv.on("plotly_click", this.selectDataOnPlot);
 
       this.plotDrawed = true;
       this.$parent.selectedDataWarning = false;
@@ -298,53 +319,54 @@ export default {
 
     drawLine(x) {
       const lineStyle = {
-        type: 'line',
+        type: "line",
         x0: x,
         x1: x,
 
         y0: 0,
         y1: 1,
-        yref: 'paper',
+        yref: "paper",
 
         line: {
-          color: 'red',
+          color: "red",
           width: 2,
-          dash: 'dashdot'
-        }
-      }
+          dash: "dashdot",
+        },
+      };
 
-      Plotly.relayout(this.plotDiv, { 'shapes[0]': lineStyle })
+      Plotly.relayout(this.plotDiv, { "shapes[0]": lineStyle });
     },
 
     drawRectangle(x1, x2) {
       const recStyle = {
-        type: 'rect',
+        type: "rect",
         x0: x1,
         x1: x2,
 
         y0: 0,
         y1: 1,
-        yref: 'paper',
+        yref: "paper",
 
-        fillcolor: 'red',
+        fillcolor: "red",
         opacity: 0.1,
-        line: { width: 0 }
-      }
+        line: { width: 0 },
+      };
 
-      Plotly.relayout(this.plotDiv, { 'shapes[0]': recStyle })
+      Plotly.relayout(this.plotDiv, { "shapes[0]": recStyle });
     },
 
     resetShapes() {
-      if (this.border1 !== null && this.border2 !== null) Plotly.relayout(this.plotDiv,
-        {
-          'shapes[0].visible': false, // First line
-          'shapes[1].visible': false, // Second line
-          'shapes[2].visible': false  // Rectangle
-        })
-      else if (this.border1 !== null) Plotly.relayout(this.plotDiv, { 'shapes[0].visible': false })
+      if (this.border1 !== null && this.border2 !== null)
+        Plotly.relayout(this.plotDiv, {
+          "shapes[0].visible": false, // First line
+          "shapes[1].visible": false, // Second line
+          "shapes[2].visible": false, // Rectangle
+        });
+      else if (this.border1 !== null)
+        Plotly.relayout(this.plotDiv, { "shapes[0].visible": false });
 
-      this.border1 = null
-      this.border2 = null
+      this.border1 = null;
+      this.border2 = null;
     },
 
     // axies selection
@@ -387,25 +409,24 @@ export default {
       // }
 
       // Get clicked point
-      if (data.points.length === 0) return
+      if (data.points.length === 0) return;
 
-      let selectionX = data.points[0].data.x[data.points[0].pointIndex]
+      let selectionX = data.points[0].data.x[data.points[0].pointIndex];
 
       // Update lines
       if (this.border1 === null) {
         // Nothing defined yet, first click
-        this.border1 = selectionX
-        this.drawLine(selectionX)
+        this.border1 = selectionX;
+        this.drawLine(selectionX);
       } else if (this.border2 === null) {
         // Second placement
-        this.border2 = selectionX
-        this.drawLine(selectionX)
-        this.drawRectangle(this.border1, this.border2)
+        this.border2 = selectionX;
+        this.drawLine(selectionX);
+        this.drawRectangle(this.border1, this.border2);
       } else {
         // Reset
-        this.resetShapes()
+        this.resetShapes();
       }
-
 
       if (this.border1 === null && this.border2 === null) {
         // Remove filter
@@ -422,16 +443,16 @@ export default {
         // Cancel export
         this.$parent.$emit("setExport", null);
 
-        return
+        return;
       }
 
-      if (this.border1 === null || this.border2 === null) return
+      if (this.border1 === null || this.border2 === null) return;
 
       // Create a debiai filter
       let colx = this.data.columns[this.columnXindex];
 
-      const min = this.border1 < this.border2 ? this.border1 : this.border2
-      const max = this.border1 > this.border2 ? this.border1 : this.border2
+      const min = this.border1 < this.border2 ? this.border1 : this.border2;
+      const max = this.border1 > this.border2 ? this.border1 : this.border2;
 
       const filter = {
         type: "intervals",
@@ -465,7 +486,6 @@ export default {
       };
 
       this.$parent.$emit("setExport", exportData);
-
     },
     filterStarted() {
       this.filtering = true;

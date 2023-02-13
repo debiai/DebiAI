@@ -79,7 +79,7 @@
     </div>
 
     <!-- New Method modal -->
-    <modal v-if="newExportMethodModal">
+    <modal v-if="newExportMethodModal" @close="newExportMethodModal = false">
       <ExportMethodCreator
         @cancel="newExportMethodModal = false"
         @created="

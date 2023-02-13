@@ -1,7 +1,7 @@
 <template>
   <div id="Footer">
     <!-- colored column selection modal -->
-    <modal v-if="selectColoredCol">
+    <modal v-if="selectColoredCol" @close="selectColoredCol = false">
       <ColumnSelection
         title="Select the workspace colored column"
         :data="data"
@@ -12,11 +12,11 @@
       />
     </modal>
     <!-- Selection selection modal -->
-    <modal v-if="selectDataset">
+    <modal v-if="selectDataset" @close="selectDataset = false">
       <SelectionSelection @cancel="selectDataset = false" />
     </modal>
     <!-- Filters modal -->
-    <modal v-show="filtersMenu">
+    <modal v-show="filtersMenu" @close="filtersMenu = false">
       <Filters :data="data" v-on:cancel="filtersMenu = false" />
     </modal>
 

@@ -1,26 +1,44 @@
 <template>
   <div class="card">
     <!-- Wigdet configuration load or save modal -->
-    <modal v-if="confSettings">
-      <WidgetConfPannel :widgetTitle="title" :widgetName="name" :confToSave="confToSave"
-        :suggestedConfName="suggestedConfName" :widgetKey="widgetKey"
-        @cancel="confSettings = false" @saved="confSaved" @confSelected="setConf"
-        @setWidgetName="setName" />
+    <modal v-if="confSettings" @close="confSettings = false">
+      <WidgetConfPannel
+        :widgetTitle="title"
+        :widgetName="name"
+        :confToSave="confToSave"
+        :suggestedConfName="suggestedConfName"
+        :widgetKey="widgetKey"
+        @cancel="confSettings = false"
+        @saved="confSaved"
+        @confSelected="setConf"
+        @setWidgetName="setName"
+      />
     </modal>
 
     <!-- Export data modal -->
-    <modal v-if="exportModal">
-      <DataExportMenu :dataToExport="exportData" @exported="exportModal = false" @cancel="exportModal = false" />
+    <modal v-if="exportModal" @close="exportModal = false">
+      <DataExportMenu
+        :dataToExport="exportData"
+        @exported="exportModal = false"
+        @cancel="exportModal = false"
+      />
     </modal>
 
     <!-- Widget -->
-    <div id="widgetHeader" :class="
-      'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')
-    ">
+    <div
+      id="widgetHeader"
+      :class="
+        'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')
+      "
+    >
       <!-- Name -->
       <h2 id="name">
         <!-- Widget filter position -->
-        <span v-if="widgetFilterOrder >= 0" title="Witget filtering order" id="witgetFilteringOrder">
+        <span
+          v-if="widgetFilterOrder >= 0"
+          title="Witget filtering order"
+          id="witgetFilteringOrder"
+        >
           {{ widgetFilterOrder + 1 }}
         </span>
         {{ name }}
@@ -52,13 +70,22 @@
           </div>
 
           <button class="warning" @click="drawPlot">Redraw</button>
-          <button @click="colorWarning = false; selectedDataWarning = false;">
+          <button
+            @click="
+              colorWarning = false;
+              selectedDataWarning = false;
+            "
+          >
             Hide
           </button>
         </div>
 
         <!-- Clear filters -->
-        <button v-if="clearFiltersAvailable" id="clearFiltersBtn" @click="clearFilters">
+        <button
+          v-if="clearFiltersAvailable"
+          id="clearFiltersBtn"
+          @click="clearFilters"
+        >
           <span class="badge">{{ widgetFilters.length }}</span>
           Clear filters
         </button>
@@ -67,45 +94,107 @@
       <!-- Options : configuration, copy, settings, close btn, ... -->
       <div class="options" v-if="!simple">
         <!-- export btn -->
-        <button v-if="exportData !== null" class="white aligned" title="Export widget data" @click="startExport">
+        <button
+          v-if="exportData !== null"
+          class="white aligned"
+          title="Export widget data"
+          @click="startExport"
+        >
           Export
-          <inline-svg :src="require('../../../../../assets/svg/send.svg')" height="14" width="18" />
+          <inline-svg
+            :src="require('../../../../../assets/svg/send.svg')"
+            height="14"
+            width="18"
+          />
         </button>
         <!-- filtering ongoing btn -->
-        <button v-if="canFilterSamples && startFiltering" class="purple highlighted" title="Stop filtering"
-          @click="startFiltering = !startFiltering">
-          <inline-svg :src="require('../../../../../assets/svg/filter.svg')" width="14" height="14" fill="white" />
+        <button
+          v-if="canFilterSamples && startFiltering"
+          class="purple highlighted"
+          title="Stop filtering"
+          @click="startFiltering = !startFiltering"
+        >
+          <inline-svg
+            :src="require('../../../../../assets/svg/filter.svg')"
+            width="14"
+            height="14"
+            fill="white"
+          />
           Filtering
         </button>
         <!-- start filtering btn -->
-        <button v-if="canFilterSamples && !startFiltering" class="purple"
-          :title="'Start filtering samples with the ' + title + ' widget'" @click="startFiltering = !startFiltering">
-          <inline-svg :src="require('../../../../../assets/svg/filter.svg')" width="14" height="14" fill="white" />
+        <button
+          v-if="canFilterSamples && !startFiltering"
+          class="purple"
+          :title="'Start filtering samples with the ' + title + ' widget'"
+          @click="startFiltering = !startFiltering"
+        >
+          <inline-svg
+            :src="require('../../../../../assets/svg/filter.svg')"
+            width="14"
+            height="14"
+            fill="white"
+          />
         </button>
         <!-- save configuration btn -->
-        <button v-if="canSaveConfiguration" :class="'info ' + (confAsChanged ? 'highlighted' : '')"
-          :title="'Save ' + title + ' widget configuration'" @click="saveConfiguration">
-          <inline-svg :src="
-            confAsChanged
-              ? require('../../../../../assets/svg/save.svg')
-              : require('../../../../../assets/svg/gear.svg')
-          " width="14" height="14" fill="white" />
+        <button
+          v-if="canSaveConfiguration"
+          :class="'info ' + (confAsChanged ? 'highlighted' : '')"
+          :title="'Save ' + title + ' widget configuration'"
+          @click="saveConfiguration"
+        >
+          <inline-svg
+            :src="
+              confAsChanged
+                ? require('../../../../../assets/svg/save.svg')
+                : require('../../../../../assets/svg/gear.svg')
+            "
+            width="14"
+            height="14"
+            fill="white"
+          />
         </button>
         <!-- dublicate btn -->
-        <button class="green" :title="'Duplicate the ' + title + ' widget'" @click="copy">
-          <inline-svg :src="require('../../../../../assets/svg/copy.svg')" width="14" height="14" fill="white" />
+        <button
+          class="green"
+          :title="'Duplicate the ' + title + ' widget'"
+          @click="copy"
+        >
+          <inline-svg
+            :src="require('../../../../../assets/svg/copy.svg')"
+            width="14"
+            height="14"
+            fill="white"
+          />
         </button>
         <!-- Settings btn -->
         <button class="warning" :title="title + ' settings'" @click="settings">
-          <inline-svg :src="require('../../../../../assets/svg/settings.svg')" width="14" height="14" />
+          <inline-svg
+            :src="require('../../../../../assets/svg/settings.svg')"
+            width="14"
+            height="14"
+          />
         </button>
         <!-- Cross btn -->
-        <button class="red" :title="'Close ' + title + ' widget'" @click="remove">
-          <inline-svg :src="require('../../../../../assets/svg/close.svg')" width="11" height="11" fill="white" />
+        <button
+          class="red"
+          :title="'Close ' + title + ' widget'"
+          @click="remove"
+        >
+          <inline-svg
+            :src="require('../../../../../assets/svg/close.svg')"
+            width="11"
+            height="11"
+            fill="white"
+          />
         </button>
       </div>
       <div class="options simple" v-else>
-        <button class="red" :title="'Close ' + title + ' widget'" @click="remove"></button>
+        <button
+          class="red"
+          :title="'Close ' + title + ' widget'"
+          @click="remove"
+        ></button>
       </div>
     </div>
 
@@ -183,7 +272,8 @@ export default {
           this.canFilterSamples = true;
 
         // Apply given configuration
-        if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
+        if (this.canSaveConfiguration && this.configuration)
+          this.setConf(this.configuration);
         this.loading = false;
       } else {
         // No component instance
@@ -294,7 +384,7 @@ export default {
     setExport(exportData) {
       const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
       const projectId = this.$store.state.ProjectPage.projectId;
-      const selectionIds = this.$store.state.ProjectPage.selectionsIds
+      const selectionIds = this.$store.state.ProjectPage.selectionsIds;
 
       // Add project and data provider id to the export data
       this.exportData = {
@@ -303,8 +393,7 @@ export default {
         data_provider_id: dataProviderId,
         selection_ids: selectionIds,
         ...exportData,
-      }
-
+      };
     },
 
     startExport() {
@@ -404,7 +493,7 @@ export default {
   width: 70px;
 }
 
-.options button+button {
+.options button + button {
   margin-left: 10px;
 }
 

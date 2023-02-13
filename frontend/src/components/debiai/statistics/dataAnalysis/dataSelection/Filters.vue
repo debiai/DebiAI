@@ -1,7 +1,7 @@
 <template>
   <div id="Filters">
     <!-- Column selection modal for creating a new filter -->
-    <modal v-if="filterColumnSelection">
+    <modal v-if="filterColumnSelection" @close="filterColumnSelection = false">
       <ColumnSelection
         title="Select a column to filter"
         :data="data"
@@ -12,12 +12,12 @@
     </modal>
 
     <!-- request creation modal -->
-    <modal v-if="requestCreation">
+    <modal v-if="requestCreation" @close="requestCreation = false">
       <RequestCreation @cancel="requestCreation = false" />
     </modal>
 
     <!-- Request selection modal -->
-    <modal v-if="requestSelection">
+    <modal v-if="requestSelection" @close="requestSelection = false">
       <Requests
         @close="requestSelection = false"
         :selectionMode="true"

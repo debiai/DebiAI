@@ -52,7 +52,10 @@
     <div id="footer" class="card">
       <div>
         <!-- Column selection Modals for creating a new filter -->
-        <modal v-if="filterColumnSelection">
+        <modal
+          v-if="filterColumnSelection"
+          @close="filterColumnSelection = false"
+        >
           <ColumnSelection
             title="Select a column to apply a filter on"
             v-on:cancel="filterColumnSelection = false"
@@ -118,11 +121,7 @@ export default {
   methods: {
     saveRequest() {
       this.$backendDialog
-        .addRequest(
-          this.requestName,
-          this.requestDescription,
-          this.filters
-        )
+        .addRequest(this.requestName, this.requestDescription, this.filters)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

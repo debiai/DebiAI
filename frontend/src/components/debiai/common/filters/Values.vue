@@ -4,48 +4,29 @@
     <modal
       v-if="addValuePannel"
       class="aligned"
+      @close="addValuePannel = false"
     >
       <h4>
         Add a value filter on the
-        <span
-          id="columnLabel"
-          class="margedSide"
-        >
+        <span id="columnLabel" class="margedSide">
           {{ filter.column.label }}
         </span>
         {{ filter.column.typeText }} column
       </h4>
 
       <!-- Controls -->
-      <div
-        class="controls aligned"
-        style="margin:20px"
-      >
+      <div class="controls aligned" style="margin: 20px">
         <!-- 'Number' column input -->
         <div v-if="filter.column.typeText == 'Number'">
-          <input
-            type="number"
-            v-model="newValue"
-            placeholder="Value"
-          />
+          <input type="number" v-model="newValue" placeholder="Value" />
         </div>
         <!-- 'text' and other column input -->
         <div v-else>
-          <input
-            type="text"
-            v-model="newValue"
-            placeholder="Value"
-          />
+          <input type="text" v-model="newValue" placeholder="Value" />
         </div>
 
-        <select
-          v-model="newValue"
-          v-if="filter.column.uniques"
-        >
-          <option
-            v-for="unValues in filter.column.uniques"
-            :key="unValues"
-          >
+        <select v-model="newValue" v-if="filter.column.uniques">
+          <option v-for="unValues in filter.column.uniques" :key="unValues">
             {{ unValues }}
           </option>
         </select>
@@ -65,10 +46,7 @@
         >
           Add and close
         </button>
-        <button
-          class="red"
-          @click="addValuePannel = false"
-        >Close</button>
+        <button class="red" @click="addValuePannel = false">Close</button>
       </div>
     </modal>
 
@@ -101,16 +79,17 @@ export default {
   methods: {
     addValue(closeAfter) {
       // Convert the value to the right type
-      const valueToAdd = this.filter.column.typeText === "Num"
-        ? parseFloat(this.newValue)
-        : this.newValue;
+      const valueToAdd =
+        this.filter.column.typeText === "Num"
+          ? parseFloat(this.newValue)
+          : this.newValue;
 
       // Add the value to the filter in the store
       this.$store.commit("addValueToFilter", {
         filterId: this.filter.id,
         value: valueToAdd,
       });
-      
+
       this.$emit("valueAdded", { value: valueToAdd, id: this.filter.id });
       this.newValue = null;
       if (closeAfter) this.addValuePannel = false;

@@ -1,7 +1,7 @@
 <template>
   <div id="intervalPlot" class="dataVisualisationWidget">
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection">
+    <modal v-if="xAxisSelection" @close="xAxisSelection = false">
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -12,7 +12,7 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="yAxisSelection">
+    <modal v-if="yAxisSelection" @close="yAxisSelection = false">
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
@@ -23,7 +23,7 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
-    <modal v-if="upperAxisSelection">
+    <modal v-if="upperAxisSelection" @close="upperAxisSelection = false">
       <ColumnSelection
         title="Select the upper axis"
         :data="data"
@@ -36,7 +36,7 @@
         v-on:colSelect="upperAxisSelect"
       />
     </modal>
-    <modal v-if="lowerAxisSelection">
+    <modal v-if="lowerAxisSelection" @close="lowerAxisSelection = false">
       <ColumnSelection
         title="Select the lower axis"
         :data="data"

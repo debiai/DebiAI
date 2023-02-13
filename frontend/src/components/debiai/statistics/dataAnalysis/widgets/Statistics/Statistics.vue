@@ -1,7 +1,7 @@
 <template>
   <div :id="'SimpleStatistics' + index" class="dataVisualisationWidget">
     <!-- Column selection Modal -->
-    <modal v-if="columnSelection">
+    <modal v-if="columnSelection" @close="columnSelection = false">
       <ColumnSelection
         title="Select a column"
         :data="data"

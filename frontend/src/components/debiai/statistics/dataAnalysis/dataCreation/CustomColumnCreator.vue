@@ -1,7 +1,7 @@
 <template>
   <div id="virtualColumnCreator">
     <!-- Col selection Modal -->
-    <modal v-if="selectedColToChange !== null">
+    <modal v-if="selectedColToChange !== null" @close="selectedColToChange = null">
       <ColumnSelection
         title="Select a column"
         :data="data"
@@ -17,7 +17,7 @@
     </modal>
 
     <!-- Rule selection Modal -->
-    <modal v-if="ruleSelection">
+    <modal v-if="ruleSelection" @close="ruleSelection = false">
       <h2 class="aligned spaced marged">
         Select an operation
         <button @click="ruleSelection = false" class="red">Cancel</button>
@@ -31,7 +31,7 @@
       </button>
     </modal>
 
-    <!-- modal title -->
+    <!-- title -->
     <h2 id="title" class="aligned spaced marged">
       <div style="display: flex">
         Custom column creation

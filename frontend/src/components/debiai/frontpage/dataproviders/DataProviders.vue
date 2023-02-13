@@ -64,7 +64,7 @@
     <div v-else-if="dataProviders.length === 0">No data providers</div>
 
     <!-- new dataprovider modal -->
-    <modal v-if="newDataProviderModal">
+    <modal v-if="newDataProviderModal" @close="newDataProviderModal = false">
       <NewDataProvider
         @cancel="newDataProviderModal = false"
         @done="

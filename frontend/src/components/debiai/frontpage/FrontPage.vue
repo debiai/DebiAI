@@ -115,7 +115,10 @@
             </div>
 
             <!-- Nb models -->
-            <div class="nb nbModel" title="Number of model added to the project">
+            <div
+              class="nb nbModel"
+              title="Number of model added to the project"
+            >
               <inline-svg
                 :src="require('@/assets/svg/gear.svg')"
                 width="17"
@@ -157,7 +160,7 @@
     </div>
 
     <!-- Data provider modals -->
-    <modal v-if="displayDataProviders">
+    <modal v-if="displayDataProviders" @close="displayDataProviders = false">
       <dataProviders @cancel="displayDataProviders = false" />
     </modal>
   </div>
@@ -346,7 +349,7 @@ export default {
   flex: 1;
   display: flex;
   justify-content: flex-start;
-  gap:4px
+  gap: 4px;
 }
 
 .nbSamples {

@@ -1,17 +1,30 @@
 <template>
   <div id="WidgetTemplateFull" class="dataVisualisationWidget">
     <!-- Column selection modal -->
-    <modal v-if="colSelection">
-      <ColumnSelection title="Select a column" :data="data" :validateRequiered="false" :colorSelection="true"
-        :defaultSelected="[selectedColumnIndex]" v-on:cancel="colSelection = false" v-on:colSelect="colSelect" />
+    <modal v-if="colSelection" @close="colSelection = false">
+      <ColumnSelection
+        title="Select a column"
+        :data="data"
+        :validateRequiered="false"
+        :colorSelection="true"
+        :defaultSelected="[selectedColumnIndex]"
+        v-on:cancel="colSelection = false"
+        v-on:colSelect="colSelect"
+      />
     </modal>
 
-    <!-- Multyple columns selection modal -->
-    <modal v-if="multypleColSelection">
-      <ColumnSelection v-if="multypleColSelection" title="Select columns" :data="data"
-        :cancelAvailable="selectedColumnsIndexs.length > 0" :colorSelection="true"
-        :defaultSelected="selectedColumnsIndexs" v-on:cancel="multypleColSelection = false"
-        v-on:validate="multypleColsSelected" />
+    <!-- Multiple columns selection modal -->
+    <modal v-if="multipleColSelection" @close="multipleColSelection = false">
+      <ColumnSelection
+        v-if="multipleColSelection"
+        title="Select columns"
+        :data="data"
+        :cancelAvailable="selectedColumnsIndexs.length > 0"
+        :colorSelection="true"
+        :defaultSelected="selectedColumnsIndexs"
+        v-on:cancel="multipleColSelection = false"
+        v-on:validate="multipleColsSelected"
+      />
     </modal>
 
     <!-- Controls -->
@@ -22,15 +35,18 @@
         <div class="data">
           <div class="name">My column</div>
           <div class="value">
-            <Column :column="data.columns.find((c) => c.index == selectedColumnIndex)" :colorSelection="true"
-              v-on:selected="colSelection = true" />
+            <Column
+              :column="data.columns.find((c) => c.index == selectedColumnIndex)"
+              :colorSelection="true"
+              v-on:selected="colSelection = true"
+            />
           </div>
         </div>
         <!-- Columns selection -->
         <div class="data">
           <div class="name">My columns</div>
           <div class="value">
-            <button @click="multypleColSelection = true">
+            <button @click="multipleColSelection = true">
               {{ selectedColumnsIndexs.length }} col selectd
             </button>
           </div>
@@ -40,8 +56,13 @@
           <div class="data">
             <div class="name">Checkbox</div>
             <div class="value">
-              <input type="checkbox" :id="'checkbox' + index" class="customCbx" v-model="checkboxValue"
-                style="display: none" />
+              <input
+                type="checkbox"
+                :id="'checkbox' + index"
+                class="customCbx"
+                v-model="checkboxValue"
+                style="display: none"
+              />
               <label :for="'checkbox' + index" class="toggle">
                 <span></span>
               </label>
@@ -51,10 +72,16 @@
           <div class="data">
             <div class="name">Selection</div>
             <div class="value">
-              <button :class="option == 'Opt.1' ? 'radioBtn selected' : 'radioBtn'" @click="option = 'Opt.1'">
+              <button
+                :class="option == 'Opt.1' ? 'radioBtn selected' : 'radioBtn'"
+                @click="option = 'Opt.1'"
+              >
                 Opt.1
               </button>
-              <button :class="option == 'Opt.2' ? 'radioBtn selected' : 'radioBtn'" @click="option = 'Opt.2'">
+              <button
+                :class="option == 'Opt.2' ? 'radioBtn selected' : 'radioBtn'"
+                @click="option = 'Opt.2'"
+              >
                 Opt.2
               </button>
             </div>
@@ -70,7 +97,6 @@
         <!-- Button -->
         <button>Button</button>
       </div>
-
     </div>
     <div id="content">Content</div>
   </div>
@@ -108,7 +134,7 @@ export default {
 
       // Other
       colSelection: false,
-      multypleColSelection: false,
+      multipleColSelection: false,
     };
   },
   props: {
@@ -131,9 +157,9 @@ export default {
     });
 
     // Filters
-    this.$parent.$on("filterStarted", () => { });
-    this.$parent.$on("filterEnded", () => { });
-    this.$parent.$on("filterCleared", () => { });
+    this.$parent.$on("filterStarted", () => {});
+    this.$parent.$on("filterEnded", () => {});
+    this.$parent.$on("filterCleared", () => {});
 
     // Exporting data
     // You can emit the following event to export and data with an export method
@@ -144,10 +170,9 @@ export default {
       // Then you can add any data you want, just make sure the object is a valid JSON
       myData1: 0,
       myData2: "data",
-      myData3: [null, null, null]
+      myData3: [null, null, null],
       // ...
     });
-
   },
   mounted() {
     // Watch for configuration changes
@@ -159,9 +184,9 @@ export default {
       this.selectedColumnIndex = index;
       this.colSelection = false;
     },
-    multypleColsSelected(indexs) {
+    multipleColsSelected(indexs) {
       this.selectedColumnsIndexs = indexs;
-      this.multypleColSelection = false;
+      this.multipleColSelection = false;
     },
 
     // =============== Widget configuration ===============
@@ -322,7 +347,7 @@ export default {
           // Do something
         }
       });
-    }
+    },
   },
   computed: {
     coloredColumnIndex() {
@@ -336,7 +361,6 @@ export default {
   watch: {
     selectedData: function () {
       // The selected data have changed
-
       // Display
     },
     coloredColumnIndex: function () {

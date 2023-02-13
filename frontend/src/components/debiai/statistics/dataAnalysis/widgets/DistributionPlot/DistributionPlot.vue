@@ -1,7 +1,7 @@
 <template>
   <div id="repartitionPlot" class="dataVisualisationWidget">
     <!-- Axis selection Modal -->
-    <modal v-if="xAxisSelection">
+    <modal v-if="xAxisSelection" @close="cancelXaxiesSettings">
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -13,7 +13,7 @@
       />
     </modal>
     <!-- Second column selection Modal -->
-    <modal v-if="secondAxisSelection">
+    <modal v-if="secondAxisSelection" @close="secondAxisSelection = false">
       <ColumnSelection
         title="Select a second column"
         :data="data"

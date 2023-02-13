@@ -1,7 +1,7 @@
 <template>
   <div id="pointPlot" class="dataVisualisationWidget">
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection">
+    <modal v-if="xAxisSelection" @close="cancelXaxiesSettings">
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -12,7 +12,7 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="yAxisSelection">
+    <modal v-if="yAxisSelection" @close="cancelYaxiesSettings">
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
@@ -23,7 +23,7 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
-    <modal v-if="zAxisSelection">
+    <modal v-if="zAxisSelection" @close="cancelZaxiesSettings">
       <ColumnSelection
         title="Select the Z axis"
         :data="data"
