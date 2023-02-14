@@ -21,4 +21,4 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm install
       - name: Prettier Format Check
-        run: npm run prettier:check
+        run: cd frontend && npm run prettier:check
