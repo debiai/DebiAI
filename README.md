@@ -3,11 +3,15 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![cd](https://github.com/debiai/debiai/actions/workflows/docker-push.yml/badge.svg)
-[![Inline_docs](https://inch-ci.org/github/dwyl/hapi-auth-jwt2.svg)](https://debiai.irt-systemx.fr/)
+[![Online documentation](https://img.shields.io/static/v1?label=&message=Online_documentation&color=brighgreen)](https://debiai.irt-systemx.fr/)
+
+![Activity](https://img.shields.io/github/commit-activity/m/debiai/debiai)
+![Last commit](https://img.shields.io/github/last-commit/debiai/debiai)
 
 ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 </div>
+
 
 ## Why DebiAI ?
 
