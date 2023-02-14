@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.20.5
+  version: 0.20.6
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -1500,12 +1500,6 @@ definitions:
       name:
         type: string
         description: project ID
-
-      modelOverviews:
-        type: array
-        items:
-          $ref: "#/definitions/modelOverview"
-        description: list of the model overviews
 
       blockLevelInfo:
         type: array

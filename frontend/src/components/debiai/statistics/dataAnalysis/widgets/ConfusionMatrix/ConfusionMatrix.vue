@@ -1,7 +1,7 @@
 <template>
   <div id="confusionMatrix" class="dataVisualisationWidget">
     <!-- Axis selection Modals -->
-    <modal v-if="trueAxisSelection">
+    <modal v-if="trueAxisSelection" @close="cancelXaxiesSettings">
       <ColumnSelection
         title="Select the True axis"
         :data="data"
@@ -12,7 +12,7 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="predAxisSelection">
+    <modal v-if="predAxisSelection" @close="cancelYaxiesSettings">
       <ColumnSelection
         title="Select the Predicted axis"
         :data="data"

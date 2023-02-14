@@ -1,7 +1,7 @@
 <template>
   <div id="CorrelationMatrix" class="dataVisualisationWidget">
     <!-- Axis selection Modal -->
-    <modal v-if="axisSelection">
+    <modal v-if="axisSelection" @close="cancelAxiesSettings">
       <ColumnSelection
         title="Select the columns to compute"
         :data="data"

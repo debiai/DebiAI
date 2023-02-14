@@ -1,7 +1,7 @@
 <template>
   <div id="project">
     <!-- Settings modal -->
-    <Modal v-if="settings && project">
+    <Modal v-if="settings && project" @close="settings = false">
       <!-- block structure creation or display -->
       <h2 class="aligned spaced">
         Block structure
@@ -216,7 +216,11 @@ export default {
     startAnalysis({ newTab }) {
       if (newTab) {
         let routeData = this.$router.resolve({
-          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
+          path:
+            "/dataprovider/" +
+            this.dataProviderId +
+            "/project/" +
+            this.projectId,
           query: {
             selectionIds: this.selectedSelectionsIds,
             selectionIntersection: this.selectionIntersection,

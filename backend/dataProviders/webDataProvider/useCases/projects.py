@@ -14,35 +14,30 @@ def get_all_projects_from_data_provider(url, name):
         return
 
     for project_id in projects:
-        if "nbSamples" in projects[project_id]:
-            nbSamples = projects[project_id]["nbSamples"]
-        else:
-            nbSamples = None
+        if "nbSamples" not in projects[project_id]:
+            projects[project_id]["nbSamples"] = None
 
         if "nbModels" not in projects[project_id]:
-            projects[project_id]["nbModels"] = 0
+            projects[project_id]["nbModels"] = None
 
         if "nbSelections" not in projects[project_id]:
-            projects[project_id]["nbSelections"] = 0
+            projects[project_id]["nbSelections"] = None
+
+        if "name" not in projects[project_id]:
+            projects[project_id]["name"] = project_id
 
         project_list.append(
             {
                 "id": project_id,
-                "name": (
-                    project_id
-                    if "name" not in projects[project_id]
-                    else projects[project_id]["name"]
-                ),
                 "dataProvider": name,
-                "view": project_id,
+                "name": projects[project_id]["name"],
                 "nbModels": projects[project_id]["nbModels"],
-                "nbSamples": nbSamples,
-                "nbRequests": 0,
-                "nbTags": 0,
+                "nbSamples": projects[project_id]["nbSamples"],
                 "nbSelections": projects[project_id]["nbSelections"],
                 "creationDate": timeNow(),
                 "updateDate": timeNow(),
-                "modelOverviews": [],
+                "nbRequests": 0,
+                "nbTags": 0,
             }
         )
 
@@ -68,7 +63,6 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "id": id_project,
         "name": project["name"],
         "dataProvider": data_provider_name,
-        "view": id_project,
         "blockLevelInfo": blockInfo,
         "resultStructure": project["expectedResults"],
         "nbModels": len(models),
@@ -78,7 +72,6 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "nbSelections": len(selections),
         "creationDate": timeNow(),
         "updateDate": timeNow(),
-        "modelOverviews": [],
         "selections": selections,
         "models": models,
     }

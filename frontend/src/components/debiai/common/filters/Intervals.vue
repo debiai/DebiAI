@@ -1,13 +1,20 @@
 <template>
   <div id="intervals">
     <!-- Add values modal -->
-    <modal v-if="addIntervalPannel">
+    <modal v-if="addIntervalPannel" @close="addIntervalPannel = false">
       <h4 class="aligned">
         Add an interval filter on the
         <div id="columnLabel" class="margedSide">
           {{ filter.column.label }}
         </div>
         column
+        <button
+          class="red"
+          @click="addIntervalPannel = false"
+          style="margin-left: 80px"
+        >
+          Cancel
+        </button>
       </h4>
       <br />
       <input
@@ -32,7 +39,6 @@
         <button @click="addInterval(true)" :disabled="!intervalValid">
           Add and close
         </button>
-        <button class="red" @click="addIntervalPannel = false">Cancel</button>
       </div>
     </modal>
 

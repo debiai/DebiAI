@@ -1,14 +1,14 @@
 <template>
   <div id="selections">
     <!-- selectionCreation modal -->
-    <modal v-if="selectionCreation">
+    <modal v-if="selectionCreation" @close="selectionCreation = false">
       <Requests
         @close="selectionCreation = false"
         @newSelection="$emit('newSelection')"
       />
     </modal>
     <!-- selected request modal -->
-    <modal v-if="selectedRequestId !== null">
+    <modal v-if="selectedRequestId !== null" @close="selectedRequestId = null">
       <Request
         :requestId="selectedRequestId"
         @close="selectedRequestId = null"

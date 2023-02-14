@@ -35,7 +35,7 @@
 
     <!-- Title, name of the columns -->
     <div id="projectTitle">
-      <h2>Projects :</h2>
+      <h2>Projects</h2>
 
       <!-- Items details -->
       <div id="itemDetails">
@@ -49,16 +49,6 @@
           Samples
         </div>
 
-        <!-- Nb requests -->
-        <div class="nbSelections" title="Project selections">
-          <inline-svg
-            :src="require('@/assets/svg/request.svg')"
-            width="14"
-            height="14"
-          />
-          Requests
-        </div>
-
         <!-- Nb selections -->
         <div class="nbSelections" title="Project selections">
           <inline-svg
@@ -67,16 +57,6 @@
             height="14"
           />
           Selections
-        </div>
-
-        <!-- Nb tags -->
-        <div class="nbSelections" title="Project selections">
-          <inline-svg
-            :src="require('@/assets/svg/tag.svg')"
-            width="14"
-            height="14"
-          />
-          Tags
         </div>
 
         <!-- Nb model results -->
@@ -115,53 +95,36 @@
           <!-- Project items -->
           <div class="items">
             <!-- Nb samples -->
-            <div class="nbSamples" title="Number of samples">
+            <div class="nb nbSamples" title="Number of samples">
               <inline-svg
                 :src="require('@/assets/svg/data.svg')"
                 width="14"
                 height="14"
               />
-              {{ project.nbSamples }}
-            </div>
-
-            <!-- Nb requests -->
-            <div class="nbRequests" title="Project requests">
-              <inline-svg
-                :src="require('@/assets/svg/request.svg')"
-                width="14"
-                height="14"
-              />
-              {{ project.nbRequests }}
+              {{ project.nbSamples !== null ? project.nbSamples : "?" }}
             </div>
 
             <!-- Nb selections -->
-            <div class="nbSelections" title="Project selections">
+            <div class="nb nbSelections" title="Number of selections">
               <inline-svg
                 :src="require('@/assets/svg/loupe.svg')"
                 width="14"
                 height="14"
               />
-              {{ project.nbSelections }}
+              {{ project.nbSelections !== null ? project.nbSelections : "?" }}
             </div>
 
-            <!-- Nb tags -->
-            <div class="nbTags" title="Project tags">
-              <inline-svg
-                :src="require('@/assets/svg/tag.svg')"
-                width="14"
-                height="14"
-              />
-              {{ project.nbTags }}
-            </div>
-
-            <!-- Nb model results -->
-            <div class="nbModel" title="Model added to the project">
+            <!-- Nb models -->
+            <div
+              class="nb nbModel"
+              title="Number of model added to the project"
+            >
               <inline-svg
                 :src="require('@/assets/svg/gear.svg')"
                 width="17"
                 height="17"
               />
-              {{ project.nbModels }}
+              {{ project.nbModels !== null ? project.nbModels : "?" }}
             </div>
           </div>
           <!-- Dates -->
@@ -197,7 +160,7 @@
     </div>
 
     <!-- Data provider modals -->
-    <modal v-if="displayDataProviders">
+    <modal v-if="displayDataProviders" @close="displayDataProviders = false">
       <dataProviders @cancel="displayDataProviders = false" />
     </modal>
   </div>
@@ -382,15 +345,11 @@ export default {
 }
 
 /* Items */
-.items {
-  justify-content: space-around;
-  display: flex;
-  opacity: 0.8;
-}
-
-.items > * {
+.items .nb {
   flex: 1;
-  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .nbSamples {

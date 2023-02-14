@@ -1,7 +1,7 @@
 <template>
   <div id="Requests">
     <!-- Requests creation modal -->
-    <modal v-if="requestCreation">
+    <modal v-if="requestCreation" @close="requestCreation = false">
       <RequestCreation
         @close="requestCreation = false"
         @newRequest="updateRequests"
@@ -9,7 +9,7 @@
     </modal>
 
     <!-- Request modal -->
-    <modal v-if="selectedRequestId">
+    <modal v-if="selectedRequestId" @close="selectedRequestId = false">
       <Request
         :requestId="selectedRequestId"
         @close="selectedRequestId = null"

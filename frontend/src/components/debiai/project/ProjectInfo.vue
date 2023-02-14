@@ -29,22 +29,10 @@
               {{ project.nbSamples }} samples
             </div>
 
-            <!-- Nb requests -->
-            <div class="item nbSelections" title="Project requests">
-              <inline-svg :src="require('../../../assets/svg/request.svg')" width="25" height="25" fill="white" />
-              {{ project.nbRequests }} requests
-            </div>
-
             <!-- Nb selections -->
             <div class="item nbSelections" title="Project selections">
               <inline-svg :src="require('../../../assets/svg/loupe.svg')" width="25" height="25" fill="white" />
               {{ project.nbSelections }} selections
-            </div>
-
-            <!-- Nb Tags -->
-            <div class="item nbTags" title="Project Tags">
-              <inline-svg :src="require('../../../assets/svg/tag.svg')" width="25" height="25" fill="white" />
-              {{ project.nbTags }} Tags
             </div>
 
             <!-- Nb models -->

@@ -1,6 +1,6 @@
 <template>
   <div id="SelectionExportMenu">
-    <!-- Modal title -->
+    <!-- Title -->
     <h2>
       Export the selected samples
       <button @click="$emit('cancel')" class="red">Cancel</button>
@@ -81,7 +81,7 @@ export default {
   data() {
     const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
     const projectId = this.$store.state.ProjectPage.projectId;
-    
+
     return {
       selectionName: "DebiAI Selection",
       extraValue: null,

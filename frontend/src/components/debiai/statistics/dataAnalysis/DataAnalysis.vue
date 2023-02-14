@@ -2,7 +2,7 @@
   <div id="dataAnalysis" v-if="data">
     <!--============= Modals =============-->
     <!-- customColumnCreation -->
-    <modal v-if="customColumnCreation">
+    <modal v-if="customColumnCreation" @close="customColumnCreation = false">
       <CustomColumnCreator
         :data="data"
         @cancel="customColumnCreation = false"
@@ -10,7 +10,7 @@
       />
     </modal>
     <!-- saveSelectionWidget -->
-    <modal v-if="saveSelectionWidget">
+    <modal v-if="saveSelectionWidget" @close="saveSelectionWidget = false">
       <SelectionCreator
         :data="data"
         :selectedData="selectedData"
@@ -19,7 +19,7 @@
       />
     </modal>
     <!-- tagCreationWidget -->
-    <modal v-if="tagCreationWidget">
+    <modal v-if="tagCreationWidget" @close="tagCreationWidget = false">
       <TagCreator
         :data="data"
         :selectedData="selectedData"
@@ -28,7 +28,7 @@
       />
     </modal>
     <!-- Selection export -->
-    <modal v-if="selectionExport">
+    <modal v-if="selectionExport" @close="selectionExport = false">
       <SelectionExportMenu
         :data="data"
         :selectedData="selectedData"
@@ -37,7 +37,7 @@
       />
     </modal>
     <!-- WidgetCatalog -->
-    <modal v-if="widgetCatalog">
+    <modal v-if="widgetCatalog" @close="widgetCatalog = false">
       <WidgetCatalog
         :widgets="availableWidgets"
         @cancel="widgetCatalog = false"

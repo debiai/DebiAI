@@ -1,7 +1,7 @@
 <template>
-  <div id="modal">
+  <div id="modal" @click="outsideClick">
     <div id="pannel">
-      <slot/>
+      <slot />
     </div>
   </div>
 </template>
@@ -11,7 +11,12 @@ export default {
   name: "Modal",
   data() {
     return {};
-  }
+  },
+  methods: {
+    outsideClick(e) {
+      if (e.target.id === "modal") this.$emit("close");
+    },
+  },
 };
 </script>
 
@@ -36,7 +41,6 @@ export default {
   max-width: 90vw;
   padding: 3vh;
   background-color: rgb(250, 250, 250);
-  border: solid#f8f9fa;
   border-radius: 1vh;
   overflow: auto;
 }
