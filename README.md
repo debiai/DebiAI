@@ -1,11 +1,14 @@
 <div align="center">
-  <img src="https://debiai.irt-systemx.fr/logo_debiai.png" height="200">
-</div>
+    <img src="images/DebiAI_logo.svg" height="200" align="">
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![cd](https://github.com/debiai/debiai/actions/workflows/docker-push.yml/badge.svg)
 [![Inline_docs](https://inch-ci.org/github/dwyl/hapi-auth-jwt2.svg)](https://debiai.irt-systemx.fr/)
+
 ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+</div>
+
 ## Why DebiAI ?
 
 DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
