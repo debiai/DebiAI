@@ -1,5 +1,8 @@
 <template>
-  <div id="parCat" class="dataVisualisationWidget">
+  <div
+    id="parCat"
+    class="dataVisualisationWidget"
+  >
     <ColumnSelection
       v-if="settings"
       title="Select the columns to display in the parallel coordinates plot"
@@ -10,7 +13,10 @@
       v-on:cancel="settings = false"
       v-on:validate="selectColumns"
     />
-    <div class="plot" :id="'PCatDiv' + index"></div>
+    <div
+      class="plot"
+      :id="'PCatDiv' + index"
+    ></div>
   </div>
 </template>
 
@@ -49,9 +55,7 @@ export default {
     this.$parent.$on("redraw", this.checkPlot);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns
-      .filter((c) => c.nbOccu <= 20)
-      .map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccu <= 20).map((c) => c.index);
   },
   mounted() {
     this.divParCat = document.getElementById("PCatDiv" + this.index);
@@ -60,9 +64,7 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map(
-          (cIndex) => this.data.columns[cIndex].label
-        ),
+        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
       };
     },
     setConf(conf) {
@@ -84,8 +86,7 @@ export default {
     // Plot
     checkPlot() {
       // Color
-      let coloredColIndex =
-        this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      let coloredColIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
 
       let colColor;
       let nbColor;
@@ -100,10 +101,7 @@ export default {
       );
 
       // Cḧeck that columns arn't too eavy on unique values
-      if (
-        selectedColumns.some((c) => c.nbOccu > 20) ||
-        (nbColor && nbColor > 20)
-      ) {
+      if (selectedColumns.some((c) => c.nbOccu > 20) || (nbColor && nbColor > 20)) {
         swal({
           title: "Display the Parallel Categories diagram ?",
           text: "You have selected some columns or a color with more than 20 unique values, this will have an impact on the readability of the plot and on the performances.\r \nThe Parallel Coordinates diagram is more suited for the visualisations with a lot of unique values.",
@@ -133,9 +131,7 @@ export default {
       let colWithSelectedSamples = [];
       selectedColumns.forEach((c, i) => {
         colWithSelectedSamples.push({ label: c.label, values: [] });
-        this.selectedData.map((j) =>
-          colWithSelectedSamples[i].values.push(c.values[j])
-        );
+        this.selectedData.map((j) => colWithSelectedSamples[i].values.push(c.values[j]));
       });
 
       let trace = {
@@ -188,17 +184,13 @@ export default {
         let filters = [];
         Object.keys(parCatSelections).forEach((columnIdx) => {
           if (columnIdx === "color") {
-            if (
-              !this.selectedColumnsIds.includes(this.currentDrawedColorIndex)
-            ) {
+            if (!this.selectedColumnsIds.includes(this.currentDrawedColorIndex)) {
               filters.push({
                 type: "values",
                 columnIndex: this.currentDrawedColorIndex,
                 values: [
                   "" +
-                    this.data.columns[this.currentDrawedColorIndex].uniques[
-                      parCatSelections.color
-                    ],
+                    this.data.columns[this.currentDrawedColorIndex].uniques[parCatSelections.color],
                 ],
               });
             }
@@ -224,8 +216,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !==
-          this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
+        this.currentDrawedColorIndex !== this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );
@@ -236,8 +227,7 @@ export default {
       this.$parent.colorWarning = n;
     },
     selectedData() {
-      if (!this.settings && !this.$parent.startFiltering)
-        this.$parent.selectedDataWarning = true;
+      if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
   },
 };

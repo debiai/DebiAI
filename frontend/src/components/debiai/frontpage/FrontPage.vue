@@ -3,9 +3,17 @@
     <!-- header -->
     <div id="head">
       <!-- DebiAI Logo -->
-      <img src="@/assets/images/DebiAI.png" alt="DebiAI" height="48" />
+      <img
+        src="@/assets/images/DebiAI.png"
+        alt="DebiAI"
+        height="48"
+      />
       <!-- DebiAI version -->
-      <a id="version" href="https://github.com/debiai/debiai/" target="_blank">
+      <a
+        id="version"
+        href="https://github.com/debiai/debiai/"
+        target="_blank"
+      >
         {{ appVersion }}
       </a>
       <!-- Doc link -->
@@ -19,7 +27,11 @@
 
       <!-- IRT Logo -->
       <p id="irtLogo">
-        <img src="@/assets/images/SystemX.png" alt="SystemX" height="38" />
+        <img
+          src="@/assets/images/SystemX.png"
+          alt="SystemX"
+          height="38"
+        />
       </p>
 
       <!-- Data provider manager -->
@@ -30,7 +42,10 @@
       >
         Manage data providers
       </button>
-      <input placeholder="Search project" v-model="searchBar" />
+      <input
+        placeholder="Search project"
+        v-model="searchBar"
+      />
     </div>
 
     <!-- Title, name of the columns -->
@@ -40,7 +55,10 @@
       <!-- Items details -->
       <div id="itemDetails">
         <!-- Nb samples -->
-        <div class="nbSamples" title="Number of samples">
+        <div
+          class="nbSamples"
+          title="Number of samples"
+        >
           <inline-svg
             :src="require('@/assets/svg/data.svg')"
             width="14"
@@ -50,7 +68,10 @@
         </div>
 
         <!-- Nb selections -->
-        <div class="nbSelections" title="Project selections">
+        <div
+          class="nbSelections"
+          title="Project selections"
+        >
           <inline-svg
             :src="require('@/assets/svg/loupe.svg')"
             width="14"
@@ -60,7 +81,10 @@
         </div>
 
         <!-- Nb model results -->
-        <div class="nbModel" title="Model added to the project">
+        <div
+          class="nbModel"
+          title="Model added to the project"
+        >
           <inline-svg
             :src="require('@/assets/svg/gear.svg')"
             width="17"
@@ -70,7 +94,10 @@
         </div>
       </div>
       <div id="controls">
-        <button class="warning" @click="loadProjects">
+        <button
+          class="warning"
+          @click="loadProjects"
+        >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
             width="10"
@@ -82,7 +109,10 @@
     </div>
     <!-- Project list -->
     <transition name="fade">
-      <div id="projects" v-if="projects !== null && projects.length">
+      <div
+        id="projects"
+        v-if="projects !== null && projects.length"
+      >
         <div
           class="project"
           v-for="project in filteredProject"
@@ -95,7 +125,10 @@
           <!-- Project items -->
           <div class="items">
             <!-- Nb samples -->
-            <div class="nb nbSamples" title="Number of samples">
+            <div
+              class="nb nbSamples"
+              title="Number of samples"
+            >
               <inline-svg
                 :src="require('@/assets/svg/data.svg')"
                 width="14"
@@ -105,7 +138,10 @@
             </div>
 
             <!-- Nb selections -->
-            <div class="nb nbSelections" title="Number of selections">
+            <div
+              class="nb nbSelections"
+              title="Number of selections"
+            >
               <inline-svg
                 :src="require('@/assets/svg/loupe.svg')"
                 width="14"
@@ -147,20 +183,34 @@
       </div>
     </transition>
     <!-- Loading -->
-    <div id="loading" v-if="projects === null">Loading</div>
+    <div
+      id="loading"
+      v-if="projects === null"
+    >
+      Loading
+    </div>
     <!-- No project message -->
-    <div id="noProjects" v-else-if="!projects.length">
+    <div
+      id="noProjects"
+      v-else-if="!projects.length"
+    >
       <span>
         No projects<br /><br />
         Find out how to add a project on our
-        <a href="https://debiai.irt-systemx.fr/dataInsertion" target="_blank">
+        <a
+          href="https://debiai.irt-systemx.fr/dataInsertion"
+          target="_blank"
+        >
           Website
         </a>
       </span>
     </div>
 
     <!-- Data provider modals -->
-    <modal v-if="displayDataProviders" @close="displayDataProviders = false">
+    <modal
+      v-if="displayDataProviders"
+      @close="displayDataProviders = false"
+    >
       <dataProviders @cancel="displayDataProviders = false" />
     </modal>
   </div>

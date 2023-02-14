@@ -1,5 +1,8 @@
 <template>
-  <div id="modal" @click="outsideClick">
+  <div
+    id="modal"
+    @click="outsideClick"
+  >
     <div id="pannel">
       <slot />
     </div>

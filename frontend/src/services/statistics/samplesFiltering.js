@@ -2,85 +2,103 @@
 // get selected data samples ids from a filter list
 
 let getSelected = (filters, data) => {
-
   let selectedSampleIds = [...Array(data.nbLines).keys()]; // Stars with 100%
-  let filtersEffecs = {} // number of samples left for each filters
+  let filtersEffecs = {}; // number of samples left for each filters
 
-  filters.forEach(filter => {
-    let column = data.columns.find(c => c.index == filter.columnIndex)
+  filters.forEach((filter) => {
+    let column = data.columns.find((c) => c.index == filter.columnIndex);
 
     if (!column) {
-      console.error("Column index not found: " + filter.columnIndex)
-      return
+      console.error("Column index not found: " + filter.columnIndex);
+      return;
     }
 
-    if (filter.type == 'values')
+    if (filter.type == "values")
       selectedSampleIds = getSelectedSamplesIdsFromValuesFilter(filter, selectedSampleIds, column);
-    else if (filter.type == 'intervals')
-      selectedSampleIds = getSelectedSamplesIdsFromIntervalsFilter(filter, selectedSampleIds, column);
-    else if (filter.type == 'interval')
-      selectedSampleIds = getSelectedSamplesIdsFromIntervalFilter(filter, selectedSampleIds, column);
+    else if (filter.type == "intervals")
+      selectedSampleIds = getSelectedSamplesIdsFromIntervalsFilter(
+        filter,
+        selectedSampleIds,
+        column
+      );
+    else if (filter.type == "interval")
+      selectedSampleIds = getSelectedSamplesIdsFromIntervalFilter(
+        filter,
+        selectedSampleIds,
+        column
+      );
 
-    filtersEffecs[filter.id] = selectedSampleIds.length
+    filtersEffecs[filter.id] = selectedSampleIds.length;
   });
 
-  return { selectedSampleIds, filtersEffecs }
-
-}
+  return { selectedSampleIds, filtersEffecs };
+};
 
 let getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) => {
-  // Filter the selected samples ids 
+  // Filter the selected samples ids
   // If one of the column value is in the filter values, the sample is selected
   if (filter.values.length > 0) {
     if (filter.inverted)
-      return selectedSampleIds.filter(sampleId =>
-        !filter.values.includes(column.values[sampleId]))
+      return selectedSampleIds.filter(
+        (sampleId) => !filter.values.includes(column.values[sampleId])
+      );
     else
-      return selectedSampleIds.filter(sampleId =>
-        filter.values.includes(column.values[sampleId]))
+      return selectedSampleIds.filter((sampleId) =>
+        filter.values.includes(column.values[sampleId])
+      );
   }
-  return selectedSampleIds
-}
+  return selectedSampleIds;
+};
 
 let getSelectedSamplesIdsFromIntervalsFilter = (filter, selectedSampleIds, col) => {
-  if (filter.intervals.length == 0) return selectedSampleIds
+  if (filter.intervals.length == 0) return selectedSampleIds;
 
   if (filter.intervals.length == 1)
-    return getSelectedSamplesIdsFromIntervalFilter(filter.intervals[0], selectedSampleIds, col, filter.inverted)
+    return getSelectedSamplesIdsFromIntervalFilter(
+      filter.intervals[0],
+      selectedSampleIds,
+      col,
+      filter.inverted
+    );
 
   // Get all the selected samples from the requests
-  let selectedSampleIdsFromIntervals = [].concat(...filter.intervals.map(interval =>
-    getSelectedSamplesIdsFromIntervalFilter(interval, selectedSampleIds, col, false)))
+  let selectedSampleIdsFromIntervals = [].concat(
+    ...filter.intervals.map((interval) =>
+      getSelectedSamplesIdsFromIntervalFilter(interval, selectedSampleIds, col, false)
+    )
+  );
 
   if (filter.inverted)
-    return selectedSampleIds.filter(sampleId => !selectedSampleIdsFromIntervals.includes(sampleId))
-  return selectedSampleIdsFromIntervals
-}
+    return selectedSampleIds.filter(
+      (sampleId) => !selectedSampleIdsFromIntervals.includes(sampleId)
+    );
+  return selectedSampleIdsFromIntervals;
+};
 
 let getSelectedSamplesIdsFromIntervalFilter = (interval, selectedSampleIds, col, inverted) => {
   if (inverted) {
     if (interval.max !== null && interval.min !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] < interval.min || col.values[sampleId] > interval.max)
-
+      return selectedSampleIds.filter(
+        (sampleId) => col.values[sampleId] < interval.min || col.values[sampleId] > interval.max
+      );
     else if (interval.max !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] > interval.max)
-
+      return selectedSampleIds.filter((sampleId) => col.values[sampleId] > interval.max);
     else if (interval.min !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] < interval.min)
-    return selectedSampleIds
+      return selectedSampleIds.filter((sampleId) => col.values[sampleId] < interval.min);
+    return selectedSampleIds;
   } else {
     if (interval.max !== null && interval.min !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] >= interval.min && col.values[sampleId] <= interval.max)
-
+      return selectedSampleIds.filter(
+        (sampleId) => col.values[sampleId] >= interval.min && col.values[sampleId] <= interval.max
+      );
     else if (interval.max !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] <= interval.max)
-
+      return selectedSampleIds.filter((sampleId) => col.values[sampleId] <= interval.max);
     else if (interval.min !== null)
-      return selectedSampleIds.filter(sampleId => col.values[sampleId] >= interval.min)
-    return selectedSampleIds
+      return selectedSampleIds.filter((sampleId) => col.values[sampleId] >= interval.min);
+    return selectedSampleIds;
   }
-}
+};
 
 export default {
-  getSelected
-}
+  getSelected,
+};

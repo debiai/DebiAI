@@ -1,7 +1,12 @@
 <template>
   <div id="DocumentationBlock">
     <div id="questionMark">
-      <b id="i" @mouseenter="show = true" @mouseleave="show = false">i</b>
+      <b
+        id="i"
+        @mouseenter="show = true"
+        @mouseleave="show = false"
+        >i</b
+      >
       <transition name="fade">
         <p
           id="docBlock"

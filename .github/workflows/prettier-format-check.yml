@@ -1,0 +1,24 @@
+# Check that the code is formatted with prettier
+
+name: Prettier Format Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: cd frontend && npm install
+      - name: Prettier Format Check
+        run: cd frontend && npm run prettier:check

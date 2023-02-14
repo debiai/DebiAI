@@ -1,10 +1,16 @@
 <template>
   <div id="intervals">
     <!-- Add values modal -->
-    <modal v-if="addIntervalPannel" @close="addIntervalPannel = false">
+    <modal
+      v-if="addIntervalPannel"
+      @close="addIntervalPannel = false"
+    >
       <h4 class="aligned">
         Add an interval filter on the
-        <div id="columnLabel" class="margedSide">
+        <div
+          id="columnLabel"
+          class="margedSide"
+        >
           {{ filter.column.label }}
         </div>
         column
@@ -33,10 +39,16 @@
 
       <!-- #controls -->
       <div class="aligned centered">
-        <button @click="addInterval(false)" :disabled="!intervalValid">
+        <button
+          @click="addInterval(false)"
+          :disabled="!intervalValid"
+        >
           Add
         </button>
-        <button @click="addInterval(true)" :disabled="!intervalValid">
+        <button
+          @click="addInterval(true)"
+          :disabled="!intervalValid"
+        >
           Add and close
         </button>
       </div>
@@ -106,11 +118,7 @@ export default {
       )
         return false;
 
-      if (
-        this.filter.column.typeText !== "Class" &&
-        this.newMin !== null &&
-        this.newMax !== null
-      )
+      if (this.filter.column.typeText !== "Class" && this.newMin !== null && this.newMax !== null)
         if (parseFloat(this.newMin) > parseFloat(this.newMax)) return false;
       return true;
     },

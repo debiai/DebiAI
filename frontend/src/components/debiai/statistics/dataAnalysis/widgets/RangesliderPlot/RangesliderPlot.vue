@@ -1,7 +1,13 @@
 <template>
-  <div id="RangesliderPlot" class="dataVisualisationWidget">
+  <div
+    id="RangesliderPlot"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection" @close="xAxisSelection = false">
+    <modal
+      v-if="xAxisSelection"
+      @close="xAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -12,7 +18,10 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="yAxisSelection" @close="yAxisSelection = false">
+    <modal
+      v-if="yAxisSelection"
+      @close="yAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
@@ -24,7 +33,10 @@
       />
     </modal>
 
-    <div id="settings" v-if="settings">
+    <div
+      id="settings"
+      v-if="settings"
+    >
       <div id="axisControls">
         <!-- Axis btns -->
         <div class="dataGroup axis">
@@ -38,7 +50,12 @@
               />
             </div>
           </div>
-          <button class="warning" @click="swap">Swap</button>
+          <button
+            class="warning"
+            @click="swap"
+          >
+            Swap
+          </button>
           <div class="data">
             <div class="name">Y axis</div>
             <div class="value">
@@ -50,7 +67,10 @@
             </div>
           </div>
         </div>
-        <div class="dataGroup color" v-if="coloredColumnIndex !== null">
+        <div
+          class="dataGroup color"
+          v-if="coloredColumnIndex !== null"
+        >
           <div class="data">
             <div class="name">Group by color</div>
             <div class="value">
@@ -61,7 +81,10 @@
                 style="display: none"
                 v-model="dividePerColor"
               />
-              <label :for="'avegareAsBar' + index" class="toggle">
+              <label
+                :for="'avegareAsBar' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
@@ -70,13 +93,20 @@
       </div>
 
       <!-- Draw -->
-      <button id="drawBtn" @click="drawPlot" :disabled="plotDrawed">
+      <button
+        id="drawBtn"
+        @click="drawPlot"
+        :disabled="plotDrawed"
+      >
         Draw
       </button>
     </div>
 
     <!-- Plot -->
-    <div class="plot" :id="'rangesliderPlot_' + this.index"></div>
+    <div
+      class="plot"
+      :id="'rangesliderPlot_' + this.index"
+    ></div>
   </div>
 </template>
 
@@ -226,14 +256,9 @@ export default {
             ? this.selectedData.map((i) => colColor.valuesIndex[i])
             : this.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
-          colColor.type == String
-            ? colColor.valuesIndexUniques
-            : colColor.uniques;
+          colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
-        let groupedValues = dataOperations.groupBy(
-          selectedColorsValues,
-          selectorUniques
-        );
+        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
 
         groupedValues.forEach((idValues, i) => {
           let colorX = idValues.map((i) => valuesX[i]);
@@ -362,8 +387,7 @@ export default {
           "shapes[1].visible": false, // Second line
           "shapes[2].visible": false, // Rectangle
         });
-      else if (this.border1 !== null)
-        Plotly.relayout(this.plotDiv, { "shapes[0].visible": false });
+      else if (this.border1 !== null) Plotly.relayout(this.plotDiv, { "shapes[0].visible": false });
 
       this.border1 = null;
       this.border2 = null;
@@ -509,10 +533,7 @@ export default {
       return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(
-        this.dividePerColor &&
-        this.currentDrawedColorIndex !== this.coloredColumnIndex
-      );
+      return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {

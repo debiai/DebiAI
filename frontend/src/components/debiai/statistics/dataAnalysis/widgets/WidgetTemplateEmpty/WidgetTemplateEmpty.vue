@@ -1,32 +1,28 @@
 <template>
-  <div id="WidgetTemplate" class="dataVisualisationWidget">
+  <div
+    id="WidgetTemplate"
+    class="dataVisualisationWidget"
+  >
     Empty Widget Template
   </div>
 </template>
 
 <script>
 export default {
-  components: {
-  },
+  components: {},
   data() {
-    return {
-    };
+    return {};
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
     selectedData: { type: Array, required: true },
   },
-  created() {
-  },
-  mounted() {
-  },
-  methods: {
-  },
-  computed: {
-  },
-  watch: {
-  },
+  created() {},
+  mounted() {},
+  methods: {},
+  computed: {},
+  watch: {},
 };
 </script>
 

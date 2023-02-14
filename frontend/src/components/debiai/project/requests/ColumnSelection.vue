@@ -2,11 +2,19 @@
   <div id="columnSelection">
     <div id="head">
       <h3>{{ title }}</h3>
-      <button class="red" style="margin-left: 20px" @click="$emit('cancel')">
+      <button
+        class="red"
+        style="margin-left: 20px"
+        @click="$emit('cancel')"
+      >
         Cancel
       </button>
     </div>
-    <div class="column" v-for="(column, i) in columns" :key="i">
+    <div
+      class="column"
+      v-for="(column, i) in columns"
+      :key="i"
+    >
       <button
         @click="$emit('colSelect', column.name)"
         :class="column.isId ? 'info' : ''"

@@ -1,7 +1,13 @@
 <template>
-  <div :id="'SimpleStatistics' + index" class="dataVisualisationWidget">
+  <div
+    :id="'SimpleStatistics' + index"
+    class="dataVisualisationWidget"
+  >
     <!-- Column selection Modal -->
-    <modal v-if="columnSelection" @close="columnSelection = false">
+    <modal
+      v-if="columnSelection"
+      @close="columnSelection = false"
+    >
       <ColumnSelection
         title="Select a column"
         :data="data"
@@ -22,10 +28,20 @@
           v-on:selected="columnSelection = true"
         />
         <!-- abs value option -->
-        <div class="dataGroup" style="flex: 1" v-if="absolueOption">
-          <div class="data" style="width: 100%">
+        <div
+          class="dataGroup"
+          style="flex: 1"
+          v-if="absolueOption"
+        >
+          <div
+            class="data"
+            style="width: 100%"
+          >
             <span class="name"> Absolute value </span>
-            <span class="value" style="width: 100%">
+            <span
+              class="value"
+              style="width: 100%"
+            >
               <input
                 type="checkbox"
                 :id="'absolute' + index"
@@ -33,7 +49,10 @@
                 v-model="absolue"
                 style="display: none"
               />
-              <label :for="'absolute' + index" class="toggle">
+              <label
+                :for="'absolute' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </span>
@@ -63,9 +82,7 @@
                 v-if="nbSelectedSamplesAtUpdate"
                 style="padding-left: 7px; opacity: 0.7"
               >
-                ({{
-                  Math.round((frequency / nbSelectedSamplesAtUpdate) * 100)
-                }}%)
+                ({{ Math.round((frequency / nbSelectedSamplesAtUpdate) * 100) }}%)
               </span>
             </td>
             <td v-if="selectedColumn.type !== String">{{ min }}</td>
@@ -79,10 +96,11 @@
     </div>
     <!-- Statistics for each color -->
 
-    <div v-if="toMuchUniqueValues">
-      To much unique values in the selected colored column
-    </div>
-    <div id="groupStat" v-else-if="statByColor !== null">
+    <div v-if="toMuchUniqueValues">To much unique values in the selected colored column</div>
+    <div
+      id="groupStat"
+      v-else-if="statByColor !== null"
+    >
       <!-- Title -->
       <b>
         {{ selectedColumn.label }}
@@ -124,11 +142,7 @@
                   v-if="nbSelectedSamplesAtUpdate"
                   style="padding-left: 7px; opacity: 0.7"
                 >
-                  ({{
-                    Math.round(
-                      (colVal.repartition / nbSelectedSamplesAtUpdate) * 100
-                    )
-                  }}%)
+                  ({{ Math.round((colVal.repartition / nbSelectedSamplesAtUpdate) * 100) }}%)
                 </span>
               </div>
             </td>
@@ -160,9 +174,7 @@
             <td v-if="colVal.frequency !== undefined">
               {{ colVal.frequency }}
               <span v-if="colVal.repartition">
-                ({{
-                  Math.round((colVal.frequency / colVal.repartition) * 100)
-                }}%)
+                ({{ Math.round((colVal.frequency / colVal.repartition) * 100) }}%)
               </span>
             </td>
           </tr>
@@ -232,8 +244,7 @@ export default {
     selectCol(index) {
       this.selectedColumn = this.data.columns.find((c) => c.index === index);
       this.columnSelection = false;
-      this.absolueOption =
-        this.selectedColumn.type !== String && this.selectedColumn.min < 0;
+      this.absolueOption = this.selectedColumn.type !== String && this.selectedColumn.min < 0;
       this.absolue = false;
 
       this.updateStatistics();
@@ -242,16 +253,10 @@ export default {
       let values;
       let valuesText;
       if (this.selectedColumn.type === String) {
-        values = this.selectedData.map(
-          (sId) => this.selectedColumn.valuesIndex[sId]
-        );
-        valuesText = this.selectedData.map(
-          (sId) => this.selectedColumn.values[sId]
-        );
+        values = this.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
+        valuesText = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
       } else {
-        values = this.selectedData.map(
-          (sId) => this.selectedColumn.values[sId]
-        );
+        values = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
         if (this.absolue) values = values.map((v) => Math.abs(v));
       }
       this.nbSelectedSamplesAtUpdate = values.length;
@@ -271,15 +276,13 @@ export default {
       // Min
       this.min = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolue)
-          this.min = dataOperations.humanize(this.selectedColumn.min);
+        if (!this.absolue) this.min = dataOperations.humanize(this.selectedColumn.min);
         else this.min = dataOperations.humanize(dataOperations.getMin(values));
 
       // Max
       this.max = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolue)
-          this.max = dataOperations.humanize(this.selectedColumn.max);
+        if (!this.absolue) this.max = dataOperations.humanize(this.selectedColumn.max);
         else this.max = dataOperations.humanize(dataOperations.getMax(values));
 
       // Std & variance
@@ -297,17 +300,12 @@ export default {
           this.toMuchUniqueValues = false;
           let selectedColors;
           if (colColor.type === String)
-            selectedColors = this.selectedData.map(
-              (i) => colColor.valuesIndex[i]
-            );
-          else
-            selectedColors = this.selectedData.map((i) => colColor.values[i]);
+            selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
+          else selectedColors = this.selectedData.map((i) => colColor.values[i]);
 
           let groupedValues = dataOperations.groupBy(
             selectedColors,
-            colColor.type === String
-              ? colColor.valuesIndexUniques
-              : colColor.uniques
+            colColor.type === String ? colColor.valuesIndexUniques : colColor.uniques
           );
 
           this.statByColor = groupedValues.map((sampleIds, i) => {
@@ -330,9 +328,7 @@ export default {
                 top = this.selectedColumn.uniques[mode.top];
                 frequency = mode.frequency;
               } else {
-                average = dataOperations.humanize(
-                  dataOperations.mean(gpValues)
-                );
+                average = dataOperations.humanize(dataOperations.mean(gpValues));
 
                 // Std & variance
                 colStd = dataOperations.humanize(std(gpValues));

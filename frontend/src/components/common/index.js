@@ -1,14 +1,9 @@
 // Imported
-import InlineSvg from 'vue-inline-svg';
-InlineSvg.name = 'inline-svg'
+import InlineSvg from "vue-inline-svg";
+InlineSvg.name = "inline-svg";
 
 // Custom
-import Modal from './Modal.vue';
-import DocumentationBlock from './DocumentationBlock .vue';
+import Modal from "./Modal.vue";
+import DocumentationBlock from "./DocumentationBlock .vue";
 
-
-export default [
-  Modal,
-  DocumentationBlock ,
-  InlineSvg
-];
+export default [Modal, DocumentationBlock, InlineSvg];

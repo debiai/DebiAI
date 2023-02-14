@@ -17,10 +17,18 @@
     <!-- Widget details -->
     <div id="widgetDetails">
       <div id="controls">
-        <button class="red" @click="$emit('cancel')">Cancel</button>
+        <button
+          class="red"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
       </div>
       <div id="content">
-        <div class="well well-sm pre-scrollable" v-html="previewText"></div>
+        <div
+          class="well well-sm pre-scrollable"
+          v-html="previewText"
+        ></div>
       </div>
     </div>
   </div>
@@ -78,9 +86,7 @@ export default {
   computed: {
     widgetDescription() {
       if (this.widgets.length == 0) return "";
-      return this.widgetDescriptions[
-        this.widgets[this.selectedWidgetNumber].componentKey
-      ];
+      return this.widgetDescriptions[this.widgets[this.selectedWidgetNumber].componentKey];
     },
     previewText() {
       marked.setOptions({
@@ -91,11 +97,7 @@ export default {
     },
     iconPath() {
       if (this.widgets.length == 0) return null;
-      return (
-        "documentation/images/" +
-        this.widgets[this.selectedWidgetNumber].name +
-        "/icon.png"
-      );
+      return "documentation/images/" + this.widgets[this.selectedWidgetNumber].name + "/icon.png";
     },
   },
 };

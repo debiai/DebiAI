@@ -1,11 +1,19 @@
 <template>
   <div id="project">
     <!-- Settings modal -->
-    <Modal v-if="settings && project" @close="settings = false">
+    <Modal
+      v-if="settings && project"
+      @close="settings = false"
+    >
       <!-- block structure creation or display -->
       <h2 class="aligned spaced">
         Block structure
-        <button class="red" @click="settings = false">Close</button>
+        <button
+          class="red"
+          @click="settings = false"
+        >
+          Close
+        </button>
       </h2>
       <BlockStructrureVisu />
       <!-- TODO results structure -->
@@ -22,7 +30,10 @@
       v-on:deleteProject="deleteProject"
     />
     <transition name="fade">
-      <div id="projectContent" v-if="project">
+      <div
+        id="projectContent"
+        v-if="project"
+      >
         <div id="selectionAndModels">
           <!-- Data selection selection -->
           <Selections
@@ -162,9 +173,7 @@ export default {
           this.project.selections = this.project.selections.sort(
             (a, b) => b.updateDate - a.updateDate
           );
-          this.project.models = this.project.models.sort(
-            (a, b) => b.updateDate - a.updateDate
-          );
+          this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
 
           // store some info
           this.$store.commit("setBlockLevels", this.project.blockLevelInfo);
@@ -198,8 +207,7 @@ export default {
         .then((res) => {
           this.nbSelectedSamples = res.nbFromSelection;
           this.nbEvaluatedSamples = res.nbSamples;
-          if (this.commomModelResults)
-            this.nbResults = res.nbSamples * this.selectedModels.length;
+          if (this.commomModelResults) this.nbResults = res.nbSamples * this.selectedModels.length;
           else this.nbResults = null; // Will draw a "?" on the dashboard
         })
         .catch((e) => {
@@ -216,11 +224,7 @@ export default {
     startAnalysis({ newTab }) {
       if (newTab) {
         let routeData = this.$router.resolve({
-          path:
-            "/dataprovider/" +
-            this.dataProviderId +
-            "/project/" +
-            this.projectId,
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
           query: {
             selectionIds: this.selectedSelectionsIds,
             selectionIntersection: this.selectionIntersection,
@@ -272,9 +276,7 @@ export default {
 
           // Convert the lists in str for the querry
           if (selectionIds && selectionIds.length > 0)
-            selectionIds = selectionIds.reduce(
-              (sId, total) => total + "." + sId
-            );
+            selectionIds = selectionIds.reduce((sId, total) => total + "." + sId);
           if (modelIds && modelIds.length > 0)
             modelIds = modelIds.reduce((mId, total) => total + "." + mId);
 
@@ -331,9 +333,7 @@ export default {
       });
     },
     selectionDeleted(selectionId) {
-      this.project.selections = this.project.selections.filter(
-        (s) => s.id !== selectionId
-      );
+      this.project.selections = this.project.selections.filter((s) => s.id !== selectionId);
     },
     modelDeleted(modelId) {
       this.project.models = this.project.models.filter((m) => m.id !== modelId);
@@ -342,10 +342,8 @@ export default {
   computed: {
     readyToAnalyse() {
       // return true if the ans can be run
-      if (this.disabled || this.loading || this.nbSelectedSamples === 0)
-        return false;
-      if (this.selectedModelIds.length > 0 && this.nbEvaluatedSamples === 0)
-        return false;
+      if (this.disabled || this.loading || this.nbSelectedSamples === 0) return false;
+      if (this.selectedModelIds.length > 0 && this.nbEvaluatedSamples === 0) return false;
       return true;
     },
     selectedSelections() {
@@ -354,9 +352,7 @@ export default {
       );
     },
     selectedModels() {
-      return this.selectedModelIds.map((mId) =>
-        this.project.models.find((m) => mId === m.id)
-      );
+      return this.selectedModelIds.map((mId) => this.project.models.find((m) => mId === m.id));
     },
   },
   watch: {

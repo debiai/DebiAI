@@ -4,7 +4,10 @@
     <!-- More than -->
     <div v-if="filter.min !== null">
       More than
-      <span class="born" :title="filter.min">
+      <span
+        class="born"
+        :title="filter.min"
+      >
         {{ $services.prettyNumber(filter.min) }}
       </span>
     </div>
@@ -13,16 +16,22 @@
     <div v-if="filter.min !== null && filter.max !== null">and</div>
     <div v-if="filter.max !== null">
       Less than
-      <span class="born" :title="filter.max">
+      <span
+        class="born"
+        :title="filter.max"
+      >
         {{ $services.prettyNumber(filter.max) }}
       </span>
-      <span v-if="!isLast">
-        or
-        </span>
+      <span v-if="!isLast"> or </span>
     </div>
 
     <!-- Delete infternal btn -->
-    <button class="red" @click="$emit('remove')">x</button>
+    <button
+      class="red"
+      @click="$emit('remove')"
+    >
+      x
+    </button>
   </div>
 </template>
 

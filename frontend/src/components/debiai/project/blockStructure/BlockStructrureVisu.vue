@@ -1,7 +1,11 @@
 <template>
   <div id="BlockStructrureVisu">
     <div id="blockLevels">
-      <div class="BlockLevelSegment" v-for="(bl, i) in blockLevels" :key="i">
+      <div
+        class="BlockLevelSegment"
+        v-for="(bl, i) in blockLevels"
+        :key="i"
+      >
         <div class="blockLevel">
           <div class="blockLevelTop">
             <div class="blockLevelTitle">
@@ -9,13 +13,24 @@
             </div>
           </div>
           <div class="keyListList">
-            <div class="keyList" v-for="type in types" :key="type">
+            <div
+              class="keyList"
+              v-for="type in types"
+              :key="type"
+            >
               <div v-if="type in bl">
                 <div v-if="bl[type].length > 0">
                   <strong>{{ type }}</strong>
-                  <div v-for="k in bl[type]" :key="k.name" class="key">
+                  <div
+                    v-for="k in bl[type]"
+                    :key="k.name"
+                    class="key"
+                  >
                     <div class="keyName">{{ k.name }}</div>
-                    <div class="keyType" :title="'Default : ' + k.default">
+                    <div
+                      class="keyType"
+                      :title="'Default : ' + k.default"
+                    >
                       {{ k.type }}
                     </div>
                   </div>

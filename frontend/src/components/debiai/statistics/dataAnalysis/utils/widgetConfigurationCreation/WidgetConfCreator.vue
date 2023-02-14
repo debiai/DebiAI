@@ -1,5 +1,8 @@
 <template>
-  <form v-on:submit.prevent id="confCreator">
+  <form
+    v-on:submit.prevent
+    id="confCreator"
+  >
     <!-- title -->
     <h4>
       Save a
@@ -44,11 +47,17 @@
       </div>
 
       <!-- widget configuration -->
-      <div class="data" id="widgetConf">
+      <div
+        class="data"
+        id="widgetConf"
+      >
         <div class="name">Configuration</div>
         <div class="value">
           <table id="keyList">
-            <tr v-for="key in Object.keys(widgetConf)" :key="key">
+            <tr
+              v-for="key in Object.keys(widgetConf)"
+              :key="key"
+            >
               <td class="key">{{ key }}</td>
               <td class="val">{{ widgetConf[key] }}</td>
             </tr>
@@ -72,7 +81,11 @@
           />
           Update the configuration
         </button> -->
-        <button type="submit" @click="save" :disabled="!confName">
+        <button
+          type="submit"
+          @click="save"
+          :disabled="!confName"
+        >
           <inline-svg
             :src="require('../../../../../../assets/svg/save.svg')"
             width="10"
@@ -102,7 +115,7 @@ export default {
     // createdConf: { type: Array, required: true },
     suggestedConfName: { type: String, default: "" },
   },
-  mounted(){
+  mounted() {
     this.confName = this.suggestedConfName;
   },
   methods: {
@@ -113,7 +126,7 @@ export default {
       this.$backendDialog
         .saveWidgetConfiguration(this.widgetKey, {
           projectId: projectId,
-          dataProviderId : dataProviderId,
+          dataProviderId: dataProviderId,
           configuration: this.widgetConf,
           name: this.confName,
           description: this.confDescription,

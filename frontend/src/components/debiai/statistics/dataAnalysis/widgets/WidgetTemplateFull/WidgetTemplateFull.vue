@@ -1,7 +1,13 @@
 <template>
-  <div id="WidgetTemplateFull" class="dataVisualisationWidget">
+  <div
+    id="WidgetTemplateFull"
+    class="dataVisualisationWidget"
+  >
     <!-- Column selection modal -->
-    <modal v-if="colSelection" @close="colSelection = false">
+    <modal
+      v-if="colSelection"
+      @close="colSelection = false"
+    >
       <ColumnSelection
         title="Select a column"
         :data="data"
@@ -14,7 +20,10 @@
     </modal>
 
     <!-- Multiple columns selection modal -->
-    <modal v-if="multipleColSelection" @close="multipleColSelection = false">
+    <modal
+      v-if="multipleColSelection"
+      @close="multipleColSelection = false"
+    >
       <ColumnSelection
         v-if="multipleColSelection"
         title="Select columns"
@@ -28,7 +37,10 @@
     </modal>
 
     <!-- Controls -->
-    <div id="settings" v-if="settings">
+    <div
+      id="settings"
+      v-if="settings"
+    >
       <!-- Axis btns -->
       <div class="dataGroup">
         <!-- Column selection -->
@@ -63,7 +75,10 @@
                 v-model="checkboxValue"
                 style="display: none"
               />
-              <label :for="'checkbox' + index" class="toggle">
+              <label
+                :for="'checkbox' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
@@ -90,7 +105,11 @@
           <div class="data">
             <div class="name">Input</div>
             <div class="value">
-              <input type="number" v-model="value" :min="1" />
+              <input
+                type="number"
+                v-model="value"
+                :min="1"
+              />
             </div>
           </div>
         </div>
@@ -203,9 +222,7 @@ export default {
     getConf() {
       let conf = {
         selectedColumn: this.data.columns[this.selectedColumnIndex].label,
-        selectedColumns: this.selectedColumnsIndexs.map(
-          (index) => this.data.columns[index].label
-        ),
+        selectedColumns: this.selectedColumnsIndexs.map((index) => this.data.columns[index].label),
         checkboxValue: this.checkboxValue,
         option: this.option,
         value: this.value,
@@ -277,10 +294,7 @@ export default {
      * This optional function can be used to get the name of the configuration
      */
     getConfNameSuggestion() {
-      return (
-        "Custom configuration with " +
-        this.data.columns[this.selectedColumnIndex].label
-      );
+      return "Custom configuration with " + this.data.columns[this.selectedColumnIndex].label;
     },
 
     // =============== Filtering ===============

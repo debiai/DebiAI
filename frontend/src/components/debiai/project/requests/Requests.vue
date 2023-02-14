@@ -1,7 +1,10 @@
 <template>
   <div id="Requests">
     <!-- Requests creation modal -->
-    <modal v-if="requestCreation" @close="requestCreation = false">
+    <modal
+      v-if="requestCreation"
+      @close="requestCreation = false"
+    >
       <RequestCreation
         @close="requestCreation = false"
         @newRequest="updateRequests"
@@ -9,7 +12,10 @@
     </modal>
 
     <!-- Request modal -->
-    <modal v-if="selectedRequestId" @close="selectedRequestId = false">
+    <modal
+      v-if="selectedRequestId"
+      @close="selectedRequestId = false"
+    >
       <Request
         :requestId="selectedRequestId"
         @close="selectedRequestId = null"
@@ -17,7 +23,10 @@
       />
     </modal>
 
-    <div id="requests" class="card">
+    <div
+      id="requests"
+      class="card"
+    >
       <div class="header">
         <h2>
           <inline-svg
@@ -27,13 +36,13 @@
             style="margin-right: 10px"
           />Requests
           <DocumentationBlock>
-            A <b> request</b> is a very light set of constraints that can be
-            used to filter the project samples and create selections.
+            A <b> request</b> is a very light set of constraints that can be used to filter the
+            project samples and create selections.
             <br />
             A <b> selection </b>
-            is a list of samples created by a request at a given moment based on
-            the data currently added to the project. This is why selections from
-            the same request can be different if the samples have evolved.
+            is a list of samples created by a request at a given moment based on the data currently
+            added to the project. This is why selections from the same request can be different if
+            the samples have evolved.
           </DocumentationBlock>
         </h2>
         <div v-if="selectionMode">Select a request</div>
@@ -45,20 +54,26 @@
           >
             + Create a new request
           </button>
-          <button class="red" @click="$emit('close')">Close</button>
+          <button
+            class="red"
+            @click="$emit('close')"
+          >
+            Close
+          </button>
         </span>
       </div>
 
       <div class="itemList">
         <!-- No requests msg -->
         <transition name="fade">
-          <div v-if="requests !== null && requests.length === 0">
-            No requests
-          </div>
+          <div v-if="requests !== null && requests.length === 0">No requests</div>
         </transition>
         <!-- Requests list -->
         <transition name="fade">
-          <div class="itemList" v-if="requests !== null && requests.length > 0">
+          <div
+            class="itemList"
+            v-if="requests !== null && requests.length > 0"
+          >
             <!-- Request Item -->
             <div
               class="item request selectable"
@@ -76,7 +91,10 @@
               </span>
 
               <!-- nb Filters -->
-              <span class="nbFilters" title="Request filters">
+              <span
+                class="nbFilters"
+                title="Request filters"
+              >
                 {{ request.filters.length }}
                 <inline-svg
                   :src="require('../../../../assets/svg/filter.svg')"
@@ -142,9 +160,7 @@ export default {
       this.$backendDialog
         .delRequest(requestId)
         .then(() => {
-          this.requests = this.requests.filter(
-            (request) => request.id !== requestId
-          );
+          this.requests = this.requests.filter((request) => request.id !== requestId);
           this.$store.commit("sendMessage", {
             title: "success",
             msg: "Request deleted",

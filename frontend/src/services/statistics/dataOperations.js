@@ -1,17 +1,16 @@
-let mathJs = require('mathjs')
+let mathJs = require("mathjs");
 
 // ======== Par. coord. ========
 
-const MAX_STRING_DISPLAYED = 28
-const MAX_STRING_LENGTH = 30
+const MAX_STRING_DISPLAYED = 28;
+const MAX_STRING_LENGTH = 30;
 
 // create data for the plotly par. coord.
 const columnsCreation = function (columns, selectedSamplesIds) {
-  let plotlyColumns = columns.map(col => {
+  let plotlyColumns = columns.map((col) => {
     if (col.type == String) {
-
-      let tickvals = []
-      let ticktext = []
+      let tickvals = [];
+      let ticktext = [];
 
       tickvals = [...Array(col.nbOccu).keys()];
 
@@ -19,46 +18,46 @@ const columnsCreation = function (columns, selectedSamplesIds) {
         // No text on the axis
         ticktext = tickvals.map(() => "");
       else
-        ticktext = col.uniques.map(v =>
+        ticktext = col.uniques.map((v) =>
           v.length > MAX_STRING_LENGTH ? v.substring(0, MAX_STRING_LENGTH) + "..." : v
         );
 
       return {
         label: col.label,
-        values: selectedSamplesIds.map(sId => col.valuesIndex[sId]),
+        values: selectedSamplesIds.map((sId) => col.valuesIndex[sId]),
         tickvals: tickvals,
         ticktext: ticktext,
-      }
+      };
     } else {
       return {
         type: "int",
         label: col.label,
-        values: selectedSamplesIds.map(sId => col.values[sId]),
+        values: selectedSamplesIds.map((sId) => col.values[sId]),
       };
     }
   });
-  return plotlyColumns
-}
+  return plotlyColumns;
+};
 
 // ======== Data point plot ========
 
-const asc = arr => arr.sort((a, b) => a - b);
+const asc = (arr) => arr.sort((a, b) => a - b);
 
-const sum = arr => arr.reduce((a, b) => a + b, 0);
+const sum = (arr) => arr.reduce((a, b) => a + b, 0);
 
-const mean = arr => arr.length ? sum(arr) / arr.length : null;
+const mean = (arr) => (arr.length ? sum(arr) / arr.length : null);
 
 const getMin = (arr) => {
   let min = Infinity;
   for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
-  return min
-}
+  return min;
+};
 const getMax = (arr) => {
   let max = -Infinity;
   for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
-  return max
-}
-const mode = arr => {
+  return max;
+};
+const mode = (arr) => {
   let numMapping = {};
   let greatestFreq = 0;
   let mode;
@@ -71,8 +70,7 @@ const mode = arr => {
     }
   });
   return { top: +mode, frequency: greatestFreq };
-}
-
+};
 
 const quantile = (sorted, q) => {
   const pos = (sorted.length - 1) * q;
@@ -84,48 +82,50 @@ const quantile = (sorted, q) => {
 };
 
 // Average, min, max, q1, q2 and standart deviation calculation
-const getStats = function (x, y, interval,
+const getStats = function (
+  x,
+  y,
+  interval,
   { fromIn = null, toIn = null, detailed = true, displayNull = true }
 ) {
-  let xSections = []
-  let average = []
-  let min = []
-  let max = []
-  let q1 = []
-  let q3 = []
-  let std = []
+  let xSections = [];
+  let average = [];
+  let min = [];
+  let max = [];
+  let q1 = [];
+  let q3 = [];
+  let std = [];
 
-  let from = fromIn !== null ? fromIn : getMin(x)
-  let to = toIn !== null ? toIn : getMax(x)
-  let sectionLength = (to - from) / (interval)
+  let from = fromIn !== null ? fromIn : getMin(x);
+  let to = toIn !== null ? toIn : getMax(x);
+  let sectionLength = (to - from) / interval;
 
   for (let i = 0; i < interval + 1; i++) {
-    var ySection = []
+    var ySection = [];
     x.forEach((v, vId) => {
-      if (v >= (sectionLength * i) + from && v < (sectionLength * (i + 1)) + from)
-        ySection.push(y[vId])
-    })
+      if (v >= sectionLength * i + from && v < sectionLength * (i + 1) + from)
+        ySection.push(y[vId]);
+    });
 
     // xSections.push(((sectionLength * i) + 2 * from + (sectionLength * (i + 1))) / 2)
-    xSections.push(((sectionLength * i) + from))
+    xSections.push(sectionLength * i + from);
 
     if (ySection.length > 0) {
+      let sorted = asc(ySection);
 
-      let sorted = asc(ySection)
-
-      average.push(mean(ySection))
-      if (detailed) min.push(sorted[0])
-      if (detailed) max.push(sorted[sorted.length - 1])
-      if (detailed) q1.push(quantile(sorted, 0.25))
-      if (detailed) q3.push(quantile(sorted, 0.75))
-      if (detailed) std.push(mathJs.std(ySection))
+      average.push(mean(ySection));
+      if (detailed) min.push(sorted[0]);
+      if (detailed) max.push(sorted[sorted.length - 1]);
+      if (detailed) q1.push(quantile(sorted, 0.25));
+      if (detailed) q3.push(quantile(sorted, 0.75));
+      if (detailed) std.push(mathJs.std(ySection));
     } else {
-      average.push(displayNull ? 0 : null)
-      if (detailed) min.push(displayNull ? 0 : null)
-      if (detailed) max.push(displayNull ? 0 : null)
-      if (detailed) q1.push(displayNull ? 0 : null)
-      if (detailed) q3.push(displayNull ? 0 : null)
-      if (detailed) std.push(displayNull ? 0 : null)
+      average.push(displayNull ? 0 : null);
+      if (detailed) min.push(displayNull ? 0 : null);
+      if (detailed) max.push(displayNull ? 0 : null);
+      if (detailed) q1.push(displayNull ? 0 : null);
+      if (detailed) q3.push(displayNull ? 0 : null);
+      if (detailed) std.push(displayNull ? 0 : null);
     }
   }
 
@@ -136,45 +136,44 @@ const getStats = function (x, y, interval,
     max,
     q1,
     q3,
-    std
-  }
-
-
-}
+    std,
+  };
+};
 
 // ======== Data repartition ========
 // get data distribution from data array and an interval
 const getRepartition = function (x, interval, min, max) {
-  let xSections = []
-  let repartition = []
+  let xSections = [];
+  let repartition = [];
 
-  let sectionLength = (max - min) / (interval)
+  let sectionLength = (max - min) / interval;
 
   for (let i = 0; i < interval + 1; i++) {
-    xSections.push(((sectionLength * i) + min))
-    repartition.push(x.filter(v => v >= (sectionLength * i) + min && v < (sectionLength * (i + 1)) + min).length)
+    xSections.push(sectionLength * i + min);
+    repartition.push(
+      x.filter((v) => v >= sectionLength * i + min && v < sectionLength * (i + 1) + min).length
+    );
   }
 
-  return { xSections, repartition }
-}
+  return { xSections, repartition };
+};
 
 // ======== Common =======
 
 // return id list list from selector array
 const groupBy = function (selector, selectorUniques) {
-  let groups = []
-  let idsList = [...Array(selector.length).keys()]
-  selectorUniques.forEach(val => {
-    groups.push(idsList.filter(i => selector[i] == val))
+  let groups = [];
+  let idsList = [...Array(selector.length).keys()];
+  selectorUniques.forEach((val) => {
+    groups.push(idsList.filter((i) => selector[i] == val));
   });
-  return groups
-}
+  return groups;
+};
 
 // to display a float more nicely
 const humanize = function (x) {
-  return x.toFixed(4).replace(/\.?0*$/, '');
-}
-
+  return x.toFixed(4).replace(/\.?0*$/, "");
+};
 
 export default {
   columnsCreation,
@@ -185,5 +184,5 @@ export default {
   getMin,
   getMax,
   mode,
-  humanize
-}
+  humanize,
+};

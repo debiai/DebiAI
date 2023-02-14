@@ -1,10 +1,16 @@
 <template>
   <div id="dataProviders">
     <!-- Title -->
-    <div id="title" class="aligned spaced">
+    <div
+      id="title"
+      class="aligned spaced"
+    >
       <h2>Data providers</h2>
       <div id="controls">
-        <button class="warning" @click="getDataProviders">
+        <button
+          class="warning"
+          @click="getDataProviders"
+        >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
             width="10"
@@ -18,12 +24,20 @@
         >
           New data provider
         </button>
-        <button class="red" @click="$emit('cancel')">Cancel</button>
+        <button
+          class="red"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
       </div>
     </div>
     <!-- Data provider list -->
     <transition name="fade">
-      <div v-if="dataProviders" class="itemList marged">
+      <div
+        v-if="dataProviders"
+        class="itemList marged"
+      >
         <div
           v-for="dataProvider in dataProviders"
           :key="dataProvider.id"
@@ -41,19 +55,33 @@
           </div>
           <!-- Status -->
           <div v-if="dataProvider.type === 'Web'">
-            <div class="status available" v-if="dataProvider.status">
+            <div
+              class="status available"
+              v-if="dataProvider.status"
+            >
               ✓ Available
             </div>
-            <div class="status notavailable" v-else>❌ Not available</div>
+            <div
+              class="status notavailable"
+              v-else
+            >
+              ❌ Not available
+            </div>
           </div>
           <div v-if="dataProvider.type === 'Python module Data Provider'">
             <div class="status available">✓ Available</div>
           </div>
 
           <!-- Actions -->
-          <div class="controls" v-if="dataProvider.type === 'Web'">
+          <div
+            class="controls"
+            v-if="dataProvider.type === 'Web'"
+          >
             <!-- <button @click="getDataProviders">Retry</button> -->
-            <button class="red" @click="deleteDataProvider(dataProvider.name)">
+            <button
+              class="red"
+              @click="deleteDataProvider(dataProvider.name)"
+            >
               Delete
             </button>
           </div>
@@ -64,7 +92,10 @@
     <div v-else-if="dataProviders.length === 0">No data providers</div>
 
     <!-- new dataprovider modal -->
-    <modal v-if="newDataProviderModal" @close="newDataProviderModal = false">
+    <modal
+      v-if="newDataProviderModal"
+      @close="newDataProviderModal = false"
+    >
       <NewDataProvider
         @cancel="newDataProviderModal = false"
         @done="
@@ -111,11 +142,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          if (
-            error.response &&
-            error.response.status !== 500 &&
-            error.response.data
-          ) {
+          if (error.response && error.response.status !== 500 && error.response.data) {
             this.$store.commit("sendMessage", {
               title: "error",
               msg: error.response.data,

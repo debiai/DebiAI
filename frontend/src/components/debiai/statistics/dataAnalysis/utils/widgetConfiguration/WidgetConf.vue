@@ -1,5 +1,8 @@
 <template>
-  <div class="configuration item selectable" @click="$emit('selected')">
+  <div
+    class="configuration item selectable"
+    @click="$emit('selected')"
+  >
     <div class="header">
       <h4 style="display: flex; align-items: center">
         {{ configuration.name }}
@@ -26,7 +29,12 @@
         </DocumentationBlock>
       </h4>
 
-      <button class="red" @click="deleteConf">Delete</button>
+      <button
+        class="red"
+        @click="deleteConf"
+      >
+        Delete
+      </button>
     </div>
     <div class="body">
       <span

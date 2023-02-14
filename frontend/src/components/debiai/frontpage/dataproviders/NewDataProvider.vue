@@ -1,10 +1,18 @@
 <template>
   <div id="newDataProviders">
     <!-- Title -->
-    <div id="title" class="aligned spaced">
+    <div
+      id="title"
+      class="aligned spaced"
+    >
       <h2>Creating a new data provider</h2>
       <div id="controls">
-        <button class="red" @click="$emit('cancel')">Cancel</button>
+        <button
+          class="red"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
@@ -15,15 +23,28 @@
         <b> Web data provider </b>
         <div class="info">
           <div class="head">
-            Data provider name <input type="text" v-model="dpName" />
+            Data provider name
+            <input
+              type="text"
+              v-model="dpName"
+            />
           </div>
           <div class="data">
-            <div>Data provider URL <input type="text" v-model="dpUrl" /></div>
+            <div>
+              Data provider URL
+              <input
+                type="text"
+                v-model="dpUrl"
+              />
+            </div>
           </div>
         </div>
         <!-- actions -->
         <div class="controls">
-          <button @click="createWebDataProvider" :disabled="!canCreate">
+          <button
+            @click="createWebDataProvider"
+            :disabled="!canCreate"
+          >
             Save
           </button>
         </div>

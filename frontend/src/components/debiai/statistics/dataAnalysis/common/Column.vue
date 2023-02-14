@@ -9,14 +9,22 @@
     >
       {{ column.label }}
     </button>
-    <div v-else-if="column.type == undefined" class="label disabled">
+    <div
+      v-else-if="column.type == undefined"
+      class="label disabled"
+    >
       {{ column.label }}
     </div>
-    <div v-else class="label">{{ column.label }}</div>
+    <div
+      v-else
+      class="label"
+    >
+      {{ column.label }}
+    </div>
 
     <!-- Number of uniques values display -->
     <div
-      v-if="disabled ||(!reduced && (!colorSelection || column.type == undefined))"
+      v-if="disabled || (!reduced && (!colorSelection || column.type == undefined))"
       :class="selectedAsColor ? 'nbOccu color' : 'nbOccu'"
       title="Number of uniques values"
     >
@@ -32,9 +40,11 @@ Click to set column as the main color"
       {{ column.nbOccu }}
     </button>
 
-
     <!-- Type display -->
-    <div :class="'type ' + column.typeText" title="Column type">
+    <div
+      :class="'type ' + column.typeText"
+      title="Column type"
+    >
       {{ column.typeText }}
     </div>
   </div>
@@ -59,10 +69,7 @@ export default {
   },
   computed: {
     selectedAsColor: function () {
-      return (
-        this.$store.state.SatisticalAnasysis.coloredColumnIndex ==
-        this.column.index
-      );
+      return this.$store.state.SatisticalAnasysis.coloredColumnIndex == this.column.index;
     },
   },
 };

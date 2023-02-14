@@ -1,8 +1,14 @@
 <template>
-  <div id="dataAnalysis" v-if="data">
+  <div
+    id="dataAnalysis"
+    v-if="data"
+  >
     <!--============= Modals =============-->
     <!-- customColumnCreation -->
-    <modal v-if="customColumnCreation" @close="customColumnCreation = false">
+    <modal
+      v-if="customColumnCreation"
+      @close="customColumnCreation = false"
+    >
       <CustomColumnCreator
         :data="data"
         @cancel="customColumnCreation = false"
@@ -10,7 +16,10 @@
       />
     </modal>
     <!-- saveSelectionWidget -->
-    <modal v-if="saveSelectionWidget" @close="saveSelectionWidget = false">
+    <modal
+      v-if="saveSelectionWidget"
+      @close="saveSelectionWidget = false"
+    >
       <SelectionCreator
         :data="data"
         :selectedData="selectedData"
@@ -19,7 +28,10 @@
       />
     </modal>
     <!-- tagCreationWidget -->
-    <modal v-if="tagCreationWidget" @close="tagCreationWidget = false">
+    <modal
+      v-if="tagCreationWidget"
+      @close="tagCreationWidget = false"
+    >
       <TagCreator
         :data="data"
         :selectedData="selectedData"
@@ -28,7 +40,10 @@
       />
     </modal>
     <!-- Selection export -->
-    <modal v-if="selectionExport" @close="selectionExport = false">
+    <modal
+      v-if="selectionExport"
+      @close="selectionExport = false"
+    >
       <SelectionExportMenu
         :data="data"
         :selectedData="selectedData"
@@ -37,14 +52,16 @@
       />
     </modal>
     <!-- WidgetCatalog -->
-    <modal v-if="widgetCatalog" @close="widgetCatalog = false">
+    <modal
+      v-if="widgetCatalog"
+      @close="widgetCatalog = false"
+    >
       <WidgetCatalog
         :widgets="availableWidgets"
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
-          ({ componentKey, configuration }) =>
-            addWidget(componentKey, null, configuration)
+          ({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
         "
       />
     </modal>
@@ -105,9 +122,7 @@
           :configuration="component.configuration"
           :index="component.id"
           v-on:remove="removeWidget(component)"
-          v-on:copy="
-            (configuration) => copyWidget({ component, configuration })
-          "
+          v-on:copy="(configuration) => copyWidget({ component, configuration })"
         >
           <component
             :is="component.key"
@@ -121,9 +136,17 @@
     </div>
 
     <!-- Bottom menu -->
-    <Footer :data="data" :selectedData="selectedData" />
+    <Footer
+      :data="data"
+      :selectedData="selectedData"
+    />
   </div>
-  <div id="dataAnalysis" v-else>Loading</div>
+  <div
+    id="dataAnalysis"
+    v-else
+  >
+    Loading
+  </div>
 </template>
 
 <script>
@@ -312,11 +335,7 @@ export default {
       // Load every available widget from the widget folder
       // Load every files with the .vue extension in the widgets folder
       // Somehow, the require.context doesn't work with a variable path
-      const availableWidgetPath = require.context(
-        "./widgets/",
-        true,
-        /\.vue$/i
-      );
+      const availableWidgetPath = require.context("./widgets/", true, /\.vue$/i);
 
       availableWidgetPath.keys().forEach((componentFilePath) => {
         // Get the component name from the file name
@@ -399,9 +418,7 @@ export default {
     // Buttons
     defaultLayout() {
       // Check if the default layout has been overide by a local storage grid stack layout
-      let savedGridStackDefaultLayout = window.localStorage.getItem(
-        "gridStackDefaultLayout"
-      );
+      let savedGridStackDefaultLayout = window.localStorage.getItem("gridStackDefaultLayout");
       if (savedGridStackDefaultLayout) {
         savedGridStackDefaultLayout = JSON.parse(savedGridStackDefaultLayout);
         this.loadLayout(savedGridStackDefaultLayout);

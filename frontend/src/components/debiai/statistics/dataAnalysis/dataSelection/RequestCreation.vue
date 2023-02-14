@@ -3,14 +3,23 @@
     <form v-on:submit.prevent>
       <b
         >Create a request from the current filters
-        <button @click="$emit('cancel')" class="red">Cancel</button>
+        <button
+          @click="$emit('cancel')"
+          class="red"
+        >
+          Cancel
+        </button>
       </b>
       <div class="dataGroup">
         <!-- Request name -->
         <div class="data">
           <div class="name">Request name</div>
           <div class="value">
-            <input type="text" v-model="requestName" style="flex: 1" />
+            <input
+              type="text"
+              v-model="requestName"
+              style="flex: 1"
+            />
           </div>
         </div>
         <!-- nb filters:  -->
@@ -33,7 +42,11 @@
         </div>
       </div>
       <div style="display: flex; justify-content: flex-end">
-        <button type="submit" @click="save" :disabled="!requestNameOk">
+        <button
+          type="submit"
+          @click="save"
+          :disabled="!requestNameOk"
+        >
           Save
         </button>
       </div>
@@ -54,11 +67,7 @@ export default {
   methods: {
     save() {
       this.$backendDialog
-        .addRequest(
-          this.requestName,
-          this.requestDescription,
-          this.filters
-        )
+        .addRequest(this.requestName, this.requestDescription, this.filters)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

@@ -19,7 +19,12 @@
         <div class="description">{{ widget.description }}</div>
       </div>
       <div class="control">
-        <button class="green" @click="$emit('add', widget)">Add</button>
+        <button
+          class="green"
+          @click="$emit('add', widget)"
+        >
+          Add
+        </button>
         <!-- configurations -->
         <transition name="fade">
           <span
@@ -38,7 +43,11 @@
       </div>
     </div>
     <transition name="scale">
-      <div id="configurationList" class="itemList" v-if="displayConfigurations">
+      <div
+        id="configurationList"
+        class="itemList"
+        v-if="displayConfigurations"
+      >
         <WidgetConfList
           :widgetKey="widget.componentKey"
           :configurations="configurations"

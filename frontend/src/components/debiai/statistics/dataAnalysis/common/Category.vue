@@ -1,11 +1,31 @@
 <template>
-  <div v-if="columns.length" id="category" class="card">
-    <div class="title" :id="name">
-      <h2>{{name}}</h2>
-      <div style="flex:1"></div>
-      <div id="controls" v-if="multipleSelection">
-        <button class="warning" @click="none">None</button>
-        <button class="info" @click="all">All</button>
+  <div
+    v-if="columns.length"
+    id="category"
+    class="card"
+  >
+    <div
+      class="title"
+      :id="name"
+    >
+      <h2>{{ name }}</h2>
+      <div style="flex: 1"></div>
+      <div
+        id="controls"
+        v-if="multipleSelection"
+      >
+        <button
+          class="warning"
+          @click="none"
+        >
+          None
+        </button>
+        <button
+          class="info"
+          @click="all"
+        >
+          All
+        </button>
       </div>
     </div>
     <div class="content">
@@ -25,7 +45,7 @@
 import Column from "./Column";
 export default {
   components: {
-    Column
+    Column,
   },
   props: {
     name: { type: String, required: true },
@@ -43,8 +63,8 @@ export default {
     },
     none() {
       this.$emit("none", this.name);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -80,7 +100,6 @@ export default {
 #Tag {
   background: var(--tag);
 }
-
 
 /* Controls  */
 button {

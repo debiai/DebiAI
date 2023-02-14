@@ -1,4 +1,4 @@
-import services from "../services"
+import services from "../services";
 
 // Default components layout
 const defaultLayout = [
@@ -22,7 +22,7 @@ const defaultLayout = [
     y: 5,
     width: 6,
     height: 5,
-  }
+  },
 ];
 
 // Loading the visualization components
@@ -35,9 +35,9 @@ const BASE_LAYOUT = {
   height: 4,
   minHeight: 2,
   maxHeight: 15,
-}
+};
 
-const availableWidgetsConfiguration = {}
+const availableWidgetsConfiguration = {};
 // Load every json configuration extension in the widgets folder
 const availableWidgets = require.context(
   "../../components/debiai/statistics/dataAnalysis/widgets",
@@ -50,7 +50,8 @@ availableWidgets.keys().forEach((componentFilePath) => {
   const componentKey = componentFilePath.split("/")[1];
   try {
     const configuration = require("../../components/debiai/statistics/dataAnalysis/widgets/" +
-      componentKey + "/configuration.json");
+      componentKey +
+      "/configuration.json");
 
     // Check configuration
     if (configuration.display === false) return;
@@ -59,8 +60,8 @@ availableWidgets.keys().forEach((componentFilePath) => {
     let widgetDescription = configuration.description || "";
     let widgetSimple = configuration.simple || false;
 
-    let widgetLayout
-    if ('layout' in configuration) {
+    let widgetLayout;
+    if ("layout" in configuration) {
       widgetLayout = { ...BASE_LAYOUT, ...configuration.layout };
     } else {
       widgetLayout = { ...BASE_LAYOUT };
@@ -73,12 +74,12 @@ availableWidgets.keys().forEach((componentFilePath) => {
       simple: widgetSimple,
       key: componentKey,
       layout: widgetLayout,
-    }
+    };
   } catch (e) {
     console.log(e);
     console.warn("Error loading widget : " + componentKey + " configuration");
   }
-})
+});
 
 function createWidget(widgetKey) {
   // A uuid is generated for the widget
@@ -92,7 +93,7 @@ function getAvailableWidgets() {
       name: availableWidgetsConfiguration[widgetKey].name,
       description: availableWidgetsConfiguration[widgetKey].description,
     };
-  })
+  });
   return widgetList;
 }
 
@@ -100,10 +101,9 @@ function widgetExists(widgetKey) {
   return widgetKey in availableWidgetsConfiguration;
 }
 
-
 export default {
   defaultLayout,
   createWidget,
   getAvailableWidgets,
-  widgetExists
-}
+  widgetExists,
+};

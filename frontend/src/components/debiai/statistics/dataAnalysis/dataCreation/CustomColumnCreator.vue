@@ -1,15 +1,16 @@
 <template>
   <div id="virtualColumnCreator">
     <!-- Col selection Modal -->
-    <modal v-if="selectedColToChange !== null" @close="selectedColToChange = null">
+    <modal
+      v-if="selectedColToChange !== null"
+      @close="selectedColToChange = null"
+    >
       <ColumnSelection
         title="Select a column"
         :data="data"
         :validateRequiered="false"
         :defaultSelected="[
-          selectedColToChange == 0
-            ? firstColumn
-            : rules[selectedColToChange - 1].colIndex,
+          selectedColToChange == 0 ? firstColumn : rules[selectedColToChange - 1].colIndex,
         ]"
         v-on:cancel="selectedColToChange = null"
         v-on:colSelect="selectCol"
@@ -17,10 +18,18 @@
     </modal>
 
     <!-- Rule selection Modal -->
-    <modal v-if="ruleSelection" @close="ruleSelection = false">
+    <modal
+      v-if="ruleSelection"
+      @close="ruleSelection = false"
+    >
       <h2 class="aligned spaced marged">
         Select an operation
-        <button @click="ruleSelection = false" class="red">Cancel</button>
+        <button
+          @click="ruleSelection = false"
+          class="red"
+        >
+          Cancel
+        </button>
       </h2>
       <button
         v-for="(operator, operatorName) in operators"
@@ -32,17 +41,29 @@
     </modal>
 
     <!-- title -->
-    <h2 id="title" class="aligned spaced marged">
+    <h2
+      id="title"
+      class="aligned spaced marged"
+    >
       <div style="display: flex">
         Custom column creation
         <DocumentationBlock>
-          Create a new column based on the analysis columns and some simple
-          arythmetic operations.
+          Create a new column based on the analysis columns and some simple arythmetic operations.
         </DocumentationBlock>
       </div>
       <div>
-        <button @click="rules = []" class="red">Clear columns</button>
-        <button @click="$emit('cancel')" class="red">Cancel</button>
+        <button
+          @click="rules = []"
+          class="red"
+        >
+          Clear columns
+        </button>
+        <button
+          @click="$emit('cancel')"
+          class="red"
+        >
+          Cancel
+        </button>
       </div>
     </h2>
 
@@ -53,7 +74,11 @@
         <div class="data">
           <div class="name">Virtual column name</div>
           <div class="value">
-            <input type="text" placeholder="New column" v-model="colName" />
+            <input
+              type="text"
+              placeholder="New column"
+              v-model="colName"
+            />
           </div>
         </div>
       </div>
@@ -65,7 +90,11 @@
           v-on:selected="selectedColToChange = 0"
         />
 
-        <div class="rule" v-for="(rule, index) in rules" :key="index">
+        <div
+          class="rule"
+          v-for="(rule, index) in rules"
+          :key="index"
+        >
           <button
             @click="
               ruleSelection = true;
@@ -83,7 +112,12 @@
         <button @click="addRule">Add column</button>
       </div>
 
-      <button @click="create" :disabled="!columnOk">Create column</button>
+      <button
+        @click="create"
+        :disabled="!columnOk"
+      >
+        Create column
+      </button>
     </div>
   </div>
 </template>
@@ -160,7 +194,7 @@ export default {
     addRule() {
       this.rules.push({
         colIndex: 0,
-        operator:  this.operators.plus,
+        operator: this.operators.plus,
       });
       this.selectedColToChange = this.rules.length;
     },
@@ -174,11 +208,7 @@ export default {
       return this.data.labels.find((l) => l == this.colName) == undefined;
     },
     columnOk() {
-      return (
-        this.colNameAvailable &&
-        this.colName.length > 0 &&
-        this.colName.length < 30
-      );
+      return this.colNameAvailable && this.colName.length > 0 && this.colName.length < 30;
     },
   },
 };

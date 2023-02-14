@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 
-import Request from './request';
-import services from "../services/services"
+import Request from "./request";
+import services from "../services/services";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const Dashboard = {
   state: {
@@ -18,33 +18,33 @@ const Dashboard = {
   },
   mutations: {
     setLoading(state, val) {
-      state.isLoadding = val
+      state.isLoadding = val;
     },
     // message
     sendMessage(state, msg) {
-      msg.id = services.uuid()
-      state.messages.push(msg)
+      msg.id = services.uuid();
+      state.messages.push(msg);
       setTimeout(() => {
-        state.messages = state.messages.filter(m => m.id != msg.id)
-      }, 5000)
+        state.messages = state.messages.filter((m) => m.id != msg.id);
+      }, 5000);
     },
     removeMessage(state, msg) {
-      state.messages = state.messages.filter(m => m != msg)
+      state.messages = state.messages.filter((m) => m != msg);
     },
 
     // request
     startRequest(state, { name, code, progress }) {
-      let newRequest = new Request(name, code, progress)
-      state.requests.push(newRequest)
+      let newRequest = new Request(name, code, progress);
+      state.requests.push(newRequest);
     },
     endRequest(state, code) {
-      state.requests = state.requests.filter(r => r.code !== code)
+      state.requests = state.requests.filter((r) => r.code !== code);
     },
     updateRequestProgress(state, { code, progress }) {
-      state.requests.find(r => r.code == code).progress = progress
+      state.requests.find((r) => r.code == code).progress = progress;
     },
-  }
-}
+  },
+};
 
 const ProjectPage = {
   state: {
@@ -56,13 +56,13 @@ const ProjectPage = {
   },
   mutations: {
     setProjectId(state, projectId) {
-      state.projectId = projectId
+      state.projectId = projectId;
     },
     setDataProviderId(state, dataProviderId) {
-      state.dataProviderId = dataProviderId
+      state.dataProviderId = dataProviderId;
     },
     setBlockLevels(state, blockLevels) {
-      state.blockLevels = blockLevels
+      state.blockLevels = blockLevels;
 
       let blockCat = Dashboard.state.categoryList;
 
@@ -70,7 +70,7 @@ const ProjectPage = {
       if (blockLevels) {
         blockLevels.forEach((block) => {
           // Add id columns
-          columns.push({ name: block.name, type: 'text', isId: true })
+          columns.push({ name: block.name, type: "text", isId: true });
 
           // Add other columns
           blockCat.forEach((category) => {
@@ -86,13 +86,11 @@ const ProjectPage = {
       state.columns = columns;
     },
     setSelectionsIds(state, selectionsIds) {
-      if (selectionsIds)
-        state.selectionsIds = selectionsIds;
-      else
-        state.selectionsIds = [];
-    }
-  }
-}
+      if (selectionsIds) state.selectionsIds = selectionsIds;
+      else state.selectionsIds = [];
+    },
+  },
+};
 
 const SatisticalAnasysis = {
   state: {
@@ -105,17 +103,17 @@ const SatisticalAnasysis = {
 
     // Filters
     filters: [],
-    filtersEffecs: []
+    filtersEffecs: [],
   },
   mutations: {
     selectProjectId(state, projectId) {
-      state.projectId = projectId
+      state.projectId = projectId;
     },
     // setSelectedSelectionIds(state, selectionIds) {
     //   state.selectedSelectionIds = selectionIds
     // },
     setColoredColumnIndex(state, index) {
-      state.coloredColumnIndex = state.coloredColumnIndex == index ? null : index
+      state.coloredColumnIndex = state.coloredColumnIndex == index ? null : index;
     },
 
     // Filters
@@ -136,91 +134,89 @@ const SatisticalAnasysis = {
 
       if (!payload.filters) return;
 
-      let toSave = payload.filters.map(filter => {
+      let toSave = payload.filters.map((filter) => {
         return {
           id: services.uuid(),
           from: payload.from,
           ...filter,
-          creationDate: services.getTimestamp()
-        }
+          creationDate: services.getTimestamp(),
+        };
       });
 
       // Find duplicate
       if (payload.removeExisting)
-        state.filters = state.filters.filter(filter =>
-          filter.from.widgetIndex !== payload.from.widgetIndex
-        )
+        state.filters = state.filters.filter(
+          (filter) => filter.from.widgetIndex !== payload.from.widgetIndex
+        );
 
-      state.filters = [...state.filters, ...toSave]
+      state.filters = [...state.filters, ...toSave];
     },
     setFiltersEffects(state, filtersEffecs) {
-      state.filtersEffecs = filtersEffecs
+      state.filtersEffecs = filtersEffecs;
     },
     clearAllFilters(state) {
-      state.filters = []
+      state.filters = [];
     },
     removeFilter(state, filterId) {
-      state.filters = state.filters.filter(filter => filter.id !== filterId);
+      state.filters = state.filters.filter((filter) => filter.id !== filterId);
     },
     invertFilter(state, filterId) {
-      let filter = state.filters.find(filter => filter.id === filterId);
+      let filter = state.filters.find((filter) => filter.id === filterId);
       if (filter) {
         if (filter.inverted) filter.inverted = false;
         else filter.inverted = true;
         // Recreating the array to trigger event
-        state.filters = [...state.filters]
+        state.filters = [...state.filters];
       }
     },
     // Values filter
     addValueToFilter(state, { filterId, value }) {
-      let filter = state.filters.find(filter => filter.id === filterId);
+      let filter = state.filters.find((filter) => filter.id === filterId);
       if (filter && filter.type == "values") {
         // Check if value is not already in the array
-        if (filter.values.find(val => val === value)) return;
+        if (filter.values.find((val) => val === value)) return;
 
-        filter.values.push(value)
+        filter.values.push(value);
 
         // Recreating the array to trigger event
-        state.filters = [...state.filters]
+        state.filters = [...state.filters];
       }
     },
     removeValueFromFilter(state, { filterId, value }) {
-      let filter = state.filters.find(filter => filter.id === filterId);
+      let filter = state.filters.find((filter) => filter.id === filterId);
       if (filter && filter.type == "values") {
-        filter.values = filter.values.filter(val => val !== value)
+        filter.values = filter.values.filter((val) => val !== value);
         // Recreating the array to trigger event
-        state.filters = [...state.filters]
+        state.filters = [...state.filters];
       }
     },
     // Intervals filter
     addIntervalToFilter(state, { filterId, interval }) {
       if (interval.min !== null || interval.max !== null) {
-        let filter = state.filters.find(filter => filter.id === filterId);
+        let filter = state.filters.find((filter) => filter.id === filterId);
         if (filter && filter.type == "intervals") {
-          filter.intervals.push(interval)
+          filter.intervals.push(interval);
 
           // Recreating the array to trigger event
-          state.filters = [...state.filters]
+          state.filters = [...state.filters];
         }
       }
     },
     removeIntervalFromFilter(state, { filterId, intervalIndex }) {
-      let filter = state.filters.find(filter => filter.id === filterId);
+      let filter = state.filters.find((filter) => filter.id === filterId);
       if (filter && filter.type == "intervals") {
         filter.intervals.splice(intervalIndex, 1);
         // Recreating the array to trigger event
-        state.filters = [...state.filters]
+        state.filters = [...state.filters];
       }
-    }
-  }
-
-}
-
+    },
+  },
+};
 
 export default new Vuex.Store({
   modules: {
     Dashboard,
     ProjectPage,
-    SatisticalAnasysis
-  }
-})
+    SatisticalAnasysis,
+  },
+});

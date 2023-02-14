@@ -1,7 +1,10 @@
 <template>
   <div id="Filters">
     <!-- Column selection modal for creating a new filter -->
-    <modal v-if="filterColumnSelection" @close="filterColumnSelection = false">
+    <modal
+      v-if="filterColumnSelection"
+      @close="filterColumnSelection = false"
+    >
       <ColumnSelection
         title="Select a column to filter"
         :data="data"
@@ -12,12 +15,18 @@
     </modal>
 
     <!-- request creation modal -->
-    <modal v-if="requestCreation" @close="requestCreation = false">
+    <modal
+      v-if="requestCreation"
+      @close="requestCreation = false"
+    >
       <RequestCreation @cancel="requestCreation = false" />
     </modal>
 
     <!-- Request selection modal -->
-    <modal v-if="requestSelection" @close="requestSelection = false">
+    <modal
+      v-if="requestSelection"
+      @close="requestSelection = false"
+    >
       <Requests
         @close="requestSelection = false"
         :selectionMode="true"
@@ -26,7 +35,10 @@
     </modal>
 
     <!-- Header -->
-    <div id="title" style="display: flex">
+    <div
+      id="title"
+      style="display: flex"
+    >
       <h2>
         <inline-svg
           :src="require('../../../../../assets/svg/filter.svg')"
@@ -38,8 +50,11 @@
       </h2>
       <span style="flex: 1"></span>
       <!-- Load filters btn -->
-      <button @click="requestSelection = true" disabled
-      title="Available in a futur update"> 
+      <button
+        @click="requestSelection = true"
+        disabled
+        title="Available in a futur update"
+      >
         <!-- TODO, revert in the filters update -->
         <inline-svg
           :src="require('../../../../../assets/svg/import.svg')"
@@ -56,7 +71,7 @@
         @click="requestCreation = true"
         title="Available in a futur update"
       >
-      <!-- TODO, revert the always disapled in the filters update -->
+        <!-- TODO, revert the always disapled in the filters update -->
         <inline-svg
           :src="require('../../../../../assets/svg/save.svg')"
           width="13"
@@ -66,15 +81,31 @@
         Save as a request
       </button>
       <!-- Clear filters btn -->
-      <button class="red" @click="clearAll">Clear all filters</button>
+      <button
+        class="red"
+        @click="clearAll"
+      >
+        Clear all filters
+      </button>
       <!-- Close btn -->
-      <button class="red" @click="$emit('cancel')">Close</button>
+      <button
+        class="red"
+        @click="$emit('cancel')"
+      >
+        Close
+      </button>
     </div>
 
     <!-- Filters -->
-    <div id="filters" class="itemList">
+    <div
+      id="filters"
+      class="itemList"
+    >
       <!-- All data -->
-      <div id="allData" class="item spaced card">
+      <div
+        id="allData"
+        class="item spaced card"
+      >
         <h3>All data</h3>
         <div class="aligned">
           {{ data.nbLines }}
@@ -86,7 +117,12 @@
         </div>
       </div>
 
-      <div v-if="filters.length == 0" class="item">No filters</div>
+      <div
+        v-if="filters.length == 0"
+        class="item"
+      >
+        No filters
+      </div>
 
       <!-- Filters for each widgets-->
       <transition-group name="fade">
@@ -95,9 +131,7 @@
           v-for="(widget, i) in Object.keys(groupedFilters)"
           :key="widget"
         >
-          <h4 class="widgetName">
-            {{ i + 1 }} - {{ groupedFilters[widget][0].from.widgetName }}
-          </h4>
+          <h4 class="widgetName">{{ i + 1 }} - {{ groupedFilters[widget][0].from.widgetName }}</h4>
           <div class="widgetFilters">
             <transition-group name="fade">
               <div
@@ -112,7 +146,10 @@
                   v-on:invertFilter="invertFilter"
                   v-if="filter.type === 'values' || filter.type === 'intervals'"
                 >
-                  <Values :filter="filter" v-if="filter.type === 'values'" />
+                  <Values
+                    :filter="filter"
+                    v-if="filter.type === 'values'"
+                  />
                   <Intervals
                     :filter="filter"
                     v-else-if="filter.type === 'intervals'"
@@ -226,16 +263,12 @@ export default {
     requestSelected(request) {
       // Add the column to the request filters
       request.filters.forEach((filter) => {
-        filter.column = this.data.columns.find(
-          (c) => c.label === filter.columnLabel
-        );
+        filter.column = this.data.columns.find((c) => c.label === filter.columnLabel);
         if (filter.column) filter.columnIndex = filter.column.index;
       });
 
       // Check if all the filters have found a column
-      let filtersWithNoColumns = request.filters.filter(
-        (filter) => filter.columnIndex == null
-      );
+      let filtersWithNoColumns = request.filters.filter((filter) => filter.columnIndex == null);
       if (filtersWithNoColumns.length > 0) {
         this.$store.commit("sendMessage", {
           title: "error",
@@ -245,9 +278,7 @@ export default {
         });
       }
       // Remove the filters with no column index
-      request.filters = request.filters.filter(
-        (filter) => filter.columnIndex !== undefined
-      );
+      request.filters = request.filters.filter((filter) => filter.columnIndex !== undefined);
 
       // Add the filter to the store
       this.$store.commit("addFilters", {

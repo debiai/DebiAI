@@ -1,10 +1,16 @@
 <template>
   <div id="WidgetConfPannel">
     <!-- Pannel title & cancel button -->
-    <div id="heading" class="aligned spaced">
+    <div
+      id="heading"
+      class="aligned spaced"
+    >
       <h3 id="title">Widget Configuration</h3>
       <span>
-        <button class="warning" @click="loadWidgetConfigurations">
+        <button
+          class="warning"
+          @click="loadWidgetConfigurations"
+        >
           <inline-svg
             :src="require('../../../../../../assets/svg/update.svg')"
             width="10"
@@ -12,14 +18,22 @@
           />
           Refresh
         </button>
-        <button class="red" @click="$emit('cancel')">Cancel</button>
+        <button
+          class="red"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
       </span>
     </div>
     <div id="content">
       <!-- Widget name form & configuration creator -->
       <div id="left">
         <!-- Change widget name form -->
-        <form id="widgetNameForm" class="card">
+        <form
+          id="widgetNameForm"
+          class="card"
+        >
           <span class="aligned spaced">
             <h4>Change the widget name</h4>
             <input
@@ -46,7 +60,10 @@
         />
       </div>
       <!-- Widget configuration selector -->
-      <div id="WidgetConfSelector" class="card">
+      <div
+        id="WidgetConfSelector"
+        class="card"
+      >
         <h3>Saved widget configuration</h3>
         <transition name="fade">
           <WidgetConfList

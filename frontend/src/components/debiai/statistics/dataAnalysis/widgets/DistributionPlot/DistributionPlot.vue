@@ -1,7 +1,13 @@
 <template>
-  <div id="repartitionPlot" class="dataVisualisationWidget">
+  <div
+    id="repartitionPlot"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modal -->
-    <modal v-if="xAxisSelection" @close="cancelXaxiesSettings">
+    <modal
+      v-if="xAxisSelection"
+      @close="cancelXaxiesSettings"
+    >
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -13,7 +19,10 @@
       />
     </modal>
     <!-- Second column selection Modal -->
-    <modal v-if="secondAxisSelection" @close="secondAxisSelection = false">
+    <modal
+      v-if="secondAxisSelection"
+      @close="secondAxisSelection = false"
+    >
       <ColumnSelection
         title="Select a second column"
         :data="data"
@@ -26,9 +35,15 @@
     </modal>
 
     <!-- Controls -->
-    <div id="axisControls" v-if="settings">
+    <div
+      id="axisControls"
+      v-if="settings"
+    >
       <!-- Axis btns -->
-      <div id="columnAxisSelection" class="dataGroup">
+      <div
+        id="columnAxisSelection"
+        class="dataGroup"
+      >
         <div class="data">
           <div class="name">X axis</div>
           <div class="value">
@@ -83,7 +98,10 @@
                 v-model="dividePerColor"
                 style="display: none"
               />
-              <label :for="'dividePerColorCbx' + index" class="toggle">
+              <label
+                :for="'dividePerColorCbx' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
@@ -117,9 +135,7 @@
           <div
             class="data"
             title="Due to a technical limitation, display the legends will disable the red to blue color gradient common to all the widgets"
-            v-if="
-              coloredColumnIndex != null && dividePerColor && plotType == 'bar'
-            "
+            v-if="coloredColumnIndex != null && dividePerColor && plotType == 'bar'"
           >
             <div class="name">Legends</div>
             <div class="value">
@@ -130,13 +146,20 @@
                 v-model="displayLegends"
                 style="display: none"
               />
-              <label :for="'displayLegends' + index" class="toggle">
+              <label
+                :for="'displayLegends' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
           </div>
           <!-- Display details -->
-          <div class="data" id="displayDetails" v-if="plotType == 'bar'">
+          <div
+            class="data"
+            id="displayDetails"
+            v-if="plotType == 'bar'"
+          >
             <div class="name">Details</div>
             <div class="value">
               <input
@@ -146,7 +169,10 @@
                 v-model="displayDetails"
                 style="display: none"
               />
-              <label :for="'displayDetails' + index" class="toggle">
+              <label
+                :for="'displayDetails' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
@@ -176,7 +202,10 @@
         Draw
       </button>
     </div>
-    <div class="plot" :id="'repDiv' + index"></div>
+    <div
+      class="plot"
+      :id="'repDiv' + index"
+    ></div>
   </div>
 </template>
 
@@ -245,8 +274,7 @@ export default {
         bins: this.bins,
       };
 
-      if (this.plotType === "bar" && this.displayDetails)
-        conf.displayDetails = this.displayDetails;
+      if (this.plotType === "bar" && this.displayDetails) conf.displayDetails = this.displayDetails;
       if (this.coloredColumnIndex !== null) {
         if (this.displayLegends) conf.displayLegends = this.displayLegends;
         conf.dividePerColor = this.dividePerColor;
@@ -337,8 +365,7 @@ export default {
       // === Apply selection ===
       // on x axis
       let selectedX;
-      if (colX.type == String)
-        selectedX = this.selectedData.map((i) => colX.valuesIndex[i]);
+      if (colX.type == String) selectedX = this.selectedData.map((i) => colX.valuesIndex[i]);
       else selectedX = this.selectedData.map((i) => colX.values[i]);
       // on x axis
       let colSecondX;
@@ -346,11 +373,8 @@ export default {
       if (this.secondColumnIndex !== null) {
         colSecondX = this.data.columns[this.secondColumnIndex];
         if (colSecondX.type == String)
-          secondSelectedX = this.selectedData.map(
-            (i) => colSecondX.valuesIndex[i]
-          );
-        else
-          secondSelectedX = this.selectedData.map((i) => colSecondX.values[i]);
+          secondSelectedX = this.selectedData.map((i) => colSecondX.valuesIndex[i]);
+        else secondSelectedX = this.selectedData.map((i) => colSecondX.values[i]);
       }
 
       let colColor;
@@ -360,33 +384,23 @@ export default {
         colColor = this.data.columns[this.coloredColumnIndex];
         let selectedColors;
         if (colColor.type == String)
-          selectedColors = this.selectedData.map(
-            (i) => colColor.valuesIndex[i]
-          );
+          selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
         else selectedColors = this.selectedData.map((i) => colColor.values[i]);
 
         // === Divide bar per color ===
         let groupedValues = dataOperations.groupBy(
           selectedColors,
-          colColor.type == String
-            ? colColor.valuesIndexUniques
-            : colColor.uniques
+          colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques
         );
 
         groupedValues.forEach((idValues, i) => {
           let values = idValues.map((i) => selectedX[i]);
-          let rep = dataOperations.getRepartition(
-            values,
-            this.bins - 1,
-            colX.min,
-            colX.max
-          );
+          let rep = dataOperations.getRepartition(values, this.bins - 1, colX.min, colX.max);
 
           xSections = rep.xSections;
           let repartition = rep.repartition;
 
-          if (colX.type == String)
-            xSectionsText = xSections.map((v, i) => colX.uniques[i]);
+          if (colX.type == String) xSectionsText = xSections.map((v, i) => colX.uniques[i]);
 
           let trace = {
             name: String(colColor.uniques[i]),
@@ -398,9 +412,7 @@ export default {
 
           // Display more values in the bars
           if (this.displayDetails)
-            trace.text = repartition.map(
-              (v) => "<b>" + v + "</b> / " + idValues.length
-            );
+            trace.text = repartition.map((v) => "<b>" + v + "</b> / " + idValues.length);
 
           // Disabled on option the colorscale because of a plotly Bug
           // follow this issue : https://github.com/plotly/plotly.js/issues/5285
@@ -424,12 +436,7 @@ export default {
         });
       } else {
         // No color or no group by selected
-        let rep = dataOperations.getRepartition(
-          selectedX,
-          this.bins - 1,
-          colX.min,
-          colX.max
-        );
+        let rep = dataOperations.getRepartition(selectedX, this.bins - 1, colX.min, colX.max);
 
         xSections = rep.xSections;
         let repartition = rep.repartition;
@@ -491,8 +498,7 @@ export default {
 
       // set labels for x absis
       let xSectionsText;
-      if (colX.type == String)
-        xSectionsText = xSections.map((v, i) => colX.uniques[i]);
+      if (colX.type == String) xSectionsText = xSections.map((v, i) => colX.uniques[i]);
       else xSections = undefined;
 
       let layout = {
@@ -581,10 +587,7 @@ export default {
             type: "values",
             columnIndex: this.currentDrawedColorIndex,
             values: [
-              "" +
-                this.data.columns[this.currentDrawedColorIndex].uniques[
-                  selec.curveNumber
-                ],
+              "" + this.data.columns[this.currentDrawedColorIndex].uniques[selec.curveNumber],
             ],
           });
         }
@@ -622,8 +625,7 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      this.bins =
-        colX.type == String ? colX.nbOccu : colX.nbOccu > 50 ? 50 : colX.nbOccu;
+      this.bins = colX.type == String ? colX.nbOccu : colX.nbOccu > 50 ? 50 : colX.nbOccu;
     },
   },
   computed: {
@@ -645,8 +647,7 @@ export default {
       this.checkPlot();
     },
     selectedData: function () {
-      if (!this.$parent.startFiltering && this.plotDrawed)
-        this.$parent.selectedDataWarning = true;
+      if (!this.$parent.startFiltering && this.plotDrawed) this.$parent.selectedDataWarning = true;
     },
     coloredColumnIndex: function () {
       this.plotDrawed = false;
