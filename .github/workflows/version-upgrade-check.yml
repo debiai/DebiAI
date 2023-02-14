@@ -4,9 +4,6 @@
 name: Version upgrade check
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types:
       - opened
