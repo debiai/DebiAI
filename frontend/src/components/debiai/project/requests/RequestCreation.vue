@@ -3,27 +3,56 @@
     <!-- page title & cancel btn -->
     <div class="aligned spaced">
       <h2>Requests creation</h2>
-      <button class="red" @click="$emit('close')">Cancel</button>
+      <button
+        class="red"
+        @click="$emit('close')"
+      >
+        Cancel
+      </button>
     </div>
 
     <!-- new request name & desc -->
-    <div id="header" class="card">
+    <div
+      id="header"
+      class="card"
+    >
       <div class="group">
         <label for="name">Request name</label>
-        <input type="text" id="name" v-model="requestName" v-focus required />
+        <input
+          type="text"
+          id="name"
+          v-model="requestName"
+          v-focus
+          required
+        />
       </div>
       <div class="group">
         <label for="name">Description</label>
-        <textarea id="description" v-model="requestDescription" />
+        <textarea
+          id="description"
+          v-model="requestDescription"
+        />
       </div>
     </div>
 
     <!-- Display filters -->
-    <div id="filtersCreation" class="itemList">
-      <div class="filter item" v-if="!filters.length">No filters</div>
+    <div
+      id="filtersCreation"
+      class="itemList"
+    >
+      <div
+        class="filter item"
+        v-if="!filters.length"
+      >
+        No filters
+      </div>
 
       <transition-group name="scale">
-        <div class="filter item" v-for="filter in filters" :key="filter.id">
+        <div
+          class="filter item"
+          v-for="filter in filters"
+          :key="filter.id"
+        >
           <FilterGenericData
             :filter="filter"
             v-on:removeFilter="removeFilter"
@@ -49,7 +78,10 @@
     </div>
 
     <!-- Controls -->
-    <div id="footer" class="card">
+    <div
+      id="footer"
+      class="card"
+    >
       <div>
         <!-- Column selection Modals for creating a new filter -->
         <modal
@@ -83,7 +115,11 @@
       </div>
 
       <!-- Save request btn -->
-      <button @click="saveRequest" class="green" :disabled="!requestCanBeSaved">
+      <button
+        @click="saveRequest"
+        class="green"
+        :disabled="!requestCanBeSaved"
+      >
         <inline-svg
           :src="require('../../../../assets/svg/save.svg')"
           width="13"

@@ -3,16 +3,22 @@
     <!-- Title -->
     <h2>
       Export the selected samples
-      <button @click="$emit('cancel')" class="red">Cancel</button>
+      <button
+        @click="$emit('cancel')"
+        class="red"
+      >
+        Cancel
+      </button>
     </h2>
     <!-- Export params -->
-    <form v-on:submit.prevent class="dataGroup">
+    <form
+      v-on:submit.prevent
+      class="dataGroup"
+    >
       <!-- Selected samples -->
       <div class="data">
         <span class="name"> Exported samples </span>
-        <span class="value">
-          {{ selectedData.length }} / {{ data.nbLines }}
-        </span>
+        <span class="value"> {{ selectedData.length }} / {{ data.nbLines }} </span>
       </div>
       <!-- Selection Name -->
       <div class="data">
@@ -20,12 +26,16 @@
           Selection name
 
           <DocumentationBlock>
-            Name that will be written in the expoted 'selection_name' Json
-            field.
+            Name that will be written in the expoted 'selection_name' Json field.
           </DocumentationBlock>
         </span>
         <span class="value">
-          <input type="text" v-model="selectionName" style="flex: 2" required />
+          <input
+            type="text"
+            v-model="selectionName"
+            style="flex: 2"
+            required
+          />
         </span>
       </div>
       <!-- Annotation Value -->
@@ -39,7 +49,10 @@
           </DocumentationBlock>
         </span>
         <span class="value">
-          <input type="text" v-model="extraValue" />
+          <input
+            type="text"
+            v-model="extraValue"
+          />
         </span>
       </div>
       <!-- Exported data -->
@@ -48,15 +61,18 @@
           Exported Json <br />
           format
           <DocumentationBlock>
-            This is not the exact exported Json file. It is only here to give
-            you an idea of the structure of the exported Json file.
+            This is not the exact exported Json file. It is only here to give you an idea of the
+            structure of the exported Json file.
 
             <br /><br />
 
             The exported Json file will be filled with the selected samples ids.
           </DocumentationBlock>
         </span>
-        <pre class="value" id="exportedSelection">
+        <pre
+          class="value"
+          id="exportedSelection"
+        >
 
 {{ JSON.stringify(selectionToExportDisplay, undefined, 2) }}
 
@@ -94,11 +110,7 @@ export default {
         data_provider_id: dataProviderId,
         selection_name: "DebiAI Selection",
         date: "timestamp",
-        sample_ids: [
-          { id: "sample id 1" },
-          { id: "sample id 2" },
-          { id: "..." },
-        ],
+        sample_ids: [{ id: "sample id 1" }, { id: "sample id 2" }, { id: "..." }],
       },
     };
   },
@@ -116,12 +128,7 @@ export default {
       this.exporting = true;
 
       this.$backendDialog
-        .exportSelection(
-          this.selectionName,
-          methodId,
-          selectedHash,
-          this.extraValue
-        )
+        .exportSelection(this.selectionName, methodId, selectedHash, this.extraValue)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

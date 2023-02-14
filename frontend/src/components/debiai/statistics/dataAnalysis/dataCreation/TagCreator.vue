@@ -1,21 +1,29 @@
 <template>
   <div id="TagCreator">
     <h2>Tag the selected values</h2>
-    <form v-on:submit.prevent class="dataGroup">
+    <form
+      v-on:submit.prevent
+      class="dataGroup"
+    >
       <!-- createdTags -->
       <!-- Selected samples -->
       <div class="data">
         <span class="name"> Selected samples </span>
-        <span class="value">
-          {{ selectedData.length }} / {{ data.nbLines }}
-        </span>
+        <span class="value"> {{ selectedData.length }} / {{ data.nbLines }} </span>
       </div>
       <div class="data">
         <span class="name"> Tag name </span>
         <span class="value">
-          <input type="text" v-model="tagName" style="flex: 2" />
+          <input
+            type="text"
+            v-model="tagName"
+            style="flex: 2"
+          />
           <select v-model="tagName">
-            <option v-for="taggedColName in taggedColumns" :key="taggedColName">
+            <option
+              v-for="taggedColName in taggedColumns"
+              :key="taggedColName"
+            >
               {{ taggedColName }}
             </option>
           </select>
@@ -24,7 +32,10 @@
       <div class="data">
         <span class="name"> Tag value : </span>
         <span class="value">
-          <input type="number" v-model="tagValue" />
+          <input
+            type="number"
+            v-model="tagValue"
+          />
         </span>
       </div>
       <!-- Tag saving TODO : make it work again -->
@@ -65,7 +76,12 @@
       >
         Create the tag
       </button>
-      <button @click="$emit('cancel')" class="red">Cancel</button>
+      <button
+        @click="$emit('cancel')"
+        class="red"
+      >
+        Cancel
+      </button>
     </span>
   </div>
 </template>
@@ -87,18 +103,14 @@ export default {
   },
   created() {
     // Load the tagged columns name
-    this.taggedColumns = this.data.columns
-      .filter((c) => c.category == "tag")
-      .map((c) => c.label);
+    this.taggedColumns = this.data.columns.filter((c) => c.category == "tag").map((c) => c.label);
   },
   methods: {
     create() {
       let tagValue = parseInt(this.tagValue);
 
       // Check if tag already exist
-      let column = this.data.columns.find(
-        (c) => c.label === this.tagName && c.category === "tag"
-      );
+      let column = this.data.columns.find((c) => c.label === this.tagName && c.category === "tag");
       let values;
       if (column) {
         // Update tag values
@@ -110,8 +122,7 @@ export default {
         column.nbOccu = uniques.length;
         column.min = Math.min(...uniques);
         column.max = Math.max(...uniques);
-        column.average =
-          values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0;
+        column.average = values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0;
         this.$store.commit("sendMessage", {
           title: "success",
           msg: "Tag updated successfully",
@@ -171,16 +182,12 @@ export default {
   },
   computed: {
     createdTags() {
-      return this.data.columns
-        .filter((c) => c.category === "tag")
-        .map((c) => c.label);
+      return this.data.columns.filter((c) => c.category === "tag").map((c) => c.label);
     },
     tagNameOk() {
       return (
         this.tagName.length >= 1 &&
-        !this.data.columns.some(
-          (c) => c.label === this.tagName && c.category !== "tag"
-        )
+        !this.data.columns.some((c) => c.label === this.tagName && c.category !== "tag")
       );
     },
     tagValueOk() {

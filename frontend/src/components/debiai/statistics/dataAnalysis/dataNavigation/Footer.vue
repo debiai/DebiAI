@@ -1,7 +1,10 @@
 <template>
   <div id="Footer">
     <!-- colored column selection modal -->
-    <modal v-if="selectColoredCol" @close="selectColoredCol = false">
+    <modal
+      v-if="selectColoredCol"
+      @close="selectColoredCol = false"
+    >
       <ColumnSelection
         title="Select the workspace colored column"
         :data="data"
@@ -12,12 +15,21 @@
       />
     </modal>
     <!-- Selection selection modal -->
-    <modal v-if="selectDataset" @close="selectDataset = false">
+    <modal
+      v-if="selectDataset"
+      @close="selectDataset = false"
+    >
       <SelectionSelection @cancel="selectDataset = false" />
     </modal>
     <!-- Filters modal -->
-    <modal v-show="filtersMenu" @close="filtersMenu = false">
-      <Filters :data="data" v-on:cancel="filtersMenu = false" />
+    <modal
+      v-show="filtersMenu"
+      @close="filtersMenu = false"
+    >
+      <Filters
+        :data="data"
+        v-on:cancel="filtersMenu = false"
+      />
     </modal>
 
     <div id="leftBtns">
@@ -54,7 +66,10 @@
       v-on:dataSelection="dataSelection"
     />
 
-    <div id="coloredColumn" v-if="coloredColumnIndex !== null">
+    <div
+      id="coloredColumn"
+      v-if="coloredColumnIndex !== null"
+    >
       Colored col :
       <Column
         :column="data.columns.find((c) => c.index == coloredColumnIndex)"
@@ -63,7 +78,10 @@
       />
       <!-- <u>{{ data.columns[coloredColumnIndex].label }}</u> -->
     </div>
-    <div id="coloredColumn" v-else>
+    <div
+      id="coloredColumn"
+      v-else
+    >
       <button @click="selectColoredCol = true">Select a colored column</button>
     </div>
     <div id="exportControls">

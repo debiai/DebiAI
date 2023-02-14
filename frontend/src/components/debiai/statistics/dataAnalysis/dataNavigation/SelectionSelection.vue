@@ -12,12 +12,20 @@
             Selections
           </h2>
           Start an analysis on another selection
-          <button class="red" @click="$emit('cancel')">Cancel</button>
+          <button
+            class="red"
+            @click="$emit('cancel')"
+          >
+            Cancel
+          </button>
         </span>
       </div>
 
       <!-- Selections -->
-      <div id="selectionList" class="itemList">
+      <div
+        id="selectionList"
+        class="itemList"
+      >
         <!-- All data -->
         <div
           id="allData"

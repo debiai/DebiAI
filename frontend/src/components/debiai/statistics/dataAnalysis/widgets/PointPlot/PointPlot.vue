@@ -1,7 +1,13 @@
 <template>
-  <div id="pointPlot" class="dataVisualisationWidget">
+  <div
+    id="pointPlot"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection" @close="xAxisSelection = false">
+    <modal
+      v-if="xAxisSelection"
+      @close="xAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -12,7 +18,10 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="yAxisSelection" @close="yAxisSelection = false">
+    <modal
+      v-if="yAxisSelection"
+      @close="yAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
@@ -23,23 +32,30 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
-    <modal v-if="sizeAxisSelection" @close="sizeAxisSelection = false">
+    <modal
+      v-if="sizeAxisSelection"
+      @close="sizeAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the point size axis"
         :data="data"
         :validateRequiered="false"
         :colorSelection="true"
-        :defaultSelected="
-          columnSizeIndex === null ? undefined : [columnSizeIndex]
-        "
+        :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
         v-on:cancel="sizeAxisSelection = false"
         v-on:colSelect="sizeAxiesSelect"
       />
     </modal>
 
-    <div id="settings" v-if="settings">
+    <div
+      id="settings"
+      v-if="settings"
+    >
       <!-- Axis selections -->
-      <div id="axisSelection" class="dataGroup">
+      <div
+        id="axisSelection"
+        class="dataGroup"
+      >
         <!-- X axis -->
         <div class="data">
           <span class="name">X axis</span>
@@ -52,7 +68,13 @@
           </div>
         </div>
         <!-- Swap axis -->
-        <button class="warning" id="swapBtn" @click="swap">Swap</button>
+        <button
+          class="warning"
+          id="swapBtn"
+          @click="swap"
+        >
+          Swap
+        </button>
         <!-- Y axis -->
         <div class="data">
           <span class="name">Y axis</span>
@@ -69,18 +91,32 @@
       <!-- 2D points & lite plot specific controls -->
       <div id="plotControls">
         <!-- 2d Point Plot Controls -->
-        <div id="2dPointPlotControls" class="dataGroup">
+        <div
+          id="2dPointPlotControls"
+          class="dataGroup"
+        >
           <!-- Draw -->
-          <button class="drawBtn" @click="pointPlot" v-if="!pointPlotDrawed">
+          <button
+            class="drawBtn"
+            @click="pointPlot"
+            v-if="!pointPlotDrawed"
+          >
             Draw 2D points
           </button>
-          <button class="drawBtn warning" @click="clearPointPlot" v-else>
+          <button
+            class="drawBtn warning"
+            @click="clearPointPlot"
+            v-else
+          >
             Erase 2D points
           </button>
           <!-- Point size axis -->
           <div class="data">
             <span class="name">Point size axis</span>
-            <div class="value" v-if="columnSizeIndex !== null">
+            <div
+              class="value"
+              v-if="columnSizeIndex !== null"
+            >
               <Column
                 :column="data.columns.find((c) => c.index == columnSizeIndex)"
                 :colorSelection="true"
@@ -96,14 +132,23 @@
                 Remove
               </button>
             </div>
-            <div class="value" v-else>
-              <button class="blue" @click="sizeAxisSelection = true">
+            <div
+              class="value"
+              v-else
+            >
+              <button
+                class="blue"
+                @click="sizeAxisSelection = true"
+              >
                 Select an axis
               </button>
             </div>
           </div>
           <!-- Max point Size -->
-          <div class="data" v-if="columnSizeIndex !== null">
+          <div
+            class="data"
+            v-if="columnSizeIndex !== null"
+          >
             <span class="name">Max point Size</span>
             <div class="value">
               <input
@@ -121,7 +166,10 @@
             <div class="value">
               <div style="flex: 1">
                 Auto :
-                <input type="checkbox" v-model="autoPointOpacity" />
+                <input
+                  type="checkbox"
+                  v-model="autoPointOpacity"
+                />
               </div>
 
               <span class="name">Opacity</span>
@@ -141,7 +189,10 @@
         </div>
 
         <!-- line Plot Controls -->
-        <div id="linePlotControls" class="dataGroup">
+        <div
+          id="linePlotControls"
+          class="dataGroup"
+        >
           <!-- Draw -->
           <button
             class="drawBtn orange"
@@ -150,7 +201,11 @@
           >
             Draw statistics
           </button>
-          <button v-else class="drawBtn warning" @click="clearLinePlot">
+          <button
+            v-else
+            class="drawBtn warning"
+            @click="clearLinePlot"
+          >
             Clear statistics
           </button>
           <!-- Bins -->
@@ -176,13 +231,19 @@
                 style="display: none"
                 v-model="avegareAsBar"
               />
-              <label :for="'avegareAsBar' + index" class="toggle">
+              <label
+                :for="'avegareAsBar' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
           </div>
           <!-- Display null values -->
-          <div class="data" v-if="!avegareAsBar">
+          <div
+            class="data"
+            v-if="!avegareAsBar"
+          >
             <span class="name">Display null</span>
             <div class="value">
               <input
@@ -193,7 +254,10 @@
                 v-model="displayNull"
                 @change="updateTraces()"
               />
-              <label :for="'displayNull' + index" class="toggle">
+              <label
+                :for="'displayNull' + index"
+                class="toggle"
+              >
                 <span></span>
               </label>
             </div>
@@ -202,9 +266,15 @@
       </div>
 
       <!-- 2D points & lite plot common controls -->
-      <div id="commonControls" class="dataGroup">
+      <div
+        id="commonControls"
+        class="dataGroup"
+      >
         <!-- Groub by color -->
-        <div class="data" v-if="coloredColumnIndex != null">
+        <div
+          class="data"
+          v-if="coloredColumnIndex != null"
+        >
           <span class="name">Groub by color</span>
           <div class="value">
             <input
@@ -214,7 +284,10 @@
               v-model="dividePerColor"
               style="display: none"
             />
-            <label :for="'dividePerColorCbxPontPlot' + index" class="toggle">
+            <label
+              :for="'dividePerColorCbxPontPlot' + index"
+              class="toggle"
+            >
               <span></span>
             </label>
           </div>
@@ -230,7 +303,10 @@
               v-model="absolue"
               style="display: none"
             />
-            <label :for="'absolute' + index" class="toggle">
+            <label
+              :for="'absolute' + index"
+              class="toggle"
+            >
               <span></span>
             </label>
           </div>
@@ -239,7 +315,10 @@
     </div>
 
     <!-- The plotly plot -->
-    <div class="plot" :id="'PPDiv' + index"></div>
+    <div
+      class="plot"
+      :id="'PPDiv' + index"
+    ></div>
   </div>
 </template>
 
@@ -376,11 +455,9 @@ export default {
           });
       }
       if ("absolue" in conf) this.absolue = conf.absolue;
-      if ("autoPointOpacity" in conf)
-        this.autoPointOpacity = conf.autoPointOpacity;
+      if ("autoPointOpacity" in conf) this.autoPointOpacity = conf.autoPointOpacity;
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
-      if ("columnSizeIndex" in conf)
-        this.columnSizeIndex = conf.columnSizeIndex;
+      if ("columnSizeIndex" in conf) this.columnSizeIndex = conf.columnSizeIndex;
       if ("maxPointSize" in conf) this.maxPointSize = conf.maxPointSize;
       if ("avegareAsBar" in conf) this.avegareAsBar = conf.avegareAsBar;
       if ("displayNull" in conf) this.displayNull = conf.displayNull;
@@ -416,8 +493,7 @@ export default {
 
       // Add the sized column to the legend name
       if (this.columnSizeIndex !== null)
-        confName +=
-          " Sized by " + this.data.columns[this.columnSizeIndex].label;
+        confName += " Sized by " + this.data.columns[this.columnSizeIndex].label;
 
       // Add if y is absolute
       if (this.absolue) confName += " (abs)";
@@ -439,8 +515,7 @@ export default {
       // Apply selection
       let valuesX = this.selectedData.map((i) => colX.values[i]);
       let valuesY;
-      if (colY.type == String)
-        valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
+      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
       // abs checked
@@ -529,8 +604,7 @@ export default {
       else {
         let tracesToDelete = [];
         this.divPointPlot.data.forEach((trace, i) => {
-          if (trace.name === "Points" && trace.mode === "markers")
-            tracesToDelete.push(i);
+          if (trace.name === "Points" && trace.mode === "markers") tracesToDelete.push(i);
         });
 
         Plotly.deleteTraces(this.divPointPlot, tracesToDelete);
@@ -568,14 +642,12 @@ export default {
       let traces = [];
       let colX = this.data.columns[this.columnXindex];
       let valuesX;
-      if (colX.type == String)
-        valuesX = this.selectedData.map((i) => colX.valuesIndex[i]);
+      if (colX.type == String) valuesX = this.selectedData.map((i) => colX.valuesIndex[i]);
       else valuesX = this.selectedData.map((i) => colX.values[i]);
 
       let colY = this.data.columns[this.columnYindex];
       let valuesY;
-      if (colY.type == String)
-        valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
+      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
       // abs checked
@@ -589,14 +661,9 @@ export default {
             ? this.selectedData.map((i) => colColor.valuesIndex[i])
             : this.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
-          colColor.type == String
-            ? colColor.valuesIndexUniques
-            : colColor.uniques;
+          colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
-        let groupedValues = dataOperations.groupBy(
-          selectedColorsValues,
-          selectorUniques
-        );
+        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
 
         let fromIn = dataOperations.getMin(valuesX);
         let toIn = dataOperations.getMax(valuesX);
@@ -616,8 +683,7 @@ export default {
 
           if (colX.type == String) {
             stats.xSections = stats.xSections.map(
-              (v, i) =>
-                colX.uniques[Math.floor(i * (colX.uniques.length / this.bins))]
+              (v, i) => colX.uniques[Math.floor(i * (colX.uniques.length / this.bins))]
             );
           }
 
@@ -639,8 +705,7 @@ export default {
         });
       } else {
         let colY = this.data.columns[this.columnYindex];
-        if (colY.type == String)
-          this.valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
+        if (colY.type == String) this.valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
 
         let stats = dataOperations.getStats(valuesX, valuesY, this.bins - 1, {
           displayNull: this.displayNull,
@@ -648,8 +713,7 @@ export default {
 
         if (colX.type == String) {
           stats.xSections = stats.xSections.map(
-            (v, i) =>
-              colX.uniques[Math.floor(i * (colX.uniques.length / this.bins))]
+            (v, i) => colX.uniques[Math.floor(i * (colX.uniques.length / this.bins))]
           );
         }
 
@@ -734,8 +798,7 @@ export default {
       else {
         let tracesToDelete = [];
         this.divPointPlot.data.forEach((trace, i) => {
-          if (trace.name !== "Points" && trace.mode == "lines")
-            tracesToDelete.push(i);
+          if (trace.name !== "Points" && trace.mode == "lines") tracesToDelete.push(i);
         });
 
         Plotly.deleteTraces(this.divPointPlot, tracesToDelete);
@@ -800,10 +863,7 @@ export default {
       });
 
       // Set zoom events for the data filtering
-      this.divPointPlot.removeListener(
-        "plotly_selected",
-        this.selectDataOnPlot
-      );
+      this.divPointPlot.removeListener("plotly_selected", this.selectDataOnPlot);
       this.divPointPlot.on("plotly_selected", this.selectDataOnPlot);
     },
 
@@ -821,22 +881,10 @@ export default {
       if (event && this.$parent.startFiltering) {
         // Get the filters acording
         let colx = this.data.columns[this.columnXindex];
-        filters.push(
-          this.getFilterFromColumn(
-            colx,
-            event.range.x[0],
-            event.range.x[1],
-            false
-          )
-        );
+        filters.push(this.getFilterFromColumn(colx, event.range.x[0], event.range.x[1], false));
         let coly = this.data.columns[this.columnYindex];
         filters.push(
-          this.getFilterFromColumn(
-            coly,
-            event.range.y[0],
-            event.range.y[1],
-            this.absolue
-          )
+          this.getFilterFromColumn(coly, event.range.y[0], event.range.y[1], this.absolue)
         );
 
         // Exporting the bondaries of the selection
@@ -876,10 +924,7 @@ export default {
         if (filters.length == 2) {
           const getRangeFromFilter = (filter) => {
             if (filter.type == "values")
-              return [
-                filter.values[0],
-                filter.values[filter.values.length - 1],
-              ];
+              return [filter.values[0], filter.values[filter.values.length - 1]];
             else if (filter.type == "intervals")
               return [filter.intervals[0].min, filter.intervals[0].max];
             return null;
@@ -930,12 +975,8 @@ export default {
           };
         }
       } else {
-        let selectedUniquesValuesIndex = col.valuesIndexUniques.filter(
-          (v) => v >= min && v <= max
-        );
-        let selectedValues = selectedUniquesValuesIndex.map(
-          (v) => col.uniques[v]
-        );
+        let selectedUniquesValuesIndex = col.valuesIndexUniques.filter((v) => v >= min && v <= max);
+        let selectedValues = selectedUniquesValuesIndex.map((v) => col.uniques[v]);
 
         // Quick fix for the case of timestamps
         if (selectedValues.length == 0) selectedValues = [min, max];
@@ -1003,9 +1044,7 @@ export default {
       this.linePlotDrawed = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat(
-        (1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2)
-      );
+      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
     },
   },
   computed: {
@@ -1036,10 +1075,7 @@ export default {
       if (this.linePlotDrawed) this.checkLinePlot();
     },
     selectedData: function () {
-      if (
-        !this.$parent.startFiltering &&
-        (this.pointPlotDrawed || this.linePlotDrawed)
-      )
+      if (!this.$parent.startFiltering && (this.pointPlotDrawed || this.linePlotDrawed))
         this.$parent.selectedDataWarning = true;
     },
     redrawRequiered(o, n) {

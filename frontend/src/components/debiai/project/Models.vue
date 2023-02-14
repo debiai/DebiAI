@@ -41,8 +41,7 @@
           v-for="model in filteredModels"
           :key="model.id"
           :class="
-            'model item selectable ' +
-            (selectedModelIds.includes(model.id) ? 'selected' : '')
+            'model item selectable ' + (selectedModelIds.includes(model.id) ? 'selected' : '')
           "
           @click="selectModel(model.id)"
         >
@@ -176,13 +175,11 @@ export default {
       commomModelResults: true,
     };
   },
-  mounted() { },
+  mounted() {},
   methods: {
     selectModel(modelId) {
       if (this.selectedModelIds.includes(modelId))
-        this.selectedModelIds = this.selectedModelIds.filter(
-          (mId) => mId !== modelId
-        );
+        this.selectedModelIds = this.selectedModelIds.filter((mId) => mId !== modelId);
       else this.selectedModelIds.push(modelId);
 
       this.$emit("modelSelected", this.selectedModelIds);
@@ -205,9 +202,7 @@ export default {
           });
 
           // Remove the model from the selected models
-          this.selectedModelIds = this.selectedModelIds.filter(
-            (mId) => mId !== modelId
-          );
+          this.selectedModelIds = this.selectedModelIds.filter((mId) => mId !== modelId);
           this.$emit("modelSelected", this.selectedModelIds);
           this.$emit("modelDeleted", modelId);
         })

@@ -6,8 +6,7 @@
         <span> Select an export method:</span>
 
         <DocumentationBlock>
-          The export method can be pre-defined in the DebiAI Config file or
-          during deployment.
+          The export method can be pre-defined in the DebiAI Config file or during deployment.
           <br />
           <br />
           More information can be found in our
@@ -19,8 +18,15 @@
           </a>
         </DocumentationBlock>
       </h3>
-      <div id="exportMethods" class="card" v-if="exportMethods">
-        <div v-if="exportMethods.length === 0" class="marged">
+      <div
+        id="exportMethods"
+        class="card"
+        v-if="exportMethods"
+      >
+        <div
+          v-if="exportMethods.length === 0"
+          class="marged"
+        >
           No export method available, please create one.
         </div>
 
@@ -75,11 +81,19 @@
       </div>
     </div>
     <div style="text-align: right">
-      <button class="green" @click="newExportMethod">New export method</button>
+      <button
+        class="green"
+        @click="newExportMethod"
+      >
+        New export method
+      </button>
     </div>
 
     <!-- New Method modal -->
-    <modal v-if="newExportMethodModal" @close="newExportMethodModal = false">
+    <modal
+      v-if="newExportMethodModal"
+      @close="newExportMethodModal = false"
+    >
       <ExportMethodCreator
         @cancel="newExportMethodModal = false"
         @created="
@@ -91,7 +105,7 @@
   </div>
 </template>
 
-  <script>
+<script>
 import ExportMethodCreator from "./ExportMethodCreator.vue";
 
 export default {
@@ -148,7 +162,7 @@ export default {
 };
 </script>
 
-  <style scoped>
+<style scoped>
 #ExportMethodSelection h3 {
   display: flex;
 }

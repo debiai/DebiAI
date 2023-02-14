@@ -2,17 +2,33 @@
   <div id="Tags">
     <h2 class="aligned spaced">
       Tags
-      <button class="warning" @click="loadTags">Refresh</button>
+      <button
+        class="warning"
+        @click="loadTags"
+      >
+        Refresh
+      </button>
     </h2>
     <!-- tag list -->
     <transition name="fade">
-      <div id="tagList" class="itemList marged" v-if="tags">
+      <div
+        id="tagList"
+        class="itemList marged"
+        v-if="tags"
+      >
         <!-- tags -->
-        <div class="tag item spaced" v-for="tag in tags" :key="tag.id">
+        <div
+          class="tag item spaced"
+          v-for="tag in tags"
+          :key="tag.id"
+        >
           <!-- name -->
           {{ tag.name }}
           <!-- Nb samples -->
-          <div class="nbSamples" title="Number of samples">
+          <div
+            class="nbSamples"
+            title="Number of samples"
+          >
             <inline-svg
               :src="require('../../../../assets/svg/data.svg')"
               width="14"
@@ -37,7 +53,12 @@
               Updated {{ $services.prettyTimeStamp(tag.updateDate) }}
             </span>
           </div>
-          <button class="red" @click="deleteTag(tag.id)">Delete</button>
+          <button
+            class="red"
+            @click="deleteTag(tag.id)"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </transition>
@@ -96,5 +117,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

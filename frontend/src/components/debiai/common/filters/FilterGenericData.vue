@@ -1,21 +1,23 @@
 <template>
-  <div id="filter" :class="filter.inverted ? 'inverted' : ''">
+  <div
+    id="filter"
+    :class="filter.inverted ? 'inverted' : ''"
+  >
     <!-- title -->
     <div id="title">
       <!-- column Name -->
       <div
         id="columnLabel"
-        :class="
-          'aligned centered ' +
-          (filter.type === 'intervals' ? 'intervalCol' : 'valueCol')
-        "
+        :class="'aligned centered ' + (filter.type === 'intervals' ? 'intervalCol' : 'valueCol')"
       >
         {{ filter.column.label }}
       </div>
     </div>
 
     <!-- inerted filter message -->
-    <span id="invertedFilterMessage" v-if="filter.inverted"
+    <span
+      id="invertedFilterMessage"
+      v-if="filter.inverted"
       >The invertion of :
     </span>
 
@@ -43,9 +45,7 @@
     <!-- Filter invert -->
     <button
       id="invert"
-      :class="
-        'aligned centered margedSide ' + (filter.inverted ? 'warning' : 'white')
-      "
+      :class="'aligned centered margedSide ' + (filter.inverted ? 'warning' : 'white')"
       title="Invert the filter"
       @click="$emit('invertFilter', filter.id)"
     >

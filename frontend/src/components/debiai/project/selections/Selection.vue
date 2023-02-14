@@ -42,7 +42,6 @@
         width="20"
         height="20"
       />{{ "nbSamples" in selection ? selection.nbSamples : "?" }}
-
     </div>
 
     <!-- options -->

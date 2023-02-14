@@ -1,25 +1,49 @@
 <template>
-  <div id="ColumnSelection" class="card">
+  <div
+    id="ColumnSelection"
+    class="card"
+  >
     <div class="title">
       <h3>{{ title }}</h3>
-      <div id="controls" v-if="validateRequiered">
-        <button class="warning" @click="none('')">None</button>
-        <button class="info" @click="all('')">All</button>
+      <div
+        id="controls"
+        v-if="validateRequiered"
+      >
+        <button
+          class="warning"
+          @click="none('')"
+        >
+          None
+        </button>
+        <button
+          class="info"
+          @click="all('')"
+        >
+          All
+        </button>
       </div>
       <div class="dataGroup">
-        <div class="data" v-if="validateRequiered">
+        <div
+          class="data"
+          v-if="validateRequiered"
+        >
           <div class="name">Selected columns</div>
-          <div class="value">
-            {{ selectedColumns.length }} / {{ data.nbColumns }}
-          </div>
+          <div class="value">{{ selectedColumns.length }} / {{ data.nbColumns }}</div>
         </div>
-        <div class="data" v-if="minimunSelection > 0">
+        <div
+          class="data"
+          v-if="minimunSelection > 0"
+        >
           <div class="name">Minimum required columns</div>
           <div class="value">{{ minimunSelection }}</div>
         </div>
       </div>
       <div class="buttons">
-        <button v-if="cancelAvailable" class="red" @click="$emit('cancel')">
+        <button
+          v-if="cancelAvailable"
+          class="red"
+          @click="$emit('cancel')"
+        >
           Cancel
         </button>
         <button
@@ -33,7 +57,12 @@
       </div>
     </div>
     <div id="searchBar">
-      Filter : <input ref="columnsSearch" v-model="searchFilter" type="text" />
+      Filter :
+      <input
+        ref="columnsSearch"
+        v-model="searchFilter"
+        type="text"
+      />
       <svg
         stroke="currentColor"
         fill="currentColor"
@@ -48,7 +77,10 @@
         ></path>
       </svg>
     </div>
-    <div id="columns" v-if="selectedColumns">
+    <div
+      id="columns"
+      v-if="selectedColumns"
+    >
       <Category
         v-for="(columns, i) in categorys"
         :key="i"
@@ -115,9 +147,7 @@ export default {
 
       if (this.validateRequiered) {
         if (this.selectedColumns.includes(colIndex)) {
-          this.selectedColumns = this.selectedColumns.filter(
-            (index) => index != colIndex
-          );
+          this.selectedColumns = this.selectedColumns.filter((index) => index != colIndex);
         } else {
           this.selectedColumns.push(colIndex);
         }
@@ -144,9 +174,7 @@ export default {
       if (this.validateRequiered) {
         if (name) {
           this.categorys[name].forEach((col) => {
-            this.selectedColumns = this.selectedColumns.filter(
-              (index) => index != col.index
-            );
+            this.selectedColumns = this.selectedColumns.filter((index) => index != col.index);
           });
         } else {
           this.selectedColumns = [];
@@ -194,8 +222,7 @@ export default {
         ),
         Tag: this.data.columns.filter(
           (c) =>
-            c.category === "tag" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
+            c.category === "tag" && c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
       };
     },

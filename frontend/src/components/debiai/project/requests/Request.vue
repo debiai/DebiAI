@@ -1,7 +1,10 @@
 <template>
   <div id="Request">
     <transition name="fade">
-      <div id="header" v-if="request !== null">
+      <div
+        id="header"
+        v-if="request !== null"
+      >
         <div id="title">
           <h3>Request :</h3>
           <h2>{{ request.name }}</h2>
@@ -14,17 +17,31 @@
           </span>
         </div>
 
-        <button class="red" @click="$emit('close')">Close</button>
+        <button
+          class="red"
+          @click="$emit('close')"
+        >
+          Close
+        </button>
       </div>
     </transition>
     <transition name="fade">
-      <div id="content" v-if="request !== null">
+      <div
+        id="content"
+        v-if="request !== null"
+      >
         <!-- Request description & filters -->
-        <div id="info" class="itemList">
+        <div
+          id="info"
+          class="itemList"
+        >
           <!-- Request description -->
           <div style="margin-bottom: 30px">
             <h2>Request description</h2>
-            <span v-if="request.description" id="description">
+            <span
+              v-if="request.description"
+              id="description"
+            >
               {{ request.description }}
             </span>
             <span v-else> No description </span>
@@ -48,16 +65,29 @@
               <!-- filter type -->
               <div class="filterType">Type : {{ filter.type }}</div>
               <!-- filter inverted -->
-              <div class="filterInverted" v-if="filter.inverted">
+              <div
+                class="filterInverted"
+                v-if="filter.inverted"
+              >
                 <span>Inverted</span>
               </div>
               <!-- filter values or intervals -->
-              <div class="filterValues" v-if="filter.type === 'values'">
-                <div class="value" v-for="(value, j) in filter.values" :key="j">
+              <div
+                class="filterValues"
+                v-if="filter.type === 'values'"
+              >
+                <div
+                  class="value"
+                  v-for="(value, j) in filter.values"
+                  :key="j"
+                >
                   {{ value }}
                 </div>
               </div>
-              <div class="filterIntervals" v-if="filter.type === 'intervals'">
+              <div
+                class="filterIntervals"
+                v-if="filter.type === 'intervals'"
+              >
                 <div
                   class="interval"
                   v-for="(interval, j) in filter.intervals"
@@ -70,23 +100,41 @@
           </div>
         </div>
         <!-- Request selection list & new selection form -->
-        <div id="selections" class="card">
+        <div
+          id="selections"
+          class="card"
+        >
           <h2>Request selections</h2>
           <!-- New selection -->
-          <div id="newSelection" class="card">
+          <div
+            id="newSelection"
+            class="card"
+          >
             <u> Create a new selection from the request filters : </u>
             <span>
               Selection name :
-              <input type="text" v-model="newSelectionName" />
-              <button @click="newSelection" :disabled="!newSelectionName">
+              <input
+                type="text"
+                v-model="newSelectionName"
+              />
+              <button
+                @click="newSelection"
+                :disabled="!newSelectionName"
+              >
                 Create
               </button>
             </span>
           </div>
           <!-- request Selections -->
-          <div id="selectionsList" class="itemList">
+          <div
+            id="selectionsList"
+            class="itemList"
+          >
             <!-- No selection msg -->
-            <div style="padding: 20px" v-if="!request.selections.length">
+            <div
+              style="padding: 20px"
+              v-if="!request.selections.length"
+            >
               No selections
             </div>
 
@@ -102,9 +150,17 @@
         </div>
       </div>
     </transition>
-    <div v-if="requestHasBeenDeleted" class="aligned spaced">
+    <div
+      v-if="requestHasBeenDeleted"
+      class="aligned spaced"
+    >
       The request has been deleted
-      <button class="red" @click="$emit('close')">Close</button>
+      <button
+        class="red"
+        @click="$emit('close')"
+      >
+        Close
+      </button>
     </div>
   </div>
 </template>
@@ -154,10 +210,7 @@ export default {
 
     newSelection() {
       this.$backendDialog
-        .createSelectionFromRequest(
-          this.request.id,
-          this.newSelectionName
-        )
+        .createSelectionFromRequest(this.request.id, this.newSelectionName)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

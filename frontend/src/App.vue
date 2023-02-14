@@ -19,7 +19,7 @@ export default {
   components: {
     Messenger,
     Loading,
-  }
+  },
 };
 </script>
 

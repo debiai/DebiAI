@@ -1,13 +1,22 @@
 <template>
   <div id="Messenger">
-    <transition-group id="list" name="list" tag="p">
+    <transition-group
+      id="list"
+      name="list"
+      tag="p"
+    >
       <div
         :class="'message ' + msg.title"
         v-for="msg in messages"
         :key="msg.id"
         @click="removeMsg(msg)"
       >
-        <h4 class="typeName" v-if="msg.title !== 'blank'">{{ msg.title }}</h4>
+        <h4
+          class="typeName"
+          v-if="msg.title !== 'blank'"
+        >
+          {{ msg.title }}
+        </h4>
         <pre class="text">{{ msg.msg }}</pre>
       </div>
     </transition-group>

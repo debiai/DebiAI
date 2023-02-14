@@ -1,7 +1,13 @@
 <template>
-  <div id="intervalPlot" class="dataVisualisationWidget">
+  <div
+    id="intervalPlot"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modals -->
-    <modal v-if="xAxisSelection" @close="xAxisSelection = false">
+    <modal
+      v-if="xAxisSelection"
+      @close="xAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the X axis"
         :data="data"
@@ -12,7 +18,10 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="yAxisSelection" @close="yAxisSelection = false">
+    <modal
+      v-if="yAxisSelection"
+      @close="yAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
@@ -23,34 +32,40 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
-    <modal v-if="upperAxisSelection" @close="upperAxisSelection = false">
+    <modal
+      v-if="upperAxisSelection"
+      @close="upperAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the upper axis"
         :data="data"
         :validateRequiered="false"
         :colorSelection="true"
-        :defaultSelected="
-          columnUpperIndex === null ? undefined : [columnUpperIndex]
-        "
+        :defaultSelected="columnUpperIndex === null ? undefined : [columnUpperIndex]"
         v-on:cancel="upperAxisSelection = false"
         v-on:colSelect="upperAxisSelect"
       />
     </modal>
-    <modal v-if="lowerAxisSelection" @close="lowerAxisSelection = false">
+    <modal
+      v-if="lowerAxisSelection"
+      @close="lowerAxisSelection = false"
+    >
       <ColumnSelection
         title="Select the lower axis"
         :data="data"
         :validateRequiered="false"
         :colorSelection="true"
-        :defaultSelected="
-          columnLowerIndex === null ? undefined : [columnLowerIndex]
-        "
+        :defaultSelected="columnLowerIndex === null ? undefined : [columnLowerIndex]"
         v-on:cancel="lowerAxisSelection = false"
         v-on:colSelect="lowerAxisSelect"
       />
     </modal>
 
-    <div id="settings" v-if="settings" class="dataGroup">
+    <div
+      id="settings"
+      v-if="settings"
+      class="dataGroup"
+    >
       <!-- Axis selections -->
       <div id="axisSelection">
         <div id="axisSelectionTop">
@@ -114,16 +129,27 @@
             style="display: none"
             @click="intervalPlotDrawed = false"
           />
-          <label :for="'smoothCbxIntPlot' + index" class="toggle">
+          <label
+            :for="'smoothCbxIntPlot' + index"
+            class="toggle"
+          >
             <span></span>
           </label>
         </div>
       </div>
-      <button :disabled="intervalPlotDrawed" @click="updateTraces">Draw</button>
+      <button
+        :disabled="intervalPlotDrawed"
+        @click="updateTraces"
+      >
+        Draw
+      </button>
     </div>
 
     <!-- The plotly plot -->
-    <div class="plot" :id="'IPDiv' + index"></div>
+    <div
+      class="plot"
+      :id="'IPDiv' + index"
+    ></div>
   </div>
 </template>
 
@@ -243,11 +269,7 @@ export default {
     defConfChangeUpdate() {
       this.$watch(
         (vm) => (
-          vm.columnXindex,
-          vm.columnYindex,
-          vm.columnUpperIndex,
-          vm.columnLowerIndex,
-          Date.now()
+          vm.columnXindex, vm.columnYindex, vm.columnUpperIndex, vm.columnLowerIndex, Date.now()
         ),
         () => {
           this.$parent.confAsChanged = true;
@@ -296,9 +318,7 @@ export default {
 
       // Plot
       let color = this.selectedData.map((i, j) =>
-        valuesLower[j] <= valuesY[j] && valuesY[j] <= valuesUpper[j]
-          ? "rgb(0,225,0)"
-          : "red"
+        valuesLower[j] <= valuesY[j] && valuesY[j] <= valuesUpper[j] ? "rgb(0,225,0)" : "red"
       );
 
       let yTrace = {
@@ -315,7 +335,7 @@ export default {
         line: {
           shape: this.smooth ? "spline" : "",
           color: "rgb(225, 0, 0)",
-          width: 4
+          width: 4,
         },
       };
       let upperTrace = {

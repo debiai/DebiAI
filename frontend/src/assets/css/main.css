@@ -1,12 +1,12 @@
 :root {
   /* SystemX colors */
-  --primary: #009DDF;
+  --primary: #009ddf;
   --primaryDark: #046c99;
-  --secondary: #CC5E24;
+  --secondary: #cc5e24;
   --secondaryDark: #924821;
-  --third: #00688D;
+  --third: #00688d;
   --thirdDark: #015370;
-  --white: #9C9C9C;
+  --white: #9c9c9c;
   /* Basics */
   --info: #17a2b8;
   --infoDark: #0d6a79;
@@ -28,16 +28,17 @@
   /* Categorys */
   --undefined: #dc3545;
   --other: #6e6e83;
-  --context: #E85D04;
-  --input: #D00000;
-  --output: #9D0208;
+  --context: #e85d04;
+  --input: #d00000;
+  --output: #9d0208;
   --groundthruth: #720004;
   --results: #1f8300;
   --virtual: #4b1c5e;
   --tag: #335e1c;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -46,7 +47,10 @@ html, body {
   /* line-height: 1.5; */
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   padding: 0px;
   margin: 0px;
 }
@@ -89,8 +93,8 @@ button:disabled {
   filter: brightness(60%);
 }
 
-button+button {
-  margin-left: 5px
+button + button {
+  margin-left: 5px;
 }
 
 button.green {
@@ -126,7 +130,7 @@ button.purple {
 button.white {
   background-color: rgb(223, 223, 223);
   border-color: var(--white);
-  color:rgb(70, 70, 70);
+  color: rgb(70, 70, 70);
 }
 
 button.highlighted {
@@ -161,7 +165,6 @@ button .badge {
   right: -5px;
   padding: 1px 3px 1px 3px;
   font-size: 0.8em;
-  ;
 }
 
 /* === RADIO BUTON === */
@@ -323,20 +326,24 @@ button .badge {
 
 /* Animations */
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
-.scale-enter-active, .scale-leave-active {
+.scale-enter-active,
+.scale-leave-active {
   overflow: hidden;
   height: 20px;
   transition: height 60ms ease-out;
 }
 
-.scale-enter, .scale-leave-to {
+.scale-enter,
+.scale-leave-to {
   height: 0px;
 }

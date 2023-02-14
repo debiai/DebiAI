@@ -1,7 +1,13 @@
 <template>
-  <div id="confusionMatrix" class="dataVisualisationWidget">
+  <div
+    id="confusionMatrix"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modals -->
-    <modal v-if="trueAxisSelection" @close="cancelXaxiesSettings">
+    <modal
+      v-if="trueAxisSelection"
+      @close="cancelXaxiesSettings"
+    >
       <ColumnSelection
         title="Select the True axis"
         :data="data"
@@ -12,7 +18,10 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
-    <modal v-if="predAxisSelection" @close="cancelYaxiesSettings">
+    <modal
+      v-if="predAxisSelection"
+      @close="cancelYaxiesSettings"
+    >
       <ColumnSelection
         title="Select the Predicted axis"
         :data="data"
@@ -24,10 +33,16 @@
       />
     </modal>
 
-    <div id="settings" v-if="settings">
+    <div
+      id="settings"
+      v-if="settings"
+    >
       <div id="axisControls">
         <!-- Axis btns -->
-        <div class="dataGroup" id="left">
+        <div
+          class="dataGroup"
+          id="left"
+        >
           <div id="axisSelection">
             <div class="data">
               <div class="name">Truth</div>
@@ -39,7 +54,12 @@
                 />
               </div>
             </div>
-            <button class="orange" @click="swap">&#8593; Swap &#8595;</button>
+            <button
+              class="orange"
+              @click="swap"
+            >
+              &#8593; Swap &#8595;
+            </button>
             <div class="data">
               <div class="name">Prediction</div>
               <div class="value">
@@ -52,7 +72,11 @@
             </div>
           </div>
           <!-- Groub by color -->
-          <div class="data" id="groupByColor" v-if="coloredColumnIndex != null">
+          <div
+            class="data"
+            id="groupByColor"
+            v-if="coloredColumnIndex != null"
+          >
             <span class="name">Groub by color</span>
             <div class="value">
               <input
@@ -72,13 +96,20 @@
           </div>
         </div>
         <!-- Draw -->
-        <button id="drawBtn" @click="checkMatrix" :disabled="plotDrawed">
+        <button
+          id="drawBtn"
+          @click="checkMatrix"
+          :disabled="plotDrawed"
+        >
           Draw
         </button>
       </div>
     </div>
 
-    <div class="plot" :id="'CFM' + index"></div>
+    <div
+      class="plot"
+      :id="'CFM' + index"
+    ></div>
   </div>
 </template>
 
@@ -205,9 +236,7 @@ export default {
       ];
 
       // First we create the matrix for all the selected data
-      let matrixList = [
-        this.fillMatrix(allUniques, selectedTruth, selectedPred),
-      ];
+      let matrixList = [this.fillMatrix(allUniques, selectedTruth, selectedPred)];
 
       // Then, if we have a colored column, we create the matrix for each unique value
       if (this.coloredColumnIndex != null && this.dividePerColor) {
@@ -218,14 +247,9 @@ export default {
             ? this.selectedData.map((i) => colColor.valuesIndex[i])
             : this.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
-          colColor.type == String
-            ? colColor.valuesIndexUniques
-            : colColor.uniques;
+          colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
-        let groupedValues = dataOperations.groupBy(
-          selectedColorsValues,
-          selectorUniques
-        );
+        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
 
         groupedValues.forEach((idValues) => {
           let colorTruth = idValues.map((i) => selectedTruth[i]);
@@ -249,9 +273,7 @@ export default {
         indexer[uniqueValue] = {};
         count[uniqueValue] = 0;
 
-        allUniques.forEach(
-          (uniqueValue2) => (indexer[uniqueValue][uniqueValue2] = 0)
-        );
+        allUniques.forEach((uniqueValue2) => (indexer[uniqueValue][uniqueValue2] = 0));
       });
 
       // Count number of value predicted for each truth
@@ -267,9 +289,7 @@ export default {
         let row = [];
         allUniques.forEach((uniqueValue2) => {
           row.push(
-            count[uniqueValue] > 0
-              ? indexer[uniqueValue][uniqueValue2] / count[uniqueValue]
-              : null
+            count[uniqueValue] > 0 ? indexer[uniqueValue][uniqueValue2] / count[uniqueValue] : null
           );
         });
         matrix.push(row);
@@ -290,8 +310,7 @@ export default {
         // Find the subplot title
         let uniqueValue;
         if (i >= 1) {
-          uniqueValue =
-            this.data.columns[this.coloredColumnIndex].uniques[i - 1];
+          uniqueValue = this.data.columns[this.coloredColumnIndex].uniques[i - 1];
         }
 
         data.push({
@@ -364,10 +383,7 @@ export default {
         // Add the title of each subplot
         let uniqueValue;
         if (matrixNumber >= 1)
-          uniqueValue =
-            this.data.columns[this.coloredColumnIndex].uniques[
-              matrixNumber - 1
-            ];
+          uniqueValue = this.data.columns[this.coloredColumnIndex].uniques[matrixNumber - 1];
         if (this.coloredColumnIndex != null && this.dividePerColor) {
           layout.annotations.push({
             text: matrixNumber >= 1 ? uniqueValue : "All data",
@@ -404,10 +420,7 @@ export default {
       this.$parent.selectedDataWarning = false;
 
       // Set the filter events
-      this.divConfusionMatrix.removeListener(
-        "plotly_click",
-        this.selectDataOnPlot
-      );
+      this.divConfusionMatrix.removeListener("plotly_click", this.selectDataOnPlot);
       this.divConfusionMatrix.on("plotly_click", this.selectDataOnPlot);
     },
     // axies selection
@@ -541,10 +554,7 @@ export default {
       return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(
-        this.dividePerColor &&
-        this.currentDrawedColorIndex !== this.coloredColumnIndex
-      );
+      return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {

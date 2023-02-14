@@ -1,7 +1,13 @@
 <template>
-  <div id="CorrelationMatrix" class="dataVisualisationWidget">
+  <div
+    id="CorrelationMatrix"
+    class="dataVisualisationWidget"
+  >
     <!-- Axis selection Modal -->
-    <modal v-if="axisSelection" @close="cancelAxiesSettings">
+    <modal
+      v-if="axisSelection"
+      @close="cancelAxiesSettings"
+    >
       <ColumnSelection
         title="Select the columns to compute"
         :data="data"
@@ -15,9 +21,15 @@
     </modal>
 
     <!-- Controls -->
-    <div id="axisControls" v-if="settings">
+    <div
+      id="axisControls"
+      v-if="settings"
+    >
       <!-- Axis btns -->
-      <div id="columnAxisSelection" class="dataGroup">
+      <div
+        id="columnAxisSelection"
+        class="dataGroup"
+      >
         <div class="data">
           <div class="name">Columns selection :</div>
           <div class="value">
@@ -28,11 +40,7 @@
           <div class="name">Matrix type</div>
           <div class="value">
             <button
-              :class="
-                selectedMatrixType == 'pearson'
-                  ? 'radioBtn selected'
-                  : 'radioBtn'
-              "
+              :class="selectedMatrixType == 'pearson' ? 'radioBtn selected' : 'radioBtn'"
               @click="
                 selectedMatrixType = 'pearson';
                 calculate();
@@ -41,11 +49,7 @@
               Pearson
             </button>
             <button
-              :class="
-                selectedMatrixType == 'spearman'
-                  ? 'radioBtn selected'
-                  : 'radioBtn'
-              "
+              :class="selectedMatrixType == 'spearman' ? 'radioBtn selected' : 'radioBtn'"
               @click="
                 selectedMatrixType = 'spearman';
                 calculate();
@@ -65,7 +69,10 @@
               v-model="significativOnly"
               style="display: none"
             />
-            <label :for="'significativOnly' + index" class="toggle">
+            <label
+              :for="'significativOnly' + index"
+              class="toggle"
+            >
               <span></span>
             </label>
           </div>
@@ -73,10 +80,18 @@
       </div>
     </div>
     <transition name="fade">
-      <div v-if="error" class="error">Error while calculating matrix</div>
+      <div
+        v-if="error"
+        class="error"
+      >
+        Error while calculating matrix
+      </div>
     </transition>
     <!-- Plot -->
-    <div class="plot" :id="'matrix' + index"></div>
+    <div
+      class="plot"
+      :id="'matrix' + index"
+    ></div>
   </div>
 </template>
 
@@ -109,7 +124,7 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    index: { type: String, required : true },
+    index: { type: String, required: true },
     selectedData: { type: Array, required: true },
   },
   created() {
@@ -147,8 +162,7 @@ export default {
       // Creating data to send
       var columnsData = [];
       this.selectedColumns.forEach((c) => {
-        if (c.type == String)
-          columnsData.push(this.selectedData.map((i) => c.valuesIndex[i]));
+        if (c.type == String) columnsData.push(this.selectedData.map((i) => c.valuesIndex[i]));
         else columnsData.push(this.selectedData.map((i) => c.values[i]));
       });
 
@@ -237,13 +251,9 @@ export default {
           layout.annotations.push({
             text: this.significativOnly
               ? Math.abs(value) > 0.8
-                ? Math.round(value * 100) / 100 +
-                  "<br>" +
-                  "&#9733;".repeat(this.matrix[i][j][1])
+                ? Math.round(value * 100) / 100 + "<br>" + "&#9733;".repeat(this.matrix[i][j][1])
                 : ""
-              : Math.round(value * 100) / 100 +
-                "<br>" +
-                "&#9733;".repeat(this.matrix[i][j][1]),
+              : Math.round(value * 100) / 100 + "<br>" + "&#9733;".repeat(this.matrix[i][j][1]),
             x: i,
             y: j,
             showarrow: false,

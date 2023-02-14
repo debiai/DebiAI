@@ -3,13 +3,25 @@
     <div id="left">
       <!-- DebiAI & project path -->
       <div id="title">
-        <h1 id="DebiAI" @click="$router.push('/')">
-          <img src="../../../../src/assets/images/DebiAI.png" alt="DebiAI" height="48" />
+        <h1
+          id="DebiAI"
+          @click="$router.push('/')"
+        >
+          <img
+            src="../../../../src/assets/images/DebiAI.png"
+            alt="DebiAI"
+            height="48"
+          />
         </h1>
         <div class="path">
           <transition name="fade">
             <span v-if="project">
-              <span @click="$router.push('/')" class="link">Projects</span> /
+              <span
+                @click="$router.push('/')"
+                class="link"
+                >Projects</span
+              >
+              /
               {{ project.id }}
             </span>
           </transition>
@@ -18,26 +30,53 @@
 
       <!-- Project name & items -->
       <transition name="fade">
-        <div id="projectTitle" v-if="project">
+        <div
+          id="projectTitle"
+          v-if="project"
+        >
           <h1 id="name">{{ project.id }}</h1>
 
           <!-- ProjectItems -->
           <div id="items">
             <!-- Nb samples -->
-            <div class="item nbSamples" title="Number of samples">
-              <inline-svg :src="require('../../../assets/svg/data.svg')" width="25" height="25" fill="white" />
+            <div
+              class="item nbSamples"
+              title="Number of samples"
+            >
+              <inline-svg
+                :src="require('../../../assets/svg/data.svg')"
+                width="25"
+                height="25"
+                fill="white"
+              />
               {{ project.nbSamples }} samples
             </div>
 
             <!-- Nb selections -->
-            <div class="item nbSelections" title="Project selections">
-              <inline-svg :src="require('../../../assets/svg/loupe.svg')" width="25" height="25" fill="white" />
+            <div
+              class="item nbSelections"
+              title="Project selections"
+            >
+              <inline-svg
+                :src="require('../../../assets/svg/loupe.svg')"
+                width="25"
+                height="25"
+                fill="white"
+              />
               {{ project.nbSelections }} selections
             </div>
 
             <!-- Nb models -->
-            <div class="item nbModel" title="Model added to the project">
-              <inline-svg :src="require('../../../assets/svg/gear.svg')" width="25" height="25" fill="white" />
+            <div
+              class="item nbModel"
+              title="Model added to the project"
+            >
+              <inline-svg
+                :src="require('../../../assets/svg/gear.svg')"
+                width="25"
+                height="25"
+                fill="white"
+              />
               {{ project.nbModels }} models
             </div>
           </div>
@@ -48,23 +87,46 @@
     <!-- Controls & date -->
     <div id="right">
       <!-- Setting btn -->
-      <button id="settings" @click="$emit('settings')">
-        <inline-svg :src="require('../../../assets/svg/settings.svg')" width="15" height="15" fill="white" />
+      <button
+        id="settings"
+        @click="$emit('settings')"
+      >
+        <inline-svg
+          :src="require('../../../assets/svg/settings.svg')"
+          width="15"
+          height="15"
+          fill="white"
+        />
       </button>
 
       <!-- Delete btn -->
-      <button id="delete" class="red" @click="$emit('deleteProject')">
+      <button
+        id="delete"
+        class="red"
+        @click="$emit('deleteProject')"
+      >
         Delete
       </button>
 
       <!-- Refresh btn -->
-      <button id="refresh" class="warning" @click="$emit('refresh')">
-        <inline-svg :src="require('../../../assets/svg/update.svg')" width="10" height="10" />
+      <button
+        id="refresh"
+        class="warning"
+        @click="$emit('refresh')"
+      >
+        <inline-svg
+          :src="require('../../../assets/svg/update.svg')"
+          width="10"
+          height="10"
+        />
         Refresh
       </button>
 
       <transition name="fade">
-        <div id="dates" v-if="project">
+        <div
+          id="dates"
+          v-if="project"
+        >
           <span :title="$services.timeStampToDate(project.creationDate)">
             Created {{ $services.prettyTimeStamp(project.creationDate) }}
           </span>

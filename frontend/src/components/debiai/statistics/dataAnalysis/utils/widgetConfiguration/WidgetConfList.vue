@@ -27,12 +27,7 @@
       </div>
     </div>
 
-    <div
-      v-if="
-        sameProjectConfigurations.length === 0 &&
-        otherConfigurations.length === 0
-      "
-    >
+    <div v-if="sameProjectConfigurations.length === 0 && otherConfigurations.length === 0">
       <h4 class="configurationType">No configuration saved</h4>
     </div>
   </div>
@@ -53,8 +48,7 @@ export default {
       const projectId = this.$store.state.ProjectPage.projectId;
 
       return this.configurations.filter(
-        (conf) =>
-          conf.projectId === projectId && conf.dataProviderId === dataProviderId
+        (conf) => conf.projectId === projectId && conf.dataProviderId === dataProviderId
       );
     },
 
@@ -63,8 +57,7 @@ export default {
       const projectId = this.$store.state.ProjectPage.projectId;
 
       return this.configurations.filter(
-        (conf) =>
-          conf.dataProviderId !== dataProviderId || conf.projectId !== projectId
+        (conf) => conf.dataProviderId !== dataProviderId || conf.projectId !== projectId
       );
     },
   },

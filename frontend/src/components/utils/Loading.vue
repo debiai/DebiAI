@@ -1,15 +1,29 @@
 <template>
   <div id="loading">
     <!-- Displaying the current requests -->
-    <transition-group id="list" name="list" tag="p">
-      <div class="request" v-for="req in requests" :key="req.code">
+    <transition-group
+      id="list"
+      name="list"
+      tag="p"
+    >
+      <div
+        class="request"
+        v-for="req in requests"
+        :key="req.code"
+      >
         <div class="top">
           <div class="name">{{ req.name }}</div>
           <div class="loader" />
         </div>
         <!-- Display the progress bar if anny -->
-        <div class="progress" v-if="req.progress !== undefined">
-          <div class="bar" :style="'width:' + req.progress * 100 + '%'"></div>
+        <div
+          class="progress"
+          v-if="req.progress !== undefined"
+        >
+          <div
+            class="bar"
+            :style="'width:' + req.progress * 100 + '%'"
+          ></div>
         </div>
       </div>
     </transition-group>

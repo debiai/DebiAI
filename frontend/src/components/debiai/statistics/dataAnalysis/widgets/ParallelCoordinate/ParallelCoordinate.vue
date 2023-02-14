@@ -1,5 +1,8 @@
 <template>
-  <div id="parCoord" class="dataVisualisationWidget">
+  <div
+    id="parCoord"
+    class="dataVisualisationWidget"
+  >
     <ColumnSelection
       v-show="settings"
       title="Select the columns to display in the parallel coordinates plot"
@@ -10,7 +13,10 @@
       v-on:cancel="settings = false"
       v-on:validate="validateSettings"
     />
-    <div class="plot" :id="'PCDiv' + index"></div>
+    <div
+      class="plot"
+      :id="'PCDiv' + index"
+    ></div>
   </div>
 </template>
 
@@ -51,9 +57,7 @@ export default {
     this.$parent.$on("filterCleared", this.filterCleared);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns
-      .filter((c) => c.nbOccu > 1)
-      .map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccu > 1).map((c) => c.index);
   },
   mounted() {
     this.divParCord = document.getElementById("PCDiv" + this.index);
@@ -62,9 +66,7 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map(
-          (cIndex) => this.data.columns[cIndex].label
-        ),
+        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
       };
     },
     setConf(conf) {
@@ -86,18 +88,12 @@ export default {
     // Plot
     drawPlot() {
       // Filter selected columns
-      let columns = this.selectedColumnsIds.map(
-        (cId) => this.data.columns[cId]
-      );
+      let columns = this.selectedColumnsIds.map((cId) => this.data.columns[cId]);
 
-      let plotlyColumns = dataOperations.columnsCreation(
-        columns,
-        this.selectedData
-      );
+      let plotlyColumns = dataOperations.columnsCreation(columns, this.selectedData);
 
       // Color
-      let coloredColIndex =
-        this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      let coloredColIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
       let colColor = this.data.columns[coloredColIndex];
       this.currentDrawedColorIndex = coloredColIndex;
 
@@ -161,10 +157,7 @@ export default {
         let intervals = this.divParCord.data[0].dimensions;
 
         // Convert plotly intervals to DebiAI filters
-        let filters = selection.convertPlotlySelectionsToFilters(
-          this.data,
-          intervals
-        );
+        let filters = selection.convertPlotlySelectionsToFilters(this.data, intervals);
 
         this.$store.commit("addFilters", {
           filters,
@@ -184,10 +177,7 @@ export default {
         let intervals = this.divParCord.data[0].dimensions;
 
         // Convert plotly intervals to DebiAI filters
-        let filters = selection.convertPlotlySelectionsToFilters(
-          this.data,
-          intervals
-        );
+        let filters = selection.convertPlotlySelectionsToFilters(this.data, intervals);
 
         // This prevent the plotly_restyle event to be triggered
         // and do a death loop with the widget
@@ -219,8 +209,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !==
-          this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
+        this.currentDrawedColorIndex !== this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );
@@ -234,8 +223,7 @@ export default {
       this.$parent.colorWarning = n;
     },
     selectedData() {
-      if (!this.settings && !this.$parent.startFiltering)
-        this.$parent.selectedDataWarning = true;
+      if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     startFiltering(o, n) {
       if (n) this.selectDataOnPlot();

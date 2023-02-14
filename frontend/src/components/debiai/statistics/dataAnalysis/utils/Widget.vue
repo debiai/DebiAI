@@ -1,7 +1,10 @@
 <template>
   <div class="card">
     <!-- Wigdet configuration load or save modal -->
-    <modal v-if="confSettings" @close="confSettings = false">
+    <modal
+      v-if="confSettings"
+      @close="confSettings = false"
+    >
       <WidgetConfPannel
         :widgetTitle="title"
         :widgetName="name"
@@ -16,7 +19,10 @@
     </modal>
 
     <!-- Export data modal -->
-    <modal v-if="exportModal" @close="exportModal = false">
+    <modal
+      v-if="exportModal"
+      @close="exportModal = false"
+    >
       <DataExportMenu
         :dataToExport="exportData"
         @exported="exportModal = false"
@@ -27,9 +33,7 @@
     <!-- Widget -->
     <div
       id="widgetHeader"
-      :class="
-        'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')
-      "
+      :class="'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')"
     >
       <!-- Name -->
       <h2 id="name">
@@ -47,29 +51,40 @@
       <!-- Loading anim, messages & warning -->
       <div class="center">
         <!-- Loading from backend -->
-        <div v-if="loading" class="saving">
+        <div
+          v-if="loading"
+          class="saving"
+        >
           <span></span><span></span><span></span>
         </div>
 
         <!-- Error icon -->
-        <div v-if="error_msg" @click="delete_error" class="dataError">
+        <div
+          v-if="error_msg"
+          @click="delete_error"
+          class="dataError"
+        >
           <b>&#x26A0;</b> {{ error_msg }}
         </div>
 
         <!-- Color and selectedDataWarning -->
-        <div v-if="colorWarning || selectedDataWarning" class="updateWarning">
+        <div
+          v-if="colorWarning || selectedDataWarning"
+          class="updateWarning"
+        >
           <b>&#x26A0;</b>
-          <div v-if="colorWarning && selectedDataWarning">
-            Selected color and data have changed
-          </div>
+          <div v-if="colorWarning && selectedDataWarning">Selected color and data have changed</div>
           <!-- Color Warning -->
           <div v-else-if="colorWarning">The selected color have changed</div>
           <!-- selectedData Warning -->
-          <div v-else-if="selectedDataWarning">
-            The selected data have changed
-          </div>
+          <div v-else-if="selectedDataWarning">The selected data have changed</div>
 
-          <button class="warning" @click="drawPlot">Redraw</button>
+          <button
+            class="warning"
+            @click="drawPlot"
+          >
+            Redraw
+          </button>
           <button
             @click="
               colorWarning = false;
@@ -92,7 +107,10 @@
       </div>
 
       <!-- Options : configuration, copy, settings, close btn, ... -->
-      <div class="options" v-if="!simple">
+      <div
+        class="options"
+        v-if="!simple"
+      >
         <!-- export btn -->
         <button
           v-if="exportData !== null"
@@ -168,7 +186,11 @@
           />
         </button>
         <!-- Settings btn -->
-        <button class="warning" :title="title + ' settings'" @click="settings">
+        <button
+          class="warning"
+          :title="title + ' settings'"
+          @click="settings"
+        >
           <inline-svg
             :src="require('../../../../../assets/svg/settings.svg')"
             width="14"
@@ -189,7 +211,10 @@
           />
         </button>
       </div>
-      <div class="options simple" v-else>
+      <div
+        class="options simple"
+        v-else
+      >
         <button
           class="red"
           :title="'Close ' + title + ' widget'"
@@ -261,19 +286,14 @@ export default {
 
       if (slotCom.componentInstance) {
         // canSaveConfiguration
-        if (
-          "getConf" in slotCom.componentInstance &&
-          "setConf" in slotCom.componentInstance
-        )
+        if ("getConf" in slotCom.componentInstance && "setConf" in slotCom.componentInstance)
           this.canSaveConfiguration = true;
 
         // canFilterSamples
-        if ("selectDataOnPlot" in slotCom.componentInstance)
-          this.canFilterSamples = true;
+        if ("selectDataOnPlot" in slotCom.componentInstance) this.canFilterSamples = true;
 
         // Apply given configuration
-        if (this.canSaveConfiguration && this.configuration)
-          this.setConf(this.configuration);
+        if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
         this.loading = false;
       } else {
         // No component instance

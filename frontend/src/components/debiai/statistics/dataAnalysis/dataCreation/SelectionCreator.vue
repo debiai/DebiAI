@@ -3,22 +3,29 @@
     <form v-on:submit.prevent>
       <b
         >Create a new selection from the selected data
-        <button @click="$emit('cancel')" class="red">Cancel</button>
+        <button
+          @click="$emit('cancel')"
+          class="red"
+        >
+          Cancel
+        </button>
       </b>
       <div class="dataGroup">
         <!-- selection name -->
         <div class="data">
           <div class="name">Selection name</div>
           <div class="value">
-            <input type="text" v-model="selectionName" style="flex: 1" />
+            <input
+              type="text"
+              v-model="selectionName"
+              style="flex: 1"
+            />
           </div>
         </div>
         <!-- nb samples -->
         <div class="data">
           <div class="name">Selected samples</div>
-          <div class="value">
-            {{ selectedData.length }} / {{ data.nbLines }}
-          </div>
+          <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
         </div>
         <!-- saveRequestAsWell -->
         <!-- TODO : Revert for the requests update -->
@@ -48,7 +55,11 @@
         </div> -->
       </div>
       <div style="display: flex; justify-content: flex-end">
-        <button type="submit" @click="save" :disabled="!selectionNameOk">
+        <button
+          type="submit"
+          @click="save"
+          :disabled="!selectionNameOk"
+        >
           Save
         </button>
       </div>
@@ -132,8 +143,7 @@ export default {
   computed: {
     selectionNameOk() {
       return (
-        this.createdSelections !== null &&
-        !this.createdSelections.includes(this.selectionName)
+        this.createdSelections !== null && !this.createdSelections.includes(this.selectionName)
       );
     },
     filters() {

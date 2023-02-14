@@ -1,14 +1,20 @@
 <template>
   <div id="selections">
     <!-- selectionCreation modal -->
-    <modal v-if="selectionCreation" @close="selectionCreation = false">
+    <modal
+      v-if="selectionCreation"
+      @close="selectionCreation = false"
+    >
       <Requests
         @close="selectionCreation = false"
         @newSelection="$emit('newSelection')"
       />
     </modal>
     <!-- selected request modal -->
-    <modal v-if="selectedRequestId !== null" @close="selectedRequestId = null">
+    <modal
+      v-if="selectedRequestId !== null"
+      @close="selectedRequestId = null"
+    >
       <Request
         :requestId="selectedRequestId"
         @close="selectedRequestId = null"
@@ -29,13 +35,11 @@
             Selections
           </h2>
           <DocumentationBlock>
-            A <b> selection </b> is a list of samples, it can be created from a
-            request from the <b> requests menu </b> or from the analysis
-            dashboard.
+            A <b> selection </b> is a list of samples, it can be created from a request from the
+            <b> requests menu </b> or from the analysis dashboard.
             <br />
-            Selections are used to start analysis on a specific subset of the
-            data project, they can be extracted with the python library as a
-            dataframe or as a numpy array.
+            Selections are used to start analysis on a specific subset of the data project, they can
+            be extracted with the python library as a dataframe or as a numpy array.
             <!-- TODO: Add path to Documentation -->
           </DocumentationBlock>
         </span>
@@ -55,8 +59,17 @@
             />
             Requests
           </button>
-          <button class="info" @click="selectAll">All</button>
-          <button class="warning" style="margin-right: 5px" @click="selecNone">
+          <button
+            class="info"
+            @click="selectAll"
+          >
+            All
+          </button>
+          <button
+            class="warning"
+            style="margin-right: 5px"
+            @click="selecNone"
+          >
             None
           </button>
           <input
@@ -68,19 +81,24 @@
       </div>
 
       <!-- All selections -->
-      <div id="selectionList" class="itemList">
+      <div
+        id="selectionList"
+        class="itemList"
+      >
         <div
           id="allData"
           :class="
-            'selection item selectable ' +
-            (selectedSelectionIds.length == 0 ? 'selected' : '')
+            'selection item selectable ' + (selectedSelectionIds.length == 0 ? 'selected' : '')
           "
           @click="selectedSelectionIds = []"
         >
           <div class="title">
             <h3 class="name">All data</h3>
           </div>
-          <div class="sampleNumber" title="Selection sample number">
+          <div
+            class="sampleNumber"
+            title="Selection sample number"
+          >
             <inline-svg
               :src="require('../../../../assets/svg/data.svg')"
               width="20"
@@ -94,8 +112,7 @@
           v-for="selection in filteredSelections"
           :key="selection.id"
           :class="
-            'item selectable ' +
-            (selectedSelectionIds.includes(selection.id) ? 'selected' : '')
+            'item selectable ' + (selectedSelectionIds.includes(selection.id) ? 'selected' : '')
           "
           :selection="selection"
           @selected="selectSelection(selection.id)"
@@ -114,7 +131,10 @@
 
     <!-- setSelection Intersection and nb selected-->
     <transition name="fade">
-      <div id="analysisControls" v-if="selectedSelectionIds.length > 0">
+      <div
+        id="analysisControls"
+        v-if="selectedSelectionIds.length > 0"
+      >
         <!-- selection Intersection -->
         <transition name="fade">
           <div
@@ -122,7 +142,10 @@
             v-if="selectedSelectionIds.length > 1"
           >
             Multiple selection selected :
-            <div class="dataGroup" style="margin-right: 40px">
+            <div
+              class="dataGroup"
+              style="margin-right: 40px"
+            >
               Union
               <input
                 type="checkbox"
@@ -131,7 +154,10 @@
                 style="display: none"
                 v-model="selectionIntersection"
               />
-              <label for="selectionIntersectionToggle" class="toggle">
+              <label
+                for="selectionIntersectionToggle"
+                class="toggle"
+              >
                 <span></span>
               </label>
               Intersection
@@ -204,9 +230,7 @@ export default {
     },
     selectSelection(selectionId) {
       if (this.selectedSelectionIds.includes(selectionId))
-        this.selectedSelectionIds = this.selectedSelectionIds.filter(
-          (mId) => mId !== selectionId
-        );
+        this.selectedSelectionIds = this.selectedSelectionIds.filter((mId) => mId !== selectionId);
       else this.selectedSelectionIds.push(selectionId);
 
       this.$emit("selectionSelected", this.selectedSelectionIds);

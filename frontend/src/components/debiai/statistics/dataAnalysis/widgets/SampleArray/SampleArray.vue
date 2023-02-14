@@ -1,5 +1,8 @@
 <template>
-  <div :id="'SampleArray' + index" class="dataVisualisationWidget">
+  <div
+    :id="'SampleArray' + index"
+    class="dataVisualisationWidget"
+  >
     <!-- Columns selection Modals -->
     <ColumnSelection
       v-show="settings"
@@ -12,7 +15,10 @@
       v-on:validate="columnsSelect"
     />
 
-    <vue-table-dynamic v-if="displayArray" :params="params"></vue-table-dynamic>
+    <vue-table-dynamic
+      v-if="displayArray"
+      :params="params"
+    ></vue-table-dynamic>
   </div>
 </template>
 
@@ -31,7 +37,7 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    index: { type: String, required : true },
+    index: { type: String, required: true },
     selectedData: { type: Array, required: true },
   },
   data() {
@@ -58,8 +64,7 @@ export default {
   },
   created() {
     // Select the 3 firsts columns
-    for (let i = 0; i < 3; i++)
-      if (this.data.nbColumns > i) this.selectedColumnsIds.push(i);
+    for (let i = 0; i < 3; i++) if (this.data.nbColumns > i) this.selectedColumnsIds.push(i);
 
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
@@ -93,20 +98,15 @@ export default {
       }
     },
     _updateArray() {
-      let labels = this.selectedColumnsIds.map(
-        (i) => this.data.columns[i].label
-      );
+      let labels = this.selectedColumnsIds.map((i) => this.data.columns[i].label);
       var data = new Array(this.selectedData.length + 1); // Number of rows
       data[0] = labels;
 
-      for (var i = 1; i < data.length; i++)
-        data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
+      for (var i = 1; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
 
       this.selectedColumnsIds.forEach((columnIndex, i) => {
         let col = this.data.columns.find((c) => c.index == columnIndex);
-        this.selectedData.map(
-          (j, indRow) => (data[indRow + 1][i] = col.values[j])
-        );
+        this.selectedData.map((j, indRow) => (data[indRow + 1][i] = col.values[j]));
       });
 
       this.displayArray = true;
@@ -132,5 +132,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
