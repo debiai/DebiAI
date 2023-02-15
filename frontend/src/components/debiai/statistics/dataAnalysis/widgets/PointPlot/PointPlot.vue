@@ -869,80 +869,89 @@ export default {
 
     // Filters
     selectDataOnPlot(event) {
-      let filters = [];
+      if (!this.$parent.startFiltering) return;
+
+      // Clear the export
       this.$parent.$emit("setExport", null);
 
       // An event msg :
       // {
       //   points: ...,
-      //   range: { x : [min, max], y : [min, max] }
-      // } or undefined (single click or double click out)
-
-      if (event && this.$parent.startFiltering) {
-        // Get the filters acording
-        let colx = this.data.columns[this.columnXindex];
-        filters.push(this.getFilterFromColumn(colx, event.range.x[0], event.range.x[1], false));
-        let coly = this.data.columns[this.columnYindex];
-        filters.push(
-          this.getFilterFromColumn(coly, event.range.y[0], event.range.y[1], this.absolue)
-        );
-
-        // Exporting the bondaries of the selection
-        // We want to export the range of the selection
-        // Filter format :
-        // [
-        //   {
-        //     "type": "values",
-        //     "values": [
-        //       "image-1",
-        //       "image-3",
-        //       ...
-        //     ],
-        //     "columnIndex": 0
-        //   },
-        //   {
-        //     "type": "intervals",
-        //     "intervals": [
-        //       {
-        //        max: 19.950596252129472,
-        //        min: 6.730834752981263
-        //       }
-        //     ],
-        //     "columnIndex": 1
-        //   }
-        // ]
-
-        // Goal format :
-        // {
-        //   type: "2Drange",
-        //   colX : colName
-        //   colY : colName
-        //   x : [min, max],
-        //   y : [min, max]
-        // }
-
-        if (filters.length == 2) {
-          const getRangeFromFilter = (filter) => {
-            if (filter.type == "values")
-              return [filter.values[0], filter.values[filter.values.length - 1]];
-            else if (filter.type == "intervals")
-              return [filter.intervals[0].min, filter.intervals[0].max];
-            return null;
-          };
-          const rangeX = getRangeFromFilter(filters[0]);
-          const rangeY = getRangeFromFilter(filters[1]);
-
-          const exportData = {
-            type: "2Drange",
-            colX: colx.label,
-            colY: coly.label,
-            x: rangeX,
-            y: rangeY,
-          };
-
-          this.$parent.$emit("setExport", exportData);
-        }
+      //   selections: [{
+      //     x0: ...,
+      //     x1: ...,
+      //     y0: ...,
+      //     y1: ...,
+      //     ...
+      //  }] // One per rectangles
+      //  range: { x : [min, max], y : [min, max] }
+      // }
+      // or undefined (single click or double click out)
+      // or { points: [], selections: [] } (double click in)
+      if (!event || !event.selections || event.selections.length === 0) {
+        this.$store.commit("addFilters", {
+          filters: [],
+          from: {
+            widgetType: this.$parent.type,
+            widgetName: this.$parent.name,
+            widgetIndex: this.index,
+          },
+          removeExisting: true,
+        });
+        this.$parent.$emit("setExport", null);
+        Plotly.relayout(this.divPointPlot, { shapes: [] }); // Rectangle
+        return;
       }
+
+      // Create the filters
+      let colx = this.data.columns[this.columnXindex];
+      let coly = this.data.columns[this.columnYindex];
+
+      // Create the first filter
+      const selections = event.selections;
+      const filters = [
+        this.getFilterFromColumn(colx, selections[0].x0, selections[0].x1, false),
+        this.getFilterFromColumn(coly, selections[0].y1, selections[0].y0, this.absolue),
+      ];
+
+      // // Create the other filters
+      // We are not doing this anymore because it is not possible make filters union in DebiAI
+      // TODO : make it possible to make filters union in DebiAI
+      // for (let i = 1; i < selections.length; i++) {
+      //   const nextFiltersx = this.getFilterFromColumn(
+      //     colx,
+      //     selections[i].x0,
+      //     selections[0].x1,
+      //     false
+      //   );
+      //   const nextFiltersy = this.getFilterFromColumn(
+      //     coly,
+      //     selections[i].y1,
+      //     selections[0].y0,
+      //     this.absolue
+      //   );
+
+      //   if (filters[0].intervals) filters[0].intervals.push(nextFiltersx.intervals[0]);
+      //   if (filters[0].values) filters[0].values = filters[0].values.concat(nextFiltersx.values);
+      //   if (filters[1].intervals) filters[1].intervals.push(nextFiltersy.intervals[0]);
+      //   if (filters[1].values) filters[1].values = filters[1].values.concat(nextFiltersy.values);
+      // }
+
+      // Display a rectangle on the plot
+      // This doesn't work , it triggers a recursive loop, I think that relayout triggers a plotly_selected event
+      // const recStyle = {
+      //   type: "rect",
+      //   x0: selections[0].x0,
+      //   x1: selections[0].x1,
+      //   y0: selections[0].y0,
+      //   y1: selections[0].y1,
+
+      //   fillcolor: "none",
+      //   line: { width: 2, color: "red" },
+      // };
+
+      // console.log("update");
+      // Plotly.relayout(this.divPointPlot, { shapes: [recStyle] });
 
       // Store the filters in the DebiAI selection system
       this.$store.commit("addFilters", {
@@ -954,9 +963,71 @@ export default {
         },
         removeExisting: true,
       });
+
+      // Exporting the bondaries of the selections with the export feature
+      // Exporting only the first selection TODO : add all the selections
+      // Goal format :
+      // {
+      //   type: "2Drange",
+      //   colX : colName
+      //   colY : colName
+      //   x : [min, max],
+      //   y : [min, max]
+      // }
+
+      const getRangeFromFilter = (filter) => {
+        if (filter.type == "values")
+          return [filter.values[0], filter.values[filter.values.length - 1]];
+        else if (filter.type == "intervals")
+          return [filter.intervals[0].min, filter.intervals[0].max];
+        return null;
+      };
+      const rangeX = getRangeFromFilter(filters[0]);
+      const rangeY = getRangeFromFilter(filters[1]);
+
+      const exportData = {
+        type: "2Drange",
+        colX: colx.label,
+        colY: coly.label,
+        x: rangeX,
+        y: rangeY,
+      };
+
+      this.$parent.$emit("setExport", exportData);
     },
     getFilterFromColumn(col, min, max, absolute) {
       // Create a debiai filter from a column and a range
+
+      // Filter format :
+      // [
+      //   {
+      //     "type": "values",
+      //     "values": [
+      //       "image-1",
+      //       "image-3",
+      //       ...
+      //     ],
+      //     "columnIndex": 0
+      //   },
+      //   {
+      //     "type": "intervals",
+      //     "intervals": [
+      //       {
+      //        max: 19.950596252129472,
+      //        min: 6.730834752981263
+      //       }
+      //     ],
+      //     "columnIndex": 1
+      //   }
+      // ]
+
+      // Fix the fact that the min and max may be inverted
+      if (min > max) {
+        let tmp = min;
+        min = max;
+        max = tmp;
+      }
+
       if (col.type !== String) {
         if (absolute) {
           return {

@@ -1,6 +1,6 @@
 {
   "name": "debiai_frontend",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Frontend for Debiai, made with Vuejs",
   "license": "Apache-2.0",
   "scripts": {
@@ -14,9 +14,9 @@
     "config.js": "^0.1.0",
     "core-js": "^3.6.4",
     "gridstack": "^2.0.0",
-    "marked": "^2.0.0",
+    "marked": "^4.2.12",
     "mathjs": "^7.6.0",
-    "plotly.js": "2.0.0",
+    "plotly.js": "^2.18.1",
     "sweetalert": "^2.1.2",
     "uuid": "^8.3.2",
     "vue": "^2.6.11",
@@ -28,16 +28,14 @@
     "vuex": "^3.5.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.4.6",
-    "@vue/cli-plugin-eslint": "^4.4.6",
-    "@vue/cli-service": "^4.4.6",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "@vue/test-utils": "^1.1.1",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "prettier": "2.8.4",
     "raw-loader": "^4.0.2",
-    "test-utils": "^1.1.1",
     "vue-template-compiler": "^2.6.14"
   },
   "eslintConfig": {
