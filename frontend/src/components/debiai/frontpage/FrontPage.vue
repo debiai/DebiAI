@@ -217,7 +217,7 @@
 </template>
 
 <script>
-import { version } from "../../../../package";
+import jsonPackage from "../../../../package";
 import dataProviders from "./dataproviders/DataProviders.vue";
 
 export default {
@@ -230,7 +230,7 @@ export default {
       projects: null, // List of projects
       dataProviders: null, // List of data providers that contains the projects
       searchBar: "",
-      appVersion: version,
+      appVersion: jsonPackage.version,
       displayDataProviders: false,
     };
   },

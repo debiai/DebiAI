@@ -379,6 +379,7 @@ export default {
 
       let colColor;
       let xSections;
+      let xSectionsText;
       if (this.coloredColumnIndex != null && this.dividePerColor) {
         // on color axis
         colColor = this.data.columns[this.coloredColumnIndex];
@@ -421,14 +422,15 @@ export default {
               colColor.type == String
                 ? xSections.map(() => colColor.valuesIndexUniques[i])
                 : xSections.map(() => colColor.uniques[i]);
-            let colorscale = "Portland";
 
             trace.marker = {
               color,
-              colorscale,
+              colorscale: "Portland",
               cmin: colColor.min,
               cmax: colColor.max,
+              showscale: true,
             };
+
             trace.showlegend = false;
           }
 
@@ -497,7 +499,6 @@ export default {
       }
 
       // set labels for x absis
-      let xSectionsText;
       if (colX.type == String) xSectionsText = xSections.map((v, i) => colX.uniques[i]);
       else xSections = undefined;
 

@@ -406,6 +406,11 @@ export default {
       const projectId = this.$store.state.ProjectPage.projectId;
       const selectionIds = this.$store.state.ProjectPage.selectionsIds;
 
+      if (!exportData) {
+        this.exportData = null;
+        return;
+      }
+
       // Add project and data provider id to the export data
       this.exportData = {
         origin: "DebiAI",

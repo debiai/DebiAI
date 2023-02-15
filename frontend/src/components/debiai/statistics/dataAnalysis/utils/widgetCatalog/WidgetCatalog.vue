@@ -36,7 +36,7 @@
 
 <script>
 import Widget from "./Widget";
-let marked = require("marked");
+import { marked } from "marked";
 
 export default {
   name: "widgetCatalog",
@@ -89,11 +89,15 @@ export default {
       return this.widgetDescriptions[this.widgets[this.selectedWidgetNumber].componentKey];
     },
     previewText() {
-      marked.setOptions({
-        renderer: new marked.Renderer(),
-      });
-      if (this.widgetDescription) return marked(this.widgetDescription);
-      else return null;
+      if (this.widgetDescription === undefined) return "No documentation";
+      try {
+        return marked.parse(this.widgetDescription);
+      } catch (error) {
+        console.log("Error while parsing markdown");
+        console.log(this.widgetDescription);
+        console.log(error);
+        return "Error while parsing the documentation";
+      }
     },
     iconPath() {
       if (this.widgets.length == 0) return null;
