@@ -50,6 +50,7 @@ async function getDataProviderLimit() {
     };
   }
 }
+
 // Get project samples Id list functions
 async function getProjectSamplesIdList(
   projectMetadata,
@@ -64,16 +65,14 @@ async function getProjectSamplesIdList(
   const accepteSize = projectMetadata.dataProvider.maxIdLimit;
   const projectNbSamples = projectMetadata.nbSamples;
 
-  if (projectNbSamples === 0) {
-    return [];
-  }
+  // If we have no samples, we don't search for samples ID
+  if (projectNbSamples === 0) return [];
 
+  // If the project is small, we gather all ID at once
+  // If we are analyzing selections or models, we don't split the request (not implemented yet)
   if (
-    projectNbSamples === undefined ||
-    projectNbSamples === null ||
-    projectNbSamples <= accepteSize ||
-    selectionIds.length > 0 ||
-    modelIds.length > 0
+    projectNbSamples !== null &&
+    (projectNbSamples <= accepteSize || selectionIds.length > 0 || modelIds.length > 0)
   ) {
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
@@ -85,6 +84,49 @@ async function getProjectSamplesIdList(
       commonResults,
     });
     return res.samples;
+  } else if (projectNbSamples === null) {
+    // If we don't kwow the number of samples, we gather all ID by chunks
+    // We stop when we get less samples than the chunk size
+    let samplesIdList = [];
+    let i = 0;
+    console.warn("Project samples number is not known, loading samples ID list by chunks");
+    let requestCode = startRequest("Loading the project data ID list");
+
+    try {
+      console.time("getProjectSamplesIdList");
+      while (true) {
+        const from = i * accepteSize;
+        const to = (i + 1) * accepteSize - 1;
+
+        const res = await backendDialog.default.getProjectSamples({ from, to });
+
+        if (res.samples.length === 0) {
+          console.log("No samples found while loading project samples ID list");
+          break;
+        }
+        samplesIdList = samplesIdList.concat(res.samples);
+        console.log("Current samples ID list length: ", samplesIdList.length);
+        if (res.samples.length < accepteSize) {
+          console.log(
+            "Last samples found while loading project samples ID list",
+            res.samples.length,
+            "<",
+            accepteSize
+          );
+          break;
+        }
+        i++;
+      }
+      console.timeEnd("getProjectSamplesIdList");
+      endRequest(requestCode);
+    } catch (error) {
+      console.timeEnd("getProjectSamplesIdList");
+      endRequest(requestCode);
+      throw error;
+    }
+
+    console.log("Request done, ", samplesIdList.length, " samples found");
+    return samplesIdList;
   } else {
     // We gather all the project samples ID
     // We need to split it in multiple requests
@@ -133,11 +175,25 @@ async function getProjectSamplesIdList(
       projectNbSamples,
       " samples requested"
     );
+
+    // Check unicity of samples ID
+    let uniqueSamplesIdList = [...new Set(samplesIdList)];
+    if (uniqueSamplesIdList.length !== samplesIdList.length)
+      console.warn(
+        "Samples ID list is not unique, ",
+        samplesIdList.length - uniqueSamplesIdList.length,
+        " duplicates found over ",
+        samplesIdList.length,
+        " samples"
+      );
+
     return samplesIdList;
   }
 }
 async function getProjectMetadata({ considerResults }) {
   let projectInfo = await backendDialog.default.getProject();
+
+  if (projectInfo.nbSamples === undefined) projectInfo.nbSamples = null;
 
   // Labels creation from block level info
   var metaData = {
@@ -238,6 +294,7 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
   return { dataArray: retArray, sampleIdList: retDataIdlist };
 }
 
+// Model results
 async function downloadResults(projectMetadata, modelId, sampleIds) {
   const CHUNK_SIZE = projectMetadata.dataProvider.maxResultLimit;
   let pulledData = 0;
@@ -290,17 +347,6 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
   store.commit("endRequest", requestCode);
   return modelResultsRet;
 }
-
-const min = (arr) => {
-  let min = Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
-  return min;
-};
-const max = (arr) => {
-  let max = -Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
-  return max;
-};
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
@@ -406,6 +452,17 @@ async function loadDataAndModelResults(
 }
 
 // array to DebiAI analysis main data object
+const min = (arr) => {
+  let min = Infinity;
+  for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
+  return min;
+};
+const max = (arr) => {
+  let max = -Infinity;
+  for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
+  return max;
+};
+
 async function arrayToJson(array, metaData) {
   let requestCode = startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
