@@ -102,7 +102,7 @@
             <inline-svg
               :src="require('../../../../assets/svg/data.svg')"
               height="15"
-            />{{ project.nbSamples !== null ? project.nbSamples : '?' }}
+            />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
           </div>
         </div>
 
