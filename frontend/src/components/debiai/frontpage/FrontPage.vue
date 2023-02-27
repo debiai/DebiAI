@@ -19,7 +19,7 @@
       <!-- Doc link -->
       <a
         id="version"
-        href="https://debiai.irt-systemx.fr/debiai/"
+        href="https://debiai.irt-systemx.fr/introduction/"
         target="_blank"
       >
         Online documentation
