@@ -283,6 +283,22 @@ button .badge {
   border-radius: 3px;
 }
 
+/* Tips */
+.tip {
+  background-color: var(--info);
+  border-left: var(--infoDark) solid 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  margin: 10px;
+  opacity: 0.8;
+  transition: all ease-out 0.1s;
+}
+.tip:hover {
+  opacity: 1;
+}
+
 /* Other */
 
 .error {

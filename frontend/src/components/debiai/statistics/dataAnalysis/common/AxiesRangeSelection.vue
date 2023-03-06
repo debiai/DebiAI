@@ -1,16 +1,25 @@
 <template>
   <div id="axiesRangeSelection">
     <!-- Title -->
-    <h3 style="padding-bottom: 20px">
+    <h3 style="padding-bottom: 10px; display: flex; justify-content: space-between">
       Set the plot X and Y axis ranges
       <button
         class="red"
         @click="$emit('cancel')"
-        style="margin-left: 50px"
       >
         Cancel
       </button>
     </h3>
+
+    <div
+      class="tip"
+      style="margin-bottom: 20px"
+    >
+      Tip: You can also use the mouse and drag the plot axis to manually <br />
+      adjust the axis position and range.
+    </div>
+
+    <!-- Axis range form -->
     <div
       class="dataGroup"
       style="flex-direction: column; gap: 15px"
@@ -25,10 +34,14 @@
         >
           <!-- Auto checkbox -->
           <div class="data">
-            <span class="name">Auto</span>
+            <span
+              class="name"
+              style="margin-left: 20px"
+              >Auto</span
+            >
             <div
               class="value"
-              style="background: var(--blankDark)"
+              style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
             >
               <input
                 type="checkbox"
@@ -46,7 +59,7 @@
             </div>
           </div>
 
-          <div style="display: flex; flex-direction: column">
+          <div style="display: flex">
             <!-- Values -->
             <div class="data">
               <span
@@ -54,7 +67,10 @@
                 style="width: 30px"
                 >Min</span
               >
-              <div class="value">
+              <div
+                class="value"
+                style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+              >
                 <input
                   type="number"
                   v-model="XMin"
@@ -68,7 +84,10 @@
                 style="width: 30px"
                 >Max</span
               >
-              <div class="value">
+              <div
+                class="value"
+                style="background: var(--blankDark); padding-right: 10px"
+              >
                 <input
                   type="number"
                   v-model="XMax"
@@ -90,10 +109,14 @@
         >
           <!-- Auto checkbox -->
           <div class="data">
-            <span class="name">Auto</span>
+            <span
+              class="name"
+              style="margin-left: 20px"
+              >Auto</span
+            >
             <div
               class="value"
-              style="background: var(--blankDark)"
+              style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
             >
               <input
                 type="checkbox"
@@ -111,7 +134,7 @@
             </div>
           </div>
 
-          <div style="display: flex; flex-direction: column">
+          <div style="display: flex">
             <!-- Values -->
             <div class="data">
               <span
@@ -119,7 +142,10 @@
                 style="width: 30px"
                 >Min</span
               >
-              <div class="value">
+              <div
+                class="value"
+                style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+              >
                 <input
                   type="number"
                   v-model="YMin"
@@ -134,7 +160,10 @@
               >
                 Max</span
               >
-              <div class="value">
+              <div
+                class="value"
+                style="background: var(--blankDark); padding-right: 10px"
+              >
                 <input
                   type="number"
                   v-model="YMax"
@@ -147,6 +176,7 @@
       </div>
     </div>
 
+    <!-- Apply button -->
     <button
       class="blue"
       @click="
@@ -216,6 +246,9 @@ export default {
 </script>
 
 <style scoped>
+input {
+  width: 90px;
+}
 .error {
   position: absolute;
 }
