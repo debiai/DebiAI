@@ -270,7 +270,7 @@ export default {
       let modelIds = this.$route.query.modelIds;
       let commomModelResults = this.$route.query.commomModelResults;
 
-      if (projectId) {
+      if (dataProviderId && projectId) {
         // Go back to project page to start an analysis imediatly
         this.$router.push({
           path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
@@ -311,7 +311,7 @@ export default {
       cellHeight: 100,
       disableOneColumnMode: true,
       float: false,
-      margin: 8,
+      margin: 0,
       resizable: {
         autoHide: true,
         handles: "e, se, s, sw, w",

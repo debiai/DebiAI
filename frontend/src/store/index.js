@@ -94,8 +94,6 @@ const ProjectPage = {
 
 const SatisticalAnasysis = {
   state: {
-    // Analysis
-    projectId: null,
     // selectedSelectionIds: null,
 
     // Color
@@ -106,9 +104,6 @@ const SatisticalAnasysis = {
     filtersEffecs: [],
   },
   mutations: {
-    selectProjectId(state, projectId) {
-      state.projectId = projectId;
-    },
     // setSelectedSelectionIds(state, selectionIds) {
     //   state.selectedSelectionIds = selectionIds
     // },
