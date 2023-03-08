@@ -3,7 +3,8 @@
     id="pointPlot"
     class="dataVisualisationWidget"
   >
-    <!-- Axis selection Modals -->
+    <!-- Modals -->
+    <!-- Xcol selection -->
     <modal
       v-if="xAxisSelection"
       @close="xAxisSelection = false"
@@ -18,6 +19,7 @@
         v-on:colSelect="xAxiesSelect"
       />
     </modal>
+    <!-- Ycol selection -->
     <modal
       v-if="yAxisSelection"
       @close="yAxisSelection = false"
@@ -32,6 +34,7 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
+    <!-- Size axis selection -->
     <modal
       v-if="sizeAxisSelection"
       @close="sizeAxisSelection = false"
@@ -46,7 +49,25 @@
         v-on:colSelect="sizeAxiesSelect"
       />
     </modal>
+    <!-- Axis range selection -->
+    <modal
+      @close="axisRangeModal = false"
+      v-if="axisRangeModal"
+    >
+      <AxiesRangeSelection
+        :index="index"
+        :axisXAuto="axisXAuto"
+        :axisYAuto="axisYAuto"
+        :axisXMin="axisXMin"
+        :axisXMax="axisXMax"
+        :axisYMin="axisYMin"
+        :axisYMax="axisYMax"
+        v-on:cancel="axisRangeModal = false"
+        v-on:apply="axisRangeSelect"
+      />
+    </modal>
 
+    <!-- Settings -->
     <div
       id="settings"
       v-if="settings"
@@ -279,13 +300,13 @@
           <div class="value">
             <input
               type="checkbox"
-              :id="'dividePerColorCbxPontPlot' + index"
+              :id="'dividePerColorCbxPointPlot' + index"
               class="customCbx"
               v-model="dividePerColor"
               style="display: none"
             />
             <label
-              :for="'dividePerColorCbxPontPlot' + index"
+              :for="'dividePerColorCbxPointPlot' + index"
               class="toggle"
             >
               <span></span>
@@ -311,6 +332,22 @@
             </label>
           </div>
         </div>
+        <!-- Fixe ranges -->
+        <button
+          style="margin: 2px"
+          class="warning"
+          @click="axisRangeModal = !axisRangeModal"
+          v-if="!axisXAuto || !axisYAuto"
+        >
+          Edit the axis ranges
+        </button>
+        <button
+          style="margin: 2px"
+          @click="axisRangeModal = !axisRangeModal"
+          v-else
+        >
+          Set the axis ranges
+        </button>
       </div>
     </div>
 
@@ -328,6 +365,7 @@ import Plotly from "plotly.js/dist/plotly";
 // components
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
+import AxiesRangeSelection from "../../common/AxiesRangeSelection";
 
 // services
 import dataOperations from "../../../../../../services/statistics/dataOperations";
@@ -337,6 +375,7 @@ export default {
   components: {
     ColumnSelection,
     Column,
+    AxiesRangeSelection,
   },
   data() {
     return {
@@ -345,6 +384,7 @@ export default {
       xAxisSelection: false,
       yAxisSelection: false,
       sizeAxisSelection: false,
+      axisRangeModal: false,
 
       // === Configuration ===
       // Axis
@@ -362,6 +402,13 @@ export default {
       avegareAsBar: false,
       displayNull: true,
       bins: 0,
+      // Axis range
+      axisXAuto: true,
+      axisXMin: 0,
+      axisXMax: 1,
+      axisYAuto: true,
+      axisYMin: 0,
+      axisYMax: 1,
 
       // === Other ===
       pointPlotDrawed: false,
@@ -857,6 +904,11 @@ export default {
       });
     },
     drawPlot(traces, layout) {
+      // Apply range if needed
+      if (!this.axisXAuto) layout.xaxis.range = [this.axisXMin, this.axisXMax];
+      if (!this.axisYAuto) layout.yaxis.range = [this.axisYMin, this.axisYMax];
+
+      // Draw the plot
       Plotly.react(this.divPointPlot, traces, layout, {
         responsive: true,
         displayModeBar: false,
@@ -1116,6 +1168,17 @@ export default {
     },
     setPointOpacity() {
       this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+    },
+    axisRangeSelect({ axisXAuto, axisXMin, axisXMax, axisYAuto, axisYMin, axisYMax }) {
+      this.axisRangeModal = false;
+      this.pointPlotDrawed = false;
+      this.linePlotDrawed = false;
+      this.axisXAuto = axisXAuto;
+      this.axisXMin = axisXMin;
+      this.axisXMax = axisXMax;
+      this.axisYAuto = axisYAuto;
+      this.axisYMin = axisYMin;
+      this.axisYMax = axisYMax;
     },
   },
   computed: {
