@@ -30,6 +30,22 @@
       />
     </modal>
 
+    <!-- Local filters Display -->
+    <modal
+      v-if="showLocalFilters"
+      @close="showLocalFilters = false"
+    >
+      <h3>
+        Filters applied to this widget
+        <button
+          class="red"
+          @click="showLocalFilters = false"
+        >
+          Close
+        </button>
+      </h3>
+      <FilterList :data="data" :filters="localFilters" />
+    </modal>
     <!-- Widget -->
     <div
       id="widgetHeader"
@@ -48,7 +64,7 @@
         {{ name }}
       </h2>
 
-      <!-- Loading anim, messages & warning -->
+      <!-- Loading anim, messages, warning & filters applied -->
       <div class="center">
         <!-- Loading from backend -->
         <div
@@ -103,6 +119,23 @@
         >
           <span class="badge">{{ widgetFilters.length }}</span>
           Clear filters
+        </button>
+
+        <!-- Filters applied -->
+        <button
+          v-if="localFilters.length > 0"
+          id="filtersApplied"
+          class="warning"
+          @click="showLocalFilters = true"
+        >
+          <span class="badge">{{ localFilters.length }}</span>
+          <inline-svg
+            :src="require('../../../../../assets/svg/filter.svg')"
+            width="14"
+            height="14"
+            fill="black"
+          />
+          applied
         </button>
       </div>
 
@@ -231,13 +264,15 @@
 <script>
 import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
 import DataExportMenu from "../dataExport/DataExportMenu";
+import FilterList from "../dataFilters/FilterList"
 
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel, DataExportMenu },
+  components: { WidgetConfPannel, DataExportMenu, FilterList},
   props: {
+    data: { type: Object, required: true },
     widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
@@ -262,6 +297,8 @@ export default {
       // Filters
       canFilterSamples: false,
       startFiltering: false,
+      showLocalFilters: false,
+      localFilters: [],
 
       // Export
       exportData: null,
@@ -272,6 +309,7 @@ export default {
     this.$on("loading", (loading) => (this.loading = loading));
     this.$on("errorMessage", this.errorMessage);
     this.$on("setExport", this.setExport);
+    this.$on("drawed", this.saveLocalFilters);
     this.timeout = null;
     this.name = this.title;
   },
@@ -398,6 +436,12 @@ export default {
         removeExisting: true,
       });
       this.$emit("filterCleared");
+    },
+    saveLocalFilters() {
+      const storeFilters = this.$store.state.SatisticalAnasysis.filters;
+      this.localFilters = JSON.parse(JSON.stringify(storeFilters));
+      this.selectedDataWarning = false;
+      console.log("localFilters", this.localFilters);
     },
 
     // Export

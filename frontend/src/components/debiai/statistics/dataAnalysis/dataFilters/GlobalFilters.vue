@@ -166,35 +166,30 @@ export default {
 
     // Filter creation
     selectFilterColumn(colId) {
-      this.filterColumnSelection = false;
+      // Add a new empty filter to the store
+      const filter = { columnIndex: colId };
 
-      // Add a new epty filter to the store
-      let filters;
-      if (this.filterSelectionType == "intervals")
-        filters = [
-          {
-            type: "intervals",
-            columnIndex: colId,
-            intervals: [],
-          },
-        ];
-      else if (this.filterSelectionType == "values")
-        filters = [
-          {
-            type: "values",
-            columnIndex: colId,
-            values: [],
-          },
-        ];
-      if (filters)
-        this.$store.commit("addFilters", {
-          filters,
-          from: {
-            widgetType: "Custom",
-            widgetName: "Custom",
-            widgetIndex: 0,
-          },
-        });
+      if (this.filterSelectionType == "intervals") {
+        filter.type = "intervals";
+        filter.intervals = [];
+      } else if (this.filterSelectionType == "values") {
+        filter.type = "values";
+        filter.values = [];
+      } else {
+        console.error("Unknown filter type: " + this.filterSelectionType);
+        return;
+      }
+
+      this.$store.commit("addFilters", {
+        filters: [filter],
+        from: {
+          widgetType: "Custom",
+          widgetName: "Custom",
+          widgetIndex: 0,
+        },
+      });
+
+      this.filterColumnSelection = false;
     },
     // Filter import
     // requestSelected(request) {
@@ -232,11 +227,8 @@ export default {
   },
   computed: {
     filters() {
-      // Get the filters from the store & find the column of each filters
-      return this.$store.state.SatisticalAnasysis.filters.map((filter) => {
-        filter.column = this.data.columns[filter.columnIndex];
-        return filter;
-      });
+      // We are reading the filters from the store in real time
+      return this.$store.state.SatisticalAnasysis.filters;
     },
   },
 };

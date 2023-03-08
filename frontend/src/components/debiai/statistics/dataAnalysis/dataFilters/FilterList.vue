@@ -89,9 +89,15 @@ export default {
     },
   },
   computed: {
+    filtersWithColumns() {
+      return this.filters.map((filter) => {
+        filter.column = this.data.columns[filter.columnIndex];
+        return filter;
+      });
+    },
     groupedFilters() {
       // Group the filters by widget
-      return this.filters.reduce((acc, filter) => {
+      return this.filtersWithColumns.reduce((acc, filter) => {
         if (!acc[filter.from.widgetIndex]) acc[filter.from.widgetIndex] = [];
         acc[filter.from.widgetIndex].push(filter);
         return acc;

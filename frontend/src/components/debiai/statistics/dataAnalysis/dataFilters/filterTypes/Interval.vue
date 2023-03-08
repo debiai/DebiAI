@@ -4,6 +4,7 @@
     <!-- More than -->
     <div v-if="filter.min !== null">
       More than
+      <br />
       <span
         class="born"
         :title="filter.min"
@@ -16,15 +17,14 @@
     <div v-if="filter.min !== null && filter.max !== null">and</div>
     <div v-if="filter.max !== null">
       Less than
+      <br />
       <span
         class="born"
         :title="filter.max"
       >
         {{ $services.prettyNumber(filter.max) }}
       </span>
-      <span v-if="!isLast"> or </span>
     </div>
-
     <!-- Delete infternal btn -->
     <button
       class="red"
@@ -32,6 +32,9 @@
     >
       x
     </button>
+    
+    <span v-if="!isLast" style="margin-left:10px"> or </span>
+
   </div>
 </template>
 
@@ -49,6 +52,8 @@ export default {
 .interval {
   color: gray;
   padding: 0px;
+  display: flex;
+  align-items: flex-start;
 }
 .interval button {
   transform: scale(0);
