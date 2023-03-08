@@ -9,6 +9,7 @@
       <div
         id="columnLabel"
         :class="'aligned centered ' + (filter.type === 'intervals' ? 'intervalCol' : 'valueCol')"
+        title="Column name"
       >
         {{ filter.column.label }}
       </div>
@@ -37,7 +38,7 @@
       </span>
       <inline-svg
         class="margedSide"
-        :src="require('../../../../assets/svg/data.svg')"
+        :src="require('@/assets/svg/data.svg')"
         width="20"
         height="20"
       />
@@ -51,7 +52,7 @@
     >
       {{ filter.inverted ? "Filter inverted" : "Invert the filter" }}
       <inline-svg
-        :src="require('../../../../assets/svg/invert.svg')"
+        :src="require('@/assets/svg/invert.svg')"
         class="marged"
         width="15"
         height="15"

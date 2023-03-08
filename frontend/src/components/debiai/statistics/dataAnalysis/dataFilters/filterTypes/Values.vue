@@ -132,7 +132,7 @@ export default {
 #values {
   display: flex;
   padding: 10px;
-  max-width: 720px;
+  max-width: 420px;
   overflow: auto;
   margin: 0 20px 0 20px;
 }
