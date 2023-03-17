@@ -46,9 +46,7 @@ def get_all_projects_from_data_provider(url, name):
 
 def get_single_project_from_data_provider(url, data_provider_name, id_project):
     project = api.get_project(url, id_project)
-
     blockInfo = format_collumns_project_overview(project)
-
     # TODO: prevent crash if no selections or models routes in data provider
     selections = get_project_selections(url, id_project)
     models = get_models_info(url, id_project)
@@ -78,35 +76,42 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
 
 
 def format_collumns_project_overview(project):
-    otherColumns = []
-    contextColumns = []
-    groundTruthColumns = []
-    inputColumns = []
+    try:
+        otherColumns = []
+        contextColumns = []
+        annotationsColumns = []
+        featuresColumns = []
+        #
+        #   Just removed old columns for category, need to take position with TOM on wich
+        #   columns could stay or not
+        #
+        # Convert data columns to DebiAi structure
+        for column in project["columns"]:
+            debiaiColumn = {
+                "name": column["name"],
+                "type": column["type"] if "type" in column else "auto",
+            }
+            if "category" in column and column["category"] == "contexts":
+                contextColumns.append(debiaiColumn)
+            elif "category" in column and column["category"] == "annotations":
+                annotationsColumns.append(debiaiColumn)
+            elif "category" in column and column["category"] == "features":
+                featuresColumns.append(debiaiColumn)
+            else:
+                otherColumns.append(debiaiColumn)
 
-    # Convert data columns to DebiAi structure
-    for column in project["columns"]:
-        debiaiColumn = {
-            "name": column["name"],
-            "type": column["type"] if "type" in column else "auto",
-        }
-        if "category" in column and column["category"] == "context":
-            contextColumns.append(debiaiColumn)
-        elif "category" in column and column["category"] == "groundtruth":
-            groundTruthColumns.append(debiaiColumn)
-        elif "category" in column and column["category"] == "input":
-            groundTruthColumns.append(debiaiColumn)
-        else:
-            otherColumns.append(debiaiColumn)
+                # Final Debiai Structure for the project
+        blockLevelInfo = [
+            {
+                "name": "Data Id",
+                "others": otherColumns,
+                "contexts": contextColumns,
+                "features": featuresColumns,
+                "annotations": annotationsColumns,
+            }
+        ]
 
-            # Final Debiai Structure for the project
-    blockLevelInfo = [
-        {
-            "name": "Data Id",
-            "others": otherColumns,
-            "contexts": contextColumns,
-            "groundTruth": groundTruthColumns,
-            "inputs": inputColumns,
-        }
-    ]
-
-    return blockLevelInfo
+        return blockLevelInfo
+    except Exception as e:
+        print(e)    
+    
