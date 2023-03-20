@@ -1,7 +1,7 @@
 <template>
   <div id="selections">
     <!-- selectionCreation modal -->
-    <modal
+    <!-- <modal
       v-if="selectionCreation"
       @close="selectionCreation = false"
     >
@@ -9,9 +9,9 @@
         @close="selectionCreation = false"
         @newSelection="$emit('newSelection')"
       />
-    </modal>
+    </modal> -->
     <!-- selected request modal -->
-    <modal
+    <!-- <modal
       v-if="selectedRequestId !== null"
       @close="selectedRequestId = null"
     >
@@ -20,7 +20,7 @@
         @close="selectedRequestId = null"
         @newSelection="$emit('newSelection')"
       />
-    </modal>
+    </modal> -->
 
     <div id="selectionsPannel">
       <!-- Pannel header -->
@@ -34,22 +34,24 @@
             />
             Selections
           </h2>
+          <!-- TODO: Add path to Documentation -->
           <DocumentationBlock>
-            A <b> selection </b> is a list of samples, it can be created from a request from the
+            A <b> selection </b> is a list of samples, it can be created from the analysis
+            dashboard.
+            <br />
+            <!-- A <b> selection </b> is a list of samples, it can be created from a request from the
             <b> requests menu </b> or from the analysis dashboard.
             <br />
             Selections are used to start analysis on a specific subset of the data project, they can
-            be extracted with the python library as a dataframe or as a numpy array.
-            <!-- TODO: Add path to Documentation -->
+            be extracted with the python library as a dataframe or as a numpy array. -->
           </DocumentationBlock>
         </span>
 
         <span class="aligned">
-          <button
+          <!-- <button
             style="margin-right: 10px"
             title="Create a selection from a request, available in a futur update"
             @click="selectionCreation = !selectionCreation"
-            disabled
           >
             <inline-svg
               :src="require('../../../../assets/svg/request.svg')"
@@ -58,7 +60,7 @@
               fill="white"
             />
             Requests
-          </button>
+          </button> -->
           <button
             class="info"
             @click="selectAll"
@@ -192,11 +194,15 @@
 
 <script>
 import Selection from "./Selection";
-import Requests from "../requests/Requests";
-import Request from "../requests/Request";
+// import Requests from "../requests/Requests";
+// import Request from "../requests/Request";
 
 export default {
-  components: { Selection, Requests, Request },
+  components: {
+    Selection,
+    //  Requests,
+    //  Request
+  },
   props: {
     project: { type: Object },
     nbSelectedSamples: { type: Number, default: 0 },

@@ -136,7 +136,7 @@ export default {
         responsive: true,
       });
 
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
 
       // Plot selection update
       this.divParCord.removeListener("plotly_restyle", this.selectDataOnPlot);

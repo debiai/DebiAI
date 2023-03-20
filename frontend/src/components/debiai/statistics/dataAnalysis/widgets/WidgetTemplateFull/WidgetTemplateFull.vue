@@ -113,11 +113,16 @@
             </div>
           </div>
         </div>
-        <!-- Button -->
-        <button>Button</button>
+        <!-- Display button -->
+        <button @click="display">Display</button>
       </div>
     </div>
-    <div id="content">Content</div>
+    <div
+      id="content"
+      v-if="displayedData"
+    >
+      {{ displayedData }}
+    </div>
   </div>
 </template>
 
@@ -154,6 +159,7 @@ export default {
       // Other
       colSelection: false,
       multipleColSelection: false,
+      displayedData: null,
     };
   },
   props: {
@@ -169,10 +175,10 @@ export default {
       this.settings = !this.settings;
     });
 
-    // Reset btn
+    // Redraw btn
     this.$parent.$on("redraw", () => {
-      // Remove the warning
-      this.$parent.colorWarning = false;
+      // We draw something again
+      this.display();
     });
 
     // Filters
@@ -206,6 +212,18 @@ export default {
     multipleColsSelected(indexs) {
       this.selectedColumnsIndexs = indexs;
       this.multipleColSelection = false;
+    },
+    display() {
+      // Do something with the data
+      const selectedColumn = this.data.columns[this.selectedColumnIndex];
+      const columnData = this.selectedData.map((d) => selectedColumn.values[d]);
+      this.displayedData =
+        "The first 30 selected values of the chosen column are : " +
+        columnData.slice(0, 30).join(", ");
+
+      // We tell the parent that the widget was displayed
+      // This will remove some warning and store the current filters
+      this.$parent.$emit("drawed");
     },
 
     // =============== Widget configuration ===============
@@ -375,7 +393,10 @@ export default {
   watch: {
     selectedData: function () {
       // The selected data have changed
-      // Display
+      // We might want to warn the user that an update is required
+      this.$parent.selectedDataWarning = true;
+      // A redraw btn will be displayed, pressing it will send redraw
+      // that can watched and used to redraw a plot (see created())
     },
     coloredColumnIndex: function () {
       // The colored colum has changed

@@ -147,6 +147,7 @@ export default {
 
           // Start analysis
           this.loadData({
+            dataProviderId,
             projectId,
             selectionIds,
             selectionIntersection,
@@ -247,6 +248,7 @@ export default {
     },
 
     loadData({
+      dataProviderId,
       projectId,
       selectionIds = [],
       selectionIntersection = false,
@@ -258,7 +260,6 @@ export default {
 
       dataLoader
         .loadProjectSamples({
-          projectId,
           selectionIds,
           selectionIntersection,
           modelIds,
@@ -266,13 +267,9 @@ export default {
         })
         .then((data) => {
           // Creating the data object
-          this.$store.commit("selectProjectId", projectId);
           this.$store.commit("setSelectionsIds", selectionIds);
           this.$store.commit("setColoredColumnIndex", 0);
           this.$store.commit("clearAllFilters");
-
-          // Perf Log
-          console.timeEnd("LOAD TREE");
 
           // Convert the lists in str for the querry
           if (selectionIds && selectionIds.length > 0)
@@ -280,10 +277,14 @@ export default {
           if (modelIds && modelIds.length > 0)
             modelIds = modelIds.reduce((mId, total) => total + "." + mId);
 
+          // Perf Log
+          console.timeEnd("LOAD TREE");
+
           // start analysis immediatly
           this.$router.push({
             name: "dataAnalysis",
             query: {
+              dataProviderId,
               projectId,
               selectionIds,
               selectionIntersection,

@@ -9,6 +9,7 @@
       <div
         id="columnLabel"
         :class="'aligned centered ' + (filter.type === 'intervals' ? 'intervalCol' : 'valueCol')"
+        title="Column name"
       >
         {{ filter.column.label }}
       </div>
@@ -37,7 +38,7 @@
       </span>
       <inline-svg
         class="margedSide"
-        :src="require('../../../../assets/svg/data.svg')"
+        :src="require('@/assets/svg/data.svg')"
         width="20"
         height="20"
       />
@@ -48,10 +49,11 @@
       :class="'aligned centered margedSide ' + (filter.inverted ? 'warning' : 'white')"
       title="Invert the filter"
       @click="$emit('invertFilter', filter.id)"
+      v-if="!readOnly"
     >
       {{ filter.inverted ? "Filter inverted" : "Invert the filter" }}
       <inline-svg
-        :src="require('../../../../assets/svg/invert.svg')"
+        :src="require('@/assets/svg/invert.svg')"
         class="marged"
         width="15"
         height="15"
@@ -63,6 +65,7 @@
       class="red margedSide"
       @click="$emit('removeFilter', filter.id)"
       title="Remove the filter"
+      v-if="!readOnly"
     >
       x
     </button>
@@ -72,7 +75,10 @@
 <script>
 export default {
   name: "Intervals",
-  props: { filter: { type: Object, required: true } },
+  props: {
+    filter: { type: Object, required: true },
+    readOnly: { type: Boolean, default: false },
+  },
   computed: {
     filtersEffecs() {
       return this.$store.state.SatisticalAnasysis.filtersEffecs;
