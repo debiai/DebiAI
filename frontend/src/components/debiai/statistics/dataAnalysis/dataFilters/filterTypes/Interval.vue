@@ -27,8 +27,13 @@
     </div>
 
     <!-- Or txt -->
-    <span v-if="!isLast" style="margin-left:10px"> or </span>
-    
+    <span
+      v-if="!isLast"
+      style="margin-left: 10px"
+    >
+      or
+    </span>
+
     <!-- Delete infternal btn -->
     <button
       class="red"
@@ -37,8 +42,6 @@
     >
       x
     </button>
-    
-
   </div>
 </template>
 

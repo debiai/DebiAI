@@ -178,7 +178,7 @@ export default {
     // Redraw btn
     this.$parent.$on("redraw", () => {
       // We draw something again
-      this.display()
+      this.display();
     });
 
     // Filters

@@ -167,7 +167,6 @@ export default {
 
       this.currentDrawedColorIndex = colColor ? colColor.index : null;
       this.$parent.$emit("drawed");
-
     },
 
     selectColumns(selectedColumnsId) {
