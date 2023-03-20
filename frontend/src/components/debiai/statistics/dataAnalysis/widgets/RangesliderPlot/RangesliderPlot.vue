@@ -64,6 +64,13 @@
                 :colorSelection="true"
                 v-on:selected="yAxisSelection = true"
               />
+              <button
+                id="addColumnBtn"
+                class="green"
+                title="Add more columns for the Y axis"
+              >
+                +
+              </button>
             </div>
           </div>
         </div>
