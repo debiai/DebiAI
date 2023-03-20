@@ -41,7 +41,7 @@
     >
       <h2>
         <inline-svg
-          :src="require('../../../../../assets/svg/filter.svg')"
+          :src="require('@/assets/svg/filter.svg')"
           width="18"
           height="18"
           style="margin-right: 3px"
@@ -56,7 +56,7 @@
         title="Available in a futur update"
       >
         <inline-svg
-          :src="require('../../../../../assets/svg/import.svg')"
+          :src="require('@/assets/svg/import.svg')"
           width="10"
           height="10"
           fill="lightgrey"
@@ -72,7 +72,7 @@
         title="Available in a futur update"
       >
         <inline-svg
-          :src="require('../../../../../assets/svg/save.svg')"
+          :src="require('@/assets/svg/save.svg')"
           width="13"
           height="13"
           fill="white"

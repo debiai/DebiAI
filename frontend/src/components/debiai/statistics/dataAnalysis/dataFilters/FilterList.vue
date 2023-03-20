@@ -44,16 +44,19 @@
             >
               <FilterGenericData
                 :filter="filter"
+                :readOnly="readOnly"
                 v-on:removeFilter="removeFilter"
                 v-on:invertFilter="invertFilter"
                 v-if="filter.type === 'values' || filter.type === 'intervals'"
               >
                 <Values
                   :filter="filter"
+                  :readOnly="readOnly"
                   v-if="filter.type === 'values'"
                 />
                 <Intervals
                   :filter="filter"
+                  :readOnly="readOnly"
                   v-else-if="filter.type === 'intervals'"
                 />
               </FilterGenericData>
@@ -79,6 +82,7 @@ export default {
   props: {
     data: { type: Object, required: true },
     filters: { type: Array, required: true },
+    readOnly: { type: Boolean, default: false },
   },
   methods: {
     removeFilter(filterId) {

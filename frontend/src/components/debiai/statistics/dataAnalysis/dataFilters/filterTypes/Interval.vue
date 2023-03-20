@@ -25,15 +25,19 @@
         {{ $services.prettyNumber(filter.max) }}
       </span>
     </div>
+
+    <!-- Or txt -->
+    <span v-if="!isLast" style="margin-left:10px"> or </span>
+    
     <!-- Delete infternal btn -->
     <button
       class="red"
       @click="$emit('remove')"
+      v-if="!readOnly"
     >
       x
     </button>
     
-    <span v-if="!isLast" style="margin-left:10px"> or </span>
 
   </div>
 </template>
@@ -44,6 +48,7 @@ export default {
   props: {
     filter: { type: Object, required: true },
     isLast: { type: Boolean, default: true },
+    readOnly: { type: Boolean, default: false },
   },
 };
 </script>
@@ -53,7 +58,11 @@ export default {
   color: gray;
   padding: 0px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+}
+.interval div {
+  display: flex;
+  align-items: center;
 }
 .interval button {
   transform: scale(0);
@@ -67,7 +76,7 @@ export default {
   color: black;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
 
   padding: 5px;
   margin: 0 5px 0 5px;

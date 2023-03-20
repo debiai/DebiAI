@@ -78,6 +78,7 @@
     <!-- Display values -->
     <div
       class="value"
+      :class="!readOnly ? 'removable' : ''"
       v-for="(value, j) in filter.values"
       :key="j"
       @click="removeValue(value)"
@@ -85,7 +86,12 @@
     >
       {{ value }}
     </div>
-    <button @click="addValuePannel = true">Add values</button>
+    <button
+      @click="addValuePannel = true"
+      v-if="!readOnly"
+    >
+      Add values
+    </button>
   </div>
 </template>
 
@@ -94,6 +100,7 @@ export default {
   name: "Values",
   props: {
     filter: { type: Object, required: true },
+    readOnly: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -138,7 +145,6 @@ export default {
 }
 
 .value {
-  cursor: pointer;
   display: flex;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   padding: 5px 10px 5px 10px;
@@ -147,7 +153,8 @@ export default {
   transition: all 0.1s;
 }
 
-.value:hover {
+.removable:hover {
+  cursor: pointer;
   background: var(--danger);
   color: white;
 }

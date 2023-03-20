@@ -49,6 +49,7 @@
       :class="'aligned centered margedSide ' + (filter.inverted ? 'warning' : 'white')"
       title="Invert the filter"
       @click="$emit('invertFilter', filter.id)"
+      v-if="!readOnly"
     >
       {{ filter.inverted ? "Filter inverted" : "Invert the filter" }}
       <inline-svg
@@ -64,6 +65,7 @@
       class="red margedSide"
       @click="$emit('removeFilter', filter.id)"
       title="Remove the filter"
+      v-if="!readOnly"
     >
       x
     </button>
@@ -73,7 +75,10 @@
 <script>
 export default {
   name: "Intervals",
-  props: { filter: { type: Object, required: true } },
+  props: {
+    filter: { type: Object, required: true },
+    readOnly: { type: Boolean, default: false },
+  },
   computed: {
     filtersEffecs() {
       return this.$store.state.SatisticalAnasysis.filtersEffecs;

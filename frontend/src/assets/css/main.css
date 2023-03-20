@@ -328,6 +328,9 @@ button .badge {
 .centered {
   justify-content: center;
 }
+.gapped {
+  gap: 10px;
+}
 
 .marged {
   margin: 10px;

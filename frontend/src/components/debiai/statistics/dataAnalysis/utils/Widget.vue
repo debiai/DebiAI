@@ -35,8 +35,16 @@
       v-if="showLocalFilters"
       @close="showLocalFilters = false"
     >
-      <h3>
-        Filters applied to this widget
+      <h3 class="aligned spaced gapped">
+        <span>
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="18"
+            height="18"
+            style="margin-right: 3px"
+          />
+          Filters applied to this widget
+        </span>
         <button
           class="red"
           @click="showLocalFilters = false"
@@ -44,7 +52,11 @@
           Close
         </button>
       </h3>
-      <FilterList :data="data" :filters="localFilters" />
+      <FilterList
+        :data="data"
+        :filters="localFilters"
+        :readOnly="true"
+      />
     </modal>
     <!-- Widget -->
     <div
@@ -130,9 +142,9 @@
         >
           <span class="badge">{{ localFilters.length }}</span>
           <inline-svg
-            :src="require('../../../../../assets/svg/filter.svg')"
-            width="14"
-            height="14"
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
             fill="black"
           />
           applied
@@ -153,7 +165,7 @@
         >
           Export
           <inline-svg
-            :src="require('../../../../../assets/svg/send.svg')"
+            :src="require('@/assets/svg/send.svg')"
             height="14"
             width="18"
           />
@@ -166,7 +178,7 @@
           @click="startFiltering = !startFiltering"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/filter.svg')"
+            :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
             fill="white"
@@ -181,7 +193,7 @@
           @click="startFiltering = !startFiltering"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/filter.svg')"
+            :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
             fill="white"
@@ -196,9 +208,7 @@
         >
           <inline-svg
             :src="
-              confAsChanged
-                ? require('../../../../../assets/svg/save.svg')
-                : require('../../../../../assets/svg/gear.svg')
+              confAsChanged ? require('@/assets/svg/save.svg') : require('@/assets/svg/gear.svg')
             "
             width="14"
             height="14"
@@ -212,7 +222,7 @@
           @click="copy"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/copy.svg')"
+            :src="require('@/assets/svg/copy.svg')"
             width="14"
             height="14"
             fill="white"
@@ -225,7 +235,7 @@
           @click="settings"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/settings.svg')"
+            :src="require('@/assets/svg/settings.svg')"
             width="14"
             height="14"
           />
@@ -237,7 +247,7 @@
           @click="remove"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/close.svg')"
+            :src="require('@/assets/svg/close.svg')"
             width="11"
             height="11"
             fill="white"
@@ -264,13 +274,13 @@
 <script>
 import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
 import DataExportMenu from "../dataExport/DataExportMenu";
-import FilterList from "../dataFilters/FilterList"
+import FilterList from "../dataFilters/FilterList";
 
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel, DataExportMenu, FilterList},
+  components: { WidgetConfPannel, DataExportMenu, FilterList },
   props: {
     data: { type: Object, required: true },
     widgetKey: { type: String, required: true },

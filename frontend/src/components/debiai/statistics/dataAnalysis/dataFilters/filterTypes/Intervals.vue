@@ -54,17 +54,21 @@
       </div>
     </modal>
 
-    <div id="intervalList">
-      <Interval
-        class="interval"
-        v-for="(interval, i) in filter.intervals"
-        :key="i"
-        :isLast="i == filter.intervals.length - 1"
-        :filter="interval"
-        v-on:remove="removeInterval(i)"
-      />
-      <button @click="addIntervalPannel = true">Add interval</button>
-    </div>
+    <Interval
+      class="interval"
+      v-for="(interval, i) in filter.intervals"
+      :key="i"
+      :isLast="i == filter.intervals.length - 1"
+      :filter="interval"
+      :readOnly="readOnly"
+      v-on:remove="removeInterval(i)"
+    />
+    <button
+      @click="addIntervalPannel = true"
+      v-if="!readOnly"
+    >
+      Add interval
+    </button>
   </div>
 </template>
 
@@ -74,7 +78,10 @@ import Interval from "./Interval";
 export default {
   name: "Intervals",
   components: { Interval },
-  props: { filter: { type: Object, required: true } },
+  props: {
+    filter: { type: Object, required: true },
+    readOnly: { type: Boolean, default: false },
+  },
   data() {
     return {
       addIntervalPannel: false,
@@ -129,10 +136,10 @@ export default {
 <style scoped>
 #intervals {
   display: flex;
-  flex-direction: row;
-  overflow-y: auto;
-  padding: 10px;
   margin: 0 20px 0 20px;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 300px;
 }
 .interval {
   padding: 5px;
