@@ -642,7 +642,7 @@ export default {
       } else this.drawPlot([pointData], layout); // regenererate or generate plot
 
       this.pointPlotDrawed = true;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
       this.currentDrawedColorIndex = this.coloredColumnIndex;
     },
     clearPointPlot() {
@@ -836,7 +836,7 @@ export default {
       } else this.drawPlot(traces, layout); // regenererate or generate plot
 
       this.linePlotDrawed = true;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
       this.currentDrawedColorIndex = this.coloredColumnIndex;
     },
     clearLinePlot() {

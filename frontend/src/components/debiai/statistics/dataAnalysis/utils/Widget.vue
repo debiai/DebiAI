@@ -319,7 +319,7 @@ export default {
     this.$on("loading", (loading) => (this.loading = loading));
     this.$on("errorMessage", this.errorMessage);
     this.$on("setExport", this.setExport);
-    this.$on("drawed", this.saveLocalFilters);
+    this.$on("drawed", this.drawed);
     this.timeout = null;
     this.name = this.title;
   },
@@ -447,11 +447,12 @@ export default {
       });
       this.$emit("filterCleared");
     },
-    saveLocalFilters() {
+    drawed() {
+      this.selectedDataWarning = false;
+
+      // The plot has been drawn, we can save a copy of the local filters
       const storeFilters = this.$store.state.SatisticalAnasysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
-      this.selectedDataWarning = false;
-      console.log("localFilters", this.localFilters);
     },
 
     // Export
