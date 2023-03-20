@@ -469,6 +469,16 @@ export default {
         conf.columnSized = this.data.columns[this.columnSizeIndex].label;
       }
 
+      // Set axis range
+      if (!this.axisXAuto) {
+        conf.axisXMin = this.axisXMin;
+        conf.axisXMax = this.axisXMax;
+      }
+      if (!this.axisYAuto) {
+        conf.axisYMin = this.axisYMin;
+        conf.axisYMax = this.axisYMax;
+      }
+
       return conf;
     },
     setConf(conf) {
@@ -510,6 +520,22 @@ export default {
       if ("displayNull" in conf) this.displayNull = conf.displayNull;
       if ("bins" in conf) this.bins = conf.bins;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
+      if ("axisXMin" in conf) {
+        this.axisXAuto = false;
+        this.axisXMin = conf.axisXMin;
+      }
+      if ("axisXMax" in conf) {
+        this.axisXAuto = false;
+        this.axisXMax = conf.axisXMax;
+      }
+      if ("axisYMin" in conf) {
+        this.axisYAuto = false;
+        this.axisYMin = conf.axisYMin;
+      }
+      if ("axisYMax" in conf) {
+        this.axisYAuto = false;
+        this.axisYMax = conf.axisYMax;
+      }
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -525,6 +551,12 @@ export default {
           vm.avegareAsBar,
           vm.displayNull,
           vm.bins,
+          vm.axisXAuto,
+          vm.axisXMin,
+          vm.axisXMax,
+          vm.axisYAuto,
+          vm.axisYMin,
+          vm.axisYMax,
           Date.now()
         ),
         () => {
