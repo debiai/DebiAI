@@ -32,7 +32,22 @@
         v-on:colSelect="yAxiesSelect"
       />
     </modal>
+    <!-- multi Y axis selection -->
+    <modal
+      v-if="yMultipleAxisSelection"
+      @close="yMultipleAxisSelection = false"
+    >
+      <ColumnSelection
+        title="Select the other columns to display in Y axis"
+        :data="data"
+        :colorSelection="true"
+        :defaultSelected="[...selectedYColumnsIds]"
+        v-on:cancel="yMultipleAxisSelection = false"
+        v-on:validate="yMultipleAxisSelect"
+      />
+    </modal>
 
+    <!-- Settings -->
     <div
       id="settings"
       v-if="settings"
@@ -58,31 +73,74 @@
           </button>
           <div class="data">
             <div class="name">Y axis</div>
-            <div class="value">
+            <div
+              class="value"
+              v-if="!multipleYAxis"
+            >
               <Column
                 :column="data.columns.find((c) => c.index == columnYindex)"
                 :colorSelection="true"
                 v-on:selected="yAxisSelection = true"
               />
             </div>
+            <div
+              class="value"
+              v-else
+            >
+              <button
+                id="addColumnBtn"
+                class=""
+                title="Add more columns for the Y axis"
+                @click="yMultipleAxisSelection = true"
+              >
+                {{
+                  selectedYColumnsIds.length > 0
+                    ? `${selectedYColumnsIds.length} Y column(s) selected`
+                    : "+ Select Y columns"
+                }}
+              </button>
+            </div>
           </div>
         </div>
         <div
-          class="dataGroup color"
-          v-if="coloredColumnIndex !== null"
+          class="dataGroup"
+          id="configBtns"
         >
-          <div class="data">
+          <!-- Group by color -->
+          <div
+            class="data"
+            v-if="coloredColumnIndex !== null"
+          >
             <div class="name">Group by color</div>
             <div class="value">
               <input
                 type="checkbox"
-                :id="'avegareAsBar' + index"
+                :id="'gbc' + index"
                 class="customCbx"
                 style="display: none"
                 v-model="dividePerColor"
               />
               <label
-                :for="'avegareAsBar' + index"
+                :for="'gbc' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+            </div>
+          </div>
+          <!-- Multiple Y axis -->
+          <div class="data">
+            <div class="name">Multiple Y columns</div>
+            <div class="value">
+              <input
+                type="checkbox"
+                :id="'mya' + index"
+                class="customCbx"
+                style="display: none"
+                v-model="multipleYAxis"
+              />
+              <label
+                :for="'mya' + index"
                 class="toggle"
               >
                 <span></span>
@@ -128,10 +186,13 @@ export default {
       settings: true,
       xAxisSelection: false,
       yAxisSelection: false,
+      yMultipleAxisSelection: false,
+      multipleYAxis: false,
 
       // Conf
       columnXindex: 0,
       columnYindex: 0,
+      selectedYColumnsIds: [],
       dividePerColor: true,
 
       // Other
@@ -177,8 +238,15 @@ export default {
       let conf = {
         // Axis
         columnX: this.data.columns[this.columnXindex].label,
-        columnY: this.data.columns[this.columnYindex].label,
+        dividePerColor: this.dividePerColor,
       };
+
+      if (this.multipleYAxis) {
+        conf.multipleYAxis = true;
+        conf.YColumns = this.selectedYColumnsIds.map((id) => this.data.columns[id].label);
+      } else {
+        conf.columnY = this.data.columns[this.columnYindex].label;
+      }
 
       return conf;
     },
@@ -202,10 +270,32 @@ export default {
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
+      if ("multipleYAxis" in conf && conf.multipleYAxis && "YColumns" in conf) {
+        this.multipleYAxis = true;
+        this.selectedYColumnsIds = [];
+        conf.YColumns.forEach((label) => {
+          let c = this.data.columns.find((c) => c.label == label);
+          if (c) this.selectedYColumnsIds.push(c.index);
+          else
+            this.$store.commit("sendMessage", {
+              title: "warning",
+              msg: "The column " + label + " hasn't been found",
+            });
+        });
+      } else this.multipleYAxis = false;
+      if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
+      this.plotDrawed = false;
     },
     defConfChangeUpdate() {
       this.$watch(
-        (vm) => (vm.columnXindex, vm.columnYindex, Date.now()),
+        (vm) => (
+          vm.columnXindex,
+          vm.columnYindex,
+          vm.selectedYColumnsIds,
+          vm.dividePerColor,
+          vm.multipleYAxis,
+          Date.now()
+        ),
         () => {
           this.$parent.confAsChanged = true;
         }
@@ -222,11 +312,16 @@ export default {
     // Display
     async drawPlot() {
       var colX = this.data.columns[this.columnXindex];
-      var colY = this.data.columns[this.columnYindex];
+
+      // Get the Y axis index
+      let YAxisIndexs;
+      if (this.multipleYAxis) YAxisIndexs = this.selectedYColumnsIds;
+      else YAxisIndexs = [this.columnYindex];
+      var colsY = YAxisIndexs.map((index) => this.data.columns[index]);
 
       // Apply selection
       let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
+      let valuesListY = colsY.map((col) => this.selectedData.map((i) => col.values[i]));
 
       const lines = [];
 
@@ -258,17 +353,43 @@ export default {
         let selectorUniques =
           colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
-        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
+        valuesListY.forEach((valuesY, i) => {
+          const yAxisColumnLabel = colsY[i].label;
+          let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
 
-        groupedValues.forEach((idValues, i) => {
-          let colorX = idValues.map((i) => valuesX[i]);
-          let colorY = idValues.map((i) => valuesY[i]);
+          groupedValues.forEach((idValues, j) => {
+            let colorX = idValues.map((k) => valuesX[k]);
+            let colorY = idValues.map((k) => valuesY[k]);
+
+            const lineName = this.multipleYAxis
+              ? yAxisColumnLabel + " - " + selectorUniques[j]
+              : selectorUniques[j];
+
+            lines.push({
+              x: colorX,
+              y: colorY,
+              type: "line",
+              name: lineName,
+              transforms: [
+                {
+                  type: "sort",
+                  target: "x",
+                  order: "descending",
+                },
+              ],
+            });
+          });
+        });
+      } else {
+        valuesListY.forEach((valuesY, i) => {
+          // No color
+          const yAxisColumnLabel = colsY[i].label;
 
           lines.push({
-            x: colorX,
-            y: colorY,
+            x: valuesX,
+            y: valuesY,
             type: "line",
-            name: colColor.uniques[i],
+            name: yAxisColumnLabel,
             transforms: [
               {
                 type: "sort",
@@ -278,25 +399,26 @@ export default {
             ],
           });
         });
-      } else {
-        // No color
-        lines.push({
-          x: valuesX,
-          y: valuesY,
-          type: "line",
-          name: "line1",
-          transforms: [
-            {
-              type: "sort",
-              target: "x",
-              order: "descending",
-            },
-          ],
-        });
       }
 
+      // Create the plot title
+      let plotTitle;
+
+      if (this.multipleYAxis) {
+        let colYLabels = colsY.map((col) => col.label).join(", ");
+        if (colYLabels.length > 50) colYLabels = colYLabels.slice(0, 50) + "...";
+
+        plotTitle = "<b>" + colX.label + "</b> / <b>" + colYLabels + "</b>";
+      } else plotTitle = "<b>" + colX.label + "</b> / <b>" + colsY[0].label + "</b>";
+
+      if (this.dividePerColor && this.coloredColumnIndex !== null) {
+        const colColor = this.data.columns[this.coloredColumnIndex];
+        plotTitle += " grouped by <b>" + colColor.label + "</b>";
+      }
+
+      // Create the layout
       const layout = {
-        title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
+        title: plotTitle,
         xaxis: {
           rangeslider: true,
         },
@@ -306,13 +428,7 @@ export default {
           fixedrange: false,
         },
         scene: {
-          xaxis: {
-            title: { text: colX.label },
-          },
           yaxis: {
-            title: {
-              text: colY.label,
-            },
             autorange: true,
           },
         },
@@ -402,6 +518,11 @@ export default {
     yAxiesSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
+      this.plotDrawed = false;
+    },
+    yMultipleAxisSelect(indexs) {
+      this.selectedYColumnsIds = indexs;
+      this.yMultipleAxisSelection = false;
       this.plotDrawed = false;
     },
     swap() {
@@ -595,9 +716,9 @@ export default {
   flex: 1;
 }
 
-.color {
+#configBtns {
   margin: 10px;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 #drawBtn {
