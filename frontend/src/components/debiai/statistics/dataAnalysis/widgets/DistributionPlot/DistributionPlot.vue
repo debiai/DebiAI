@@ -626,7 +626,7 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      this.bins = colX.type == String ? colX.nbOccu : colX.nbOccu > 50 ? 50 : colX.nbOccu;
+      this.bins = colX.type == String ? colX.nbOccu : colX.nbOccu > 100 ? 100 : colX.nbOccu;
     },
   },
   computed: {
