@@ -361,9 +361,9 @@ export default {
             let colorX = idValues.map((k) => valuesX[k]);
             let colorY = idValues.map((k) => valuesY[k]);
 
-            const lineName = this.multipleYAxis
-              ? yAxisColumnLabel + " - " + selectorUniques[j]
-              : selectorUniques[j];
+            let lineName;
+            if (this.multipleYAxis) lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
+            else lineName = colColor.uniques[j];
 
             lines.push({
               x: colorX,
@@ -381,8 +381,8 @@ export default {
           });
         });
       } else {
+        // No color
         valuesListY.forEach((valuesY, i) => {
-          // No color
           const yAxisColumnLabel = colsY[i].label;
 
           lines.push({
