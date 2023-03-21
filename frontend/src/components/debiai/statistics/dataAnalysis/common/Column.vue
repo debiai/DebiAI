@@ -91,7 +91,6 @@ export default {
 
 #column .label {
   width: 140px;
-  display: flex;
   justify-content: center;
   align-items: center;
 
@@ -100,6 +99,10 @@ export default {
   color: white;
   border-radius: 10px 0px 0px 10px;
   font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: "-";
   /* transition: all 0.1s; */
 }
 #column button.selected {
@@ -213,4 +216,5 @@ export default {
 #column .type.undefined {
   background: var(--undefined);
 }
+
 </style>
