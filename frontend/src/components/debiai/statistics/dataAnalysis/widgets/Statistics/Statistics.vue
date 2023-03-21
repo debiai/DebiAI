@@ -360,7 +360,7 @@ export default {
         this.colColorDisplayed = null;
       }
 
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
       this.$parent.colorWarning = false;
     },
   },

@@ -30,6 +30,34 @@
       />
     </modal>
 
+    <!-- Local filters Display -->
+    <modal
+      v-if="showLocalFilters"
+      @close="showLocalFilters = false"
+    >
+      <h3 class="aligned spaced gapped">
+        <span>
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="18"
+            height="18"
+            style="margin-right: 3px"
+          />
+          Filters applied to this widget
+        </span>
+        <button
+          class="red"
+          @click="showLocalFilters = false"
+        >
+          Close
+        </button>
+      </h3>
+      <FilterList
+        :data="data"
+        :filters="localFilters"
+        :readOnly="true"
+      />
+    </modal>
     <!-- Widget -->
     <div
       id="widgetHeader"
@@ -48,7 +76,7 @@
         {{ name }}
       </h2>
 
-      <!-- Loading anim, messages & warning -->
+      <!-- Loading anim, messages, warning & filters applied -->
       <div class="center">
         <!-- Loading from backend -->
         <div
@@ -104,6 +132,23 @@
           <span class="badge">{{ widgetFilters.length }}</span>
           Clear filters
         </button>
+
+        <!-- Filters applied -->
+        <button
+          v-if="localFilters.length > 0"
+          id="filtersApplied"
+          class="warning"
+          @click="showLocalFilters = true"
+        >
+          <span class="badge">{{ localFilters.length }}</span>
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+            fill="black"
+          />
+          applied
+        </button>
       </div>
 
       <!-- Options : configuration, copy, settings, close btn, ... -->
@@ -120,7 +165,7 @@
         >
           Export
           <inline-svg
-            :src="require('../../../../../assets/svg/send.svg')"
+            :src="require('@/assets/svg/send.svg')"
             height="14"
             width="18"
           />
@@ -133,7 +178,7 @@
           @click="startFiltering = !startFiltering"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/filter.svg')"
+            :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
             fill="white"
@@ -148,7 +193,7 @@
           @click="startFiltering = !startFiltering"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/filter.svg')"
+            :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
             fill="white"
@@ -163,9 +208,7 @@
         >
           <inline-svg
             :src="
-              confAsChanged
-                ? require('../../../../../assets/svg/save.svg')
-                : require('../../../../../assets/svg/gear.svg')
+              confAsChanged ? require('@/assets/svg/save.svg') : require('@/assets/svg/gear.svg')
             "
             width="14"
             height="14"
@@ -179,7 +222,7 @@
           @click="copy"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/copy.svg')"
+            :src="require('@/assets/svg/copy.svg')"
             width="14"
             height="14"
             fill="white"
@@ -192,7 +235,7 @@
           @click="settings"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/settings.svg')"
+            :src="require('@/assets/svg/settings.svg')"
             width="14"
             height="14"
           />
@@ -204,7 +247,7 @@
           @click="remove"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/close.svg')"
+            :src="require('@/assets/svg/close.svg')"
             width="11"
             height="11"
             fill="white"
@@ -231,13 +274,15 @@
 <script>
 import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
 import DataExportMenu from "../dataExport/DataExportMenu";
+import FilterList from "../dataFilters/FilterList";
 
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel, DataExportMenu },
+  components: { WidgetConfPannel, DataExportMenu, FilterList },
   props: {
+    data: { type: Object, required: true },
     widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
@@ -262,6 +307,8 @@ export default {
       // Filters
       canFilterSamples: false,
       startFiltering: false,
+      showLocalFilters: false,
+      localFilters: [],
 
       // Export
       exportData: null,
@@ -272,6 +319,7 @@ export default {
     this.$on("loading", (loading) => (this.loading = loading));
     this.$on("errorMessage", this.errorMessage);
     this.$on("setExport", this.setExport);
+    this.$on("drawed", this.drawed);
     this.timeout = null;
     this.name = this.title;
   },
@@ -398,6 +446,13 @@ export default {
         removeExisting: true,
       });
       this.$emit("filterCleared");
+    },
+    drawed() {
+      this.selectedDataWarning = false;
+
+      // The plot has been drawn, we can save a copy of the local filters
+      const storeFilters = this.$store.state.SatisticalAnasysis.filters;
+      this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
 
     // Export

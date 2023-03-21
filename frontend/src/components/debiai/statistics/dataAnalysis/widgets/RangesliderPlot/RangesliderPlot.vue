@@ -338,7 +338,7 @@ export default {
       this.plotDiv.on("plotly_click", this.selectDataOnPlot);
 
       this.plotDrawed = true;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
       this.currentDrawedColorIndex = this.coloredColumnIndex;
     },
 

@@ -23,10 +23,10 @@
     </modal>
     <!-- Filters modal -->
     <modal
-      v-show="filtersMenu"
+      v-if="filtersMenu"
       @close="filtersMenu = false"
     >
-      <Filters
+      <GlobalFilters
         :data="data"
         v-on:cancel="filtersMenu = false"
       />
@@ -56,7 +56,7 @@
           fill="white"
           style="margin-right: 3px"
         />
-        <u>Filters</u>
+        <u>Global filters</u>
       </button>
     </div>
 
@@ -97,7 +97,7 @@ import SelectionSelection from "./SelectionSelection";
 import SelectedDataInfo from "./SelectedDataInfo";
 import Column from "../common/Column";
 import ColumnSelection from "../common/ColumnSelection";
-import Filters from "../dataSelection/Filters";
+import GlobalFilters from "../dataFilters/GlobalFilters";
 
 export default {
   components: {
@@ -105,7 +105,7 @@ export default {
     SelectedDataInfo,
     Column,
     ColumnSelection,
-    Filters,
+    GlobalFilters,
   },
   props: {
     data: { type: Object, required: true },

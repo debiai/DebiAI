@@ -417,7 +417,7 @@ export default {
       });
 
       this.matrixDrawed = true;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
 
       // Set the filter events
       this.divConfusionMatrix.removeListener("plotly_click", this.selectDataOnPlot);

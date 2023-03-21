@@ -114,7 +114,7 @@ export default {
 
       this.params.data = data;
       this.params.sort = this.selectedColumnsIds.map((c, i) => i);
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
     },
     columnsSelect(columnIndexs) {
       this.selectedColumnsIds = columnIndexs;
