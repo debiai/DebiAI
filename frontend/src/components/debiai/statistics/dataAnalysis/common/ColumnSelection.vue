@@ -202,7 +202,7 @@ export default {
           (c) =>
             c.category === "features" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),       
+        ),
         Contexts: this.data.columns.filter(
           (c) =>
             c.category === "contexts" &&

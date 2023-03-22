@@ -216,5 +216,4 @@ export default {
 #column .type.undefined {
   background: var(--undefined);
 }
-
 </style>

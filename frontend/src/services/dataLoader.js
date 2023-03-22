@@ -4,7 +4,6 @@ import services from "./services";
 
 const backendDialog = require("./backendDialog");
 
-
 //
 //  Need to take position on wich columns stay availiable or not
 //
@@ -198,9 +197,6 @@ async function getProjectSamplesIdList(
 }
 async function getProjectMetadata({ considerResults }) {
   let projectInfo = await backendDialog.default.getProject();
-  console.log("====== Project Info ====")
-  console.log(projectInfo)
-
   if (projectInfo.nbSamples === undefined) projectInfo.nbSamples = null;
 
   // Labels creation from block level info
@@ -231,7 +227,6 @@ async function getProjectMetadata({ considerResults }) {
           metaData.type.push(data.type);
         });
     });
-    console.log(blockLevel)
   });
 
   // In case we are loading the results
@@ -246,10 +241,6 @@ async function getProjectMetadata({ considerResults }) {
       metaData.categories.push("results");
     });
   }
-  console.log(" ===== Metadata Project =====")
-  console.log(metaData)
-  console.log(metaData.categories)
-
   return metaData;
 }
 async function downloadSamplesData(projectMetadata, sampleIds) {
@@ -302,8 +293,6 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
     endRequest(requestCode);
     console.timeEnd("Loading the project data");
   }
-  console.log("===== DATA ARRAY ====== ")
-  console.log(retArray);
   return { dataArray: retArray, sampleIdList: retDataIdlist };
 }
 
