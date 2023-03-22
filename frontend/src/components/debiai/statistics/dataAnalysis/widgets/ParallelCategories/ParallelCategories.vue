@@ -166,7 +166,7 @@ export default {
       this.divParCat.on("plotly_click", this.selectDataOnPlot);
 
       this.currentDrawedColorIndex = colColor ? colColor.index : null;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
     },
 
     selectColumns(selectedColumnsId) {

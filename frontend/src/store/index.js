@@ -94,10 +94,6 @@ const ProjectPage = {
 
 const SatisticalAnasysis = {
   state: {
-    // Analysis
-    projectId: null,
-    // selectedSelectionIds: null,
-
     // Color
     coloredColumnIndex: 0,
 
@@ -106,12 +102,6 @@ const SatisticalAnasysis = {
     filtersEffecs: [],
   },
   mutations: {
-    selectProjectId(state, projectId) {
-      state.projectId = projectId;
-    },
-    // setSelectedSelectionIds(state, selectionIds) {
-    //   state.selectedSelectionIds = selectionIds
-    // },
     setColoredColumnIndex(state, index) {
       state.coloredColumnIndex = state.coloredColumnIndex == index ? null : index;
     },

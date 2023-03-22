@@ -269,7 +269,7 @@ export default {
         responsive: true,
       });
 
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
       this.matrixDrawed = true;
     },
   },

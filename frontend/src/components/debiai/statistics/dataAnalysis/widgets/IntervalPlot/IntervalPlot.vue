@@ -371,7 +371,7 @@ export default {
       let layout = this.gerenateLayout({ colX, colY });
       this.drawPlot([upperTrace, lowerTrace, yTrace], layout); // regenererate or generate plot
       this.intervalPlotDrawed = true;
-      this.$parent.selectedDataWarning = false;
+      this.$parent.$emit("drawed");
     },
 
     // Draw
