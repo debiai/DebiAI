@@ -15,10 +15,7 @@
       v-for="(column, i) in columns"
       :key="i"
     >
-      <button
-        @click="$emit('colSelect', column.name)"
-        :class="column.isId ? 'info' : ''"
-      >
+      <button @click="$emit('colSelect', column.name)">
         {{ column.name }}
       </button>
       {{ column.type }}

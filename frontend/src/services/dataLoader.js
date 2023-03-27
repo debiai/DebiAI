@@ -199,34 +199,19 @@ async function getProjectMetadata({ considerResults }) {
   let projectInfo = await backendDialog.default.getProject();
   if (projectInfo.nbSamples === undefined) projectInfo.nbSamples = null;
 
-  // Labels creation from block level info
+  // Labels creation from project columns
   var metaData = {
     timestamp: projectInfo.creationDate,
     nbSamples: projectInfo.nbSamples,
-    labels: [],
-    categories: [],
-    type: [],
+    labels: ["Data ID"],
+    categories: ["other"],
+    type: ["auto"],
   };
 
-  // // Set the Sample_ID in the Other category
-  // metaData.labels.push("Sample_ID")
-  // metaData.categories.push("other")
-  // metaData.type.push("unknown")
-
-  projectInfo.blockLevelInfo.forEach((blockLevel) => {
-    // Set the block name in the Other category
-    metaData.labels.push(blockLevel.name);
-    metaData.categories.push("other");
-    metaData.type.push("unknown");
-
-    CATEGORIES.forEach((cat) => {
-      if (cat.blName in blockLevel)
-        blockLevel[cat.blName].forEach((data) => {
-          metaData.labels.push(data.name);
-          metaData.categories.push(cat.singleName);
-          metaData.type.push(data.type);
-        });
-    });
+  projectInfo.columns.forEach((column) => {
+    metaData.labels.push(column.name);
+    metaData.categories.push(column.category);
+    metaData.type.push(column.type);
   });
 
   // In case we are loading the results

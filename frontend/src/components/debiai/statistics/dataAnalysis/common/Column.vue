@@ -3,7 +3,7 @@
     <!-- Label display -->
     <button
       v-if="column.type !== undefined && !disabled"
-      :class="selected ? 'label selected' : 'label'"
+      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 15 ? 'long' : '')"
       @click="select"
       :title="selected ? 'Unselect ' + column.label : 'Select ' + column.label"
     >
@@ -102,8 +102,11 @@ export default {
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: "-";
-  /* transition: all 0.1s; */
+  text-overflow: "...";
+  padding: 5px;
+}
+#column .long {
+  font-size: 0.75em;
 }
 #column button.selected {
   background-color: var(--primary);

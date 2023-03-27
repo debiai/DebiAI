@@ -185,32 +185,14 @@ export default {
   computed: {
     categorys: function () {
       return {
-        //
-        //  Need to take position on wich columns stay availiable or not
-        //
         Others: this.data.columns.filter(
           (c) =>
             c.category === "other" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
-        Annotations: this.data.columns.filter(
-          (c) =>
-            c.category === "annotations" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Features: this.data.columns.filter(
-          (c) =>
-            c.category === "features" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
         Contexts: this.data.columns.filter(
           (c) =>
-            c.category === "contexts" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Outputs: this.data.columns.filter(
-          (c) =>
-            c.category === "output" &&
+            c.category === "context" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
         Inputs: this.data.columns.filter(
@@ -220,12 +202,12 @@ export default {
         ),
         GroundTruth: this.data.columns.filter(
           (c) =>
-            c.category === "ground truth" &&
+            c.category === "groundtruth" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
         Results: this.data.columns.filter(
           (c) =>
-            c.category === "results" &&
+            c.category === "result" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
         Virtual: this.data.columns.filter(
