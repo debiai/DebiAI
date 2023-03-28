@@ -7,9 +7,7 @@
         v-for="category in Object.keys(columnsPerCategory)"
         :key="category"
       >
-        <div class="categoryName">
-          {{ category }}:
-        </div>
+        <div class="categoryName">{{ category }}:</div>
         <div class="columns">
           <div
             class="column"

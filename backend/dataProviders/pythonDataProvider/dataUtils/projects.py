@@ -141,7 +141,7 @@ def get_project_columns(projectId):
     block_level_info = get_project_block_level_info(projectId)
 
     # Convert the block level info to the new columns format
-    #   blockLevelInfo: 
+    #   blockLevelInfo:
     #   [
     #     { "name": "block1" },
     #     {
@@ -180,29 +180,48 @@ def get_project_columns(projectId):
     #   { "name": "inp1", "category": "input", "type": "number" },
     # ]
 
-    project_columns= []
+    project_columns = []
 
     for block in block_level_info:
         block_name = block["name"]
-        project_columns.append({"name": block_name, "category": "other", "type": "auto"})
+        project_columns.append(
+            {"name": block_name, "category": "other", "type": "auto"}
+        )
 
         if "groundTruth" in block:
             for ground_truth in block["groundTruth"]:
-                project_columns.append({"name": ground_truth["name"], "category": "groundtruth", "type": ground_truth["type"]})
+                project_columns.append(
+                    {
+                        "name": ground_truth["name"],
+                        "category": "groundtruth",
+                        "type": ground_truth["type"],
+                    }
+                )
 
         if "contexts" in block:
             for context in block["contexts"]:
-                project_columns.append({"name": context["name"], "category": "context", "type": context["type"]})
+                project_columns.append(
+                    {
+                        "name": context["name"],
+                        "category": "context",
+                        "type": context["type"],
+                    }
+                )
 
         if "inputs" in block:
             for input in block["inputs"]:
-                project_columns.append({"name": input["name"], "category": "input", "type": input["type"]})
+                project_columns.append(
+                    {"name": input["name"], "category": "input", "type": input["type"]}
+                )
 
         if "others" in block:
             for other in block["others"]:
-                project_columns.append({"name": other["name"], "category": "other", "type": other["type"]})
+                project_columns.append(
+                    {"name": other["name"], "category": "other", "type": other["type"]}
+                )
 
     return project_columns
+
 
 def get_result_structure(projectId):
     with open(DATA_PATH + projectId + "/info.json") as json_file:

@@ -76,6 +76,7 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "models": models,
     }
 
+
 def get_project_columns(project):
     project_columns = []
     # Expected project["columns"] example :

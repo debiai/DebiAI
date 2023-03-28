@@ -29,58 +29,6 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     return samples
 
-
-def get_list(projectId, data):
-    """
-    Return a list of samples in a project
-    """
-
-    # Get the hashmap
-    hashmap = hash.getHashmap(projectId)
-
-    # Get params
-    selectionIds = data["selectionIds"]
-    selectionIntersection = data["selectionIntersection"]
-    modelIds = data["modelIds"]
-    commonResults = data["commonResults"]
-
-    samples = []
-    if not selectionIds or len(selectionIds) == 0:
-        # Start form all the project samples
-        samples = list(hashmap.keys())
-        # In case of streaming purpose
-        if "from" in data and "to" in data:
-            samples = samples[data["from"] : data["to"] + 1]
-    else:
-        # Or from the selections samples
-        try:
-            samples = selections.getSelectionsSamples(
-                projectId, selectionIds, selectionIntersection
-            )
-        except KeyError as e:
-            print(e)
-            return "selection not found", 404
-
-    if len(samples) == 0:
-        return {"samples": [], "nbSamples": 0, "nbFromSelection": 0, "nbFromModels": 0}
-
-    nbFromSelection = len(samples)
-    nbFromModels = 0
-    # Then, concat with the model results if given
-    if modelIds and len(modelIds) > 0:
-        modelSamples = models.getModelListResults(projectId, modelIds, commonResults)
-        nbFromModels = len(modelSamples)
-        samples = set(samples)
-        samples.intersection_update(set(modelSamples))
-
-    return {
-        "samples": list(samples),
-        "nbSamples": len(samples),
-        "nbFromSelection": nbFromSelection,
-        "nbFromModels": nbFromModels,
-    }
-
-
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
     # Get path of the samples from the hashmap
