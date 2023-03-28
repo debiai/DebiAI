@@ -29,6 +29,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     return samples
 
+
 # Get data
 def get_data_from_sampleid_list(project_id, id_list):
     # Get path of the samples from the hashmap

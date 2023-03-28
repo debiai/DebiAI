@@ -66,6 +66,10 @@ def get_project(projectId):
         # project columns
         projectColumns = get_project_columns(projectId)
 
+        # project block level
+        # We still need to get the project block level, the Python module use it
+        projectBlockLevel = get_project_block_level_info(projectId)
+
         projectOverview = {
             "id": projectId,
             "name": name,
@@ -75,6 +79,7 @@ def get_project(projectId):
             "creationDate": creationDate,
             "updateDate": updateDate,
             "columns": projectColumns,
+            "blockLevelInfo": projectBlockLevel,
         }
 
     except Exception as e:
