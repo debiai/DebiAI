@@ -1,6 +1,6 @@
 <template>
   <div id="ProjectColumnsVisu">
-    <h3>Data colums</h3>
+    <h3>Data columns</h3>
     <div id="columns">
       <div
         class="category"
