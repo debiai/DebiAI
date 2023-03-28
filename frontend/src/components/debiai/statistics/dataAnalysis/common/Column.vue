@@ -3,7 +3,7 @@
     <!-- Label display -->
     <button
       v-if="column.type !== undefined && !disabled"
-      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 15 ? 'long' : '')"
+      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 20 ? 'long' : '')"
       @click="select"
       :title="selected ? 'Unselect ' + column.label : 'Select ' + column.label"
     >

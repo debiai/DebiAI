@@ -207,7 +207,7 @@ export default {
         ),
         Results: this.data.columns.filter(
           (c) =>
-            c.category === "result" &&
+            c.category === "results" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
         Virtual: this.data.columns.filter(
