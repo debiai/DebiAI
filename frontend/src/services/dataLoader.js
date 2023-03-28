@@ -242,25 +242,34 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
   try {
     while (pulledData < nbSamples) {
-      let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
+      const samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
 
       // First, pull the samples from the browser memory
       // let cachedSamples = await cacheService.getSamplesByIds(projectMetadata.timestamp, samplesToPull)
       // let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
       // retArray = [...retArray, ...Object.values(cachedSamples)]
       // retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
-      let samplesToDownload = samplesToPull;
+      const samplesToDownload = samplesToPull;
 
       if (samplesToDownload.length) {
         // Then download the missing samples
         console.log(samplesToDownload.length + " samples to download");
 
-        let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
+        const downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
           samplesToDownload
         );
 
-        // We receive an map of samples
-        let map = downloadedSamples.data;
+        // We receive an map of samples:
+        // {
+        //   "id1": [0, 1, 2, 3, ...],
+        //   "id2": [0, 1, 2, 3, ...],
+        //   "id3": [0, 1, 2, 3, ...]
+        //   ...
+        // }
+        const map = downloadedSamples.data;
+
+        // Add the data ID to the samples
+        for (let sampleId in map) map[sampleId].unshift(sampleId);
 
         // Stack the samples
         retArray = [...retArray, ...Object.values(map)];

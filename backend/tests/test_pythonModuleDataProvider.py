@@ -76,6 +76,7 @@ def test_get_project():
     assert resp.status_code == 200
     proj = json.loads(resp.text)
     assert type(proj) is dict
+    assert type(proj["columns"]) is list
     assert proj["models"] == []
     assert len(proj["name"]) > 0
     assert proj["name"] == test_project_name
