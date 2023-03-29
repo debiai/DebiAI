@@ -69,13 +69,6 @@ export default {
 </script>
 
 <style scoped>
-#category {
-  /* cursor: pointer; */
-}
-#category:hover {
-  /* transform: scale(1.01); */
-}
-
 #Others {
   background: var(--other);
 }
@@ -84,9 +77,6 @@ export default {
 }
 #Inputs {
   background: var(--input);
-}
-#Outputs {
-  background: var(--output);
 }
 #GroundTruth {
   background: var(--groundthruth);

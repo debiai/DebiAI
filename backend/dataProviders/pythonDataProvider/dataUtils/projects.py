@@ -63,20 +63,23 @@ def get_project(projectId):
         if os.path.exists(DATA_PATH + projectId + "/tags/"):
             nbTags = len(os.listdir(DATA_PATH + projectId + "/tags/"))
 
-        # Block level info
-        blockLevelInfo = get_project_block_level_info(projectId)
+        # project columns
+        projectColumns = get_project_columns(projectId)
+
+        # project block level
+        # We still need to get the project block level, the Python module use it
+        projectBlockLevel = get_project_block_level_info(projectId)
 
         projectOverview = {
             "id": projectId,
             "name": name,
             "nbModels": nbModels,
             "nbSelections": nbSelection,
-            "nbRequests": nbRequests,
             "nbSamples": nbSamples,
-            "nbTags": nbTags,
             "creationDate": creationDate,
             "updateDate": updateDate,
-            "blockLevelInfo": blockLevelInfo,
+            "columns": projectColumns,
+            "blockLevelInfo": projectBlockLevel,
         }
 
     except Exception as e:
@@ -137,6 +140,92 @@ def get_project_block_level_info(projectId):
 
     with open(DATA_PATH + projectId + "/info.json") as json_file:
         return json.load(json_file)["blockLevelInfo"]
+
+
+def get_project_columns(projectId):
+    block_level_info = get_project_block_level_info(projectId)
+
+    # Convert the block level info to the new columns format
+    #   blockLevelInfo:
+    #   [
+    #     { "name": "block1" },
+    #     {
+    #       "name": "block2",
+    #       "contexts": [
+    #           { "name": "cont1", "type": "text" },
+    #           { "name": "cont2", "type": "text" },
+    #       ]
+    #     },
+    #     { "name": "block3", "contexts": [{ "name": "cont3", "type": "text" }] },
+    #     {
+    #       "name": "block4",
+    #       "others": [{ "name": "other1", "type": "number" }],
+    #       "groundTruth": [
+    #           { "name": "gdt1", "type": "number" },
+    #           { "name": "gdt2", "type": "number" },
+    #       ],
+    #       "inputs": [
+    #           { "name": "inp1", "type": "number" }
+    #       ]
+    #     }
+    # ]
+
+    # Goal format:
+    # [
+    #   { "name": "block1", "category": "other", "type": "auto" },
+    #   { "name": "block2", "category": "other", "type": "auto" },
+    #   { "name": "cont1", "category": "context", "type": "text" },
+    #   { "name": "cont2", "category": "context", "type": "text" },
+    #   { "name": "cont3", "category": "context", "type": "text" },
+    #   { "name": "block3", "category": "other", "type": "auto" },
+    #   { "name": "other1", "category": "other", "type": "number" },
+    #   { "name": "block4", "category": "other", "type": "auto" },
+    #   { "name": "gdt1", "category": "groundtruth", "type": "number" },
+    #   { "name": "gdt2", "category": "groundtruth", "type": "number" },
+    #   { "name": "inp1", "category": "input", "type": "number" },
+    # ]
+
+    project_columns = []
+
+    for block in block_level_info:
+        block_name = block["name"]
+        project_columns.append(
+            {"name": block_name, "category": "other", "type": "auto"}
+        )
+
+        if "groundTruth" in block:
+            for ground_truth in block["groundTruth"]:
+                project_columns.append(
+                    {
+                        "name": ground_truth["name"],
+                        "category": "groundtruth",
+                        "type": ground_truth["type"],
+                    }
+                )
+
+        if "contexts" in block:
+            for context in block["contexts"]:
+                project_columns.append(
+                    {
+                        "name": context["name"],
+                        "category": "context",
+                        "type": context["type"],
+                    }
+                )
+
+        if "inputs" in block:
+            for input in block["inputs"]:
+                project_columns.append(
+                    {"name": input["name"], "category": "input", "type": input["type"]}
+                )
+
+        if "others" in block:
+            for other in block["others"]:
+                project_columns.append(
+                    {"name": other["name"], "category": "other", "type": other["type"]}
+                )
+
+    return project_columns
 
 
 def get_result_structure(projectId):

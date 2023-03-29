@@ -9,7 +9,7 @@ Vue.use(Vuex);
 const Dashboard = {
   state: {
     // Global variables
-    categoryList: ["inputs", "groundTruth", "contexts", "others", "tag"],
+    categoryList: ["input", "groundtruth", "context", "other"],
 
     // Dashboard
     isLoadding: false,
@@ -51,8 +51,8 @@ const ProjectPage = {
     projectId: null,
     dataProviderId: null,
     selectionsIds: [],
-    blockLevels: [],
-    columns: [],
+    projectColumns: [],
+    projectResultsColumns: [],
   },
   mutations: {
     setProjectId(state, projectId) {
@@ -61,29 +61,11 @@ const ProjectPage = {
     setDataProviderId(state, dataProviderId) {
       state.dataProviderId = dataProviderId;
     },
-    setBlockLevels(state, blockLevels) {
-      state.blockLevels = blockLevels;
-
-      let blockCat = Dashboard.state.categoryList;
-
-      let columns = [];
-      if (blockLevels) {
-        blockLevels.forEach((block) => {
-          // Add id columns
-          columns.push({ name: block.name, type: "text", isId: true });
-
-          // Add other columns
-          blockCat.forEach((category) => {
-            if (category in block) {
-              block[category].forEach((column) => {
-                columns.push(column);
-              });
-            }
-          });
-        });
-      }
-
-      state.columns = columns;
+    setProjectColumns(state, projectColumns) {
+      state.projectColumns = projectColumns;
+    },
+    setProjectResultsColumns(state, projectResultsColumns) {
+      state.projectResultsColumns = projectResultsColumns;
     },
     setSelectionsIds(state, selectionsIds) {
       if (selectionsIds) state.selectionsIds = selectionsIds;

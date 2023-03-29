@@ -4,11 +4,16 @@ import services from "./services";
 
 const backendDialog = require("./backendDialog");
 
+//
+//  Need to take position on wich columns stay availiable or not
+//
 const CATEGORIES = [
   { blName: "inputs", singleName: "input" },
   { blName: "groundTruth", singleName: "ground truth" },
   { blName: "contexts", singleName: "context" },
   { blName: "others", singleName: "other" },
+  { blName: "features", singleName: "features" },
+  { blName: "annotations", singleName: "annotations" },
 ];
 
 // Requests functions
@@ -192,37 +197,21 @@ async function getProjectSamplesIdList(
 }
 async function getProjectMetadata({ considerResults }) {
   let projectInfo = await backendDialog.default.getProject();
-
   if (projectInfo.nbSamples === undefined) projectInfo.nbSamples = null;
 
-  // Labels creation from block level info
+  // Labels creation from project columns
   var metaData = {
     timestamp: projectInfo.creationDate,
     nbSamples: projectInfo.nbSamples,
-    labels: [],
-    categories: [],
-    type: [],
+    labels: ["Data ID"],
+    categories: ["other"],
+    type: ["auto"],
   };
 
-  // // Set the Sample_ID in the Other category
-  // metaData.labels.push("Sample_ID")
-  // metaData.categories.push("other")
-  // metaData.type.push("unknown")
-
-  projectInfo.blockLevelInfo.forEach((blockLevel) => {
-    // Set the block name in the Other category
-    metaData.labels.push(blockLevel.name);
-    metaData.categories.push("other");
-    metaData.type.push("unknown");
-
-    CATEGORIES.forEach((cat) => {
-      if (cat.blName in blockLevel)
-        blockLevel[cat.blName].forEach((data) => {
-          metaData.labels.push(data.name);
-          metaData.categories.push(cat.singleName);
-          metaData.type.push(data.type);
-        });
-    });
+  projectInfo.columns.forEach((column) => {
+    metaData.labels.push(column.name);
+    metaData.categories.push(column.category);
+    metaData.type.push(column.type);
   });
 
   // In case we are loading the results
@@ -237,7 +226,6 @@ async function getProjectMetadata({ considerResults }) {
       metaData.categories.push("results");
     });
   }
-
   return metaData;
 }
 async function downloadSamplesData(projectMetadata, sampleIds) {
@@ -254,25 +242,34 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
   try {
     while (pulledData < nbSamples) {
-      let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
+      const samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
 
       // First, pull the samples from the browser memory
       // let cachedSamples = await cacheService.getSamplesByIds(projectMetadata.timestamp, samplesToPull)
       // let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
       // retArray = [...retArray, ...Object.values(cachedSamples)]
       // retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
-      let samplesToDownload = samplesToPull;
+      const samplesToDownload = samplesToPull;
 
       if (samplesToDownload.length) {
         // Then download the missing samples
         console.log(samplesToDownload.length + " samples to download");
 
-        let downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
+        const downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
           samplesToDownload
         );
 
-        // We receive an map of samples
-        let map = downloadedSamples.data;
+        // We receive an map of samples:
+        // {
+        //   "id1": [0, 1, 2, 3, ...],
+        //   "id2": [0, 1, 2, 3, ...],
+        //   "id3": [0, 1, 2, 3, ...]
+        //   ...
+        // }
+        const map = downloadedSamples.data;
+
+        // Add the data ID to the samples
+        for (let sampleId in map) map[sampleId].unshift(sampleId);
 
         // Stack the samples
         retArray = [...retArray, ...Object.values(map)];
@@ -290,7 +287,6 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
     endRequest(requestCode);
     console.timeEnd("Loading the project data");
   }
-
   return { dataArray: retArray, sampleIdList: retDataIdlist };
 }
 

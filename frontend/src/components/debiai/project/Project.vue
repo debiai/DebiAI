@@ -7,7 +7,7 @@
     >
       <!-- block structure creation or display -->
       <h2 class="aligned spaced">
-        Block structure
+        Project columns
         <button
           class="red"
           @click="settings = false"
@@ -15,11 +15,12 @@
           Close
         </button>
       </h2>
-      <BlockStructrureVisu />
+      <ProjectColumnsVisu />
       <!-- TODO results structure -->
 
       <!-- Tags -->
-      <tags :project="project" />
+      <!-- TODO make tags work -->
+      <!-- <tags :project="project" /> -->
     </Modal>
 
     <!-- ProjectInfo -->
@@ -70,10 +71,10 @@
 <script>
 // Components
 import ProjectInfo from "./ProjectInfo";
-import BlockStructrureVisu from "./blockStructure/BlockStructrureVisu.vue";
+import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
-import Tags from "./tags/Tags.vue";
+// import Tags from "./tags/Tags.vue";
 import Analysis from "./Analysis.vue";
 
 // Services
@@ -84,10 +85,10 @@ export default {
   name: "Project",
   components: {
     ProjectInfo,
-    BlockStructrureVisu,
+    ProjectColumnsVisu,
     Models,
     Selections,
-    Tags,
+    // Tags,
     Analysis,
   },
   data: () => {
@@ -176,10 +177,27 @@ export default {
           );
           this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
 
-          // store some info
-          this.$store.commit("setBlockLevels", this.project.blockLevelInfo);
+          // Store some info
+          this.$store.commit("setProjectColumns", this.project.columns);
+          this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
         })
         .catch((e) => {
+          if (e.response && e.response.status === 500) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Internal server error while loading project",
+            });
+          } else if (e.response && e.response.status === 404) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Project not found",
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Error while loading project",
+            });
+          }
           console.log(e);
           this.$router.push("/");
         });

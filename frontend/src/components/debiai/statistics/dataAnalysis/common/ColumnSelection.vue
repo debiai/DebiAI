@@ -195,11 +195,6 @@ export default {
             c.category === "context" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
-        Outputs: this.data.columns.filter(
-          (c) =>
-            c.category === "output" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
         Inputs: this.data.columns.filter(
           (c) =>
             c.category === "input" &&
@@ -207,7 +202,7 @@ export default {
         ),
         GroundTruth: this.data.columns.filter(
           (c) =>
-            c.category === "ground truth" &&
+            c.category === "groundtruth" &&
             c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
         Results: this.data.columns.filter(

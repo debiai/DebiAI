@@ -67,15 +67,7 @@ class WebDataProvider(DataProvider):
     def get_samples(self, project_id, id_list):
         # http Request get full sample
         # Return object { id: [data]}
-        samples = get_project_samples(self.url, project_id, id_list)
-
-        # We need to add the id to the sample data array
-        # Because we have added the "Data Id" block name in the
-        # block structure
-
-        for sample_id in samples:
-            samples[sample_id].insert(0, sample_id)
-        return samples
+        return get_project_samples(self.url, project_id, id_list)
 
     def get_selections(self, project_id):
         # Get selections on project

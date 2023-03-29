@@ -36,8 +36,6 @@ def get_all_projects_from_data_provider(url, name):
                 "nbSelections": projects[project_id]["nbSelections"],
                 "creationDate": timeNow(),
                 "updateDate": timeNow(),
-                "nbRequests": 0,
-                "nbTags": 0,
             }
         )
 
@@ -47,12 +45,16 @@ def get_all_projects_from_data_provider(url, name):
 def get_single_project_from_data_provider(url, data_provider_name, id_project):
     project = api.get_project(url, id_project)
 
-    blockInfo = format_collumns_project_overview(project)
+    # Check the project columns
+    project_columns = get_project_columns(project)
 
-    # TODO: prevent crash if no selections or models routes in data provider
+    # Add selections
     selections = get_project_selections(url, id_project)
+
+    # Add models
     models = get_models_info(url, id_project)
 
+    # Check nbSamples
     if "nbSamples" in project:
         nbSamples = project["nbSamples"]
     else:
@@ -63,12 +65,10 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "id": id_project,
         "name": project["name"],
         "dataProvider": data_provider_name,
-        "blockLevelInfo": blockInfo,
+        "columns": project_columns,
         "resultStructure": project["expectedResults"],
         "nbModels": len(models),
         "nbSamples": nbSamples,
-        "nbRequests": 0,
-        "nbTags": 0,
         "nbSelections": len(selections),
         "creationDate": timeNow(),
         "updateDate": timeNow(),
@@ -77,36 +77,30 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     }
 
 
-def format_collumns_project_overview(project):
-    otherColumns = []
-    contextColumns = []
-    groundTruthColumns = []
-    inputColumns = []
+def get_project_columns(project):
+    project_columns = []
+    # Expected project["columns"] example :
+    # [
+    #     { "name": "storage", "category": "other" },
+    #     { "name": "age", "category": "context" },
+    #     { "name": "path", "category": "input" },
+    #     { "name": "label", "category": "groundtruth" },
+    #     { "name": "type" }, # category is not specified, it will be "other"
+    # ]
+    if "columns" in project:
+        for column in project["columns"]:
+            col = {"name": column["name"]}
 
-    # Convert data columns to DebiAi structure
-    for column in project["columns"]:
-        debiaiColumn = {
-            "name": column["name"],
-            "type": column["type"] if "type" in column else "auto",
-        }
-        if "category" in column and column["category"] == "context":
-            contextColumns.append(debiaiColumn)
-        elif "category" in column and column["category"] == "groundtruth":
-            groundTruthColumns.append(debiaiColumn)
-        elif "category" in column and column["category"] == "input":
-            groundTruthColumns.append(debiaiColumn)
-        else:
-            otherColumns.append(debiaiColumn)
+            if "category" in column:
+                col["category"] = column["category"]
+            else:
+                col["category"] = "other"
 
-            # Final Debiai Structure for the project
-    blockLevelInfo = [
-        {
-            "name": "Data Id",
-            "others": otherColumns,
-            "contexts": contextColumns,
-            "groundTruth": groundTruthColumns,
-            "inputs": inputColumns,
-        }
-    ]
+            if "type" in column:
+                col["type"] = column["type"]
+            else:
+                col["type"] = "auto"
 
-    return blockLevelInfo
+            project_columns.append(col)
+
+    return project_columns

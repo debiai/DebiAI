@@ -3,7 +3,7 @@
     <!-- Label display -->
     <button
       v-if="column.type !== undefined && !disabled"
-      :class="selected ? 'label selected' : 'label'"
+      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 20 ? 'long' : '')"
       @click="select"
       :title="selected ? 'Unselect ' + column.label : 'Select ' + column.label"
     >
@@ -91,7 +91,6 @@ export default {
 
 #column .label {
   width: 140px;
-  display: flex;
   justify-content: center;
   align-items: center;
 
@@ -100,7 +99,14 @@ export default {
   color: white;
   border-radius: 10px 0px 0px 10px;
   font-weight: bold;
-  /* transition: all 0.1s; */
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: "...";
+  padding: 5px;
+}
+#column .long {
+  font-size: 0.75em;
 }
 #column button.selected {
   background-color: var(--primary);

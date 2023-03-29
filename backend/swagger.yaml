@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.21.5
+  version: 0.21.6
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -76,7 +76,7 @@ paths:
           description: The Data provider id must not be null
         404:
           description: The data provider doesn't exist
-  
+
     get:
       summary: Get general informations about a data provider, like his version or the max number sample for each type of request
       tags: [Data Providers]
@@ -1501,11 +1501,36 @@ definitions:
         type: string
         description: project ID
 
-      blockLevelInfo:
+      columns:
         type: array
         items:
-          $ref: "#/definitions/blockLevelInfo"
-        description: list of the projects blockLevelInfo that describe the project tree
+          type: object
+          required:
+            - name
+            - category
+            - type
+          properties:
+            name:
+                type: string
+                description: column name
+            category:
+                type: string
+                description: column category
+                enum:
+                  - other
+                  - context
+                  - input
+                  - groundtruth
+            type:
+                type: string
+                description: column type
+                enum:
+                  - auto
+                  - text
+                  - number
+                  - boolean
+
+        description: list of the projects columns that will be used to display the data
 
   blockLevelInfo:
     type: object
@@ -1515,7 +1540,6 @@ definitions:
       name:
         type: string
         description: block level name
-        example: file
 
   # Artefacts
   artefact:
