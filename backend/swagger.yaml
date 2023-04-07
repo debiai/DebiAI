@@ -498,6 +498,11 @@ paths:
                 type: integer
                 description: Where we stop the selection in case of over 10 000 samples
                 minimum: 0
+
+              analysis:
+                description: Informations about the analysis to help data-providers with data management
+                $ref: "#/definitions/analysis"
+
       responses:
         200:
           description: List of the project sample id
@@ -600,6 +605,7 @@ paths:
 
         - name: data
           in: body
+          required: true
           schema:
             type: object
             required:
@@ -609,7 +615,10 @@ paths:
                 type: array
                 items:
                   type: [string, integer, number]
-          required: true
+
+              analysis:
+                description: Informations about the analysis to help data-providers with data management
+                $ref: "#/definitions/analysis"
 
       responses:
         200:
@@ -1511,24 +1520,24 @@ definitions:
             - type
           properties:
             name:
-                type: string
-                description: column name
+              type: string
+              description: column name
             category:
-                type: string
-                description: column category
-                enum:
-                  - other
-                  - context
-                  - input
-                  - groundtruth
+              type: string
+              description: column category
+              enum:
+                - other
+                - context
+                - input
+                - groundtruth
             type:
-                type: string
-                description: column type
-                enum:
-                  - auto
-                  - text
-                  - number
-                  - boolean
+              type: string
+              description: column type
+              enum:
+                - auto
+                - text
+                - number
+                - boolean
 
         description: list of the projects columns that will be used to display the data
 
@@ -1721,3 +1730,20 @@ definitions:
         type: boolean
       type:
         type: string
+
+  # Analysis
+  analysis:
+    type: object
+    description: Data for the current analysis
+    required:
+      - analysisId
+    properties:
+      id:
+        type: string
+        description: Unique ID generated for the analysis, it will be the same in this analysis requests
+      start:
+        type: boolean
+        description: True if this is the first request of the analysis
+      end:
+        type: boolean
+        description: True if this is the last request of the analysis
