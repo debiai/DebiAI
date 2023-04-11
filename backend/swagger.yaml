@@ -520,37 +520,6 @@ paths:
         404:
           description: project doesn't exist
 
-  /data-providers/{dataProviderId}/projects/{projectId}/selectionSamples/{selectionId}:
-    get:
-      summary: get the project selection sampleId list
-      tags: [Samples]
-      operationId: controller.samples.get_selection_list
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
-        - name: selectionId
-          in: path
-          type: string
-          description: selection ID
-          required: true
-
-      responses:
-        200:
-          description: List of the project sample id
-          schema:
-            type: array
-            items:
-              type: string
-        404:
-          description: project or selection doesn't exist
-
   # Blocks
   /data-providers/{dataProviderId}/projects/{projectId}/blocks:
     post:
