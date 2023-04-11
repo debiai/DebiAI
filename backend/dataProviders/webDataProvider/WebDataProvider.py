@@ -59,15 +59,15 @@ class WebDataProvider(DataProvider):
             "Deleting a project is not supported by this data provider", 400
         )
 
-    def get_id_list(self, project_id, _from=None, _to=None):
+    def get_id_list(self, project_id, analysis, _from=None, _to=None):
         # http Request on dp to get id list
         # Return Arr[id]
-        return get_project_id_list(self.url, project_id, _from, _to)
+        return get_project_id_list(self.url, project_id, analysis, _from, _to)
 
-    def get_samples(self, project_id, id_list):
+    def get_samples(self, project_id, analysis, id_list):
         # http Request get full sample
         # Return object { id: [data]}
-        return get_project_samples(self.url, project_id, id_list)
+        return get_project_samples(self.url, project_id, analysis, id_list)
 
     def get_selections(self, project_id):
         # Get selections on project

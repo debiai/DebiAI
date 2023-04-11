@@ -59,6 +59,7 @@ async function getDataProviderLimit() {
 // Get project samples Id list functions
 async function getProjectSamplesIdList(
   projectMetadata,
+  analysisId,
   selectionIds = [],
   selectionIntersection = false,
   modelIds = [],
@@ -83,6 +84,7 @@ async function getProjectSamplesIdList(
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
     const res = await backendDialog.default.getProjectSamples({
+      analysis: { id: analysisId, start: true, end: true },
       selectionIds,
       selectionIntersection,
       modelIds,
@@ -103,14 +105,23 @@ async function getProjectSamplesIdList(
         const from = i * accepteSize;
         const to = (i + 1) * accepteSize - 1;
 
-        const res = await backendDialog.default.getProjectSamples({ from, to });
+        // Deal with the analysis info
+        const analysis = { id: analysisId, start: false, end: false };
+        if (i === 0) analysis.start = true;
+
+        // Send the request
+        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
 
         if (res.samples.length === 0) {
           console.log("No samples found while loading project samples ID list");
           break;
         }
+
+        // Add the samples to the list
         samplesIdList = samplesIdList.concat(res.samples);
         console.log("Current samples ID list length: ", samplesIdList.length);
+
+        // If we get less samples than the chunk size, we stop
         if (res.samples.length < accepteSize) {
           console.log(
             "Last samples found while loading project samples ID list",
@@ -120,6 +131,9 @@ async function getProjectSamplesIdList(
           );
           break;
         }
+
+        // TODO: Update a new progress bar counter
+
         i++;
       }
       console.timeEnd("getProjectSamplesIdList");
@@ -147,7 +161,13 @@ async function getProjectSamplesIdList(
         const from = i * accepteSize;
         const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1;
 
-        const res = await backendDialog.default.getProjectSamples({ from, to });
+        // Deal with the analysis info
+        const analysis = { id: analysisId, start: false, end: false };
+        if (i === 0) analysis.start = true;
+        if (i === nbRequest - 1) analysis.end = true;
+
+        // Send the request
+        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
 
         if (res.samples.length === 0)
           throw "No samples found while loading project samples ID list from " + from + " to " + to;
@@ -162,6 +182,8 @@ async function getProjectSamplesIdList(
             " instead of " +
             (to - from + 1)
           );
+
+        // Add the samples to the list
         samplesIdList = samplesIdList.concat(res.samples);
         updateRequestProgress(requestCode, (i + 1) / nbRequest);
       }
@@ -228,7 +250,7 @@ async function getProjectMetadata({ considerResults }) {
   }
   return metaData;
 }
-async function downloadSamplesData(projectMetadata, sampleIds) {
+async function downloadSamplesData(projectMetadata, sampleIds, analysisId) {
   const CHUNK_SIZE = projectMetadata.dataProvider.maxDataLimit;
   let pulledData = 0;
   let nbSamples = sampleIds.length;
@@ -255,8 +277,15 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
         // Then download the missing samples
         console.log(samplesToDownload.length + " samples to download");
 
+        // Deal with the analysis info
+        const analysis = { id: analysisId, start: false, end: false };
+        if (pulledData === 0) analysis.start = true;
+        if (pulledData + samplesToDownload.length === nbSamples) analysis.end = true;
+
+        // Send the request
         const downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
-          samplesToDownload
+          samplesToDownload,
+          analysis
         );
 
         // We receive an map of samples:
@@ -346,6 +375,9 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
+  // Generate an analysis id
+  let analysisId = services.uuid();
+
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata({ considerResults: false });
 
@@ -356,12 +388,17 @@ async function loadData(selectionIds, selectionIntersection) {
   // Get the samples to pull
   let samplesToPull = await getProjectSamplesIdList(
     projectMetadata,
+    analysisId,
     selectionIds,
     selectionIntersection
   );
 
   // Download and convert the tree
-  const { dataArray, sampleIdList } = await downloadSamplesData(projectMetadata, samplesToPull);
+  const { dataArray, sampleIdList } = await downloadSamplesData(
+    projectMetadata,
+    samplesToPull,
+    analysisId
+  );
 
   return {
     metaData: projectMetadata,
@@ -380,6 +417,9 @@ async function loadDataAndModelResults(
   modelIds,
   commonResults
 ) {
+  // Generate an analysis id
+  let analysisId = services.uuid();
+
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata({ considerResults: true });
 
@@ -390,6 +430,7 @@ async function loadDataAndModelResults(
   // Get the samples ID to pull
   let samplesToPull = await getProjectSamplesIdList(
     projectMetadata,
+    analysisId,
     selectionIds,
     selectionIntersection,
     modelIds,
@@ -397,7 +438,11 @@ async function loadDataAndModelResults(
   );
 
   // Download and convert the tree
-  const { dataArray, sampleIdList } = await downloadSamplesData(projectMetadata, samplesToPull);
+  const { dataArray, sampleIdList } = await downloadSamplesData(
+    projectMetadata,
+    samplesToPull,
+    analysisId
+  );
 
   // =========== Then add the model results
   // Create a request

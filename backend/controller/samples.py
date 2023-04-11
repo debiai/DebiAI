@@ -26,12 +26,3 @@ def get_list(dataProviderId, projectId, data):
         return data_id_list, 200
     except DataProviderException.DataProviderException as e:
         return e.message, e.status_code
-
-
-# Get the list of samples ID of the project selection
-def get_selection_list(dataProviderId, projectId, selectionId):
-    try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-        return data_provider.get_selection_id_list(projectId, selectionId)
-    except DataProviderException.DataProviderException as e:
-        return e.message, e.status_code

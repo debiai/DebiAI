@@ -12,13 +12,14 @@ import dataProviders.DataProviderException as DataProviderException
 def get_data(dataProviderId, projectId, data):
     # return a project data from a list of ids
     sampleIds = data["sampleIds"]
+    analysis = data["analysis"]
 
     try:
         # Find the data provider
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
         # Ask for the data
-        samples = data_provider.get_samples(projectId, sampleIds)
+        samples = data_provider.get_samples(projectId, analysis, sampleIds)
 
         if samples is not None:
             return {

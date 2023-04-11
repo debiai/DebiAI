@@ -49,17 +49,30 @@ def get_project(url, id_project):
         return None
 
 
-def get_id_list(url, id_project, _from=None, _to=None):
+def get_id_list(url, id_project, analysis, _from=None, _to=None):
     try:
         if _from is not None and _to is not None:
             url = (
                 url
                 + "/projects/"
                 + id_project
-                + "/data-id-list?from={}&to={}".format(_from, _to)
+                + "/data-id-list?from={}&to={}&analysisId={}".format(
+                    _from, _to, analysis["id"]
+                )
             )
         else:
-            url = url + "/projects/" + id_project + "/data-id-list"
+            url = (
+                url
+                + "/projects/"
+                + id_project
+                + "/data-id-list?analysisId={}".format(analysis["id"])
+            )
+
+        if analysis["start"]:
+            url += "&analysisStart={}".format(str(analysis["start"]).lower())
+        if analysis["end"]:
+            url += "&analysisEnd={}".format(str(analysis["end"]).lower())
+
         r = requests.get(url)
 
         return get_http_response(r)
@@ -70,9 +83,19 @@ def get_id_list(url, id_project, _from=None, _to=None):
         return []
 
 
-def get_samples(url, id_project, id_list):
+def get_samples(url, id_project, analysis, id_list):
     try:
-        r = requests.post(url + "/projects/{}/data".format(id_project), json=id_list)
+        rurl = (
+            url
+            + "/projects/{}/data?analysisId={}&analysisStart={}&analysisEnd={}".format(
+                id_project,
+                analysis["id"],
+                str(analysis["start"]).lower(),
+                str(analysis["end"]).lower(),
+            )
+        )
+
+        r = requests.post(rurl, json=id_list)
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         raise Exception(

@@ -35,11 +35,11 @@ class DataProvider(ABC):
 
     # Samples
     @abstractmethod
-    def get_id_list(self, _from, _to):
+    def get_id_list(self, _projectId, _analysis, _from, _to):
         pass
 
     @abstractmethod
-    def get_samples(self, id_list):
+    def get_samples(self, _projectId, _analysis, id_list):
         pass
 
     # Selections

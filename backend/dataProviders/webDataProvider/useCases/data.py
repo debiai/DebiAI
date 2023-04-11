@@ -6,13 +6,13 @@ import dataProviders.webDataProvider.http.api as api
 #
 
 
-def get_project_id_list(url, id_project, _from=None, _to=None):
-    id_list = api.get_id_list(url, id_project, _from, _to)
+def get_project_id_list(url, id_project, analysis, _from=None, _to=None):
+    id_list = api.get_id_list(url, id_project, analysis, _from, _to)
 
     return id_list
 
 
-def get_project_samples(url, id_project, id_list):
-    data = api.get_samples(url, id_project, id_list)
+def get_project_samples(url, id_project, analysis, id_list):
+    data = api.get_samples(url, id_project, analysis, id_list)
 
     return data

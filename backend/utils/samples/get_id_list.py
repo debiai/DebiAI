@@ -28,9 +28,11 @@ def get_list(data_provider, project_id, data):
     else:
         # Option 1 : get samples id list
         if "from" in data and "to" in data:
-            id_list = data_provider.get_id_list(project_id, data["from"], data["to"])
+            id_list = data_provider.get_id_list(
+                project_id, data["analysis"], data["from"], data["to"]
+            )
         else:
-            id_list = data_provider.get_id_list(project_id)
+            id_list = data_provider.get_id_list(project_id, data["analysis"])
 
         nb_from_selection = len(id_list)
 

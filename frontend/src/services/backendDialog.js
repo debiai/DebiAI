@@ -103,41 +103,8 @@ export default {
   },
 
   // Samples
-  getSampleNumber(selectionId = undefined) {
-    let code = startRequest("Loading the project data");
-    let request =
-      apiURL +
-      "data-providers/" +
-      dataProviderId() +
-      "/projects/" +
-      projectId() +
-      "/getAvailableDataNumber";
-    if (selectionId) request += "?selectionId=" + selectionId;
-
-    return axios
-      .get(request)
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-  getSampleNumberWithModelResults(modelIds, common) {
-    let code = startRequest("Loading the project data");
-    let request =
-      apiURL +
-      "data-providers/" +
-      dataProviderId() +
-      "/projects/" +
-      projectId() +
-      "/getAvailableDataNumberWithModelResults?modelIds=" +
-      modelIds +
-      "&common=" +
-      common;
-
-    return axios
-      .get(request)
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
   getProjectSamples({
+    analysis,
     selectionIds = [],
     selectionIntersection = false,
     modelIds = [],
@@ -151,12 +118,12 @@ export default {
       apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/samples";
 
     const requestBody = {
+      analysis,
       selectionIds,
       selectionIntersection,
       modelIds,
       commonResults,
     };
-
     if (from !== null && to !== null) {
       requestBody.from = from;
       requestBody.to = to;
@@ -167,154 +134,9 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
-  getSelectionSamples(selectionId) {
-    let code = startRequest("Loading the project samples list");
-    let request =
-      apiURL +
-      "data-providers/" +
-      dataProviderId() +
-      "/projects/" +
-      projectId() +
-      "/selectionSamples/" +
-      selectionId;
-
-    return axios
-      .get(request)
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
 
   // Blocks
-  addBlock(block) {
-    let code = startRequest("Adding Block");
-    return axios
-      .post(
-        apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/blocks",
-        block
-      )
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getBlocks(depth = 1) {
-    let code = startRequest("Loading the project data");
-
-    return axios
-      .get(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/blocks?depth=" +
-          depth
-      )
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getBlocksChunk(start, size, selectionId = undefined) {
-    let request =
-      apiURL +
-      "data-providers/" +
-      dataProviderId() +
-      "/projects/" +
-      projectId() +
-      "/trainingSamples?start=" +
-      start +
-      "&size=" +
-      size;
-    if (selectionId) request += "&selectionId=" + selectionId;
-
-    return axios.get(request).then((response) => response.data);
-  },
-  getBlocksChunkWithModelResults(start, size, modelIds, common, selectionId = undefined) {
-    let request =
-      apiURL +
-      "data-providers/" +
-      dataProviderId() +
-      "/projects/" +
-      projectId() +
-      "/trainingSamplesWithModelResults?start=" +
-      start +
-      "&size=" +
-      size +
-      "&modelIds=" +
-      modelIds +
-      "&common=" +
-      common;
-    if (selectionId) request += "&selectionId=" + selectionId;
-
-    return axios.get(request).then((response) => response.data);
-  },
-  getBlocksFromSelection(selectionId, depth = 1) {
-    let code = startRequest("Loading the request data");
-
-    return axios
-      .get(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/blocks/" +
-          selectionId +
-          "?depth=" +
-          depth
-      )
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getBlocksTree(blockId, blockPath, depth = 1) {
-    let code = startRequest("Loading the project data");
-
-    return axios
-      .post(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/block", {
-        blockId,
-        blockPath,
-        depth,
-      })
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getBlocksTreeWithModelResults(modelIds, common) {
-    let code = startRequest("Loading the project data and the model results");
-
-    return axios
-      .post(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/blocksWithModelResults",
-        {
-          modelIds,
-          common,
-        }
-      )
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getBlocksFromSampleIds(sampleIds) {
+  getBlocksFromSampleIds(sampleIds, analysis) {
     return axios
       .post(
         apiURL +
@@ -323,7 +145,7 @@ export default {
           "/projects/" +
           projectId() +
           "/blocksFromSampleIds",
-        { sampleIds }
+        { sampleIds, analysis }
       )
       .then((response) => response.data);
   },
