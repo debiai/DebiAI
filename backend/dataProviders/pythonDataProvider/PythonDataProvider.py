@@ -88,13 +88,13 @@ class PythonDataProvider(DataProvider):
 
     # Id list
     @project_must_exist
-    def get_id_list(self, project_id, _from=None, _to=None):
+    def get_id_list(self, project_id, analysis, _from=None, _to=None):
         # Get id list
         # Return Arr[id]
         return samples.get_all_samples_id_list(project_id, _from, _to)
 
     @project_must_exist
-    def get_samples(self, project_id, id_list):
+    def get_samples(self, project_id, analysis, id_list):
         # Get full data from id list
         # Return object { id: [data]}
         return samples.get_data_from_sampleid_list(project_id, id_list)
