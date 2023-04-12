@@ -41,9 +41,10 @@
           v-if="req.quantity > 0"
           class="quantity"
         >
-          Amount loaded: {{ req.quantity }} <br>
-          Time spent: {{ $services.timeStampToTime(Date.now() - req.creationTime) }} <br>
-          Time per 100000 items: {{ $services.timeStampToTime((Date.now() - req.creationTime) / req.quantity * 100000) }} 
+          Amount loaded: {{ req.quantity }} <br />
+          Time spent: {{ $services.timeStampToTime(Date.now() - req.creationTime) }} <br />
+          Time per 100000 items:
+          {{ $services.timeStampToTime(((Date.now() - req.creationTime) / req.quantity) * 100000) }}
         </div>
       </div>
     </transition-group>
