@@ -217,6 +217,7 @@ export default {
       this.loading = true;
       this.$backendDialog
         .getProjectSamples({
+          analysis: { id: this.$services.uuid(), start: true, end: true },
           selectionIds: this.selectedSelections.map((s) => s.id),
           selectionIntersection: this.selectionIntersection,
           modelIds: this.selectedModels.map((m) => m.id),

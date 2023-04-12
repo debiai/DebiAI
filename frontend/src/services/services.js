@@ -25,6 +25,18 @@ export default {
     return Math.floor(years) + " years ago";
   },
 
+  timeStampToTime(ts) {
+    var a = new Date(ts);
+    var hour = a.getHours() - 1; // GMT+1
+    var min = a.getMinutes();
+    var sec = a.getSeconds() + 1; // To end on a full second
+    var time = sec + "s"
+    if (min > 0) time = min + "m" + time;
+    if (hour > 0) time = hour + "h " + time;
+
+    return time;
+  },
+
   timeStampToDate(ts) {
     var a = new Date(ts);
     var months = [
@@ -48,6 +60,16 @@ export default {
     var min = a.getMinutes();
     var sec = a.getSeconds();
     var time = date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
+    return time;
+  },
+  
+  timeStampToHourAndMinute(ts) {
+    var a = new Date(ts);
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    if (min < 10) min = "0" + min;
+    if (hour < 10) hour = "0" + hour;
+    var time = hour + "h" + min;
     return time;
   },
 

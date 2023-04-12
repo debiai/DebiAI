@@ -11,11 +11,13 @@
         v-for="req in requests"
         :key="req.code"
       >
+        <!-- Name of the request -->
         <div class="top">
           <div class="name">{{ req.name }}</div>
           <div class="loader" />
         </div>
-        <!-- Display the progress bar if anny -->
+
+        <!-- Progress bar if anny -->
         <div
           class="progress"
           v-if="req.progress !== undefined"
@@ -24,6 +26,12 @@
             class="bar"
             :style="'width:' + req.progress * 100 + '%'"
           ></div>
+        </div>
+
+        <!-- Time remaining-->
+        <div v-if="req.remaining !== undefined" class="remaining">
+          Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br>
+          Time of arrival: {{ $services.timeStampToHourAndMinute(req.timeArrival) }}
         </div>
       </div>
     </transition-group>
@@ -44,7 +52,23 @@ export default {
   },
   computed: {
     requests() {
-      return this.$store.state.Dashboard.requests;
+      const requests = this.$store.state.Dashboard.requests;
+      const time = Date.now();
+
+      requests.forEach((request) => {
+        if (request.progress !== undefined && request.progress > 0) {
+          // Calculating the remaining time
+          const timeSpent = time - request.creationTime;
+          const estimatedTimeLeft = timeSpent / request.progress - timeSpent;
+          request.remaining = estimatedTimeLeft;
+
+          // Calculating the time of arrival
+          const timeArrival = time + estimatedTimeLeft;
+          request.timeArrival = timeArrival;
+        }
+      });
+
+      return requests;
     },
   },
 };
@@ -124,6 +148,13 @@ export default {
   height: 100%;
   background-color: #cfecff;
   transition: width 0.5s ease-in-out;
+}
+
+.request .remaining {
+  margin-top: 3px;
+  font-size: 0.8em;
+  text-align: left;
+  font-weight: bold;
 }
 
 /* Trasitions */
