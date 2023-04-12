@@ -29,8 +29,11 @@
         </div>
 
         <!-- Time remaining-->
-        <div v-if="req.remaining !== undefined" class="remaining">
-          Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br>
+        <div
+          v-if="req.remaining !== undefined"
+          class="remaining"
+        >
+          Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br />
           Time of arrival: {{ $services.timeStampToHourAndMinute(req.timeArrival) }}
         </div>
       </div>

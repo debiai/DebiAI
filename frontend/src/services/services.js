@@ -30,7 +30,7 @@ export default {
     var hour = a.getHours() - 1; // GMT+1
     var min = a.getMinutes();
     var sec = a.getSeconds() + 1; // To end on a full second
-    var time = sec + "s"
+    var time = sec + "s";
     if (min > 0) time = min + "m" + time;
     if (hour > 0) time = hour + "h " + time;
 
@@ -62,7 +62,7 @@ export default {
     var time = date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
     return time;
   },
-  
+
   timeStampToHourAndMinute(ts) {
     var a = new Date(ts);
     var hour = a.getHours();
