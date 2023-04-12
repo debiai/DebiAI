@@ -45,7 +45,7 @@ const Dashboard = {
     },
     updateRequestQuantity(state, { code, quantity }) {
       state.requests.find((r) => r.code == code).quantity = quantity;
-    }
+    },
   },
 };
 
