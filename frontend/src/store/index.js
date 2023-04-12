@@ -43,6 +43,9 @@ const Dashboard = {
     updateRequestProgress(state, { code, progress }) {
       state.requests.find((r) => r.code == code).progress = progress;
     },
+    updateRequestQuantity(state, { code, quantity }) {
+      state.requests.find((r) => r.code == code).quantity = quantity;
+    }
   },
 };
 

@@ -36,6 +36,13 @@
           Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br />
           Time of arrival: {{ $services.timeStampToHourAndMinute(req.timeArrival) }}
         </div>
+        <!-- Quantity processed -->
+        <div
+          v-if="req.quantity > 0"
+          class="quantity"
+        >
+          Amount loaded: {{ req.quantity }}
+        </div>
       </div>
     </transition-group>
   </div>
@@ -154,6 +161,12 @@ export default {
 }
 
 .request .remaining {
+  margin-top: 3px;
+  font-size: 0.8em;
+  text-align: left;
+  font-weight: bold;
+}
+.request .quantity {
   margin-top: 3px;
   font-size: 0.8em;
   text-align: left;

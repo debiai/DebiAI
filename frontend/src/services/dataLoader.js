@@ -30,6 +30,9 @@ function startProgressRequest(name) {
 function updateRequestProgress(code, progress) {
   store.commit("updateRequestProgress", { code, progress });
 }
+function updateRequestQuantity(code, quantity) {
+  store.commit("updateRequestQuantity", { code, quantity });
+}
 function endRequest(code) {
   store.commit("endRequest", code);
 }
@@ -132,7 +135,8 @@ async function getProjectSamplesIdList(
           break;
         }
 
-        // TODO: Update a new progress bar counter
+        // Update a new progress bar counter
+        updateRequestQuantity(requestCode, samplesIdList.length);
 
         i++;
       }
