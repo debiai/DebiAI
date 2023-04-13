@@ -16,8 +16,6 @@
         </button>
       </h2>
       <ProjectColumnsVisu />
-      <!-- TODO results structure -->
-
       <!-- Tags -->
       <!-- TODO make tags work -->
       <!-- <tags :project="project" /> -->
@@ -29,6 +27,7 @@
       v-on:settings="settings = !settings"
       v-on:refresh="loadProject"
       v-on:deleteProject="deleteProject"
+      v-on:backToProjects="backToProjects"
     />
     <transition name="fade">
       <div
@@ -285,6 +284,15 @@ export default {
           commomModelResults,
         })
         .then((data) => {
+          // If no data, stop here, it has been canceled
+          if (!data) {
+            this.$store.commit("sendMessage", {
+              title: "info",
+              msg: "Analysis canceled",
+            });
+            return;
+          }
+
           // Creating the data object
           this.$store.commit("setSelectionsIds", selectionIds);
           this.$store.commit("setColoredColumnIndex", 0);
@@ -358,6 +366,27 @@ export default {
     modelDeleted(modelId) {
       this.project.models = this.project.models.filter((m) => m.id !== modelId);
     },
+    backToProjects() {
+      if (dataLoader.isAnalysisLoading()) {
+        swal({
+          title: "Cancel the analysis?",
+          text: "An analysis is being started. Do you want to cancel it?",
+          buttons: {
+            cancel: "No",
+            validate: "Yes",
+          },
+          icon: "warning",
+          dangerMode: true,
+        }).then((validate) => {
+          if (validate) {
+            dataLoader.cancelAnalysis();
+            this.$router.push("/");
+          }
+        });
+      } else {
+        this.$router.push("/");
+      }
+    },
   },
   computed: {
     readyToAnalyse() {
@@ -382,6 +411,13 @@ export default {
     commomModelResults() {
       this.updateNbSamples();
     },
+  },
+  beforeDestroy() {
+    // We cancel the analysis if we leave the page
+    if (dataLoader.isAnalysisLoading()) dataLoader.cancelAnalysis();
+
+    // We close the swal if it is open (in case of pressing back just before the analysis start)
+    swal.close();
   },
 };
 </script>

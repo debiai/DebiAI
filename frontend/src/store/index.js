@@ -33,18 +33,29 @@ const Dashboard = {
     },
 
     // request
-    startRequest(state, { name, code, progress }) {
-      let newRequest = new Request(name, code, progress);
+    startRequest(state, { name, code, progress, cancelCallback }) {
+      let newRequest = new Request(name, code, progress, cancelCallback);
       state.requests.push(newRequest);
     },
     endRequest(state, code) {
       state.requests = state.requests.filter((r) => r.code !== code);
     },
     updateRequestProgress(state, { code, progress }) {
-      state.requests.find((r) => r.code == code).progress = progress;
+      const request = state.requests.find((r) => r.code == code);
+      if (!request) return;
+      request.progress = progress;
     },
     updateRequestQuantity(state, { code, quantity }) {
-      state.requests.find((r) => r.code == code).quantity = quantity;
+      const request = state.requests.find((r) => r.code == code);
+      if (!request) return;
+      request.quantity = quantity;
+    },
+    cancelRequest(state, code) {
+      const request = state.requests.find((r) => r.code == code);
+      if (!request) return;
+      request.cancel();
+      // Remove request
+      state.requests = state.requests.filter((r) => r.code !== code);
     },
   },
 };
