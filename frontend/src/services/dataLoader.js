@@ -30,6 +30,9 @@ function startProgressRequest(name) {
 function updateRequestProgress(code, progress) {
   store.commit("updateRequestProgress", { code, progress });
 }
+function updateRequestQuantity(code, quantity) {
+  store.commit("updateRequestQuantity", { code, quantity });
+}
 function endRequest(code) {
   store.commit("endRequest", code);
 }
@@ -97,7 +100,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
     let i = 0;
     console.warn("Project samples number is not known, loading samples ID list by chunks");
-    let requestCode = startRequest("Loading the project data ID list");
+    let requestCode = startRequest("Step 1/2: Loading the data ID list");
 
     try {
       console.time("getProjectSamplesIdList");
@@ -132,7 +135,8 @@ async function getProjectSamplesIdList(
           break;
         }
 
-        // TODO: Update a new progress bar counter
+        // Update a new progress bar counter
+        updateRequestQuantity(requestCode, samplesIdList.length);
 
         i++;
       }
@@ -153,7 +157,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
 
     console.log("Splitting ID list request in ", nbRequest, " requests");
-    let requestCode = startProgressRequest("Loading the project data ID list");
+    let requestCode = startProgressRequest("Step 1/2: Loading the data ID list");
 
     try {
       console.time("getProjectSamplesIdList");
