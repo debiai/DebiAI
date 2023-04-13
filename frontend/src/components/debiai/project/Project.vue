@@ -285,6 +285,15 @@ export default {
           commomModelResults,
         })
         .then((data) => {
+          // If no data, stop here, it has been canceled
+          if (!data) {
+            this.$store.commit("sendMessage", {
+              title: "info",
+              msg: "Analysis canceled",
+            });
+            return;
+          }
+
           // Creating the data object
           this.$store.commit("setSelectionsIds", selectionIds);
           this.$store.commit("setColoredColumnIndex", 0);

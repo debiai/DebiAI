@@ -4,6 +4,20 @@ import services from "./services";
 
 const backendDialog = require("./backendDialog");
 
+let currentAnalysis = {};
+
+function resetCurrentAnalysis() {
+  currentAnalysis = {
+    id: null,
+    canceled: false,
+    requestCodes: {
+      analysisStarting: null,
+      projectSamplesIdList: null,
+      modelResults: null,
+    },
+  };
+}
+
 //
 //  Need to take position on wich columns stay availiable or not
 //
@@ -17,9 +31,9 @@ const CATEGORIES = [
 ];
 
 // Requests functions
-function startRequest(name) {
+function startRequest(name, cancelCallback = null) {
   let requestCode = services.uuid();
-  store.commit("startRequest", { name, code: requestCode });
+  store.commit("startRequest", { name, code: requestCode, cancelCallback });
   return requestCode;
 }
 function startProgressRequest(name) {
@@ -62,12 +76,13 @@ async function getDataProviderLimit() {
 // Get project samples Id list functions
 async function getProjectSamplesIdList(
   projectMetadata,
-  analysisId,
   selectionIds = [],
   selectionIntersection = false,
   modelIds = [],
   commonResults = false
 ) {
+  if (currentAnalysis.canceled) return;
+
   // Returns the list of samples id for a project
   // this need to be done in a sequential way to avoid
   // too big requests
@@ -87,7 +102,7 @@ async function getProjectSamplesIdList(
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
     const res = await backendDialog.default.getProjectSamples({
-      analysis: { id: analysisId, start: true, end: true },
+      analysis: { id: currentAnalysis.id, start: true, end: true },
       selectionIds,
       selectionIntersection,
       modelIds,
@@ -101,6 +116,7 @@ async function getProjectSamplesIdList(
     let i = 0;
     console.warn("Project samples number is not known, loading samples ID list by chunks");
     let requestCode = startRequest("Step 1/2: Loading the data ID list");
+    currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
       console.time("getProjectSamplesIdList");
@@ -109,7 +125,7 @@ async function getProjectSamplesIdList(
         const to = (i + 1) * accepteSize - 1;
 
         // Deal with the analysis info
-        const analysis = { id: analysisId, start: false, end: false };
+        const analysis = { id: currentAnalysis.id, start: false, end: false };
         if (i === 0) analysis.start = true;
 
         // Send the request
@@ -135,6 +151,9 @@ async function getProjectSamplesIdList(
           break;
         }
 
+        // Check if the request has been canceled
+        if (currentAnalysis.canceled) break;
+
         // Update a new progress bar counter
         updateRequestQuantity(requestCode, samplesIdList.length);
 
@@ -158,6 +177,7 @@ async function getProjectSamplesIdList(
 
     console.log("Splitting ID list request in ", nbRequest, " requests");
     let requestCode = startProgressRequest("Step 1/2: Loading the data ID list");
+    currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
       console.time("getProjectSamplesIdList");
@@ -166,7 +186,7 @@ async function getProjectSamplesIdList(
         const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1;
 
         // Deal with the analysis info
-        const analysis = { id: analysisId, start: false, end: false };
+        const analysis = { id: currentAnalysis.id, start: false, end: false };
         if (i === 0) analysis.start = true;
         if (i === nbRequest - 1) analysis.end = true;
 
@@ -190,6 +210,9 @@ async function getProjectSamplesIdList(
         // Add the samples to the list
         samplesIdList = samplesIdList.concat(res.samples);
         updateRequestProgress(requestCode, (i + 1) / nbRequest);
+
+        // Check if the request has been canceled
+        if (currentAnalysis.canceled) break;
       }
       console.timeEnd("getProjectSamplesIdList");
       endRequest(requestCode);
@@ -254,7 +277,9 @@ async function getProjectMetadata({ considerResults }) {
   }
   return metaData;
 }
-async function downloadSamplesData(projectMetadata, sampleIds, analysisId) {
+async function downloadSamplesData(projectMetadata, sampleIds) {
+  if (currentAnalysis.canceled) return;
+
   const CHUNK_SIZE = projectMetadata.dataProvider.maxDataLimit;
   let pulledData = 0;
   let nbSamples = sampleIds.length;
@@ -282,7 +307,7 @@ async function downloadSamplesData(projectMetadata, sampleIds, analysisId) {
         console.log(samplesToDownload.length + " samples to download");
 
         // Deal with the analysis info
-        const analysis = { id: analysisId, start: false, end: false };
+        const analysis = { id: currentAnalysis.id, start: false, end: false };
         if (pulledData === 0) analysis.start = true;
         if (pulledData + samplesToDownload.length === nbSamples) analysis.end = true;
 
@@ -315,6 +340,9 @@ async function downloadSamplesData(projectMetadata, sampleIds, analysisId) {
       // Update the progress
       pulledData += CHUNK_SIZE;
       updateRequestProgress(requestCode, pulledData / nbSamples);
+
+      // Check if the request has been canceled
+      if (currentAnalysis.canceled) break;
     }
   } finally {
     endRequest(requestCode);
@@ -327,13 +355,11 @@ async function downloadSamplesData(projectMetadata, sampleIds, analysisId) {
 async function downloadResults(projectMetadata, modelId, sampleIds) {
   const CHUNK_SIZE = projectMetadata.dataProvider.maxResultLimit;
   let pulledData = 0;
+
   // Create a request
-  let requestCode = services.uuid();
-  store.commit("startRequest", {
-    name: modelId,
-    code: requestCode,
-    progress: 0,
-  });
+  let requestCode = startProgressRequest(modelId);
+  currentAnalysis.requestCodes.modelResults = requestCode;
+
   let modelResultsRet = {};
 
   try {
@@ -363,25 +389,23 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
       // cacheService.saveResults(timestamp, modelId, resultsToSave)
 
       pulledData += CHUNK_SIZE;
-      store.commit("updateRequestProgress", {
-        code: requestCode,
-        progress: pulledData / nbSamples,
-      });
+      updateRequestProgress(requestCode, pulledData / nbSamples);
+
+      // Check if the request has been canceled
+      if (currentAnalysis.canceled) break;
     }
   } catch (error) {
     store.commit("endRequest", requestCode);
     throw error;
   }
-  store.commit("updateRequestProgress", { code: requestCode, progress: 1 });
-  store.commit("endRequest", requestCode);
+  updateRequestProgress(requestCode, 1);
+  endRequest(requestCode);
+
   return modelResultsRet;
 }
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
-  // Generate an analysis id
-  let analysisId = services.uuid();
-
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata({ considerResults: false });
 
@@ -392,17 +416,12 @@ async function loadData(selectionIds, selectionIntersection) {
   // Get the samples to pull
   let samplesToPull = await getProjectSamplesIdList(
     projectMetadata,
-    analysisId,
     selectionIds,
     selectionIntersection
   );
 
   // Download and convert the tree
-  const { dataArray, sampleIdList } = await downloadSamplesData(
-    projectMetadata,
-    samplesToPull,
-    analysisId
-  );
+  const { dataArray, sampleIdList } = await downloadSamplesData(projectMetadata, samplesToPull);
 
   return {
     metaData: projectMetadata,
@@ -421,9 +440,6 @@ async function loadDataAndModelResults(
   modelIds,
   commonResults
 ) {
-  // Generate an analysis id
-  let analysisId = services.uuid();
-
   // Downloading project meta data, requiered to interprate the tree
   let projectMetadata = await getProjectMetadata({ considerResults: true });
 
@@ -434,7 +450,6 @@ async function loadDataAndModelResults(
   // Get the samples ID to pull
   let samplesToPull = await getProjectSamplesIdList(
     projectMetadata,
-    analysisId,
     selectionIds,
     selectionIntersection,
     modelIds,
@@ -442,11 +457,7 @@ async function loadDataAndModelResults(
   );
 
   // Download and convert the tree
-  const { dataArray, sampleIdList } = await downloadSamplesData(
-    projectMetadata,
-    samplesToPull,
-    analysisId
-  );
+  const { dataArray, sampleIdList } = await downloadSamplesData(projectMetadata, samplesToPull);
 
   // =========== Then add the model results
   // Create a request
@@ -457,6 +468,8 @@ async function loadDataAndModelResults(
     let samplesToPullFull = [];
 
     for (let i = 0; i < modelIds.length; i++) {
+      if (currentAnalysis.canceled) break;
+
       const modelId = modelIds[i];
 
       let modelResults = await downloadResults(projectMetadata, modelId, samplesToPull);
@@ -478,10 +491,7 @@ async function loadDataAndModelResults(
 
       dataArrayFull = [...dataArrayFull, ...dataAndResultsArray];
       samplesToPullFull = [...samplesToPullFull, ...modelsSamplesToPull];
-      store.commit("updateRequestProgress", {
-        code: requestCode,
-        progress: (i + 1) / modelIds.length,
-      });
+      updateRequestProgress(requestCode, (i + 1) / modelIds.length);
     }
     store.commit("endRequest", requestCode);
 
@@ -612,7 +622,11 @@ async function loadProjectSamples({
   modelIds = null,
   commomModelResults = false,
 }) {
-  let requestCode = startRequest("The analysis is starting");
+  // Setups the analysis
+  resetCurrentAnalysis();
+  let requestCode = startRequest("The analysis is starting", cancelCallback);
+  currentAnalysis.requestCodes.analysisStarting = requestCode;
+  currentAnalysis.id = services.uuid();
 
   // Load the project tree as an array
   let data, projectSamples;
@@ -627,6 +641,9 @@ async function loadProjectSamples({
     } else {
       projectSamples = await loadData(selectionIds, selectionIntersection);
     }
+
+    if (currentAnalysis.canceled) return;
+
     let metaData = projectSamples.metaData;
     let array = projectSamples.array;
     let sampleIdList = projectSamples.sampleIdList;
@@ -638,7 +655,18 @@ async function loadProjectSamples({
     endRequest(requestCode);
   }
 
+  if (currentAnalysis.canceled) return;
   return data;
+}
+
+function cancelCallback() {
+  console.log("cancelCallback");
+  currentAnalysis.canceled = true;
+
+  // Stop all the requests
+  endRequest(currentAnalysis.requestCodes.analysisStarting);
+  endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
+  endRequest(currentAnalysis.requestCodes.modelResults);
 }
 
 export default { loadProjectSamples };

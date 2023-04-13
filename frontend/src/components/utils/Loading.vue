@@ -34,8 +34,11 @@
           class="remaining"
         >
           Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br />
-          Time of arrival: {{ $services.timeStampToHourAndMinute(req.timeArrival) }}
+          <span v-if="req.remaining > 60000">
+            Time of arrival: ~{{ $services.timeStampToHourAndMinute(req.timeArrival + 60000) }}
+          </span>
         </div>
+
         <!-- Quantity processed -->
         <div
           v-if="req.quantity > 0"
@@ -46,6 +49,14 @@
           Time per 100000 items:
           {{ $services.timeStampToTime(((Date.now() - req.creationTime) / req.quantity) * 100000) }}
         </div>
+
+        <!-- Button to cancel the request -->
+        <button
+          v-if="req.cancellable"
+          @click="cancelRequest(req)"
+        >
+          Cancel
+        </button>
       </div>
     </transition-group>
   </div>
@@ -61,6 +72,9 @@ export default {
   methods: {
     removeMsg(msg) {
       this.$store.commit("removeMessage", msg);
+    },
+    cancelRequest(req) {
+      this.$store.commit("cancelRequest", req.code);
     },
   },
   computed: {
