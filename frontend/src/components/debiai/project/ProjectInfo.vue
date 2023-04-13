@@ -5,7 +5,7 @@
       <div id="title">
         <h1
           id="DebiAI"
-          @click="$router.push('/')"
+          @click="$emit('backToProjects')"
         >
           <img
             src="../../../../src/assets/images/DebiAI.png"
@@ -17,7 +17,7 @@
           <transition name="fade">
             <span v-if="project">
               <span
-                @click="$router.push('/')"
+                @click="$emit('backToProjects')"
                 class="link"
                 >Projects</span
               >

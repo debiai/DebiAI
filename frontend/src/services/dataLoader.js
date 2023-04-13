@@ -622,6 +622,9 @@ async function loadProjectSamples({
   modelIds = null,
   commomModelResults = false,
 }) {
+  // Check if the analysis is already running
+  if (isAnalysisLoading()) throw new Error("Analysis already running");
+
   // Setups the analysis
   resetCurrentAnalysis();
   let requestCode = startRequest("The analysis is starting", cancelCallback);
@@ -642,20 +645,24 @@ async function loadProjectSamples({
       projectSamples = await loadData(selectionIds, selectionIntersection);
     }
 
-    if (currentAnalysis.canceled) return;
+    if (!currentAnalysis.canceled) {
+      let metaData = projectSamples.metaData;
+      let array = projectSamples.array;
+      let sampleIdList = projectSamples.sampleIdList;
 
-    let metaData = projectSamples.metaData;
-    let array = projectSamples.array;
-    let sampleIdList = projectSamples.sampleIdList;
-
-    // Convert the the array in an column lists ready for analysing
-    data = await arrayToJson(array, metaData);
-    data.sampleIdList = sampleIdList;
+      // Convert the the array in an column lists ready for analysing
+      data = await arrayToJson(array, metaData);
+      data.sampleIdList = sampleIdList;
+    }
   } finally {
     endRequest(requestCode);
   }
 
-  if (currentAnalysis.canceled) return;
+  if (currentAnalysis.canceled) {
+    resetCurrentAnalysis();
+    return;
+  }
+  resetCurrentAnalysis();
   return data;
 }
 
@@ -668,5 +675,9 @@ function cancelCallback() {
   endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
   endRequest(currentAnalysis.requestCodes.modelResults);
 }
+function isAnalysisLoading() {
+  if (currentAnalysis.id == null || currentAnalysis.canceled) return false;
+  return true;
+}
 
-export default { loadProjectSamples };
+export default { loadProjectSamples, cancelAnalysis: cancelCallback, isAnalysisLoading };
