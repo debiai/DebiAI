@@ -59,7 +59,7 @@ class PythonDataProvider(DataProvider):
                 "projects": True,
                 "selections": True,
                 "models": True,
-            }
+            },
         }
 
     # Projects

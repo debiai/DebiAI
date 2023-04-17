@@ -105,5 +105,6 @@ def get_project_columns(project):
 
     return project_columns
 
+
 def delete_project(url, project_id):
     api.delete_project(url, project_id)
