@@ -38,3 +38,6 @@ def get_model_result_id(url, project_id, model_id):
 
 def get_model_results(url, project_id, model_id, sample_list):
     return api.get_model_result(url, project_id, model_id, sample_list)
+
+def delete_model(url, project_id, model_id):
+    return api.delete_model(url, project_id, model_id)

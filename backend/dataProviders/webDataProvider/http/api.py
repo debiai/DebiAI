@@ -32,6 +32,7 @@ def get_info(url):
         return None
 
 
+# ==== Projects ====
 def get_projects(url):
     try:
         r = requests.get(url + "/projects")
@@ -105,6 +106,15 @@ def get_samples(url, id_project, analysis, id_list):
         )
 
 
+def delete_project(url, id_project):
+    try:
+        r = requests.delete(url + "/projects/" + id_project)
+        return get_http_response(r)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
+
+
+# ==== Selections ====
 def get_selections(url, id_project):
     try:
         r = requests.get(url + "/projects/{}/selections".format(id_project))
@@ -146,6 +156,7 @@ def delete_selection(url, id_project, id_selection):
         return None
 
 
+# ==== Models ====
 def get_models(url, id_project):
     try:
         r = requests.get(url + "/projects/{}/models".format(id_project))
@@ -178,6 +189,15 @@ def get_model_result(url, id_project, id_model, id_sample_list):
         return None
 
 
+def delete_model(url, id_project, id_model):
+    try:
+        r = requests.delete(url + "/projects/{}/models/{}".format(id_project, id_model))
+        return get_http_response(r)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None
+
+
+# ==== Utils ====
 def get_http_response(response):
     try:
         if response.raise_for_status() is None:
