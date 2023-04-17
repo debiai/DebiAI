@@ -123,10 +123,15 @@ export default {
     let startAns = this.$route.query.startAnalysis;
 
     if (dataProviderId && projectId) {
-      this.$store.commit("setDataProviderId", dataProviderId);
-      this.$store.commit("setProjectId", projectId);
       this.dataProviderId = dataProviderId;
       this.projectId = projectId;
+      this.$store.commit("setDataProviderId", dataProviderId);
+      this.$store.commit("setProjectId", projectId);
+
+      // Load data-provider info
+      this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
+        this.$store.commit("setDataProviderInfo", dataInfo);
+      });
 
       // Load the project data
       this.loadProject().then(() => {
@@ -417,7 +422,9 @@ export default {
     if (dataLoader.isAnalysisLoading()) dataLoader.cancelAnalysis();
 
     // We close the swal if it is open (in case of pressing back just before the analysis start)
-    swal.close();
+    try {
+      swal.close();
+    } catch (error) {}
   },
 };
 </script>

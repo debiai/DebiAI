@@ -79,6 +79,11 @@
           <button
             class="red"
             @click="(event) => deleteModel(model.id, event)"
+            v-if="
+              $store.state.ProjectPage.dataProviderInfo &&
+              $store.state.ProjectPage.dataProviderInfo.canDelete &&
+              $store.state.ProjectPage.dataProviderInfo.canDelete.models
+            "
           >
             Delete
           </button>

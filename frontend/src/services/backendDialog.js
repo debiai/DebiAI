@@ -78,8 +78,8 @@ export default {
         return response.data;
       });
   },
-  getSingleDataProvider() {
-    let code = startRequest("Getting data provider limit");
+  getSingleDataInfo() {
+    let code = startRequest("Getting data provider info");
     return axios
       .get(apiURL + "data-providers/" + dataProviderId())
       .finally(() => {
