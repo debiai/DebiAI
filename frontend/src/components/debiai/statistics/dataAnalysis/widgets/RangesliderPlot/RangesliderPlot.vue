@@ -449,10 +449,9 @@ export default {
               },
             ],
           });
-
-          // Set the color to black if there is only one line
-          if (lines.length == 1) lines[0].line = { color: "black" };
         });
+        // Set the color to black if there is only one line
+        if (lines.length == 1) lines[0].line = { color: "black" };
       }
 
       // Create the plot title
@@ -497,10 +496,17 @@ export default {
       };
 
       // Deal with background tag color
-      const traces = lines;
+      let traces = lines;
       // const traces = [];
       const heatmap = this.drawTagHeatmap(valuesX, layout);
-      if (heatmap) traces.push(heatmap);
+      if (heatmap) {
+        // Set all the lines axis to y2
+        lines.forEach((line) => {
+          line.yaxis = "y2";
+        });
+
+        traces.unshift(heatmap);
+      }
 
       // Draw
       Plotly.react(this.plotDiv, traces, layout, {
@@ -577,16 +583,29 @@ export default {
         text: textTag,
         hovertemplate: "%{text}",
         type: "heatmap",
-        opacity: 0.3,
-        yaxis: "y2",
+        opacity: 0.45,
         colorscale: "Portland",
       };
 
+      if (colTag.type === String) heatmap.showscale = false;
+
       // Complete the layout with an additional yaxis
-      layout.yaxis2 = {
+      layout.yaxis = {
+        title: "Ax1",
+        side: "right",
         title: "",
+        showgrid: false,
+        showticklabels: false,
+        showline: false,
+        zeroline: false,
+        ticks: "",
+        ticksuffix: " ",
+      };
+      layout.yaxis2 = {
         overlaying: "y",
-        display: false,
+        autorange: true,
+        type: "linear",
+        fixedrange: false,
       };
 
       return heatmap;
