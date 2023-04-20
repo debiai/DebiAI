@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.22.2
+  version: 0.22.3
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -102,6 +102,20 @@ paths:
                 type: integer
               maxResultByRequest:
                 type: integer
+
+              canDelete:
+                type: object
+                description: Informations about what can be deleted by DebiAI
+                properties:
+                  projects:
+                    type: boolean
+                    default: true
+                  selections:
+                    type: boolean
+                    default: true
+                  models:
+                    type: boolean
+                    default: true
         400:
           description: The Data provider id must not be null
         404:

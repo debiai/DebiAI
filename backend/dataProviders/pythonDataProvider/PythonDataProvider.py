@@ -55,6 +55,11 @@ class PythonDataProvider(DataProvider):
             "maxSampleIdByRequest": 10000,
             "maxSampleDataByRequest": 2000,
             "maxResultByRequest": 5000,
+            "canDelete": {
+                "projects": True,
+                "selections": True,
+                "models": True,
+            },
         }
 
     # Projects
