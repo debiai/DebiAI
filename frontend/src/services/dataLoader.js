@@ -52,8 +52,11 @@ function endRequest(code) {
 }
 async function getDataProviderLimit() {
   try {
-    let dataProviderInfo = await backendDialog.default.getSingleDataProvider();
-
+    let dataProviderInfo = store.state.ProjectPage.dataProviderInfo;
+    if (!dataProviderInfo) {
+      dataProviderInfo = await backendDialog.default.getDataProviderInfo();
+      store.commit("setDataProviderInfo", dataProviderInfo);
+    }
     const dataProviderLimit = {
       maxIdLimit: dataProviderInfo.maxSampleIdByRequest || 10000,
       maxDataLimit: dataProviderInfo.maxSampleDataByRequest || 2000,

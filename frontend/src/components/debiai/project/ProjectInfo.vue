@@ -86,41 +86,48 @@
 
     <!-- Controls & date -->
     <div id="right">
-      <!-- Setting btn -->
-      <button
-        id="settings"
-        @click="$emit('settings')"
-      >
-        <inline-svg
-          :src="require('../../../assets/svg/settings.svg')"
-          width="15"
-          height="15"
-          fill="white"
-        />
-      </button>
+      <div id="btnsTop">
+        <!-- Setting btn -->
+        <button
+          id="settings"
+          @click="$emit('settings')"
+        >
+          <inline-svg
+            :src="require('../../../assets/svg/settings.svg')"
+            width="15"
+            height="15"
+            fill="white"
+          />
+        </button>
 
-      <!-- Delete btn -->
-      <button
-        id="delete"
-        class="red"
-        @click="$emit('deleteProject')"
-      >
-        Delete
-      </button>
+        <!-- Delete btn -->
+        <button
+          id="delete"
+          class="red"
+          @click="$emit('deleteProject')"
+          v-if="
+            $store.state.ProjectPage.dataProviderInfo &&
+            $store.state.ProjectPage.dataProviderInfo.canDelete &&
+            $store.state.ProjectPage.dataProviderInfo.canDelete.projects
+          "
+        >
+          Delete
+        </button>
 
-      <!-- Refresh btn -->
-      <button
-        id="refresh"
-        class="warning"
-        @click="$emit('refresh')"
-      >
-        <inline-svg
-          :src="require('../../../assets/svg/update.svg')"
-          width="10"
-          height="10"
-        />
-        Refresh
-      </button>
+        <!-- Refresh btn -->
+        <button
+          id="refresh"
+          class="warning"
+          @click="$emit('refresh')"
+        >
+          <inline-svg
+            :src="require('../../../assets/svg/update.svg')"
+            width="10"
+            height="10"
+          />
+          Refresh
+        </button>
+      </div>
 
       <transition name="fade">
         <div
@@ -225,30 +232,25 @@ export default {
 
 /* Right */
 #right {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr 1fr;
-  grid-template-rows: 40px 40px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "settings delete refresh"
-    "dates dates dates";
-  grid-area: right;
+  display: flex;
+  flex-direction: column;
   padding: 10px 20px 0 0;
 }
 
-#settings {
-  grid-area: settings;
+#btnsTop {
+  display: flex;
   margin: 5px;
+}
+#settings {
+  flex: 0.4;
 }
 
 #delete {
-  grid-area: delete;
-  margin: 5px;
+  flex: 0.8;
 }
 
 #refresh {
-  grid-area: refresh;
-  margin: 5px;
+  flex: 1;
 }
 
 #dates {

@@ -48,6 +48,11 @@
     <button
       class="red"
       @click="(event) => deleteSelection(event)"
+      v-if="
+        $store.state.ProjectPage.dataProviderInfo &&
+        $store.state.ProjectPage.dataProviderInfo.canDelete &&
+        $store.state.ProjectPage.dataProviderInfo.canDelete.selections
+      "
     >
       Delete
     </button>

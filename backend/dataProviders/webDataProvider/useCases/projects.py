@@ -104,3 +104,7 @@ def get_project_columns(project):
             project_columns.append(col)
 
     return project_columns
+
+
+def delete_project(url, project_id):
+    api.delete_project(url, project_id)

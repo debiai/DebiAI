@@ -67,6 +67,7 @@ const ProjectPage = {
     selectionsIds: [],
     projectColumns: [],
     projectResultsColumns: [],
+    dataProviderInfo: null,
   },
   mutations: {
     setProjectId(state, projectId) {
@@ -84,6 +85,10 @@ const ProjectPage = {
     setSelectionsIds(state, selectionsIds) {
       if (selectionsIds) state.selectionsIds = selectionsIds;
       else state.selectionsIds = [];
+    },
+    setDataProviderInfo(state, dataProviderInfo) {
+      state.dataProviderInfo = dataProviderInfo;
+      console.log("DataProviderInfo", dataProviderInfo);
     },
   },
 };
