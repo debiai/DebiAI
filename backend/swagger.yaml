@@ -915,7 +915,7 @@ paths:
               name:
                 type: string
                 description: Name of the configuration
-                maxLength: 50
+                maxLength: 100
                 minLength: 1
               projectId:
                 type: string

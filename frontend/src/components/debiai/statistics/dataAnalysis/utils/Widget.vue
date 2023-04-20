@@ -421,10 +421,7 @@ export default {
       this.confToSave = slotCom.getConf();
 
       // Find a suggested name
-      this.suggestedConfName = "";
-      if (this.name !== this.title) this.suggestedConfName = this.name;
-      else if ("getConfNameSuggestion" in slotCom)
-        this.suggestedConfName = slotCom.getConfNameSuggestion();
+      this.suggestedConfName = slotCom.getConfNameSuggestion();
 
       // Open the configuration creator modal
       this.confSettings = true;

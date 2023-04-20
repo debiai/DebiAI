@@ -379,7 +379,7 @@ export default {
         confName += " / " + this.data.columns[this.coloredColumnIndex].label;
 
       if (this.columnTagIndex !== null)
-        confName += ", Background is: " + this.data.columns[this.columnTagIndex].label;
+        confName += ", Background is " + this.data.columns[this.columnTagIndex].label;
 
       return confName;
     },

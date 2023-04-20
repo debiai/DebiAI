@@ -16,10 +16,11 @@
       <div class="data">
         <div class="name">Name</div>
         <div class="value">
-          <input
+          <textarea
+            id="confNameArea"
             type="text"
             v-model="confName"
-            style="flex: 1"
+            style="flex: 2"
             placeholder="Configuration name"
           />
           <!-- <select v-model="confName">
@@ -27,6 +28,19 @@
               {{ configuration.name }}
             </option>
           </select> -->
+          <button
+            title="Reset the configuration name to the one suggested by the widget"
+            @click="confName = suggestedConfName"
+            v-if="confName !== suggestedConfName"
+          >
+            <inline-svg
+              :src="require('@/assets/svg/update.svg')"
+              width="10"
+              height="10"
+              fill="white"
+              style="transform: scale(1.2)"
+            />
+          </button>
         </div>
       </div>
 
@@ -41,8 +55,7 @@
             cols="15"
             v-model="confDescription"
             placeholder="Widget configuration description"
-          >
-          </textarea>
+          />
         </div>
       </div>
 
@@ -138,11 +151,18 @@ export default {
           });
           this.$emit("saved", this.confName);
         })
-        .catch(() => {
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't save the widget configuration",
-          });
+        .catch((e) => {
+          if (e.response && e.response.data?.detail) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: e.response.data.detail,
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Couldn't save the widget configuration",
+            });
+          }
         });
     },
   },
@@ -185,5 +205,7 @@ export default {
 }
 #controls {
   padding: 5px;
+}
+#confNameArea {
 }
 </style>
