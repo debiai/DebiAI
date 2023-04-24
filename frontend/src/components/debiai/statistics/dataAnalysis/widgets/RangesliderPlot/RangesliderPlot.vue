@@ -46,6 +46,21 @@
         v-on:validate="yMultipleAxisSelect"
       />
     </modal>
+    <!-- Tag axis selection -->
+    <modal
+      v-if="tagAxisSelection"
+      @close="tagAxisSelection = false"
+    >
+      <ColumnSelection
+        title="Select the backgroud color column"
+        :data="data"
+        :validateRequiered="false"
+        :colorSelection="true"
+        :defaultSelected="columnTagIndex === null ? undefined : [columnTagIndex]"
+        v-on:cancel="tagAxisSelection = false"
+        v-on:colSelect="tagAxiesSelect"
+      />
+    </modal>
 
     <!-- Settings -->
     <div
@@ -128,6 +143,40 @@
               </label>
             </div>
           </div>
+          <!-- Tag column -->
+          <div class="data">
+            <span class="name">Background color</span>
+            <div
+              class="value"
+              v-if="columnTagIndex !== null"
+            >
+              <Column
+                :column="data.columns.find((c) => c.index == columnTagIndex)"
+                :colorSelection="true"
+                v-on:selected="tagAxisSelection = true"
+              />
+              <button
+                class="red"
+                @click="
+                  columnTagIndex = null;
+                  plotDrawed = false;
+                "
+              >
+                Remove
+              </button>
+            </div>
+            <div
+              class="value"
+              v-else
+            >
+              <button
+                class="blue"
+                @click="tagAxisSelection = true"
+              >
+                Select a column
+              </button>
+            </div>
+          </div>
           <!-- Multiple Y axis -->
           <div class="data">
             <div class="name">Multiple Y columns</div>
@@ -188,12 +237,14 @@ export default {
       yAxisSelection: false,
       yMultipleAxisSelection: false,
       multipleYAxis: false,
+      tagAxisSelection: false,
 
       // Conf
       columnXindex: 0,
       columnYindex: 0,
       selectedYColumnsIds: [],
       dividePerColor: true,
+      columnTagIndex: null,
 
       // Other
       currentDrawedColorIndex: null,
@@ -241,6 +292,7 @@ export default {
         dividePerColor: this.dividePerColor,
       };
 
+      // Multiple Y axis
       if (this.multipleYAxis) {
         conf.multipleYAxis = true;
         conf.YColumns = this.selectedYColumnsIds.map((id) => this.data.columns[id].label);
@@ -248,27 +300,30 @@ export default {
         conf.columnY = this.data.columns[this.columnYindex].label;
       }
 
+      // Tag column
+      if (this.columnTagIndex !== null)
+        conf.columnTag = this.data.columns[this.columnTagIndex].label;
+      else conf.columnTag = null;
+
       return conf;
     },
     setConf(conf) {
+      const sendColNotFoundMessage = (col) => {
+        this.$store.commit("sendMessage", {
+          title: "warning",
+          msg: "The column " + col + " hasn't been found",
+        });
+      };
       if (!conf) return;
       if ("columnX" in conf) {
         let c = this.data.columns.find((c) => c.label == conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
-          this.$store.commit("sendMessage", {
-            title: "warning",
-            msg: "The column " + conf.columnX + " hasn't been found",
-          });
+        else sendColNotFoundMessage(conf.columnX);
       }
       if ("columnY" in conf) {
         let c = this.data.columns.find((c) => c.label == conf.columnY);
         if (c) this.columnYindex = c.index;
-        else
-          this.$store.commit("sendMessage", {
-            title: "warning",
-            msg: "The column " + conf.columnY + " hasn't been found",
-          });
+        else sendColNotFoundMessage(conf.columnY);
       }
       if ("multipleYAxis" in conf && conf.multipleYAxis && "YColumns" in conf) {
         this.multipleYAxis = true;
@@ -276,14 +331,16 @@ export default {
         conf.YColumns.forEach((label) => {
           let c = this.data.columns.find((c) => c.label == label);
           if (c) this.selectedYColumnsIds.push(c.index);
-          else
-            this.$store.commit("sendMessage", {
-              title: "warning",
-              msg: "The column " + label + " hasn't been found",
-            });
+          else sendColNotFoundMessage(label);
         });
       } else this.multipleYAxis = false;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
+      if (conf.columnTag === null || conf.columnTag === undefined) this.columnTagIndex = null;
+      if ("columnTag" in conf) {
+        let c = this.data.columns.find((c) => c.label == conf.columnTag);
+        if (c) this.columnTagIndex = c.index;
+        else sendColNotFoundMessage(conf.columnTag);
+      }
       this.plotDrawed = false;
     },
     defConfChangeUpdate() {
@@ -294,6 +351,7 @@ export default {
           vm.selectedYColumnsIds,
           vm.dividePerColor,
           vm.multipleYAxis,
+          vm.columnTagIndex,
           Date.now()
         ),
         () => {
@@ -302,10 +360,27 @@ export default {
       );
     },
     getConfNameSuggestion() {
-      let confName =
-        this.data.columns[this.columnXindex].label +
-        " / " +
-        this.data.columns[this.columnYindex].label;
+      let confName;
+      if (this.multipleYAxis) {
+        confName = this.data.columns[this.columnXindex].label + " / ";
+        this.selectedYColumnsIds.forEach((id) => {
+          confName += this.data.columns[id].label + ", ";
+        });
+        confName = confName.slice(0, -3);
+      } else
+        confName =
+          this.data.columns[this.columnXindex].label +
+          " / " +
+          this.data.columns[this.columnYindex].label;
+
+      console.log(this.multipleYAxis);
+      console.log(confName);
+      if (this.dividePerColor && this.coloredColumnIndex !== null)
+        confName += " / " + this.data.columns[this.coloredColumnIndex].label;
+
+      if (this.columnTagIndex !== null)
+        confName += ", Background is " + this.data.columns[this.columnTagIndex].label;
+
       return confName;
     },
 
@@ -399,6 +474,8 @@ export default {
             ],
           });
         });
+        // Set the color to black if there is only one line
+        if (lines.length == 1) lines[0].line = { color: "black" };
       }
 
       // Create the plot title
@@ -414,6 +491,11 @@ export default {
       if (this.dividePerColor && this.coloredColumnIndex !== null) {
         const colColor = this.data.columns[this.coloredColumnIndex];
         plotTitle += " grouped by <b>" + colColor.label + "</b>";
+      }
+
+      if (this.columnTagIndex !== null) {
+        const colTag = this.data.columns[this.columnTagIndex];
+        plotTitle += " with background color <b>" + colTag.label + "</b>";
       }
 
       // Create the layout
@@ -442,8 +524,21 @@ export default {
         shapes: [],
       };
 
+      // Deal with background tag color
+      let traces = lines;
+      // const traces = [];
+      const heatmap = this.drawTagHeatmap(valuesX, layout);
+      if (heatmap) {
+        // Set all the lines axis to y2
+        lines.forEach((line) => {
+          line.yaxis = "y2";
+        });
+
+        traces.unshift(heatmap);
+      }
+
       // Draw
-      Plotly.react(this.plotDiv, lines, layout, {
+      Plotly.react(this.plotDiv, traces, layout, {
         displayModeBar: false,
         responsive: true,
       });
@@ -457,7 +552,6 @@ export default {
       this.$parent.$emit("drawed");
       this.currentDrawedColorIndex = this.coloredColumnIndex;
     },
-
     drawLine(x) {
       const lineStyle = {
         type: "line",
@@ -477,7 +571,6 @@ export default {
 
       Plotly.relayout(this.plotDiv, { "shapes[0]": lineStyle });
     },
-
     drawRectangle(x1, x2) {
       const recStyle = {
         type: "rect",
@@ -495,7 +588,57 @@ export default {
 
       Plotly.relayout(this.plotDiv, { "shapes[0]": recStyle });
     },
+    drawTagHeatmap(x, layout) {
+      if (this.columnTagIndex === null) return;
+      const colTag = this.data.columns[this.columnTagIndex];
 
+      // Get the tag values with selection
+      let valuesTag = [];
+      if (colTag.type === String) valuesTag = this.selectedData.map((i) => colTag.valuesIndex[i]);
+      else valuesTag = this.selectedData.map((i) => colTag.values[i]);
+
+      // Construct a text array for the hover
+      const textTag = valuesTag.map((v) => colTag.uniques[v] || v);
+
+      // Create an array full of 1 for the y axis
+      const valuesTagY = [];
+      for (let i = 0; i < valuesTag.length; i++) valuesTagY.push(1);
+
+      const heatmap = {
+        name: colTag.label,
+        x: x,
+        y: valuesTagY,
+        z: valuesTag,
+        text: textTag,
+        hovertemplate: "%{text}",
+        type: "heatmap",
+        opacity: 0.45,
+        colorscale: "Portland",
+      };
+
+      if (colTag.type === String || this.multipleYAxis) heatmap.showscale = false;
+
+      // Complete the layout with an additional yaxis
+      layout.yaxis = {
+        title: "Ax1",
+        side: "right",
+        title: "",
+        showgrid: false,
+        showticklabels: false,
+        showline: false,
+        zeroline: false,
+        ticks: "",
+        ticksuffix: " ",
+      };
+      layout.yaxis2 = {
+        overlaying: "y",
+        autorange: true,
+        type: "linear",
+        fixedrange: false,
+      };
+
+      return heatmap;
+    },
     resetShapes() {
       if (this.border1 !== null && this.border2 !== null)
         Plotly.relayout(this.plotDiv, {
@@ -531,7 +674,11 @@ export default {
       this.columnXindex = temp;
       this.drawPlot();
     },
-
+    tagAxiesSelect(index) {
+      this.columnTagIndex = index;
+      this.tagAxisSelection = false;
+      this.plotDrawed = false;
+    },
     // Filters
     selectDataOnPlot(data) {
       if (!this.filtering) return;
@@ -667,6 +814,9 @@ export default {
     redrawRequiered(o, n) {
       this.$parent.colorWarning = n;
     },
+    multipleYAxis() {
+      this.plotDrawed = false;
+    },
   },
 };
 </script>
@@ -719,6 +869,9 @@ export default {
 #configBtns {
   margin: 10px;
   justify-content: space-evenly;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
 }
 
 #drawBtn {
