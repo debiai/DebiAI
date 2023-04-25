@@ -432,11 +432,6 @@ async function loadData(selectionIds, selectionIntersection) {
     sampleIdList,
   };
 }
-/**
- * @param {Array<string>} modelIds
- * @param {boolean} common get the common sample or not
- * @param {string?} selectionId Get model on the selection if provided
- */
 async function loadDataAndModelResults(
   selectionIds,
   selectionIntersection,
@@ -658,7 +653,8 @@ async function loadProjectSamples({
       data.sampleIdList = sampleIdList;
     }
   } finally {
-    endRequest(requestCode);
+    // End the analysis
+    cancelCallback();
   }
 
   if (currentAnalysis.canceled) {
