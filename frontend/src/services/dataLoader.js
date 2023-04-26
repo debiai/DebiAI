@@ -397,12 +397,10 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
       // Check if the request has been canceled
       if (currentAnalysis.canceled) break;
     }
-  } catch (error) {
-    store.commit("endRequest", requestCode);
-    throw error;
+    updateRequestProgress(requestCode, 1);
+  } finally {
+    endRequest(requestCode);
   }
-  updateRequestProgress(requestCode, 1);
-  endRequest(requestCode);
 
   return modelResultsRet;
 }
@@ -652,15 +650,21 @@ async function loadProjectSamples({
       data = await arrayToJson(array, metaData);
       data.sampleIdList = sampleIdList;
     }
+  } catch (e) {
+    console.error(e);
+    resetCurrentAnalysis();
+    throw e;
   } finally {
-    // End the analysis
-    cancelCallback();
+    endRequest(requestCode);
   }
 
   if (currentAnalysis.canceled) {
+    // The analysis was canceled, we return null
     resetCurrentAnalysis();
     return;
   }
+
+  // Got the samples, we return the data
   resetCurrentAnalysis();
   return data;
 }
