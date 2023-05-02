@@ -90,7 +90,7 @@ export default {
 /* Label  */
 
 #column .label {
-  width: 140px;
+  width: 200px;
   justify-content: center;
   align-items: center;
 
