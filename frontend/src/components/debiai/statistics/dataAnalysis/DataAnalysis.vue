@@ -456,7 +456,6 @@ export default {
       while (this.components.length > 0) this.removeWidget(this.components[0]);
     },
     layout() {
-      console.log(this.getLayout());
       this.layoutModal = true;
     },
   },

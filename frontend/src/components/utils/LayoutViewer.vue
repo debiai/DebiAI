@@ -1,24 +1,27 @@
 <template>
   <div id="layoutViewer">
     <!-- Display a layout in a graphical way -->
-    <!-- {{ layout }} -->
+    <div v-if="layout.length === 0">No layout to display</div>
+
     <div
       class="component"
       v-for="component in layout"
       :key="component.id"
       :style="{
-        gridColumn: component.x + 1,
-        gridRow: component.y + 1,
-        width: component.width * 100 + '%',
-        height: component.height * 100 + '%',
+        left: (component.x / analysisMaxX) * 100 + 1.5 + '%',
+        top: (component.y / lowestY) * 100 + 2 + '%',
+        width: (component.width / analysisMaxX) * 100 - 4 + '%',
+        height: (component.height / lowestY) * 100 - 3 + '%',
+        'background-image':
+          'url(' +
+          require(`@/components/debiai/statistics/dataAnalysis/widgets/${component.key}/icon.png`) +
+          ')',
       }"
-    />
-      <!-- {{ component.key }} -->
-      <!-- {{ component.layout.x }} -->
-      <!-- {{ component.layout.y }} -->
-      <!-- {{ component.layout.width }} -->
-      <!-- {{ component.layout.height }} -->
-    <!-- </div> -->
+    >
+      <div class="content">
+        {{ component.key }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,7 +38,17 @@ export default {
     };
   },
   methods: {},
-  computed: {},
+  computed: {
+    lowestY() {
+      let lowestY = 0;
+      this.layout.forEach((component) => {
+        if (component.y + component.height > lowestY) {
+          lowestY = component.y + component.height;
+        }
+      });
+      return lowestY + 0.5;
+    },
+  },
 };
 </script>
 
@@ -46,16 +59,41 @@ export default {
   margin: 5px;
   border: 1px solid black;
   border-radius: 3px;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, 1fr);
-  gap: 0.5px 0.5px;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 .component {
-  background-color: rgb(190, 250, 250);
+  cursor: pointer;
+  background-color: white;
   border: 1px solid black;
   border-radius: 3px;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-top: 5px solid rgb(121, 121, 121);
+  background-size: contain;
+  background-position: center;
+}
+
+.component .content {
+  display: none;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 3px;
+  z-index: 1;
+  padding: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.component:hover .content {
+  display: block;
 }
 </style>

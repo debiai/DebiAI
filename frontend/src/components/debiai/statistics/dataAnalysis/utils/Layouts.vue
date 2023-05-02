@@ -13,45 +13,46 @@
     </h2>
 
     <!-- Layout save -->
-    <h3>Save the current layout</h3>
-
     <div class="aligned">
       <!-- Form -->
-      <form
-        id="saveLayout"
-        class="dataGroup"
-      >
-        <!-- Layout name -->
-        <div class="data">
-          <span class="name"> Name </span>
-          <span class="value">
-            <input
-              type="text"
-              v-model="layoutName"
-              style="flex: 1"
-            />
-          </span>
-        </div>
-        <!-- Layout description -->
-        <div class="data">
-          <span class="name"> Description </span>
-          <span class="value">
-            <textarea
-              v-model="layoutDescription"
-              style="height: 50px; flex: 1"
-              placeholder="Optional layout description"
-            />
-          </span>
-        </div>
-        <!-- Save btn -->
-        <button
-          type="submit"
-          @click="save"
-          :disabled="!layoutNameOk"
+      <div>
+        <h3 class="padded">Save the current layout</h3>
+        <form
+          id="saveLayout"
+          class="dataGroup"
         >
-          Save the layout
-        </button>
-      </form>
+          <!-- Layout name -->
+          <div class="data">
+            <span class="name"> Name </span>
+            <span class="value">
+              <input
+                type="text"
+                v-model="layoutName"
+                style="flex: 1"
+              />
+            </span>
+          </div>
+          <!-- Layout description -->
+          <div class="data">
+            <span class="name"> Description </span>
+            <span class="value">
+              <textarea
+                v-model="layoutDescription"
+                style="height: 50px; flex: 1"
+                placeholder="Optional layout description"
+              />
+            </span>
+          </div>
+          <!-- Save btn -->
+          <button
+            type="submit"
+            @click="save"
+            :disabled="!layoutNameOk"
+          >
+            Save the layout
+          </button>
+        </form>
+      </div>
 
       <!-- LayoutVisualisation -->
       <LayoutViewer :layout="layout" />
