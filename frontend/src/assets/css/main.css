@@ -338,6 +338,12 @@ button .badge {
   margin-left: 10px;
   margin-right: 10px;
 }
+.padded {
+  padding: 10px;
+}
+.padded-bot {
+  padding-bottom: 10px;
+}
 
 .date {
   opacity: 0.6;

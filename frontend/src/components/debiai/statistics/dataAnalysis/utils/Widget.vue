@@ -541,7 +541,7 @@ export default {
 }
 
 #name {
-  min-width: 30px;
+  overflow: hidden;
 }
 
 #name.clickable {
@@ -597,6 +597,11 @@ export default {
   padding: 0px 8px 0px 8px;
 }
 
+/* Set all the text to no wram and overflow hidden */
+.updateWarning * {
+  white-space: nowrap;
+  overflow: hidden;
+}
 .updateWarning button {
   padding: 1px 5px 1px 5px;
   margin-left: 10px;

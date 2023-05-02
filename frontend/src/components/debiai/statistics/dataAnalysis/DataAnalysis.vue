@@ -51,13 +51,23 @@
         @exported="selectionExport = false"
       />
     </modal>
+    <!-- Layout -->
+    <modal
+      v-if="layoutModal"
+      @close="layoutModal = false"
+    >
+      <Layouts
+        @cancel="layoutModal = false"
+        :components="components"
+        :gridstack="grid"
+      />
+    </modal>
     <!-- WidgetCatalog -->
     <modal
       v-if="widgetCatalog"
       @close="widgetCatalog = false"
     >
       <WidgetCatalog
-        :widgets="availableWidgets"
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
@@ -80,10 +90,9 @@
       @saveSelection="saveSelection"
       @tagCreation="tagCreation"
       @exportSelection="exportSelection"
-      @defaultLayout="defaultLayout"
-      @clearLayout="clearLayout"
-      @changeDefaultLayout="changeDefaultLayout"
+      @layout="layout"
       @restoreDefaultLayout="restoreDefaultLayout"
+      @clearLayout="clearLayout"
     />
     <!-- floating wiget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
@@ -152,7 +161,6 @@
 
 <script>
 import { GridStack } from "gridstack";
-import swal from "sweetalert";
 import "gridstack/dist/gridstack.css";
 import fab from "vue-fab"; // For the bubble floating menu
 
@@ -165,6 +173,7 @@ import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
+import Layouts from "./utils/Layouts";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -182,6 +191,7 @@ export default {
     SelectionCreator,
     TagCreator,
     SelectionExportMenu,
+    Layouts,
     WidgetCatalog,
 
     Footer,
@@ -196,15 +206,15 @@ export default {
       selectedData: null, // Index of the selected samples or results
 
       // Workspace
-      gridStacklayout: [],
-      availableWidgets: [],
       components: [],
+      grid: null,
 
       // Modals
       customColumnCreation: false,
       saveSelectionWidget: false,
       tagCreationWidget: false,
       selectionExport: false,
+      layoutModal: false,
       widgetCatalog: false,
 
       // Menu
@@ -234,27 +244,21 @@ export default {
           color: "var(--success)",
         },
         {
-          name: "defaultLayout",
-          icon: "settings_backup_restore",
-          tooltip: "Default layout",
-          color: "var(--warningDark)",
-        },
-        {
-          name: "clearLayout",
-          icon: "delete",
-          tooltip: "Clear layout",
-          color: "var(--dangerDark)",
-        },
-        {
-          name: "changeDefaultLayout",
-          icon: "handyman",
-          tooltip: "Change the default layout",
-          color: "var(--warningDark)",
+          name: "layout",
+          icon: "auto_awesome_mosaic",
+          tooltip: "Save or load layout",
+          color: "var(--info)",
         },
         {
           name: "restoreDefaultLayout",
           icon: "undo",
           tooltip: "Restore the default layout",
+          color: "var(--warning)",
+        },
+        {
+          name: "clearLayout",
+          icon: "delete",
+          tooltip: "Clear layout",
           color: "var(--dangerDark)",
         },
       ],
@@ -347,9 +351,6 @@ export default {
           import("./widgets/" + componentKey + "/" + componentKey + ".vue")
         );
       });
-
-      // Loading the available widgets names
-      this.availableWidgets = componentsGridStackData.getAvailableWidgets();
     },
     loadLayout(layout) {
       this.clearLayout();
@@ -415,24 +416,16 @@ export default {
         return JSON.stringify(layout);
       }
     },
+    saveLayout() {
+      // TODO
+      const layout = this.getLayout();
+    },
 
     // Buttons
-    defaultLayout() {
-      // Check if the default layout has been overide by a local storage grid stack layout
-      let savedGridStackDefaultLayout = window.localStorage.getItem("gridStackDefaultLayout");
-      if (savedGridStackDefaultLayout) {
-        savedGridStackDefaultLayout = JSON.parse(savedGridStackDefaultLayout);
-        this.loadLayout(savedGridStackDefaultLayout);
-
-        // Send message to the user
-        this.$store.commit("sendMessage", {
-          title: "success",
-          msg: "Custom default layout loaded",
-        });
-      } else {
-        // No saved default layout
+    restoreDefaultLayout() {
+      setTimeout(() => {
         this.loadLayout(componentsGridStackData.defaultLayout);
-      }
+      }, 100);
     },
     clearLayout() {
       while (this.components.length > 0) this.removeWidget(this.components[0]);
@@ -450,13 +443,6 @@ export default {
         msg: "Column created successfully",
       });
     },
-    saveLayout() {
-      const layout = this.getLayout();
-      if (layout) {
-        // Save curent configuration into local storage
-        window.localStorage.setItem("gridStackLayout", layout);
-      }
-    },
     saveSelection() {
       this.saveSelectionWidget = true;
     },
@@ -466,41 +452,12 @@ export default {
     exportSelection() {
       this.selectionExport = true;
     },
-    changeDefaultLayout() {
-      swal({
-        title: "Change the default layout ?",
-        text: "This will replace the current default widget layout for all the projects",
-        buttons: true,
-        dangerMode: true,
-      }).then((validate) => {
-        if (validate) {
-          const layout = this.getLayout();
-          if (layout) {
-            // Save curent configuration into local storage
-            window.localStorage.setItem("gridStackDefaultLayout", layout);
-            this.$store.commit("sendMessage", {
-              title: "success",
-              msg: "Default layout saved successfully",
-            });
-          }
-        }
-      });
+    clearLayout() {
+      while (this.components.length > 0) this.removeWidget(this.components[0]);
     },
-    restoreDefaultLayout() {
-      swal({
-        title: "Restore the default layout ?",
-        text: "This will replace the current default widget layout by the default application one",
-        buttons: true,
-        dangerMode: true,
-      }).then((validate) => {
-        if (validate) {
-          window.localStorage.removeItem("gridStackDefaultLayout");
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Default layout restored",
-          });
-        }
-      });
+    layout() {
+      console.log(this.getLayout());
+      this.layoutModal = true;
     },
   },
   computed: {
