@@ -92,9 +92,20 @@ export default {
   },
   methods: {
     save(e) {
-      console.log("save");
       e.preventDefault();
-      this.$emit("cancel");
+
+      console.log(this.components);
+      const requestBody = {
+        name: this.layoutName,
+        description: this.layoutDescription,
+        layout: [],
+      };
+
+      // Expected layout:
+      // [{ x, y, w, h, key, config }];
+
+      console.log("save");
+      // this.$emit("cancel");
       this.$store.commit("sendMessage", {
         title: "success",
         msg: "Layout saved",

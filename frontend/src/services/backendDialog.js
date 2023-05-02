@@ -372,6 +372,31 @@ export default {
       });
   },
 
+  // Layouts
+  getLayouts() {
+    return axios.get(apiURL + "app/layouts/").then((response) => response.data);
+  },
+  saveLayout({ layout, name, description }) {
+    let code = startRequest("Saving layout");
+    return axios
+      .post(apiURL + "app/layouts/", {
+        projectId: projectId(),
+        dataProviderId: dataProviderId(),
+        layout: layout,
+        name: name,
+        description: description,
+      })
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+  deleteLayout(layoutId) {
+    let code = startRequest("Deleting layout");
+    return axios
+      .delete(apiURL + "app/layouts/" + layoutId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+
   // Widget configurations
   getWidgetConfigurationsOverview() {
     return axios.get(apiURL + "app/widget-configurations/").then((response) => response.data);
