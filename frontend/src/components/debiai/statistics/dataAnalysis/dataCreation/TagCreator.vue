@@ -38,35 +38,6 @@
           />
         </span>
       </div>
-      <!-- Tag saving TODO : make it work again -->
-      <!-- <div class="data">
-        <span class="name">
-          Save the tag on the server :
-
-          <DocumentationBlock>
-            With this option enabled, the tagged values will be saved on the
-            server.
-            <br />
-            Saving the tag on the server allows you to load the tagged samples
-            from the Python library.
-            <br />
-            The tag can also be used to select specific samples with a request
-            from the project page (coming soon).
-          </DocumentationBlock>
-        </span>
-        <span class="value">
-          <input
-            type="checkbox"
-            id="saveTagBackend"
-            class="customCbx"
-            v-model="saveTagBackend"
-            style="display: none"
-          />
-          <label for="saveTagBackend" class="toggle">
-            <span></span>
-          </label>
-        </span>
-      </div> -->
     </form>
     <span>
       <button
@@ -93,7 +64,6 @@ export default {
     return {
       tagName: "My tag",
       tagValue: 1,
-      saveTagBackend: false,
       taggedColumns: [],
     };
   },
@@ -153,31 +123,8 @@ export default {
           title: "success",
           msg: "Tag created successfully",
         });
+        this.$emit("cancel");
       }
-
-      if (this.saveTagBackend) {
-        let tagHash = {};
-        values.forEach((tag, sampleIndex) => {
-          tagHash[this.data.sampleIdList[sampleIndex]] = tag;
-        });
-
-        this.$backendDialog
-          .updateTag(this.tagName, tagHash)
-          .then(() => {
-            this.$store.commit("sendMessage", {
-              title: "success",
-              msg: "Tag uploaded successfully",
-            });
-            this.$emit("created");
-          })
-          .catch((err) => {
-            console.error(err);
-            this.$store.commit("sendMessage", {
-              title: "error",
-              msg: "Error while saving or updating the tag to the server",
-            });
-          });
-      } else this.$emit("created");
     },
   },
   computed: {

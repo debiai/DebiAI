@@ -407,40 +407,6 @@ export default {
       .then((response) => response.data);
   },
 
-  // Tags
-  updateTag(tagName, tagHash) {
-    let code = startRequest("Updating tag");
-    return axios
-      .post(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/tags", {
-        tagName,
-        tagHash,
-      })
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-  getTags() {
-    let code = startRequest("Loading tags");
-    return axios
-      .get(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/tags")
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-  deleteTag(tagId) {
-    let code = startRequest("Deleting tag");
-    return axios
-      .delete(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/tags/" +
-          tagId
-      )
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-
   // Exports
   getExportMethods() {
     let code = startRequest("Loading export methods");
