@@ -843,6 +843,74 @@ paths:
         200:
           description: selection deleted
 
+  # Analysis layouts
+  /app/layouts/:
+    get:
+      summary: Get all layouts
+      tags: [Layouts]
+      operationId: controller.layouts.get_layouts
+      responses:
+        200:
+          description: Layouts for all projects
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectLayout"
+
+    post:
+      summary: Add a layout
+      tags: [Layouts]
+      operationId: controller.layouts.post_layout
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - dataProviderId
+              - layout
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
+              description:
+                type: string
+              layout:
+                $ref: "#/definitions/dashboardLayout"
+
+      responses:
+        204:
+          description: Dashboard layout saved
+
+  /app/layouts/{id}:
+    delete:
+      summary: Delete a layout
+      tags: [Layouts]
+      operationId: controller.layouts.delete_layout
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: Id of the layout to delete
+          minLength: 1
+      responses:
+        204:
+          description: Layout deleted
+        404:
+          description: Layout not found
+
   # Widget configuration
   /app/widget-configurations/:
     get:
@@ -1494,18 +1562,6 @@ definitions:
               , 'intervals' filters have an 'interval' key that is a list of
               {min, max} intervals
 
-  # Tags
-  tag:
-    allOf:
-      - $ref: "#/definitions/artefact"
-      - type: object
-        required:
-          - tags
-        properties:
-          tags:
-            type: object
-            description: key is samplehash and value is an integer
-
   # DataTypes
   dataType:
     type: object
@@ -1539,7 +1595,6 @@ definitions:
             type: string
 
   # block & sample
-
   block:
     allOf:
       - $ref: "#/definitions/dataType"
@@ -1598,3 +1653,68 @@ definitions:
       end:
         type: boolean
         description: True if this is the last request of the analysis
+
+  # Layout
+  projectLayout:
+    description: Project layout, information about a dashboard layout
+    type: object
+    required:
+      - id
+      - name
+      - projectId
+      - dataProviderId
+      - layout
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      projectId:
+        type: string
+        description: Id of the project linked to the layout
+      dataProviderId:
+        type: string
+        description: Id of the data provider linked to the project id
+      creationDate:
+        type: string
+        format: date-time
+      layout:
+        $ref: "#/definitions/dashboardLayout"
+
+  dashboardLayout:
+    description: Dashboard layout, list of widgets with their
+      position and configuration
+
+    type: array
+    items:
+      type: object
+      required:
+        - widgetKey
+        - x
+        - y
+        - w
+        - h
+      properties:
+        widgetKey:
+          type: string
+          description: Key of the widget
+        x:
+          type: integer
+          description: x position of the widget
+        y:
+          type: integer
+          description: y position of the widget
+        w:
+          type: integer
+          description: width of the widget
+        h:
+          type: integer
+          description: height of the widget
+        config:
+          type: object
+          description: Configuration of the widget
+        name:
+          type: string
+          description: Name of the widget
