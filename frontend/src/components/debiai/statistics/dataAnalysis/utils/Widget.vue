@@ -392,11 +392,16 @@ export default {
       // Finally remove the widget
       this.$emit("remove");
     },
+    getComponentConf() {
+      if (this.canSaveConfiguration) {
+        let slotCom = this.$slots.default[0].componentInstance;
+        return slotCom.getConf();
+      } else return null;
+    },
     copy() {
       if (this.canSaveConfiguration) {
         // Load configuration to copy
-        let slotCom = this.$slots.default[0].componentInstance;
-        let configuration = slotCom.getConf();
+        let configuration = this.getComponentConf();
         this.$emit("copy", { configuration, name: this.name + " copy" });
       } else this.$emit("copy");
     },

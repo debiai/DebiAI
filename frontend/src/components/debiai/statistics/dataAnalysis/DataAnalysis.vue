@@ -131,6 +131,7 @@
           :simple="component.simple"
           :configuration="component.configuration"
           :index="component.id"
+          :ref="component.id"
           v-on:remove="removeWidget(component)"
           v-on:copy="(configuration) => copyWidget({ component, configuration })"
         >
@@ -457,6 +458,12 @@ export default {
     },
     layout() {
       this.layoutModal = true;
+      
+      // Fetch the configuration of each component
+      this.components.forEach((component) => {
+        const componentConfig = this.$refs[component.id][0].getComponentConf();
+        component.config = componentConfig
+      });
     },
   },
   computed: {

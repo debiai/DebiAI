@@ -58,29 +58,32 @@ export default {
   padding: 5px;
   margin: 5px;
   border: 1px solid black;
-  border-radius: 3px;
+  background-color: rgb(240, 240, 240);
+  border-radius: 5px;
   width: 150px;
   height: 150px;
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .component {
   cursor: pointer;
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid rgb(155, 155, 155);
   border-radius: 3px;
-  width: 50px;
-  height: 50px;
   position: absolute;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  border-top: 5px solid rgb(121, 121, 121);
+  border-top: 3px solid rgb(121, 121, 121);
   background-size: contain;
   background-position: center;
+
+  transition: all 0.2s ease-in-out;
+  overflow: visible;
 }
 
 .component .content {
@@ -88,11 +91,15 @@ export default {
   background-color: white;
   border: 1px solid black;
   border-radius: 3px;
-  z-index: 1;
   padding: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  z-index: 100;
 }
 
+.component:hover {
+  transform: scale(1.1);
+}
 .component:hover .content {
   display: block;
 }

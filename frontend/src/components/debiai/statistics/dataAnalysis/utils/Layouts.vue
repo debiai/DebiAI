@@ -83,10 +83,16 @@ export default {
     };
   },
   mounted() {
+    // Get the current layout from the gridstack
     let gsPos = this.gridstack.save();
     this.layout = [];
     gsPos.forEach((gsComp) => {
-      gsComp.key = this.components.find((c) => gsComp.id == c.id).key;
+      const gridComponent = this.components.find((c) => gsComp.id == c.id);
+      if (!gridComponent) return;
+
+      // Add the key and config to the layout
+      gsComp.key = gridComponent.key;
+      gsComp.config = gridComponent.config;
       this.layout.push(gsComp);
     });
   },
@@ -102,14 +108,36 @@ export default {
       };
 
       // Expected layout:
-      // [{ x, y, w, h, key, config }];
+      // [{ x, y, w, h, widgetKey, config }];
 
-      console.log("save");
-      // this.$emit("cancel");
-      this.$store.commit("sendMessage", {
-        title: "success",
-        msg: "Layout saved",
+      this.layout.forEach((component) => {
+        requestBody.layout.push({
+          x: component.x,
+          y: component.y,
+          w: component.width,
+          h: component.height,
+          widgetKey: component.key,
+          config: component.config,
+        });
       });
+
+      // Send the request
+      this.$backendDialog
+        .saveLayout(requestBody)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Layout saved",
+          });
+          this.$emit("cancel");
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't save the layout",
+          });
+        });
     },
   },
   computed: {
