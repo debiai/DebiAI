@@ -19,7 +19,14 @@
     >
       <!-- Form -->
       <div>
-        <h3 class="padded">Save the current layout</h3>
+        <h3 class="padded aligned">
+          Save the current layout
+          <DocumentationBlock>
+            Saving the current layout will save the position of the widgets on the dashboard. <br />
+            The current configuration of the widgets will also be saved, it will be used when
+            loading the layout back.
+          </DocumentationBlock>
+        </h3>
         <form
           id="formNewLayout"
           class="dataGroup"
@@ -61,47 +68,45 @@
       <LayoutViewer :layout="layout" />
     </div>
 
-    <!-- Layout loads -->
+    <!-- Layout list -->
     <h3>Load a saved layout</h3>
-
-    <div
-      id="savedLayouts"
-      class="itemList"
-    >
-      <div v-if="savedLayouts.length == 0">
-        No saved layout
+    <div id="savedLayouts">
+      <div>
+        <h4 class="layoutList">Project layouts:</h4>
+        <div class="itemList">
+          <Layout
+            v-for="layout in sameProjectLayouts"
+            :key="layout.id"
+            :layout="layout"
+            v-on:selected="$emit('selected', layout)"
+            v-on:deleted="loadLayouts"
+          />
+          <div
+            class="item"
+            style="color: brown"
+            v-if="sameProjectLayouts.length === 0"
+          >
+            No layout saved for this project
+          </div>
+        </div>
       </div>
-      <div
-        class="layout item selectable"
-        v-for="layout in savedLayouts"
-        :key="layout.id"
-      >
-        <div class="left">
-          <h4 style="display: flex; align-items: center">
-            {{ layout.name }}
-            <!-- Display layout : -->
-          </h4>
-
-          <span
-            class="creationDate"
-            :title="$services.timeStampToDate(layout.creationDate)"
+      <div>
+        <h4 class="layoutList">Other layouts:</h4>
+        <div class="itemList">
+          <Layout
+            v-for="layout in otherLayouts"
+            :key="layout.id"
+            :layout="layout"
+            v-on:selected="$emit('selected', layout)"
+            v-on:deleted="loadLayouts"
+          />
+          <div
+            class="item"
+            style="color: brown"
+            v-if="otherLayouts.length === 0"
           >
-            Created {{ $services.prettyTimeStamp(layout.creationDate) }}
-          </span>
-        </div>
-
-        <div class="center">
-          <div class="description">{{ layout.description }}</div>
-          <LayoutViewer :layout="layout.layout" />
-        </div>
-
-        <div class="right">
-          <button
-            class="red"
-            @click="deleteLayout(layout.id)"
-          >
-            Delete
-          </button>
+            No layout saved for other projects
+          </div>
         </div>
       </div>
     </div>
@@ -109,12 +114,14 @@
 </template>
 
 <script>
-import LayoutViewer from "@/components/utils/LayoutViewer.vue";
+import LayoutViewer from "./LayoutViewer.vue";
+import Layout from "./Layout.vue"
 
 export default {
   name: "Layouts",
   components: {
     LayoutViewer,
+    Layout,
   },
   props: {
     components: { type: Array, required: true },
@@ -142,7 +149,6 @@ export default {
 
       this.layout.push(gsComp);
     });
-    console.log(this.layout);
 
     // Load the saved layouts
     this.loadLayouts();
@@ -224,6 +230,23 @@ export default {
     layoutNameOk() {
       return this.layoutName.length > 0;
     },
+    sameProjectLayouts() {
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      const projectId = this.$store.state.ProjectPage.projectId;
+
+      return this.savedLayouts.filter(
+        (layout) => layout.projectId === projectId && layout.dataProviderId === dataProviderId
+      );
+    },
+
+    otherLayouts() {
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+      const projectId = this.$store.state.ProjectPage.projectId;
+
+      return this.savedLayouts.filter(
+        (layout) => layout.dataProviderId !== dataProviderId || layout.projectId !== projectId
+      );
+    },
   },
 };
 </script>
@@ -235,7 +258,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 40px;
+  gap: 20px;
 }
 h3 {
   text-align: left;
@@ -259,49 +282,9 @@ h3 {
 #savedLayouts {
   overflow: auto;
   max-height: 400px;
-}
-.layout {
-  display: flex;
-  align-items: stretch;
-  gap: 30px;
-  padding: 5px;
-}
-
-.layout .left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  max-width: 100px;
-  padding: 10px;
-}
-.layout .center {
-  flex: 1;
-  display: flex;
-  justify-content: space-evenly;
-  gap: 20px;
-}
-.layout .center .description{
-  padding: 10px;
-}
-.layout .right {
-  display: flex;
-  align-items: center;
-}
-.layout .creationDate {
-  text-align: right;
-  font-size: 0.7em;
-  opacity: 0.7;
-}
-.layout .description {
-  flex: 1;
   text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-width: 300px;
-  opacity: 0.7;
-  font-size: 0.8em;
 }
-.layout .value {
-  text-align: left;
+#savedLayouts h4 {
+  padding: 15px;
 }
 </style>
