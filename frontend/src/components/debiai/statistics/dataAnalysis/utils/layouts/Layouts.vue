@@ -78,7 +78,7 @@
             v-for="layout in sameProjectLayouts"
             :key="layout.id"
             :layout="layout"
-            v-on:selected="$emit('selected', layout)"
+            v-on:selected="$emit('selected', layout.layout)"
             v-on:deleted="loadLayouts"
           />
           <div
@@ -97,7 +97,7 @@
             v-for="layout in otherLayouts"
             :key="layout.id"
             :layout="layout"
-            v-on:selected="$emit('selected', layout)"
+            v-on:selected="$emit('selected', layout.layout)"
             v-on:deleted="loadLayouts"
           />
           <div
@@ -115,7 +115,7 @@
 
 <script>
 import LayoutViewer from "./LayoutViewer.vue";
-import Layout from "./Layout.vue"
+import Layout from "./Layout"
 
 export default {
   name: "Layouts",
@@ -197,7 +197,8 @@ export default {
             title: "success",
             msg: "Layout saved",
           });
-          this.$emit("cancel");
+          // this.$emit("cancel");
+          this.loadLayouts();
         })
         .catch((e) => {
           console.log(e);

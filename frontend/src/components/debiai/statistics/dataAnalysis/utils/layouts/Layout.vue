@@ -1,5 +1,8 @@
 <template>
-  <div class="layout item selectable">
+  <div
+    class="layout item selectable"
+    @click="(event) => click(event)"
+  >
     <div class="left">
       <h4 style="display: flex; align-items: center">
         {{ layout.name }}
@@ -22,7 +25,7 @@
     <div class="right">
       <button
         class="red"
-        @click="deleteLayout(layout.id)"
+        @click="(event) => deleteLayout(event)"
       >
         Delete
       </button>
@@ -42,7 +45,8 @@ export default {
     layout: { type: Object, required: true },
   },
   methods: {
-    deleteLayout() {
+    deleteLayout(event) {
+      event.stopPropagation();
       this.$backendDialog
         .deleteLayout(this.layout.id)
         .then(() => {
@@ -59,6 +63,10 @@ export default {
             msg: "Couldn't delete the layout",
           });
         });
+    },
+    click(event) {
+      event.stopPropagation();
+      this.$emit("selected");
     },
   },
 };

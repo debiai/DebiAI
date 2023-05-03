@@ -58,6 +58,7 @@
     >
       <Layouts
         @cancel="layoutModal = false"
+        @selected="loadLayout"
         :components="components"
         :gridstack="grid"
       />
@@ -355,6 +356,7 @@ export default {
     },
     loadLayout(layout) {
       this.clearLayout();
+      this.layoutModal = false;
       layout.forEach((c) => {
         // Get the key (previous cache version)
         if (!c.widgetKey) c.widgetKey = c.key;
@@ -365,7 +367,7 @@ export default {
         }
 
         // get comp default layout :
-        let component = componentsGridStackData.createWidget(c.widgetKey);
+        const component = componentsGridStackData.createWidget(c.widgetKey);
 
         // set shape from given layout
         component.layout.x = c.x;
@@ -373,11 +375,16 @@ export default {
         component.layout.height = c.height;
         component.layout.width = c.width;
 
+        // set configuration from given layout
+        if (c.config) component.configuration = { configuration: c.config };
+
         // add to model
         this.components.push(component);
+      });
 
-        // wait until vue has completely rendered the new component
-        this.$nextTick(() => {
+      // wait until vue has completely rendered the new components
+      this.$nextTick(() => {
+        this.components.forEach((component) => {
           this.grid.makeWidget(document.getElementById(component.id));
         });
       });

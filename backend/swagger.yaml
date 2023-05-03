@@ -1715,6 +1715,7 @@ definitions:
         config:
           type: object
           description: Configuration of the widget
+          x-nullable: true
         name:
           type: string
           description: Name of the widget

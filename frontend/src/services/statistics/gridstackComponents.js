@@ -83,7 +83,13 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
 function createWidget(widgetKey) {
   // A uuid is generated for the widget
-  return { ...availableWidgetsConfiguration[widgetKey], id: services.uuid() };
+  const widgetId = services.uuid();
+
+  // Create a copy of the widget configuration
+  const layoutCopy = { ...availableWidgetsConfiguration[widgetKey].layout };
+  const copyConfiguration = { ...availableWidgetsConfiguration[widgetKey] };
+  copyConfiguration.layout = layoutCopy;
+  return { ...copyConfiguration, id: widgetId };
 }
 
 function getAvailableWidgets() {
