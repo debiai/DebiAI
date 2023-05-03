@@ -14,12 +14,12 @@
         height: (component.height / lowestY) * 100 - 3 + '%',
         'background-image':
           'url(' +
-          require(`@/components/debiai/statistics/dataAnalysis/widgets/${component.key}/icon.png`) +
+          require(`@/components/debiai/statistics/dataAnalysis/widgets/${component.widgetKey}/icon.png`) +
           ')',
       }"
     >
       <div class="content">
-        {{ component.key }}
+        {{ component.widgetKey }}
       </div>
     </div>
   </div>

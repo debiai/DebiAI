@@ -126,7 +126,7 @@
       >
         <Widget
           :data="data"
-          :widgetKey="component.key"
+          :widgetKey="component.widgetKey"
           :title="component.name"
           :simple="component.simple"
           :configuration="component.configuration"
@@ -136,7 +136,7 @@
           v-on:copy="(configuration) => copyWidget({ component, configuration })"
         >
           <component
-            :is="component.key"
+            :is="component.widgetKey"
             :component="component"
             :data="data"
             :selectedData="selectedData"
@@ -356,13 +356,16 @@ export default {
     loadLayout(layout) {
       this.clearLayout();
       layout.forEach((c) => {
-        if (!c.key || !componentsGridStackData.widgetExists(c.key)) {
-          console.warn("Component " + c.key + " not found");
+        // Get the key (previous cache version)
+        if (!c.widgetKey) c.widgetKey = c.key;
+
+        if (!c.widgetKey || !componentsGridStackData.widgetExists(c.widgetKey)) {
+          console.warn("Component " + c.widgetKey + " not found");
           return;
         }
 
         // get comp default layout :
-        let component = componentsGridStackData.createWidget(c.key);
+        let component = componentsGridStackData.createWidget(c.widgetKey);
 
         // set shape from given layout
         component.layout.x = c.x;
@@ -404,14 +407,16 @@ export default {
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 
       // Create the componen with its configuration if possible
-      this.addWidget(component.key, gsComp, configuration);
+      this.addWidget(component.widgetKey, gsComp, configuration);
     },
     getLayout() {
       if (this.grid) {
         let gsPos = this.grid.save();
         let layout = [];
         gsPos.forEach((gsComp) => {
-          gsComp.key = this.components.find((c) => gsComp.id == c.id).key;
+          const gridComponent = this.components.find((c) => gsComp.id == c.id);
+          if (!gridComponent) return;
+          gsComp.widgetKey = gridComponent.widgetKey;
           layout.push(gsComp);
         });
         return JSON.stringify(layout);
@@ -458,11 +463,11 @@ export default {
     },
     layout() {
       this.layoutModal = true;
-      
+
       // Fetch the configuration of each component
       this.components.forEach((component) => {
         const componentConfig = this.$refs[component.id][0].getComponentConf();
-        component.config = componentConfig
+        component.config = componentConfig;
       });
     },
   },

@@ -38,8 +38,8 @@ def test_add_layout():
             {
                 "x": 0,
                 "y": 0,
-                "w": 1,
-                "h": 1,
+                "width": 1,
+                "height": 1,
                 "widgetKey": "testWidgetKey",
                 "config": {},
                 "name": "testName",

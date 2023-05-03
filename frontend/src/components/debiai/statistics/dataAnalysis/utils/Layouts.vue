@@ -59,7 +59,44 @@
     </div>
 
     <!-- Layout loads -->
-    <!-- TODO -->
+    <h3>Load a saved layout</h3>
+
+    <div
+      id="layouts"
+      class="itemList"
+    >
+      <div
+        class="layout item selectable"
+        v-for="layout in savedLayouts"
+        :key="layout.id"
+      >
+        <div class="header">
+          <h4 style="display: flex; align-items: center">
+            {{ layout.name }}
+            <!-- Display layout : -->
+            <DocumentationBlock>
+              <LayoutViewer :layout="layout.layout" />
+            </DocumentationBlock>
+          </h4>
+
+          <button
+            class="red"
+            @click="deleteLayout(layout.id)"
+          >
+            Delete
+          </button>
+        </div>
+        <div class="body">
+          <span
+            class="creationDate"
+            :title="$services.timeStampToDate(layout.creationDate)"
+          >
+            Created {{ $services.prettyTimeStamp(layout.creationDate) }}
+          </span>
+          <div class="description">{{ layout.description }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -80,6 +117,7 @@ export default {
       layout: [],
       layoutName: "New layout",
       layoutDescription: "",
+      savedLayouts: [],
     };
   },
   mounted() {
@@ -90,13 +128,29 @@ export default {
       const gridComponent = this.components.find((c) => gsComp.id == c.id);
       if (!gridComponent) return;
 
-      // Add the key and config to the layout
-      gsComp.key = gridComponent.key;
+      // Add the widgetKey and config to the layout
+      gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
       this.layout.push(gsComp);
     });
+    console.log(this.layout);
+
+    // Load the saved layouts
+    this.loadLayouts();
   },
   methods: {
+    loadLayouts() {
+      this.layouts = [];
+      this.$backendDialog
+        .getLayouts()
+        .then((layouts) => {
+          console.log(layouts);
+          this.savedLayouts = layouts;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
     save(e) {
       e.preventDefault();
 
@@ -114,9 +168,9 @@ export default {
         requestBody.layout.push({
           x: component.x,
           y: component.y,
-          w: component.width,
-          h: component.height,
-          widgetKey: component.key,
+          width: component.width,
+          height: component.height,
+          widgetKey: component.widgetKey,
           config: component.config,
         });
       });
@@ -139,6 +193,24 @@ export default {
           });
         });
     },
+    deleteLayout(layoutId) {
+      this.$backendDialog
+        .deleteLayout(layoutId)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Layout deleted",
+          });
+          this.loadLayouts();
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't delete the layout",
+          });
+        });
+    },
   },
   computed: {
     layoutNameOk() {
@@ -152,6 +224,10 @@ export default {
 #layouts {
   /* text-align: left; */
 }
+h3 {
+  text-align: left;
+  padding: 5px;
+}
 #saveLayout {
   flex-direction: column;
 }
@@ -160,5 +236,40 @@ export default {
 }
 #saveLayout .value {
   flex: 1;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.layout .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.layout .body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.layout .creationDate {
+  text-align: right;
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+.layout .description {
+  flex: 1;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 300px;
+  opacity: 0.7;
+  font-size: 0.8em;
+}
+.layout .value {
+  text-align: left;
 }
 </style>

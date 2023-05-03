@@ -1694,8 +1694,8 @@ definitions:
         - widgetKey
         - x
         - y
-        - w
-        - h
+        - width
+        - height
       properties:
         widgetKey:
           type: string
@@ -1706,10 +1706,10 @@ definitions:
         y:
           type: integer
           description: y position of the widget
-        w:
+        width:
           type: integer
           description: width of the widget
-        h:
+        height:
           type: integer
           description: height of the widget
         config:

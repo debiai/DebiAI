@@ -20,8 +20,8 @@ LAYOUTS_PATH = "data/layouts.json"
 #            "widgetKey": "parallelCoordinate",
 #            "x": 0,
 #            "y": 0,
-#            "w": 0,
-#            "h": 0,
+#            "width": 0,
+#            "height": 0,
 #            "config": {}, # Widget config (optional)
 #            "name": "", # Name given to the widget (optional)
 #          },
@@ -73,8 +73,8 @@ def add_layout(data):
         widget_position = {
             "x": widget["x"],
             "y": widget["y"],
-            "w": widget["w"],
-            "h": widget["h"],
+            "width": widget["width"],
+            "height": widget["height"],
             "widgetKey": widget["widgetKey"],
         }
 
