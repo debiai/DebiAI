@@ -13,12 +13,15 @@
     </h2>
 
     <!-- Layout save -->
-    <div class="aligned">
+    <div
+      id="layoutSave"
+      class="aligned"
+    >
       <!-- Form -->
       <div>
         <h3 class="padded">Save the current layout</h3>
         <form
-          id="saveLayout"
+          id="formNewLayout"
           class="dataGroup"
         >
           <!-- Layout name -->
@@ -62,38 +65,43 @@
     <h3>Load a saved layout</h3>
 
     <div
-      id="layouts"
+      id="savedLayouts"
       class="itemList"
     >
+      <div v-if="savedLayouts.length == 0">
+        No saved layout
+      </div>
       <div
         class="layout item selectable"
         v-for="layout in savedLayouts"
         :key="layout.id"
       >
-        <div class="header">
+        <div class="left">
           <h4 style="display: flex; align-items: center">
             {{ layout.name }}
             <!-- Display layout : -->
-            <DocumentationBlock>
-              <LayoutViewer :layout="layout.layout" />
-            </DocumentationBlock>
           </h4>
 
-          <button
-            class="red"
-            @click="deleteLayout(layout.id)"
-          >
-            Delete
-          </button>
-        </div>
-        <div class="body">
           <span
             class="creationDate"
             :title="$services.timeStampToDate(layout.creationDate)"
           >
             Created {{ $services.prettyTimeStamp(layout.creationDate) }}
           </span>
+        </div>
+
+        <div class="center">
           <div class="description">{{ layout.description }}</div>
+          <LayoutViewer :layout="layout.layout" />
+        </div>
+
+        <div class="right">
+          <button
+            class="red"
+            @click="deleteLayout(layout.id)"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
@@ -131,6 +139,7 @@ export default {
       // Add the widgetKey and config to the layout
       gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
+
       this.layout.push(gsComp);
     });
     console.log(this.layout);
@@ -144,7 +153,6 @@ export default {
       this.$backendDialog
         .getLayouts()
         .then((layouts) => {
-          console.log(layouts);
           this.savedLayouts = layouts;
         })
         .catch((e) => {
@@ -223,37 +231,61 @@ export default {
 <style scoped>
 #layouts {
   /* text-align: left; */
+  max-height: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 40px;
 }
 h3 {
   text-align: left;
   padding: 5px;
 }
-#saveLayout {
+
+#layoutSave {
+  display: flex;
+  justify-content: center;
+}
+#formNewLayout {
   flex-direction: column;
 }
-#saveLayout .name {
+#formNewLayout .name {
   width: 100px;
 }
-#saveLayout .value {
+#formNewLayout .value {
   flex: 1;
 }
 
+#savedLayouts {
+  overflow: auto;
+  max-height: 400px;
+}
 .layout {
   display: flex;
-  flex-direction: column;
   align-items: stretch;
+  gap: 30px;
+  padding: 5px;
 }
 
-.layout .header {
+.layout .left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100px;
+  padding: 10px;
+}
+.layout .center {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+}
+.layout .center .description{
+  padding: 10px;
+}
+.layout .right {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-.layout .body {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
 }
 .layout .creationDate {
   text-align: right;
