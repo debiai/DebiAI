@@ -376,7 +376,7 @@ export default {
   getLayouts() {
     return axios.get(apiURL + "app/layouts/").then((response) => response.data);
   },
-  saveLayout({ layout, name, description }) {
+  saveLayout({ layout, name, description, lastLayoutSaved }) {
     let code = startRequest("Saving layout");
     return axios
       .post(apiURL + "app/layouts/", {
@@ -385,6 +385,7 @@ export default {
         layout: layout,
         name: name,
         description: description,
+        lastLayoutSaved: lastLayoutSaved,
       })
       .finally(() => endRequest(code))
       .then((response) => response.data);

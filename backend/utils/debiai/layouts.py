@@ -63,8 +63,6 @@ def get_layouts():
 def add_layout(data):
     # project_id, data_provider_id, conf_description, conf_name, conf
     # Add a new widget layout
-    layouts = get_layouts()
-
     # Generate id
     id = str(uuid.uuid1())
 
@@ -94,7 +92,24 @@ def add_layout(data):
         "dataProviderId": data["dataProviderId"],
         "creationDate": utils.timeNow(),
         "layout": layout_to_add,
+        "lastLayoutSaved": False,
     }
+
+    layouts = get_layouts()
+
+    # Check if their is already a "last saved" layout
+    if "lastLayoutSaved" in data and data["lastLayoutSaved"] == True:
+        file_to_add["lastLayoutSaved"] = True
+
+        for layout in layouts:
+            if (
+                layout["projectId"] == data["projectId"]
+                and layout["dataProviderId"] == data["dataProviderId"]
+                and "lastLayoutSaved" in layout
+                and layout["lastLayoutSaved"] == True
+            ):
+                # Remove the "last saved" layout
+                layouts.remove(layout)
 
     # Save layout
     layouts.append(file_to_add)

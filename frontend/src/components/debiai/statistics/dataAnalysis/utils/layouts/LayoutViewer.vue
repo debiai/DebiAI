@@ -82,7 +82,7 @@ export default {
   background-size: contain;
   background-position: center;
 
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   overflow: visible;
 }
 
@@ -93,12 +93,11 @@ export default {
   border-radius: 3px;
   padding: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  z-index: 100;
 }
 
 .component:hover {
   transform: scale(1.1);
+  z-index: 2;
 }
 .component:hover .content {
   display: block;

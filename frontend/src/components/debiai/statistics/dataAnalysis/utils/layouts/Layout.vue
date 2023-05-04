@@ -4,6 +4,12 @@
     @click="(event) => click(event)"
   >
     <div class="left">
+      <div
+        class="tag"
+        v-if="layout.lastLayoutSaved"
+      >
+        Last layout used
+      </div>
       <h4 style="display: flex; align-items: center">
         {{ layout.name }}
         <!-- Display layout : -->
@@ -87,6 +93,15 @@ export default {
   max-width: 100px;
   padding: 10px;
   text-align: left;
+}
+.layout .left .tag {
+  border: 2px solid rgb(70, 70, 70);
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 0.8em;
+  margin-bottom: 5px;
+  opacity: 0.3;
+  font-weight: bold;
 }
 .layout .center {
   flex: 1;

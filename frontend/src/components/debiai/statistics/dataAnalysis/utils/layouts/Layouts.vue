@@ -115,7 +115,7 @@
 
 <script>
 import LayoutViewer from "./LayoutViewer.vue";
-import Layout from "./Layout"
+import Layout from "./Layout";
 
 export default {
   name: "Layouts",
@@ -160,6 +160,11 @@ export default {
         .getLayouts()
         .then((layouts) => {
           this.savedLayouts = layouts;
+
+          // Sort the layouts by creation date
+          this.savedLayouts.sort((a, b) => {
+            return new Date(b.creationDate) - new Date(a.creationDate);
+          });
         })
         .catch((e) => {
           console.log(e);
@@ -168,7 +173,6 @@ export default {
     save(e) {
       e.preventDefault();
 
-      console.log(this.components);
       const requestBody = {
         name: this.layoutName,
         description: this.layoutDescription,

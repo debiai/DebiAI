@@ -13,7 +13,7 @@
         />
         <div
           class="item"
-          style="color:brown"
+          style="color: brown"
           v-if="sameProjectConfigurations.length === 0"
         >
           No configuration saved for this project
@@ -33,7 +33,7 @@
         />
         <div
           class="item"
-          style="color:brown"
+          style="color: brown"
           v-if="otherConfigurations.length === 0"
         >
           No configuration saved for other projects

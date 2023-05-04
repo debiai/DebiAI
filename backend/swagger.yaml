@@ -888,6 +888,12 @@ paths:
                 type: string
               layout:
                 $ref: "#/definitions/dashboardLayout"
+              lastLayoutSaved:
+                type: boolean
+                description: If true, the layout will be loaded by default
+                  If a layout with lastLayoutSaved=true already exists, it will
+                  be replaced by the new one
+                default: false
 
       responses:
         204:
@@ -1682,6 +1688,9 @@ definitions:
         format: date-time
       layout:
         $ref: "#/definitions/dashboardLayout"
+      lastLayoutSaved:
+        type: boolean
+        description: True if this is the last layout saved
 
   dashboardLayout:
     description: Dashboard layout, list of widgets with their

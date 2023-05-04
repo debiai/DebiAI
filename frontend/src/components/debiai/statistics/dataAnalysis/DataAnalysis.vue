@@ -300,15 +300,8 @@ export default {
       // Load available Widgets from the widget folder
       this.loadWidgets();
 
-      // Load local storage grid stack layout or the default one if no layout is saved
-      let savedGridStackLayout = window.localStorage.getItem("gridStackLayout");
-      if (savedGridStackLayout) {
-        savedGridStackLayout = JSON.parse(savedGridStackLayout);
-        this.loadLayout(savedGridStackLayout);
-      } else {
-        // No saved layout
-        this.defaultLayout();
-      }
+      // Load saved layout
+      this.loadLastLayout();
     }
   },
   mounted() {
@@ -331,10 +324,10 @@ export default {
       this.$emit("GridStack_resizestop");
       window.dispatchEvent(new Event("resize"));
     });
-    this.grid.on("added removed change", () => {
-      // Save layout in local cache
-      this.saveLayout();
-    });
+    // this.grid.on("added removed change", () => {
+    //   // Save layout in local cache
+    //   this.saveLayout();
+    // });
   },
   methods: {
     // Grid stack & widgets
@@ -354,11 +347,38 @@ export default {
         );
       });
     },
+    loadLastLayout() {
+      // Get the last layout saved for this project
+      const projectId = this.$store.state.ProjectPage.projectId;
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+
+      // Get all the saved layouts
+      this.$backendDialog
+        .getLayouts()
+        .then((layouts) => {
+          // Find the last layout saved for this project
+          const lastLayout = layouts.find(
+            (l) =>
+              l.projectId == projectId && l.dataProviderId == dataProviderId && l.lastLayoutSaved
+          );
+
+          if (lastLayout) {
+            // Load the layout
+            this.loadLayout(lastLayout.layout);
+          } else {
+            // No layout found, load default layout
+            this.restoreDefaultLayout();
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
     loadLayout(layout) {
       this.clearLayout();
       this.layoutModal = false;
       layout.forEach((c) => {
-        // Get the key (previous cache version)
+        // Get the key (previous layout version saved in cache)
         if (!c.widgetKey) c.widgetKey = c.key;
 
         if (!c.widgetKey || !componentsGridStackData.widgetExists(c.widgetKey)) {
@@ -378,7 +398,6 @@ export default {
         // set configuration from given layout
         if (c.config) component.configuration = { configuration: c.config };
 
-        // add to model
         this.components.push(component);
       });
 
@@ -416,22 +435,75 @@ export default {
       // Create the componen with its configuration if possible
       this.addWidget(component.widgetKey, gsComp, configuration);
     },
-    getLayout() {
-      if (this.grid) {
-        let gsPos = this.grid.save();
-        let layout = [];
-        gsPos.forEach((gsComp) => {
-          const gridComponent = this.components.find((c) => gsComp.id == c.id);
-          if (!gridComponent) return;
-          gsComp.widgetKey = gridComponent.widgetKey;
-          layout.push(gsComp);
-        });
-        return JSON.stringify(layout);
-      }
+    updateLayoutConfig() {
+      // Update the components list with their config
+      this.components.forEach((component) => {
+        component.config = this.$refs[component.id][0].getComponentConf();
+      });
     },
+
     saveLayout() {
-      // TODO
-      const layout = this.getLayout();
+      // Get the current layout
+      if (!this.grid) return;
+
+      // Get the current layout from the gridstack
+      this.updateLayoutConfig();
+      let gridStackLayout = this.grid.save();
+      const layout = [];
+      gridStackLayout.forEach((gsComp) => {
+        // Get the component from the components list
+        const gridComponent = this.components.find((c) => gsComp.id == c.id);
+        if (!gridComponent) return;
+
+        // Add the widgetKey and config to the gs layout
+        gsComp.widgetKey = gridComponent.widgetKey;
+        gsComp.config = gridComponent.config;
+
+        layout.push(gsComp);
+      });
+
+      // Create the layout save request body
+      const projectId = this.$store.state.ProjectPage.projectId;
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+
+      const requestBody = {
+        name: projectId + " last layout",
+        description:
+          "Last layout for project " + projectId + " and data provider " + dataProviderId,
+        layout: [],
+        lastLayoutSaved: true, // This will erase the previous last layout saved
+      };
+
+      // We remove some properties from the layout
+      // Expected layout:
+      // [{ x, y, w, h, widgetKey, config }];
+      layout.forEach((component) => {
+        requestBody.layout.push({
+          x: component.x,
+          y: component.y,
+          width: component.width,
+          height: component.height,
+          widgetKey: component.widgetKey,
+          config: component.config,
+        });
+      });
+
+      // Send the request
+      this.$backendDialog
+        .saveLayout(requestBody)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Layout saved",
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't save the layout",
+          });
+        });
     },
 
     // Buttons
@@ -469,13 +541,8 @@ export default {
       while (this.components.length > 0) this.removeWidget(this.components[0]);
     },
     layout() {
+      this.updateLayoutConfig();
       this.layoutModal = true;
-
-      // Fetch the configuration of each component
-      this.components.forEach((component) => {
-        const componentConfig = this.$refs[component.id][0].getComponentConf();
-        component.config = componentConfig;
-      });
     },
   },
   computed: {
@@ -504,9 +571,15 @@ export default {
     },
   },
   beforeDestroy() {
+    // Save the layout
+    this.saveLayout();
+
     // this.$store.commit("selectProjectId", null);
     this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
+
+    // Remove the grid
+    this.grid.destroy();
   },
 };
 </script>

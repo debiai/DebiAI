@@ -410,7 +410,8 @@ export default {
     setConf(configuration) {
       let slotCom = this.$slots.default[0];
       slotCom.componentInstance.setConf(configuration.configuration);
-      this.name = configuration.name;
+      if (configuration.name) this.name = configuration.name;
+      else this.name = this.title;
       this.confSettings = false;
       setTimeout(() => {
         this.confAsChanged = false;
