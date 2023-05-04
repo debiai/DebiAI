@@ -81,3 +81,49 @@ def test_delete_layout():
     assert resp.status_code == 200
     assert type(layouts) is list
     assert len(layouts) == 0
+
+
+def test_last_layout_saved():
+    # if lastLayoutSaved is true, the previous layout with lastLayoutSaved = true
+    # should be deleted
+
+    # Add the first layout
+    url = appUrl + "app/layouts/"
+    data = {
+        "name": "testName",
+        "description": "testDescription",
+        "projectId": "testProjectId",
+        "dataProviderId": "testDataProviderId",
+        "lastLayoutSaved": True,
+        "layout": [],
+    }
+    resp = requests.request("POST", url, headers={}, json=data)
+    assert resp.status_code == 204
+
+    # Add the second layout
+    data = {
+        "name": "testName2",
+        "description": "testDescription",
+        "projectId": "testProjectId",
+        "dataProviderId": "testDataProviderId",
+        "lastLayoutSaved": True,
+        "layout": [],
+    }
+    resp = requests.request("POST", url, headers={}, json=data)
+    assert resp.status_code == 204
+
+    # Check if the first layout was removed
+    url = appUrl + "app/layouts/"
+    resp = requests.request("GET", url, headers={}, data={})
+    layouts = json.loads(resp.text)
+    assert resp.status_code == 200
+    assert type(layouts) is list
+    assert len(layouts) == 1
+    assert layouts[0]["lastLayoutSaved"] == True
+    assert layouts[0]["name"] == data["name"]
+    assert layouts[0]["description"] == data["description"]
+    assert layouts[0]["projectId"] == data["projectId"]
+    assert layouts[0]["dataProviderId"] == data["dataProviderId"]
+
+    # Remove the layout
+    delete_layout(layouts[0]["id"])
