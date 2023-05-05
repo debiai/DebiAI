@@ -1,7 +1,7 @@
 #############################################################################
 # Imports
 #############################################################################
-import utils.debiai.layouts as layoutsUtils
+import utils.layouts.layouts as layoutsUtils
 
 #############################################################################
 # Analysis dashboard layout Management

@@ -1,5 +1,5 @@
 from config.init_config import get_config
-import exportMethods.exportUtils as exportUtils
+import modules.exportMethods.exportUtils as exportUtils
 
 #############################################################################
 # Export API Management

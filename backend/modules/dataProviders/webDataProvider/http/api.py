@@ -1,5 +1,5 @@
 import requests, json
-from dataProviders.DataProviderException import DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 
 
 ### Todo : change info if in not alive anymore
