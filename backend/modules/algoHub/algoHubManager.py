@@ -6,14 +6,15 @@ algo_hub_list = []
 
 
 def setup_algo_hub():
-    print("===================== ALGOHUB ======================")
+    print("==================== ALGO HUB ======================")
     config = get_config()
-    algo_hub_config = config["ALGO_HUB"]
+    algo_hub_config = config["ALGO_HUB_LIST"]
 
     keys = list(algo_hub_config.keys())
     values = list(algo_hub_config.values())
 
     # Add AlgoHubs from config file
+    print(" - Loading Algo Hub from config file")
     for i in range(len(algo_hub_config)):
         name = keys[i]
         url = values[i]
@@ -27,19 +28,20 @@ def setup_algo_hub():
             algo_hub = AlgoHub(url, name)
             if algo_hub.is_alive():
                 print(
-                    "   Data Provider "
+                    "   AlgoHub "
                     + name
-                    + " added to Data Providers list and already accessible"
+                    + " added to AlgoHub list and already accessible"
                 )
             else:
-                print("   [ERROR] : Data Provider " + name + " Is not accessible now")
-            add(algo_hub)
-        except AlgoHubException as e:
-            print("   [ERROR] : Data Provider " + e.message + " Is not accessible now")
+                print("   [ERROR] : AlgoHub " + name + " Is not accessible now")
 
+            add(algo_hub)
+
+        except AlgoHubException as e:
+            print("   [ERROR] : AlgoHub " + e.message + " Is not accessible now")
 
     if len(algo_hub_list) == 0:
-        print("Warning, No data providers setup")
+        print("   No AlgoHub found")
 
 
 def algo_hub_exists(name):
@@ -47,22 +49,6 @@ def algo_hub_exists(name):
         if d.name == name:
             return True
     return False
-
-
-def is_valid_name(name):
-    # /, &, | are not allowed in data provider names
-    if (
-        "/" in name
-        or "&" in name
-        or "|" in name
-        or len(name) == 0
-        or len(name) > 50
-        or name[0] == " "
-        or name[-1] == " "
-    ):
-        return False
-
-    return True
 
 
 def add(algo_hub):
@@ -76,6 +62,8 @@ def get_algo_hub_list():
 
 def get_single_algo_hub(name):
     # Check if the data provider is not disabled
+    config = get_config()
+    if not config["ALGO_HUB"]["enabled"]:
         raise AlgoHubException("Python module data provider is disabled", 403)
 
     # Return the data provider with the given name

@@ -21,15 +21,21 @@ def init_config():
 
     print("===================== CONFIG =======================")
 
-    # First, read the config file
-    config_parser.read(config_path)
+    # Default config
     config = {
         "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
+
+        "ALGO_HUB_CONFIG": {"creation": True, "deletion": True},
+        "ALGO_HUB_LIST": {},
+
         "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
         "EXPORT_METHODS_LIST": {},
     }
+
+    # First, read the config file
+    config_parser.read(config_path)
 
     for section in config_parser.sections():
         # Data providers
@@ -65,6 +71,29 @@ def init_config():
                 config["WEB_DATA_PROVIDERS"][data_provider] = config_parser[section][
                     data_provider
                 ]
+            continue
+
+        # AlgoHub
+        if section == "ALGO_HUB_CONFIG":
+            if "creation" in config_parser[section]:
+                if str.lower(config_parser[section]["creation"]) == "false":
+                    print("Config file: AlgoHub creation disabled")
+                    config["ALGO_HUB_CONFIG"]["creation"] = False
+
+            if "deletion" in config_parser[section]:
+                if str.lower(config_parser[section]["deletion"]) == "false":
+                    print("Config file: AlgoHub deletion disabled")
+                    config["ALGO_HUB_CONFIG"]["deletion"] = False
+            continue
+
+        if section == "ALGO_HUB_LIST":
+            for algo_hub in config_parser[section]:
+                print(
+                    "Config file: detected AlgoHub '"
+                    + algo_hub
+                    + "' from config file"
+                )
+                config["ALGO_HUB_LIST"][algo_hub] = config_parser[section][algo_hub]
             continue
 
         # Export methods
@@ -153,6 +182,54 @@ def init_config():
             )
 
             config["WEB_DATA_PROVIDERS"][data_provider_name] = data_provider_url
+        
+        # Deal with AlgoHub in env variables
+        if env_var == "DEBIAI_ALGO_HUB_CREATION_ENABLED":
+            # Env var format: DEBIAI_ALGO_HUB_CREATION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: AlgoHub creation disabled")
+                config["ALGO_HUB_CONFIG"]["creation"] = False
+            continue
+
+        if env_var == "DEBIAI_ALGO_HUB_DELETION_ENABLED":
+            # Env var format: DEBIAI_ALGO_HUB_DELETION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: AlgoHub deletion disabled")
+                config["ALGO_HUB_CONFIG"]["deletion"] = False
+            continue
+
+        # Deal with AlgoHub list in env variables
+        if "DEBIAI_ALGO_HUB" in env_var:
+            # Env var format: DEBIAI_ALGO_HUB_<name>=<url>
+            if len(env_var.split("_")) != 4:
+                print(
+                    "Environment variables: invalid environment variable '"
+                    + env_var
+                    + "', skipping"
+                )
+                print("Expected format: DEBIAI_ALGO_HUB_<name>=<url>")
+                continue
+
+            algo_hub_name = env_var.split("_")[3]
+            algo_hub_url = os.environ[env_var]
+
+            if len(algo_hub_name) == 0:
+                print(
+                    "Environment variables: invalid AlgoHub name '"
+                    + env_var
+                    + "', skipping"
+                )
+                print("Expected format: DEBIAI_ALGO_HUB_<name>=<url>")
+                continue
+
+            print(
+                "Environment variables: detected AlgoHub '"
+                + algo_hub_name
+                + "' from environment variables"
+            )
+
+            config["ALGO_HUB_LIST"][algo_hub_name] = algo_hub_url
+
 
         # Deal with Export Methods in env variables
         if env_var == "DEBIAI_EXPORT_METHODS_CREATION_ENABLED":

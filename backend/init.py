@@ -1,5 +1,6 @@
 import modules.dataProviders.dataProviderManager as dataProviderManager
 import modules.exportMethods.exportUtils as exportUtils
+import modules.algoHub.algoHubManager as algoHubManager
 import utils.widgetConfigurations.widgetConfigurations as widgetConfUtils
 import utils.layouts.layouts as layoutsUtils
 import config.init_config as config
@@ -11,6 +12,9 @@ def init():
 
     # Init data providers
     dataProviderManager.setup_data_providers()
+
+    # Init AlgoHub
+    algoHubManager.setup_algo_hub()
 
     # Init export methods
     exportUtils.load_export_methods()

@@ -27,3 +27,20 @@ def is_url_valid(url):
         return all([result.scheme, result.netloc])
     except:
         return False
+
+
+# Name
+def is_valid_name(name):
+    # /, &, | are not allowed in data-providers & algohub names
+    if (
+        "/" in name
+        or "&" in name
+        or "|" in name
+        or len(name) == 0
+        or len(name) > 50
+        or name[0] == " "
+        or name[-1] == " "
+    ):
+        return False
+
+    return True

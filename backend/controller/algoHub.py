@@ -2,9 +2,10 @@
 # Imports
 #############################################################################
 from config.init_config import get_config
-from utils.utils import is_url_valid
+from utils.utils import is_url_valid, is_valid_name
 import modules.algoHub.algoHubManager as algo_hub_manager
-from modules.algoHub.algoHub import AlgoHub
+from modules.algoHub.AlgoHubException import AlgoHubException
+from modules.algoHub.AlgoHub import AlgoHub
 
 #############################################################################
 # Algo hub Management
@@ -19,7 +20,7 @@ def get_algorithms():
 def post_algo_hub(data):
     # Check if we are allowed to add AlgoHubs from the config file
     config = get_config()
-    creation_allowed = config["ALGO_HUB"]["creation"]
+    creation_allowed = config["ALGO_HUB_CONFIG"]["creation"]
     if not creation_allowed:
         return "AlgoHub creation is not allowed", 403
 
@@ -28,7 +29,7 @@ def post_algo_hub(data):
         return "AlgoHub already exists", 400
 
     # Check if algoHub name is valid
-    if not algo_hub_manager.is_valid_name(data["name"]):
+    if not is_valid_name(data["name"]):
         return "Invalid algoHub name", 400
 
     # Add algoHUub
@@ -44,16 +45,26 @@ def post_algo_hub(data):
     return None, 204
 
 
-def delete_algo_hub(algoHubId):
+def use_algo(algoHubName, data):
+    # Check if algoHub exists
+    if not algo_hub_manager.algo_hub_exists(algoHubName):
+        return "AlgoHub does not exists", 404
+
+    # Use algoHub
+    algo_hub_manager.use(algoHubName)
+
+    return None, 204
+
+def delete_algo_hub(algoHubName):
     # Check if we are allowed to add AlgoHubs from the config file
     config = get_config()
-    deletion_allowed = config["ALGO_HUB"]["deletion"]
+    deletion_allowed = config["ALGO_HUB_CONFIG"]["deletion"]
     if not deletion_allowed:
         return "AlgoHub deletion is not allowed", 403
 
     # Delete algub
     try:
-        algo_hub_manager.delete(algoHubId)
+        algo_hub_manager.delete(algoHubName)
         return None, 204
-    except algoHubException.algoHubException as e:
+    except AlgoHubException as e:
         return e.message, e.status_code

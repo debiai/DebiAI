@@ -1045,6 +1045,132 @@ paths:
         404:
           description: Widget title or configuration not found
 
+  # AlgoHub
+  /algo-hub/algorithms:
+    get:
+      summary: Get all algorithms
+      tags: [AlgoHub]
+      operationId: controller.algoHub.get_algorithms
+      responses:
+        200:
+          description: Algorithms list
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: "#/definitions/algoHub"
+
+    post:
+      summary: Add an Algo provider
+      tags: [AlgoHub]
+      operationId: controller.algoHub.post_algo_hub
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - url
+            properties:
+              name:
+                type: string
+                description: Name of the Algo provider
+                maxLength: 100
+                minLength: 1
+              url:
+                type: string
+                description: Url of the Algo provider
+
+      responses:
+        204:
+          description: Algorithm saved
+
+  /algo-hub/algorithms/{name}:
+    delete:
+      summary: Delete an Algo provider
+      tags: [AlgoHub]
+      operationId: controller.algoHub.delete_algo_hub
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to delete
+          minLength: 1
+      responses:
+        204:
+          description: Algo provider deleted
+        404:
+          description: Algo provider not found
+
+  /algo-hub/algorithms/{name}/use/{algoId}:
+    post:
+      summary: Use an algorithm of an Algo provider
+      tags: [AlgoHub]
+      operationId: controller.algoHub.use_algo
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to use
+          minLength: 1
+        - name: algoId
+          in: path
+          type: string
+          required: true
+          description: Id of the algorithm to use
+          minLength: 1
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - inputs
+            properties:
+              inputs:
+                type: array
+                description: Inputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the input,
+                        must be the same as the one defined in the input list
+                    value:
+                      description: Value of the input, depending on the input type
+
+      responses:
+        200:
+          description: Algorithm result
+          schema:
+            type: object
+            required:
+              - outputs
+            properties:
+              outputs:
+                type: array
+                description: Outputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the output,
+                        must be the same as the one defined in the output list
+                    value:
+                      description: Value of the output, depending on the output type
+
   # Data export
   /app/exportMethods:
     get:
@@ -1725,3 +1851,136 @@ definitions:
           type: object
           description: Configuration of the widget
           x-nullable: true
+
+  # AlgoHub
+  algoHub:
+    description: Informations about the AlgoHub (the algo provider)
+    required:
+      - url
+      - name
+      - status
+      - algorithms
+    properties:
+      name:
+        type: string
+        description: Name of the AlgoHub
+        minLength: 1
+      url:
+        type: string
+        description: Url of the AlgoHub
+        minLength: 1
+      status:
+        type: boolean
+        description: Status of the AlgoHub
+      algorithms:
+        type: array
+        description: List of algorithms provided by the AlgoHub
+        items:
+          type: object
+          description: Informations about an algorithm
+          required:
+            - id
+            - inputs
+            - outputs
+          properties:
+            id:
+              type: string
+              description: The id of the algorithm, must be unique, will be used to identify the algorithm
+              example: "my-algorithm-01"
+            name:
+              type: string
+              description: The name of the algorithm
+              example: "My algorithm 01"
+            description:
+              type: string
+              description: The description of the algorithm
+              example: "This algorithm is used to do something"
+            tags:
+              type: array
+              description: The list of tags of the algorithm
+              items:
+                type: string
+              example: ["tag1", "tag2"]
+            author:
+              type: string
+              description: The author of the algorithm
+              example: "Ada Lovelace"
+            creationDate:
+              type: string
+              description: The creation date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-01-01"
+              format: date
+              x-nullable: true
+            updateDate:
+              type: string
+              description: The last update date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-03-20"
+              format: date
+              x-nullable: true
+            version:
+              type: string
+              description: The version of the algorithm
+              example: "0.1.0"
+            inputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoHubInputOutput"
+            outputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoHubInputOutput"
+
+  algoHubInputOutput:
+    type: object
+    description: Informations about an input or an output of an algorithm
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        description: The name of the input or output
+        example: "Input_A"
+      type:
+        type: string
+        enum:
+          - string
+          - number
+          - boolean
+          - array
+
+      # Next is useless for outputs
+      availableValues:
+        type: array
+        description: The list of available values for this input
+        example: ["my value", "my other value"]
+      default:
+        description: The default value for this input
+        example: "my value"
+      min:
+        type: number
+        description: The minimum value for number inputs
+        example: 0
+      max:
+        type: number
+        description: The maximum value for number inputs
+        example: 10
+      arrayType:
+        type: string
+        description: For array inputs, specify type of the array
+        enum:
+          - string
+          - number
+          - boolean
+      lengthMin:
+        type: number
+        description: The minimum length of the array for array inputs
+        example: 0
+      lengthMax:
+        type: number
+        description: The maximum length of the array for array inputs
+        example: 10
