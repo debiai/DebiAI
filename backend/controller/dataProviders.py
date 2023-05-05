@@ -2,10 +2,10 @@
 # Imports
 #############################################################################
 from config.init_config import get_config
-from utils.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from modules.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 from utils.utils import is_url_valid
-import utils.dataProviders.dataProviderManager as data_provider_manager
-from utils.dataProviders.DataProviderException import DataProviderException
+import modules.dataProviders.dataProviderManager as data_provider_manager
+from modules.dataProviders.DataProviderException import DataProviderException
 
 #############################################################################
 # Data Providers Management

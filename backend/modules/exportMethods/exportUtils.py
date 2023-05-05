@@ -1,10 +1,10 @@
 from config.init_config import get_config
-import utils.dataProviders.dataProviderManager as data_provider_manager
-import utils.dataProviders.DataProviderException as DataProviderException
+import modules.dataProviders.dataProviderManager as data_provider_manager
+import modules.dataProviders.DataProviderException as DataProviderException
 import time
 
-from utils.exportMethods.methods.kafkaUtils import KafkaExportType
-from utils.exportMethods.methods.postUtils import PostExportType
+from modules.exportMethods.methods.kafkaUtils import KafkaExportType
+from modules.exportMethods.methods.postUtils import PostExportType
 
 #############################################################################
 #

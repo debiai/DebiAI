@@ -1,6 +1,6 @@
-from utils.dataProviders.DataProvider import DataProvider
-from utils.dataProviders.DataProviderException import DataProviderException
-from utils.dataProviders.pythonDataProvider.dataUtils import (
+from modules.dataProviders.DataProvider import DataProvider
+from modules.dataProviders.DataProviderException import DataProviderException
+from modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
     projects,
     samples,

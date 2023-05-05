@@ -1,10 +1,10 @@
 from config.init_config import get_config
-from utils.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
-from utils.dataProviders.pythonDataProvider.PythonDataProvider import (
+from modules.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from modules.dataProviders.pythonDataProvider.PythonDataProvider import (
     PythonDataProvider,
     PYTHON_DATA_PROVIDER_ID,
 )
-from utils.dataProviders.DataProviderException import DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 
 data_providers_list = []
 python_data_provider_disabled = True
