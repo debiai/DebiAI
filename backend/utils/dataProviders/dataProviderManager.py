@@ -89,9 +89,7 @@ def get_data_provider_list():
 def get_single_data_provider(name):
     # Check if the data provider is not disabled
     if name == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
-        raise DataProviderException(
-            "Python module data provider is disabled", 403
-        )
+        raise DataProviderException("Python module data provider is disabled", 403)
 
     # Return the data provider with the given name
     for d in data_providers_list:
