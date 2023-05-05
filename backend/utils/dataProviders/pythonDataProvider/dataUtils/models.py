@@ -1,13 +1,13 @@
 import os
 import ujson as json
-from dataProviders.pythonDataProvider.dataUtils import (
+from utils.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
     selections,
     projects,
     hash,
     tree,
 )
-from dataProviders.DataProviderException import DataProviderException
+from utils.dataProviders.DataProviderException import DataProviderException
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 

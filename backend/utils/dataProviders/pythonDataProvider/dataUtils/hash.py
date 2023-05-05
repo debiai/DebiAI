@@ -1,7 +1,7 @@
 import hashlib
 import ujson as json
 
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
+from utils.dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 

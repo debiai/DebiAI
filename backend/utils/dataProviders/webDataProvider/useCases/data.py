@@ -1,4 +1,4 @@
-import dataProviders.webDataProvider.http.api as api
+import utils.dataProviders.webDataProvider.http.api as api
 
 #
 # UseCase folder role is the middleware between class methods and http requests

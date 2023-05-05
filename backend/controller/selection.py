@@ -2,8 +2,8 @@
 # Imports
 #############################################################################
 
-import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.DataProviderException as DataProviderException
+import utils.dataProviders.dataProviderManager as data_provider_manager
+import utils.dataProviders.DataProviderException as DataProviderException
 
 #############################################################################
 # Selections Management

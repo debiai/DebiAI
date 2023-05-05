@@ -1,10 +1,10 @@
 from config.init_config import get_config
-from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
-from dataProviders.pythonDataProvider.PythonDataProvider import (
+from utils.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from utils.dataProviders.pythonDataProvider.PythonDataProvider import (
     PythonDataProvider,
     PYTHON_DATA_PROVIDER_ID,
 )
-import dataProviders.DataProviderException as DataProviderException
+from utils.dataProviders.DataProviderException import DataProviderException
 
 data_providers_list = []
 python_data_provider_disabled = True
@@ -41,7 +41,7 @@ def setup_data_providers():
             else:
                 print("   [ERROR] : Data Provider " + name + " Is not accessible now")
             add(data_provider)
-        except DataProviderException.DataProviderException as e:
+        except DataProviderException as e:
             print("   [ERROR] : Data Provider " + e.message + " Is not accessible now")
 
     # Python Data Providers
@@ -89,7 +89,7 @@ def get_data_provider_list():
 def get_single_data_provider(name):
     # Check if the data provider is not disabled
     if name == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
-        raise DataProviderException.DataProviderException(
+        raise DataProviderException(
             "Python module data provider is disabled", 403
         )
 
@@ -98,14 +98,14 @@ def get_single_data_provider(name):
         if d.name == name:
             return d
 
-    raise DataProviderException.DataProviderException("Data provider not found", 404)
+    raise DataProviderException("Data provider not found", 404)
 
 
 def delete(name):
     for d in data_providers_list:
         if d.name == name:
             if d.type == "Python module Data Provider":
-                raise DataProviderException.DataProviderException(
+                raise DataProviderException(
                     "Python module data provider cannot be deleted", 403
                 )
 

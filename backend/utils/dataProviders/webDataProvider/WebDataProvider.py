@@ -1,23 +1,23 @@
-from dataProviders.DataProvider import DataProvider
-from dataProviders.webDataProvider.useCases.data import (
+from utils.dataProviders.DataProvider import DataProvider
+from utils.dataProviders.webDataProvider.useCases.data import (
     get_project_id_list,
     get_project_samples,
 )
-from dataProviders.webDataProvider.useCases.projects import (
+from utils.dataProviders.webDataProvider.useCases.projects import (
     get_all_projects_from_data_provider,
     get_single_project_from_data_provider,
     delete_project,
 )
-from dataProviders.webDataProvider.useCases.models import (
+from utils.dataProviders.webDataProvider.useCases.models import (
     get_model_results,
     get_models_info,
     get_model_result_id,
     delete_model,
 )
-import dataProviders.webDataProvider.useCases.selections as useCaseSelections
-from dataProviders.webDataProvider.http.api import get_info, get_status
+import utils.dataProviders.webDataProvider.useCases.selections as useCaseSelections
+from utils.dataProviders.webDataProvider.http.api import get_info, get_status
 
-from dataProviders.DataProviderException import DataProviderException
+from utils.dataProviders.DataProviderException import DataProviderException
 
 
 #

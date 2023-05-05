@@ -1,7 +1,7 @@
-import dataProviders.webDataProvider.http.api as api
+import utils.dataProviders.webDataProvider.http.api as api
 
-from dataProviders.webDataProvider.useCases.models import get_models_info
-from dataProviders.webDataProvider.useCases.selections import get_project_selections
+from utils.dataProviders.webDataProvider.useCases.models import get_models_info
+from utils.dataProviders.webDataProvider.useCases.selections import get_project_selections
 
 from utils.utils import timeNow
 

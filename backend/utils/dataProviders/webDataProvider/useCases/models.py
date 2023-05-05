@@ -1,5 +1,5 @@
-import dataProviders.webDataProvider.http.api as api
-from dataProviders.DataProviderException import DataProviderException
+import utils.dataProviders.webDataProvider.http.api as api
+from utils.dataProviders.DataProviderException import DataProviderException
 
 
 def get_models_info(url, project_id):

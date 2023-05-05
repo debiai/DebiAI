@@ -1,5 +1,5 @@
 from kafka import KafkaProducer
-from exportMethods.exportClass import ExportType, ExportMethod
+from utils.exportMethods.exportClass import ExportType, ExportMethod
 import json
 
 #############################################################################
