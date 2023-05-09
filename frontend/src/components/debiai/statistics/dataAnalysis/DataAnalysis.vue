@@ -68,9 +68,7 @@
       v-if="algorithmModal"
       @close="algorithmModal = false"
     >
-      <Algorithms
-        @cancel="algorithmModal = false"
-      />
+      <Algorithms @cancel="algorithmModal = false" />
     </modal>
     <!-- WidgetCatalog -->
     <modal
@@ -80,9 +78,8 @@
       <WidgetCatalog
         @cancel="widgetCatalog = false"
         @add="addWidget"
-        @addWithConf="
-          ({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
-        "
+        @addWithConf="({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
+          "
       />
     </modal>
 
@@ -337,6 +334,8 @@ export default {
       },
     };
 
+    // Check thet the selector ".grid-stack" is present in the DOM
+    if (!document.querySelector(".grid-stack")) return;
     this.grid = GridStack.init(gridStackOptions);
     this.grid.on("resizestop", () => {
       // Create move event to update the plotly plots
@@ -617,7 +616,7 @@ header #widgetList {
   display: flex;
 }
 
-header #widgetList button + button {
+header #widgetList button+button {
   margin-left: 5px;
 }
 
