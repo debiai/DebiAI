@@ -1045,132 +1045,6 @@ paths:
         404:
           description: Widget title or configuration not found
 
-  # AlgoProviders
-  /algoproviders/algo-providers:
-    get:
-      summary: Get all Algo providers and their algorithms
-      tags: [AlgoProviders]
-      operationId: controller.algoProviders.get_algo_providers
-      responses:
-        200:
-          description: Algorithms list
-          schema:
-            type: array
-            items:
-              type: object
-              $ref: "#/definitions/algoProvider"
-
-    post:
-      summary: Add an Algo provider
-      tags: [AlgoProviders]
-      operationId: controller.algoProviders.post_algo_provider
-      parameters:
-        - name: data
-          in: body
-          required: true
-          schema:
-            type: object
-            required:
-              - name
-              - url
-            properties:
-              name:
-                type: string
-                description: Name of the Algo provider
-                maxLength: 100
-                minLength: 1
-              url:
-                type: string
-                description: Url of the Algo provider
-
-      responses:
-        204:
-          description: Algorithm saved
-
-  /algoproviders/algo-providers/{name}:
-    delete:
-      summary: Delete an Algo provider
-      tags: [AlgoProviders]
-      operationId: controller.algoProviders.delete_algo_provider
-      parameters:
-        - name: name
-          in: path
-          type: string
-          required: true
-          description: Name of the Algo provider to delete
-          minLength: 1
-      responses:
-        204:
-          description: Algo provider deleted
-        404:
-          description: Algo provider not found
-
-  /algoproviders/algorithms/{name}/use/{algoId}:
-    post:
-      summary: Use an algorithm of an Algo provider
-      tags: [AlgoProviders]
-      operationId: controller.algoProviders.use_algo
-      parameters:
-        - name: name
-          in: path
-          type: string
-          required: true
-          description: Name of the Algo provider to use
-          minLength: 1
-        - name: algoId
-          in: path
-          type: string
-          required: true
-          description: Id of the algorithm to use
-          minLength: 1
-        - name: data
-          in: body
-          required: true
-          schema:
-            type: object
-            required:
-              - inputs
-            properties:
-              inputs:
-                type: array
-                description: Inputs of the algorithm
-                items:
-                  type: object
-                  required:
-                    - name
-                    - value
-                  properties:
-                    name:
-                      type: string
-                      description: Name of the input,
-                        must be the same as the one defined in the input list
-                    value:
-                      description: Value of the input, depending on the input type
-
-      responses:
-        200:
-          description: Algorithm result
-          schema:
-            type: object
-            required:
-              - outputs
-            properties:
-              outputs:
-                type: array
-                description: Outputs of the algorithm
-                items:
-                  type: object
-                  required:
-                    - name
-                    - value
-                  properties:
-                    name:
-                      type: string
-                      description: Name of the output,
-                        must be the same as the one defined in the output list
-                    value:
-                      description: Value of the output, depending on the output type
-
   # Data export
   /app/exportMethods:
     get:
@@ -1307,6 +1181,132 @@ paths:
       responses:
         200:
           description: Selection exported
+
+  # Algo providers
+  /app/algo-providers:
+    get:
+      summary: Get all Algo providers and their algorithms
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.get_algo_providers
+      responses:
+        200:
+          description: Algorithms list
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: "#/definitions/algoProvider"
+
+    post:
+      summary: Add an Algo provider
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.post_algo_provider
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - url
+            properties:
+              name:
+                type: string
+                description: Name of the Algo provider
+                maxLength: 100
+                minLength: 1
+              url:
+                type: string
+                description: Url of the Algo provider
+
+      responses:
+        204:
+          description: Algorithm saved
+
+  /app/algo-providers/{name}:
+    delete:
+      summary: Delete an Algo provider
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.delete_algo_provider
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to delete
+          minLength: 1
+      responses:
+        204:
+          description: Algo provider deleted
+        404:
+          description: Algo provider not found
+
+  /app/algo-providers/{name}/algorithms/use/{algoId}:
+    post:
+      summary: Use an algorithm of an Algo provider
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.use_algo
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to use
+          minLength: 1
+        - name: algoId
+          in: path
+          type: string
+          required: true
+          description: Id of the algorithm to use
+          minLength: 1
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - inputs
+            properties:
+              inputs:
+                type: array
+                description: Inputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the input,
+                        must be the same as the one defined in the input list
+                    value:
+                      description: Value of the input, depending on the input type
+
+      responses:
+        200:
+          description: Algorithm result
+          schema:
+            type: object
+            required:
+              - outputs
+            properties:
+              outputs:
+                type: array
+                description: Outputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the output,
+                        must be the same as the one defined in the output list
+                    value:
+                      description: Value of the output, depending on the output type
 
   # Statistical operations
   /statisticalOperations/pearsonCorrelation:

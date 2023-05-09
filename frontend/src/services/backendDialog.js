@@ -490,4 +490,28 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
+
+  // Algo providers
+  getAlgoProviders() {
+    let code = startRequest("Loading algo providers");
+    return axios
+      .get(apiURL + "app/algo-providers")
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+  addAlgoProvider(name, url) {
+    let toExport = { name, url };
+    let code = startRequest("Adding the algo provider");
+    return axios
+      .post(apiURL + "app/algo-providers", toExport)
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+  deleteAlgoProvider(algoProviderName) {
+    let code = startRequest("Deleting the algo provider");
+    return axios
+      .delete(apiURL + "app/algo-providers/" + algoProviderName)
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
 };

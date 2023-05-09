@@ -9,7 +9,7 @@ algo_provider_list = []
 
 def test_get_algorithms():
     global algo_provider_list
-    url = appUrl + "algoproviders/algo-providers"
+    url = appUrl + "app/algo-providers"
     resp = requests.get(url=url, headers={})
     assert resp.status_code == 200
     print(resp.text)
@@ -58,7 +58,7 @@ def test_get_algorithms():
 
 
 def test_add_algo_provider():
-    url = appUrl + "algoproviders/algo-providers"
+    url = appUrl + "app/algo-providers"
     data = {"name": test_algo_provider_name, "url": "http://localhost:4000"}
     resp = requests.post(url=url, headers={}, json=data)
     assert resp.status_code == 204
@@ -77,12 +77,12 @@ def test_add_algo_provider():
 
 
 def test_delete_algo_provider():
-    url = appUrl + "algoproviders/algo-providers/" + test_algo_provider_name
+    url = appUrl + "app/algo-providers/" + test_algo_provider_name
     resp = requests.delete(url=url, headers={})
     assert resp.status_code == 204
 
     # Test that it was removed from the list
-    url = appUrl + "algoproviders/algo-providers"
+    url = appUrl + "app/algo-providers"
     resp = requests.get(url=url, headers={})
     assert resp.status_code == 200
     print(resp.text)
