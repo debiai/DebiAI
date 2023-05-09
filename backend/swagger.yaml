@@ -1045,12 +1045,12 @@ paths:
         404:
           description: Widget title or configuration not found
 
-  # AlgoHub
-  /algo-hub/algorithms:
+  # AlgoProviders
+  /algoproviders/algo-providers:
     get:
-      summary: Get all algorithms
-      tags: [AlgoHub]
-      operationId: controller.algoHub.get_algorithms
+      summary: Get all Algo providers and their algorithms
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.get_algo_providers
       responses:
         200:
           description: Algorithms list
@@ -1058,12 +1058,12 @@ paths:
             type: array
             items:
               type: object
-              $ref: "#/definitions/algoHub"
+              $ref: "#/definitions/algoProvider"
 
     post:
       summary: Add an Algo provider
-      tags: [AlgoHub]
-      operationId: controller.algoHub.post_algo_hub
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.post_algo_provider
       parameters:
         - name: data
           in: body
@@ -1087,11 +1087,11 @@ paths:
         204:
           description: Algorithm saved
 
-  /algo-hub/algorithms/{name}:
+  /algoproviders/algo-providers/{name}:
     delete:
       summary: Delete an Algo provider
-      tags: [AlgoHub]
-      operationId: controller.algoHub.delete_algo_hub
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.delete_algo_provider
       parameters:
         - name: name
           in: path
@@ -1105,11 +1105,11 @@ paths:
         404:
           description: Algo provider not found
 
-  /algo-hub/algorithms/{name}/use/{algoId}:
+  /algoproviders/algorithms/{name}/use/{algoId}:
     post:
       summary: Use an algorithm of an Algo provider
-      tags: [AlgoHub]
-      operationId: controller.algoHub.use_algo
+      tags: [AlgoProviders]
+      operationId: controller.algoProviders.use_algo
       parameters:
         - name: name
           in: path
@@ -1852,9 +1852,9 @@ definitions:
           description: Configuration of the widget
           x-nullable: true
 
-  # AlgoHub
-  algoHub:
-    description: Informations about the AlgoHub (the algo provider)
+  # AlgoProviders
+  algoProvider:
+    description: Informations about an AlgoProvider
     required:
       - url
       - name
@@ -1863,18 +1863,18 @@ definitions:
     properties:
       name:
         type: string
-        description: Name of the AlgoHub
+        description: Name of the AlgoProvider
         minLength: 1
       url:
         type: string
-        description: Url of the AlgoHub
+        description: Url of the AlgoProvider
         minLength: 1
       status:
         type: boolean
-        description: Status of the AlgoHub
+        description: Status of the AlgoProvider
       algorithms:
         type: array
-        description: List of algorithms provided by the AlgoHub
+        description: List of algorithms provided by the AlgoProvider
         items:
           type: object
           description: Informations about an algorithm
@@ -1926,15 +1926,15 @@ definitions:
               description: The list of inputs of the algorithm
               items:
                 type: object
-                $ref: "#/definitions/algoHubInputOutput"
+                $ref: "#/definitions/algoInputOutput"
             outputs:
               type: array
               description: The list of inputs of the algorithm
               items:
                 type: object
-                $ref: "#/definitions/algoHubInputOutput"
+                $ref: "#/definitions/algoInputOutput"
 
-  algoHubInputOutput:
+  algoInputOutput:
     type: object
     description: Informations about an input or an output of an algorithm
     required:

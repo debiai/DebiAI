@@ -26,10 +26,8 @@ def init_config():
         "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
-
-        "ALGO_HUB_CONFIG": {"creation": True, "deletion": True},
-        "ALGO_HUB_LIST": {},
-
+        "ALGO_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
+        "ALGO_PROVIDERS": {},
         "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
         "EXPORT_METHODS_LIST": {},
     }
@@ -73,27 +71,25 @@ def init_config():
                 ]
             continue
 
-        # AlgoHub
-        if section == "ALGO_HUB_CONFIG":
+        # AlgoProvider
+        if section == "ALGO_PROVIDERS_CONFIG":
             if "creation" in config_parser[section]:
                 if str.lower(config_parser[section]["creation"]) == "false":
-                    print("Config file: AlgoHub creation disabled")
-                    config["ALGO_HUB_CONFIG"]["creation"] = False
+                    print("Config file: AlgoProvider creation disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
 
             if "deletion" in config_parser[section]:
                 if str.lower(config_parser[section]["deletion"]) == "false":
-                    print("Config file: AlgoHub deletion disabled")
-                    config["ALGO_HUB_CONFIG"]["deletion"] = False
+                    print("Config file: AlgoProvider deletion disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False
             continue
 
-        if section == "ALGO_HUB_LIST":
-            for algo_hub in config_parser[section]:
+        if section == "ALGO_PROVIDERS":
+            for algo_provider in config_parser[section]:
                 print(
-                    "Config file: detected AlgoHub '"
-                    + algo_hub
-                    + "' from config file"
+                    "Config file: detected AlgoProvider '" + algo_provider + "' from config file"
                 )
-                config["ALGO_HUB_LIST"][algo_hub] = config_parser[section][algo_hub]
+                config["ALGO_PROVIDERS"][algo_provider] = config_parser[section][algo_provider]
             continue
 
         # Export methods
@@ -182,54 +178,53 @@ def init_config():
             )
 
             config["WEB_DATA_PROVIDERS"][data_provider_name] = data_provider_url
-        
-        # Deal with AlgoHub in env variables
-        if env_var == "DEBIAI_ALGO_HUB_CREATION_ENABLED":
-            # Env var format: DEBIAI_ALGO_HUB_CREATION_ENABLED=<True|False>
+
+        # Deal with AlgoProvider in env variables
+        if env_var == "DEBIAI_ALGO_PROVIDER_CREATION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDER_CREATION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
-                print("Environment variables: AlgoHub creation disabled")
-                config["ALGO_HUB_CONFIG"]["creation"] = False
+                print("Environment variables: AlgoProvider creation disabled")
+                config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
             continue
 
-        if env_var == "DEBIAI_ALGO_HUB_DELETION_ENABLED":
-            # Env var format: DEBIAI_ALGO_HUB_DELETION_ENABLED=<True|False>
+        if env_var == "DEBIAI_ALGO_PROVIDER_DELETION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDER_DELETION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
-                print("Environment variables: AlgoHub deletion disabled")
-                config["ALGO_HUB_CONFIG"]["deletion"] = False
+                print("Environment variables: AlgoProvider deletion disabled")
+                config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False
             continue
 
-        # Deal with AlgoHub list in env variables
-        if "DEBIAI_ALGO_HUB" in env_var:
-            # Env var format: DEBIAI_ALGO_HUB_<name>=<url>
+        # Deal with AlgoProvider list in env variables
+        if "DEBIAI_ALGO_PROVIDER" in env_var:
+            # Env var format: DEBIAI_ALGO_PROVIDER_<name>=<url>
             if len(env_var.split("_")) != 4:
                 print(
                     "Environment variables: invalid environment variable '"
                     + env_var
                     + "', skipping"
                 )
-                print("Expected format: DEBIAI_ALGO_HUB_<name>=<url>")
+                print("Expected format: DEBIAI_ALGO_PROVIDER_<name>=<url>")
                 continue
 
-            algo_hub_name = env_var.split("_")[3]
-            algo_hub_url = os.environ[env_var]
+            algo_provider_name = env_var.split("_")[3]
+            algo_provider_url = os.environ[env_var]
 
-            if len(algo_hub_name) == 0:
+            if len(algo_provider_name) == 0:
                 print(
-                    "Environment variables: invalid AlgoHub name '"
+                    "Environment variables: invalid AlgoProvider name '"
                     + env_var
                     + "', skipping"
                 )
-                print("Expected format: DEBIAI_ALGO_HUB_<name>=<url>")
+                print("Expected format: DEBIAI_ALGO_PROVIDER_<name>=<url>")
                 continue
 
             print(
-                "Environment variables: detected AlgoHub '"
-                + algo_hub_name
+                "Environment variables: detected AlgoProvider '"
+                + algo_provider_name
                 + "' from environment variables"
             )
 
-            config["ALGO_HUB_LIST"][algo_hub_name] = algo_hub_url
-
+            config["ALGO_PROVIDERS"][algo_provider_name] = algo_provider_url
 
         # Deal with Export Methods in env variables
         if env_var == "DEBIAI_EXPORT_METHODS_CREATION_ENABLED":

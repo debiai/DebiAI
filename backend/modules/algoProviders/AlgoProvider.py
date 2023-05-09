@@ -1,9 +1,9 @@
-# Class for AlgoHub
+# Class for AlgoProvider
 import requests, json
-from modules.algoHub.AlgoHubException import AlgoHubException
+from modules.algoProviders.AlgoProviderException import AlgoProviderException
 
 
-class AlgoHub:
+class AlgoProvider:
     def __init__(self, url, name):
         self.url = url
         self.name = name
@@ -42,6 +42,6 @@ def get_valid_response(response):
 
 def get_error_response(response):
     if response.status_code == 500:
-        raise AlgoHubException("AlgoHub unexpected Error", 500)
+        raise AlgoProviderException("AlgoProvider unexpected Error", 500)
 
-    raise AlgoHubException(response.text, response.status_code)
+    raise AlgoProviderException(response.text, response.status_code)

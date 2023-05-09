@@ -31,7 +31,7 @@ def is_url_valid(url):
 
 # Name
 def is_valid_name(name):
-    # /, &, | are not allowed in data-providers & algohub names
+    # /, &, | are not allowed in data-providers & algo-providers names
     if (
         "/" in name
         or "&" in name
