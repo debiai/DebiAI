@@ -1,7 +1,10 @@
 import os
 import ujson as json
 
-from dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils, projects
+from modules.dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+    projects,
+)
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 

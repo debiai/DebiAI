@@ -1,8 +1,8 @@
 #############################################################################
 # Imports
 #############################################################################
-import dataProviders.DataProviderException as DataProviderException
-import dataProviders.dataProviderManager as data_provider_manager
+import modules.dataProviders.DataProviderException as DataProviderException
+import modules.dataProviders.dataProviderManager as data_provider_manager
 import utils.samples.get_id_list as get_id_list
 
 #############################################################################

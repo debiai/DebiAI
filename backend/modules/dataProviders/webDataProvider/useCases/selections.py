@@ -1,5 +1,5 @@
-import dataProviders.webDataProvider.http.api as api
-from dataProviders.DataProviderException import DataProviderException
+import modules.dataProviders.webDataProvider.http.api as api
+from modules.dataProviders.DataProviderException import DataProviderException
 
 
 def get_project_selections(url, project_id):

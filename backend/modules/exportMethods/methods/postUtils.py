@@ -1,4 +1,4 @@
-from exportMethods.exportClass import ExportType, ExportMethod
+from modules.exportMethods.exportClass import ExportType, ExportMethod
 import requests
 
 #############################################################################

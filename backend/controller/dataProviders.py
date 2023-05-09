@@ -2,13 +2,13 @@
 # Imports
 #############################################################################
 from config.init_config import get_config
-from dataProviders.webDataProvider.WebDataProvider import WebDataProvider
+from modules.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 from utils.utils import is_url_valid
-import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.DataProviderException as DataProviderException
+import modules.dataProviders.dataProviderManager as data_provider_manager
+from modules.dataProviders.DataProviderException import DataProviderException
 
 #############################################################################
-# PROJECTS Management
+# Data Providers Management
 #############################################################################
 
 
@@ -35,7 +35,7 @@ def get_data_provider_info(dataProviderId):
         info = data_provider.get_info()
 
         return info, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -69,7 +69,7 @@ def post_data_providers(data):
             return "Invalid data provider type, valid types are: Web", 400
 
         return None, 204
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -84,5 +84,5 @@ def delete_data_providers(dataProviderId):
     try:
         data_provider_manager.delete(dataProviderId)
         return None, 204
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code

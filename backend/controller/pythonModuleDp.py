@@ -1,6 +1,6 @@
-import dataProviders.DataProviderException as DataProviderException
-import dataProviders.dataProviderManager as data_provider_manager
-import dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
+import modules.dataProviders.DataProviderException as DataProviderException
+import modules.dataProviders.dataProviderManager as data_provider_manager
+import modules.dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 
 # Project

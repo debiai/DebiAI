@@ -1,5 +1,5 @@
 import os
-from dataProviders.pythonDataProvider.dataUtils import (
+from modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
     selections,
     models,

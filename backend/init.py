@@ -1,7 +1,7 @@
-import dataProviders.dataProviderManager as dataProviderManager
-import exportMethods.exportUtils as exportUtils
-import utils.debiai.widgetConfigurations as widgetConfUtils
-import utils.debiai.layouts as layoutsUtils
+import modules.dataProviders.dataProviderManager as dataProviderManager
+import modules.exportMethods.exportUtils as exportUtils
+import utils.widgetConfigurations.widgetConfigurations as widgetConfUtils
+import utils.layouts.layouts as layoutsUtils
 import config.init_config as config
 
 

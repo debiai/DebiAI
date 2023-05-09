@@ -1,7 +1,7 @@
 #############################################################################
 # Imports
 #############################################################################
-import utils.debiai.widgetConfigurations as widgetConfUtils
+import utils.widgetConfigurations.widgetConfigurations as widgetConfUtils
 
 #############################################################################
 # Widget configuration Management
