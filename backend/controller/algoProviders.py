@@ -13,7 +13,7 @@ from modules.algoProviders.AlgoProvider import AlgoProvider
 
 
 def get_algo_providers():
-    algorithms = algo_provider_manager.get_algo_providers()
+    algorithms = algo_provider_manager.get_algo_providers_json()
     return algorithms, 200
 
 
@@ -32,11 +32,8 @@ def post_algo_provider(data):
     if not is_valid_name(data["name"]):
         return "Invalid algoProviders name", 400
 
-    # Add algoHUub
+    # Add the algoProvider
     # Check if url is valid
-    if "url" not in data:
-        return "A url must be provided", 400
-
     if not is_url_valid(data["url"]):
         return "Invalid url", 400
 

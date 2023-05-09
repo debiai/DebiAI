@@ -1852,7 +1852,7 @@ definitions:
           description: Configuration of the widget
           x-nullable: true
 
-  # AlgoProviders
+  # Algo providers
   algoProvider:
     description: Informations about an AlgoProvider
     required:

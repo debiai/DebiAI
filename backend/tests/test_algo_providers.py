@@ -82,6 +82,7 @@ def test_delete_algo_provider():
     assert resp.status_code == 204
 
     # Test that it was removed from the list
+    url = appUrl + "algoproviders/algo-providers"
     resp = requests.get(url=url, headers={})
     assert resp.status_code == 200
     print(resp.text)

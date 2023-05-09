@@ -21,6 +21,13 @@ class AlgoProvider:
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             return None
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "url": self.url,
+            "status": self.alive,
+            "algorithms": self.get_algorithms(),
+        }
 
 # ==== Utils ====
 def get_http_response(response):

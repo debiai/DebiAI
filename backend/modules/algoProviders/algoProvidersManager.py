@@ -44,11 +44,16 @@ def setup_algo_providers():
 
 def add(algo_provider):
     algo_providers.append(algo_provider)
-    return
 
 
 def get_algo_providers():
     return algo_providers
+
+def get_algo_providers_json():
+    algo_providers_json = []
+    for algo_provider in algo_providers:
+        algo_providers_json.append(algo_provider.to_json())
+    return algo_providers_json
 
 def algo_provider_exists(name):
     for d in algo_providers:
