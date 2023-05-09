@@ -51,13 +51,24 @@
         @exported="selectionExport = false"
       />
     </modal>
+    <!-- Layout -->
+    <modal
+      v-if="layoutModal"
+      @close="layoutModal = false"
+    >
+      <Layouts
+        @cancel="layoutModal = false"
+        @selected="loadLayout"
+        :components="components"
+        :gridstack="grid"
+      />
+    </modal>
     <!-- WidgetCatalog -->
     <modal
       v-if="widgetCatalog"
       @close="widgetCatalog = false"
     >
       <WidgetCatalog
-        :widgets="availableWidgets"
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
@@ -80,10 +91,9 @@
       @saveSelection="saveSelection"
       @tagCreation="tagCreation"
       @exportSelection="exportSelection"
-      @defaultLayout="defaultLayout"
-      @clearLayout="clearLayout"
-      @changeDefaultLayout="changeDefaultLayout"
+      @layout="layout"
       @restoreDefaultLayout="restoreDefaultLayout"
+      @clearLayout="clearLayout"
     />
     <!-- floating wiget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
@@ -117,16 +127,17 @@
       >
         <Widget
           :data="data"
-          :widgetKey="component.key"
+          :widgetKey="component.widgetKey"
           :title="component.name"
           :simple="component.simple"
           :configuration="component.configuration"
           :index="component.id"
+          :ref="component.id"
           v-on:remove="removeWidget(component)"
           v-on:copy="(configuration) => copyWidget({ component, configuration })"
         >
           <component
-            :is="component.key"
+            :is="component.widgetKey"
             :component="component"
             :data="data"
             :selectedData="selectedData"
@@ -152,7 +163,6 @@
 
 <script>
 import { GridStack } from "gridstack";
-import swal from "sweetalert";
 import "gridstack/dist/gridstack.css";
 import fab from "vue-fab"; // For the bubble floating menu
 
@@ -165,6 +175,7 @@ import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
+import Layouts from "./utils/layouts/Layouts";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
@@ -182,6 +193,7 @@ export default {
     SelectionCreator,
     TagCreator,
     SelectionExportMenu,
+    Layouts,
     WidgetCatalog,
 
     Footer,
@@ -196,15 +208,15 @@ export default {
       selectedData: null, // Index of the selected samples or results
 
       // Workspace
-      gridStacklayout: [],
-      availableWidgets: [],
       components: [],
+      grid: null,
 
       // Modals
       customColumnCreation: false,
       saveSelectionWidget: false,
       tagCreationWidget: false,
       selectionExport: false,
+      layoutModal: false,
       widgetCatalog: false,
 
       // Menu
@@ -234,27 +246,21 @@ export default {
           color: "var(--success)",
         },
         {
-          name: "defaultLayout",
-          icon: "settings_backup_restore",
-          tooltip: "Default layout",
-          color: "var(--warningDark)",
-        },
-        {
-          name: "clearLayout",
-          icon: "delete",
-          tooltip: "Clear layout",
-          color: "var(--dangerDark)",
-        },
-        {
-          name: "changeDefaultLayout",
-          icon: "handyman",
-          tooltip: "Change the default layout",
-          color: "var(--warningDark)",
+          name: "layout",
+          icon: "auto_awesome_mosaic",
+          tooltip: "Save or load layout",
+          color: "var(--info)",
         },
         {
           name: "restoreDefaultLayout",
           icon: "undo",
           tooltip: "Restore the default layout",
+          color: "var(--warning)",
+        },
+        {
+          name: "clearLayout",
+          icon: "delete",
+          tooltip: "Clear layout",
           color: "var(--dangerDark)",
         },
       ],
@@ -294,15 +300,8 @@ export default {
       // Load available Widgets from the widget folder
       this.loadWidgets();
 
-      // Load local storage grid stack layout or the default one if no layout is saved
-      let savedGridStackLayout = window.localStorage.getItem("gridStackLayout");
-      if (savedGridStackLayout) {
-        savedGridStackLayout = JSON.parse(savedGridStackLayout);
-        this.loadLayout(savedGridStackLayout);
-      } else {
-        // No saved layout
-        this.defaultLayout();
-      }
+      // Load saved layout
+      this.loadLastLayout();
     }
   },
   mounted() {
@@ -325,10 +324,10 @@ export default {
       this.$emit("GridStack_resizestop");
       window.dispatchEvent(new Event("resize"));
     });
-    this.grid.on("added removed change", () => {
-      // Save layout in local cache
-      this.saveLayout();
-    });
+    // this.grid.on("added removed change", () => {
+    //   // Save layout in local cache
+    //   this.saveLayout();
+    // });
   },
   methods: {
     // Grid stack & widgets
@@ -347,20 +346,48 @@ export default {
           import("./widgets/" + componentKey + "/" + componentKey + ".vue")
         );
       });
+    },
+    loadLastLayout() {
+      // Get the last layout saved for this project
+      const projectId = this.$store.state.ProjectPage.projectId;
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
 
-      // Loading the available widgets names
-      this.availableWidgets = componentsGridStackData.getAvailableWidgets();
+      // Get all the saved layouts
+      this.$backendDialog
+        .getLayouts()
+        .then((layouts) => {
+          // Find the last layout saved for this project
+          const lastLayout = layouts.find(
+            (l) =>
+              l.projectId == projectId && l.dataProviderId == dataProviderId && l.lastLayoutSaved
+          );
+
+          if (lastLayout) {
+            // Load the layout
+            this.loadLayout(lastLayout.layout);
+          } else {
+            // No layout found, load default layout
+            this.restoreDefaultLayout();
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
     loadLayout(layout) {
       this.clearLayout();
+      this.layoutModal = false;
       layout.forEach((c) => {
-        if (!c.key || !componentsGridStackData.widgetExists(c.key)) {
-          console.warn("Component " + c.key + " not found");
+        // Get the key (previous layout version saved in cache)
+        if (!c.widgetKey) c.widgetKey = c.key;
+
+        if (!c.widgetKey || !componentsGridStackData.widgetExists(c.widgetKey)) {
+          console.warn("Component " + c.widgetKey + " not found");
           return;
         }
 
         // get comp default layout :
-        let component = componentsGridStackData.createWidget(c.key);
+        const component = componentsGridStackData.createWidget(c.widgetKey);
 
         // set shape from given layout
         component.layout.x = c.x;
@@ -368,11 +395,15 @@ export default {
         component.layout.height = c.height;
         component.layout.width = c.width;
 
-        // add to model
-        this.components.push(component);
+        // set configuration from given layout
+        if (c.config) component.configuration = { configuration: c.config };
 
-        // wait until vue has completely rendered the new component
-        this.$nextTick(() => {
+        this.components.push(component);
+      });
+
+      // wait until vue has completely rendered the new components
+      this.$nextTick(() => {
+        this.components.forEach((component) => {
           this.grid.makeWidget(document.getElementById(component.id));
         });
       });
@@ -402,37 +433,84 @@ export default {
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 
       // Create the componen with its configuration if possible
-      this.addWidget(component.key, gsComp, configuration);
+      this.addWidget(component.widgetKey, gsComp, configuration);
     },
-    getLayout() {
-      if (this.grid) {
-        let gsPos = this.grid.save();
-        let layout = [];
-        gsPos.forEach((gsComp) => {
-          gsComp.key = this.components.find((c) => gsComp.id == c.id).key;
-          layout.push(gsComp);
+    updateLayoutConfig() {
+      // Update the components list with their config
+      this.components.forEach((component) => {
+        component.config = this.$refs[component.id][0].getComponentConf();
+      });
+    },
+
+    saveLayout() {
+      // Get the current layout
+      if (!this.grid) return;
+
+      // Get the current layout from the gridstack
+      this.updateLayoutConfig();
+      let gridStackLayout = this.grid.save();
+      const layout = [];
+      gridStackLayout.forEach((gsComp) => {
+        // Get the component from the components list
+        const gridComponent = this.components.find((c) => gsComp.id == c.id);
+        if (!gridComponent) return;
+
+        // Add the widgetKey and config to the gs layout
+        gsComp.widgetKey = gridComponent.widgetKey;
+        gsComp.config = gridComponent.config;
+
+        layout.push(gsComp);
+      });
+
+      // Create the layout save request body
+      const projectId = this.$store.state.ProjectPage.projectId;
+      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
+
+      const requestBody = {
+        name: projectId + " last layout",
+        description:
+          "Last layout for project " + projectId + " and data provider " + dataProviderId,
+        layout: [],
+        lastLayoutSaved: true, // This will erase the previous last layout saved
+      };
+
+      // We remove some properties from the layout
+      // Expected layout:
+      // [{ x, y, w, h, widgetKey, config }];
+      layout.forEach((component) => {
+        requestBody.layout.push({
+          x: component.x,
+          y: component.y,
+          width: component.width,
+          height: component.height,
+          widgetKey: component.widgetKey,
+          config: component.config,
         });
-        return JSON.stringify(layout);
-      }
+      });
+
+      // Send the request
+      this.$backendDialog
+        .saveLayout(requestBody)
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Layout saved",
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't save the layout",
+          });
+        });
     },
 
     // Buttons
-    defaultLayout() {
-      // Check if the default layout has been overide by a local storage grid stack layout
-      let savedGridStackDefaultLayout = window.localStorage.getItem("gridStackDefaultLayout");
-      if (savedGridStackDefaultLayout) {
-        savedGridStackDefaultLayout = JSON.parse(savedGridStackDefaultLayout);
-        this.loadLayout(savedGridStackDefaultLayout);
-
-        // Send message to the user
-        this.$store.commit("sendMessage", {
-          title: "success",
-          msg: "Custom default layout loaded",
-        });
-      } else {
-        // No saved default layout
+    restoreDefaultLayout() {
+      setTimeout(() => {
         this.loadLayout(componentsGridStackData.defaultLayout);
-      }
+      }, 100);
     },
     clearLayout() {
       while (this.components.length > 0) this.removeWidget(this.components[0]);
@@ -450,13 +528,6 @@ export default {
         msg: "Column created successfully",
       });
     },
-    saveLayout() {
-      const layout = this.getLayout();
-      if (layout) {
-        // Save curent configuration into local storage
-        window.localStorage.setItem("gridStackLayout", layout);
-      }
-    },
     saveSelection() {
       this.saveSelectionWidget = true;
     },
@@ -466,41 +537,12 @@ export default {
     exportSelection() {
       this.selectionExport = true;
     },
-    changeDefaultLayout() {
-      swal({
-        title: "Change the default layout ?",
-        text: "This will replace the current default widget layout for all the projects",
-        buttons: true,
-        dangerMode: true,
-      }).then((validate) => {
-        if (validate) {
-          const layout = this.getLayout();
-          if (layout) {
-            // Save curent configuration into local storage
-            window.localStorage.setItem("gridStackDefaultLayout", layout);
-            this.$store.commit("sendMessage", {
-              title: "success",
-              msg: "Default layout saved successfully",
-            });
-          }
-        }
-      });
+    clearLayout() {
+      while (this.components.length > 0) this.removeWidget(this.components[0]);
     },
-    restoreDefaultLayout() {
-      swal({
-        title: "Restore the default layout ?",
-        text: "This will replace the current default widget layout by the default application one",
-        buttons: true,
-        dangerMode: true,
-      }).then((validate) => {
-        if (validate) {
-          window.localStorage.removeItem("gridStackDefaultLayout");
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Default layout restored",
-          });
-        }
-      });
+    layout() {
+      this.updateLayoutConfig();
+      this.layoutModal = true;
     },
   },
   computed: {
@@ -529,9 +571,15 @@ export default {
     },
   },
   beforeDestroy() {
+    // Save the layout
+    this.saveLayout();
+
     // this.$store.commit("selectProjectId", null);
     this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
+
+    // Remove the grid
+    this.grid.destroy();
   },
 };
 </script>

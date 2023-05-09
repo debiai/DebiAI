@@ -392,11 +392,16 @@ export default {
       // Finally remove the widget
       this.$emit("remove");
     },
+    getComponentConf() {
+      if (this.canSaveConfiguration) {
+        let slotCom = this.$slots.default[0].componentInstance;
+        return slotCom.getConf();
+      } else return null;
+    },
     copy() {
       if (this.canSaveConfiguration) {
         // Load configuration to copy
-        let slotCom = this.$slots.default[0].componentInstance;
-        let configuration = slotCom.getConf();
+        let configuration = this.getComponentConf();
         this.$emit("copy", { configuration, name: this.name + " copy" });
       } else this.$emit("copy");
     },
@@ -405,7 +410,8 @@ export default {
     setConf(configuration) {
       let slotCom = this.$slots.default[0];
       slotCom.componentInstance.setConf(configuration.configuration);
-      this.name = configuration.name;
+      if (configuration.name) this.name = configuration.name;
+      else this.name = this.title;
       this.confSettings = false;
       setTimeout(() => {
         this.confAsChanged = false;
@@ -421,7 +427,8 @@ export default {
       this.confToSave = slotCom.getConf();
 
       // Find a suggested name
-      this.suggestedConfName = slotCom.getConfNameSuggestion();
+      if (slotCom.getConfNameSuggestion) this.suggestedConfName = slotCom.getConfNameSuggestion();
+      else this.suggestedConfName = null;
 
       // Open the configuration creator modal
       this.confSettings = true;
@@ -541,7 +548,7 @@ export default {
 }
 
 #name {
-  min-width: 30px;
+  overflow: hidden;
 }
 
 #name.clickable {
@@ -597,6 +604,11 @@ export default {
   padding: 0px 8px 0px 8px;
 }
 
+/* Set all the text to no wram and overflow hidden */
+.updateWarning * {
+  white-space: nowrap;
+  overflow: hidden;
+}
 .updateWarning button {
   padding: 1px 5px 1px 5px;
   margin-left: 10px;

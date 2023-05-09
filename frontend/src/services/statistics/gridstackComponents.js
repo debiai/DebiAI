@@ -3,21 +3,21 @@ import services from "../services";
 // Default components layout
 const defaultLayout = [
   {
-    key: "ParallelCoordinate",
+    widgetKey: "ParallelCoordinate",
     x: 0,
     y: 0,
     width: 12,
     height: 5,
   },
   {
-    key: "PointPlot",
+    widgetKey: "PointPlot",
     x: 6,
     y: 5,
     width: 6,
     height: 5,
   },
   {
-    key: "DistributionPlot",
+    widgetKey: "DistributionPlot",
     x: 0,
     y: 5,
     width: 6,
@@ -72,7 +72,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
       name: widgetName,
       description: widgetDescription,
       simple: widgetSimple,
-      key: componentKey,
+      widgetKey: componentKey,
       layout: widgetLayout,
     };
   } catch (e) {
@@ -83,13 +83,19 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
 function createWidget(widgetKey) {
   // A uuid is generated for the widget
-  return { ...availableWidgetsConfiguration[widgetKey], id: services.uuid() };
+  const widgetId = services.uuid();
+
+  // Create a copy of the widget configuration
+  const layoutCopy = { ...availableWidgetsConfiguration[widgetKey].layout };
+  const copyConfiguration = { ...availableWidgetsConfiguration[widgetKey] };
+  copyConfiguration.layout = layoutCopy;
+  return { ...copyConfiguration, id: widgetId };
 }
 
 function getAvailableWidgets() {
   let widgetList = Object.keys(availableWidgetsConfiguration).map((widgetKey) => {
     return {
-      componentKey: availableWidgetsConfiguration[widgetKey].key,
+      componentKey: availableWidgetsConfiguration[widgetKey].widgetKey,
       name: availableWidgetsConfiguration[widgetKey].name,
       description: availableWidgetsConfiguration[widgetKey].description,
     };

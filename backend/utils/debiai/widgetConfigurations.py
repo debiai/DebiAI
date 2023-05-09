@@ -109,11 +109,15 @@ def _get_all_configurations():
         return {}
 
 
-def _save_configurations(conf):
+def _save_configurations(conf, retry=False):
     # Update the json file
     try:
         with open(CONF_PATH, "w") as json_file:
             json.dump(conf, json_file)
     except FileNotFoundError:
-        setup_widget_configurations()
-        _save_configurations(conf)
+        if not retry:
+            setup_widget_configurations()
+            _save_configurations(conf, True)
+        else:
+            print("Error while saving the widget configurations file")
+            print("The file will not be saved")

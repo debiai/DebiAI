@@ -72,7 +72,7 @@
               :src="require('../../../assets/svg/data.svg')"
               width="20"
               height="20"
-            />{{ "nbResults" in model ? model.nbResults : "?" }}
+            />{{ "nbResults" in model ? (model.nbResults === null ? "?" : model.nbResults) : "?" }}
           </div>
 
           <!-- options -->

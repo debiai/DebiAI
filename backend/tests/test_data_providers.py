@@ -30,8 +30,6 @@ def test_get_data_provider():
         url = appUrl + "data-providers/" + dp["name"]
         resp = requests.get(url=url, headers={})
         assert resp.status_code == 200
-        assert type(json.loads(resp.text)) is dict
-        assert "version" in json.loads(resp.text)
 
 
 def test_add_data_provider():

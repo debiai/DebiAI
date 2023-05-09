@@ -35,21 +35,25 @@
 </template>
 
 <script>
+import componentsGridStackData from "../../../../../../services/statistics/gridstackComponents";
 import Widget from "./Widget";
 import { marked } from "marked";
 
 export default {
   name: "widgetCatalog",
   components: { Widget },
-  props: { widgets: { requiered: true, type: Array } },
   data() {
     return {
+      widgets: [],
       selectedWidgetNumber: 0,
       widgetDescriptions: {},
       widgetConfigurationsOverview: {}, // { <widgetTitle>: <nbOfConfigurations> }
     };
   },
   mounted() {
+    // Loading the available widgets names
+    this.widgets = componentsGridStackData.getAvailableWidgets();
+
     // Load md widgets descriptions
     this.widgets.forEach((widget) => {
       try {

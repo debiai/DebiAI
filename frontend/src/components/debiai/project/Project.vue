@@ -16,9 +16,6 @@
         </button>
       </h2>
       <ProjectColumnsVisu />
-      <!-- Tags -->
-      <!-- TODO make tags work -->
-      <!-- <tags :project="project" /> -->
     </Modal>
 
     <!-- ProjectInfo -->
@@ -73,7 +70,6 @@ import ProjectInfo from "./ProjectInfo";
 import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
-// import Tags from "./tags/Tags.vue";
 import Analysis from "./Analysis.vue";
 
 // Services
@@ -87,7 +83,6 @@ export default {
     ProjectColumnsVisu,
     Models,
     Selections,
-    // Tags,
     Analysis,
   },
   data: () => {

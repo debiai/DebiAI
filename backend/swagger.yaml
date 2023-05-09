@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.22.6
+  version: 0.23.0
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -843,6 +843,80 @@ paths:
         200:
           description: selection deleted
 
+  # Analysis layouts
+  /app/layouts/:
+    get:
+      summary: Get all layouts
+      tags: [Layouts]
+      operationId: controller.layouts.get_layouts
+      responses:
+        200:
+          description: Layouts for all projects
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectLayout"
+
+    post:
+      summary: Add a layout
+      tags: [Layouts]
+      operationId: controller.layouts.post_layout
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - dataProviderId
+              - layout
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
+              description:
+                type: string
+              layout:
+                $ref: "#/definitions/dashboardLayout"
+              lastLayoutSaved:
+                type: boolean
+                description: If true, the layout will be loaded by default
+                  If a layout with lastLayoutSaved=true already exists, it will
+                  be replaced by the new one
+                default: false
+
+      responses:
+        204:
+          description: Dashboard layout saved
+
+  /app/layouts/{id}:
+    delete:
+      summary: Delete a layout
+      tags: [Layouts]
+      operationId: controller.layouts.delete_layout
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: Id of the layout to delete
+          minLength: 1
+      responses:
+        204:
+          description: Layout deleted
+        404:
+          description: Layout not found
+
   # Widget configuration
   /app/widget-configurations/:
     get:
@@ -970,138 +1044,6 @@ paths:
           description: Widget configuration saved
         404:
           description: Widget title or configuration not found
-
-  # Tags
-  /data-providers/{dataProviderId}/projects/{projectId}/tags:
-    post:
-      summary: Add a tag to a project
-      tags: [Tags]
-      operationId: controller.tags.post_tag
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - tagName
-              - tagHash
-            properties:
-              tagName:
-                type: string
-                description: Tag name
-                minLength: 1
-              tagHash:
-                type: object
-                description: key value ; key is the sample hash, value is the tag value
-          required: true
-      responses:
-        200:
-          description: Tag added or updated
-        404:
-          description: Project not found
-
-    get:
-      summary: Get project tags
-      tags: [Tags]
-      operationId: controller.tags.get_tags
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: Tag overview list
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/tag"
-
-  /data-providers/{dataProviderId}/projects/{projectId}/tags/{tagId}:
-    get:
-      summary: Get a tag from Id
-      tags: [Tags]
-      operationId: controller.tags.get_tag
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: tagId
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: Tag
-          schema:
-            $ref: "#/definitions/tag"
-    delete:
-      summary: Delete a tag
-      tags: [Tags]
-      operationId: controller.tags.delete_tag
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: tagId
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: Tag deleted
-        404:
-          description: Project or tag not found
-
-  /data-providers/{dataProviderId}/projects/{projectId}/tags/{tagId}/samples/{tagValue}:
-    get:
-      summary: Get a sample tree from a tag and a value
-      tags: [Tags]
-      operationId: controller.tags.get_tag_sample_tree
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          required: true
-        - name: tagId
-          in: path
-          type: string
-          required: true
-        - name: tagValue
-          in: path
-          type: integer
-          required: true
-      responses:
-        200:
-          description: Sample tree
-          schema:
-            type: object
 
   # Data export
   /app/exportMethods:
@@ -1626,18 +1568,6 @@ definitions:
               , 'intervals' filters have an 'interval' key that is a list of
               {min, max} intervals
 
-  # Tags
-  tag:
-    allOf:
-      - $ref: "#/definitions/artefact"
-      - type: object
-        required:
-          - tags
-        properties:
-          tags:
-            type: object
-            description: key is samplehash and value is an integer
-
   # DataTypes
   dataType:
     type: object
@@ -1671,7 +1601,6 @@ definitions:
             type: string
 
   # block & sample
-
   block:
     allOf:
       - $ref: "#/definitions/dataType"
@@ -1730,3 +1659,69 @@ definitions:
       end:
         type: boolean
         description: True if this is the last request of the analysis
+
+  # Layout
+  projectLayout:
+    description: Project layout, information about a dashboard layout
+    type: object
+    required:
+      - id
+      - name
+      - projectId
+      - dataProviderId
+      - layout
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      projectId:
+        type: string
+        description: Id of the project linked to the layout
+      dataProviderId:
+        type: string
+        description: Id of the data provider linked to the project id
+      creationDate:
+        type: string
+        format: date-time
+      layout:
+        $ref: "#/definitions/dashboardLayout"
+      lastLayoutSaved:
+        type: boolean
+        description: True if this is the last layout saved
+
+  dashboardLayout:
+    description: Dashboard layout, list of widgets with their
+      position and configuration
+
+    type: array
+    items:
+      type: object
+      required:
+        - widgetKey
+        - x
+        - y
+        - width
+        - height
+      properties:
+        widgetKey:
+          type: string
+          description: Key of the widget
+        x:
+          type: integer
+          description: x position of the widget
+        y:
+          type: integer
+          description: y position of the widget
+        width:
+          type: integer
+          description: width of the widget
+        height:
+          type: integer
+          description: height of the widget
+        config:
+          type: object
+          description: Configuration of the widget
+          x-nullable: true

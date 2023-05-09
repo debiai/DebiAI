@@ -4,8 +4,8 @@
     <div id="columns">
       <div
         class="category"
-        v-for="category in Object.keys(columnsPerCategory)"
-        :key="category"
+        v-for="(category, i) in Object.keys(columnsPerCategory)"
+        :key="i"
       >
         <div class="categoryName">{{ category }}:</div>
         <div class="columns">
@@ -31,8 +31,8 @@
       <div class="columns">
         <div
           class="column"
-          v-for="column in projectResultsColumns"
-          :key="column.name"
+          v-for="(column, i) in projectResultsColumns"
+          :key="i"
         >
           <div class="columnName">
             {{ column.name }}

@@ -372,6 +372,32 @@ export default {
       });
   },
 
+  // Layouts
+  getLayouts() {
+    return axios.get(apiURL + "app/layouts/").then((response) => response.data);
+  },
+  saveLayout({ layout, name, description, lastLayoutSaved }) {
+    let code = startRequest("Saving layout");
+    return axios
+      .post(apiURL + "app/layouts/", {
+        projectId: projectId(),
+        dataProviderId: dataProviderId(),
+        layout: layout,
+        name: name,
+        description: description,
+        lastLayoutSaved: lastLayoutSaved,
+      })
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+  deleteLayout(layoutId) {
+    let code = startRequest("Deleting layout");
+    return axios
+      .delete(apiURL + "app/layouts/" + layoutId)
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+
   // Widget configurations
   getWidgetConfigurationsOverview() {
     return axios.get(apiURL + "app/widget-configurations/").then((response) => response.data);
@@ -403,40 +429,6 @@ export default {
     let code = startRequest("Deleting widget configuration");
     return axios
       .delete(apiURL + "app/widgets/" + widgetKey + "/configurations/" + configurationId)
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-
-  // Tags
-  updateTag(tagName, tagHash) {
-    let code = startRequest("Updating tag");
-    return axios
-      .post(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/tags", {
-        tagName,
-        tagHash,
-      })
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-  getTags() {
-    let code = startRequest("Loading tags");
-    return axios
-      .get(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/tags")
-      .finally(() => endRequest(code))
-      .then((response) => response.data);
-  },
-  deleteTag(tagId) {
-    let code = startRequest("Deleting tag");
-    return axios
-      .delete(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/tags/" +
-          tagId
-      )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },

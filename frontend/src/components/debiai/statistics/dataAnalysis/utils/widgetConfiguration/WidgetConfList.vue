@@ -1,6 +1,6 @@
 <template>
   <div id="configurations">
-    <div v-if="sameProjectConfigurations.length > 0">
+    <div>
       <h4 class="configurationType">Project configurations:</h4>
       <div class="itemList">
         <WidgetConf
@@ -11,9 +11,16 @@
           v-on:selected="$emit('selected', configuration)"
           v-on:deleted="$emit('deleted')"
         />
+        <div
+          class="item"
+          style="color: brown"
+          v-if="sameProjectConfigurations.length === 0"
+        >
+          No configuration saved for this project
+        </div>
       </div>
     </div>
-    <div v-if="otherConfigurations.length > 0">
+    <div>
       <h4 class="configurationType">Other configurations:</h4>
       <div class="itemList">
         <WidgetConf
@@ -24,11 +31,14 @@
           v-on:selected="$emit('selected', configuration)"
           v-on:deleted="$emit('deleted')"
         />
+        <div
+          class="item"
+          style="color: brown"
+          v-if="otherConfigurations.length === 0"
+        >
+          No configuration saved for other projects
+        </div>
       </div>
-    </div>
-
-    <div v-if="sameProjectConfigurations.length === 0 && otherConfigurations.length === 0">
-      <h4 class="configurationType">No configuration saved</h4>
     </div>
   </div>
 </template>
