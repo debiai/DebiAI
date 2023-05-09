@@ -1,17 +1,5 @@
 <template>
   <div id="AlgorithmsSelection">
-    <!-- Title & cancel btn -->
-    <h2 class="aligned spaced padded-bot">
-      Algorithms
-
-      <button
-        @click="$emit('cancel')"
-        class="red"
-      >
-        Close
-      </button>
-    </h2>
-
     <!-- New algo provider -->
     <modal
       v-if="newAlgoProviderModal"
@@ -58,15 +46,31 @@
       </div>
     </modal>
 
+    <!-- Title & cancel btn -->
+    <h2 class="aligned spaced padded-bot">
+      Algorithms
+
+      <span>
+
+        <button
+          @click="newAlgoProviderModal = true"
+          class="green"
+        >
+          Add a new Algo Provider
+        </button>
+
+        <button
+          @click="$emit('cancel')"
+          class="red"
+        >
+          Close
+        </button>
+      </span>
+    </h2>
+
     <!-- Algo Provider list -->
     <h3>
       Use an algorithm
-      <button
-        @click="newAlgoProviderModal = true"
-        class="green"
-      >
-        Add a new Algo Provider
-      </button>
     </h3>
     <div id="algoProviders">
       <h4 v-if="algoProviders.length === 0">No algo providers set</h4>
@@ -120,14 +124,9 @@ export default {
     save(e) {
       e.preventDefault();
 
-      const requestBody = {
-        name: this.algoProviderName,
-        url: this.algoProviderURL,
-      };
-
       // Send the request
       this.$backendDialog
-        .addAlgoProvider(requestBody)
+        .addAlgoProvider(this.algoProviderName, this.algoProviderURL)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",
@@ -138,10 +137,13 @@ export default {
         })
         .catch((e) => {
           console.log(e);
+          console.log(e.response);
+          const resp = e.response?.data;
           this.$store.commit("sendMessage", {
             title: "error",
-            msg: "Couldn't save the algoProvider",
+            msg: resp ? resp : "Couldn't add the algoProvider",
           });
+
         });
     },
     deleteAlgoProvider(algoProviderName) {
@@ -174,12 +176,14 @@ export default {
 <style scoped>
 #AlgorithmsSelection {
   /* text-align: left; */
-  max-height: 900px;
+  min-height: 900px;
+  min-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
 }
+
 h3 {
   text-align: left;
   padding: 5px;
@@ -189,12 +193,15 @@ h3 {
   display: flex;
   justify-content: center;
 }
+
 #formNewAlgoProvider {
   flex-direction: column;
 }
+
 #formNewAlgoProvider .name {
   width: 100px;
 }
+
 #formNewAlgoProvider .value {
   flex: 1;
 }
@@ -204,6 +211,7 @@ h3 {
   max-height: 400px;
   text-align: left;
 }
+
 #algoProviders h4 {
   padding: 15px;
 }

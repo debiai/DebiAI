@@ -26,7 +26,7 @@ def post_algo_provider(data):
 
     # Check if algoProviders already exists
     if algo_provider_manager.algo_provider_exists(data["name"]):
-        return "AlgoProvider already exists", 400
+        return "AlgoProvider '" + data["name"] + "' already exists", 400
 
     # Check if algoProviders name is valid
     if not is_valid_name(data["name"]):
@@ -51,6 +51,7 @@ def use_algo(algoProvidersName, data):
     algo_provider_manager.use(algoProvidersName)
 
     return None, 204
+
 
 def delete_algo_provider(name):
     # Check if we are allowed to add AlgoProviders from the config file
