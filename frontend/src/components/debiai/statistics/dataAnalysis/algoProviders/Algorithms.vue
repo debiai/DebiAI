@@ -6,9 +6,12 @@
       @close="newAlgoProviderModal = false"
     >
       <div>
-        <h3 class="padded aligned">
+        <h3 class="padded aligned spaced">
           Add a new Algo Provider
           <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
+
+          <button class="red" @click="newAlgoProviderModal = false"
+          >Cancel</button>
         </h3>
         <form
           id="formNewAlgoProvider"
@@ -59,6 +62,17 @@
           class="green"
         >
           + Add a new Algo Provider
+        </button>
+        <button
+          class="warning"
+          @click="loadAlgoProviders"
+        >
+          <inline-svg
+            :src="require('../../../../../assets/svg/update.svg')"
+            width="10"
+            height="10"
+          />
+          Refresh
         </button>
 
         <button

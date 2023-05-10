@@ -1,7 +1,7 @@
 <template>
   <div
     id="modal"
-    @click="outsideClick"
+    @click.stop="outsideClick"
   >
     <div id="pannel">
       <slot />

@@ -27,7 +27,7 @@ class AlgoProvider:
 
     def to_json(self):
         algorithms = None
-        if self.alive:
+        if self.is_alive():
             algorithms = self.get_algorithms()
 
         return {
