@@ -88,7 +88,6 @@ const ProjectPage = {
     },
     setDataProviderInfo(state, dataProviderInfo) {
       state.dataProviderInfo = dataProviderInfo;
-      console.log("DataProviderInfo", dataProviderInfo);
     },
   },
 };

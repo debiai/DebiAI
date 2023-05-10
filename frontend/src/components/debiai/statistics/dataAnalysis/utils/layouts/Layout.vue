@@ -24,7 +24,18 @@
     </div>
 
     <div class="center">
-      <div class="description">{{ layout.description }}</div>
+      <div class="description">
+        <div
+          class="coloredColumn"
+          v-if="layout.selectedColorColumn"
+        >
+          Colored column:
+          <u>
+            {{ layout.selectedColorColumn }}
+          </u>
+        </div>
+        <div>{{ layout.description }}</div>
+      </div>
       <LayoutViewer :layout="layout.layout" />
     </div>
 
@@ -127,8 +138,12 @@ export default {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-width: 300px;
-  opacity: 0.7;
   font-size: 0.8em;
+  color: #666;
+}
+.layout .description .coloredColumn {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 .layout .value {
   text-align: left;

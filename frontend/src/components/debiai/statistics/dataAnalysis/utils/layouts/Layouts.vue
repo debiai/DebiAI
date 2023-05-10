@@ -22,9 +22,14 @@
         <h3 class="padded aligned">
           Save the current layout
           <DocumentationBlock>
-            Saving the current layout will save the position of the widgets on the dashboard. <br />
-            The current configuration of the widgets will also be saved, it will be used when
-            loading the layout back.
+            Saving the current layout will save:
+            <ul>
+              <li>The name and description of the layout</li>
+              <li>The position and size of the widgets on the dashboard</li>
+              <li>The current configuration of the widgets</li>
+              <li>The selected colored column if any</li>
+            </ul>
+            Loading a saved layout will load all of the above.
           </DocumentationBlock>
         </h3>
         <form
@@ -78,7 +83,7 @@
             v-for="layout in sameProjectLayouts"
             :key="layout.id"
             :layout="layout"
-            v-on:selected="$emit('selected', layout.layout)"
+            v-on:selected="$emit('selected', layout)"
             v-on:deleted="loadLayouts"
           />
           <div
@@ -124,6 +129,7 @@ export default {
     Layout,
   },
   props: {
+    data: { type: Object, required: true },
     components: { type: Array, required: true },
     gridstack: { type: Object, required: true },
   },
@@ -193,6 +199,13 @@ export default {
         });
       });
 
+      // Add the selectedColorColumn
+      const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      if (coloredColumnIndex !== null) {
+        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
+      }
+      console.log(requestBody);
+
       // Send the request
       this.$backendDialog
         .saveLayout(requestBody)
@@ -202,6 +215,7 @@ export default {
             msg: "Layout saved",
           });
           // this.$emit("cancel");
+          this.layoutName = "";
           this.loadLayouts();
         })
         .catch((e) => {
@@ -259,7 +273,8 @@ export default {
 <style scoped>
 #layouts {
   /* text-align: left; */
-  max-height: 900px;
+  height: 800px;
+  width: 700px;
   display: flex;
   flex-direction: column;
   align-items: stretch;

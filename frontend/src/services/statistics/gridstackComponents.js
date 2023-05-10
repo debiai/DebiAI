@@ -1,29 +1,31 @@
 import services from "../services";
 
 // Default components layout
-const defaultLayout = [
-  {
-    widgetKey: "ParallelCoordinate",
-    x: 0,
-    y: 0,
-    width: 12,
-    height: 5,
-  },
-  {
-    widgetKey: "PointPlot",
-    x: 6,
-    y: 5,
-    width: 6,
-    height: 5,
-  },
-  {
-    widgetKey: "DistributionPlot",
-    x: 0,
-    y: 5,
-    width: 6,
-    height: 5,
-  },
-];
+const defaultLayout = {
+  layout: [
+    {
+      widgetKey: "ParallelCoordinate",
+      x: 0,
+      y: 0,
+      width: 12,
+      height: 5,
+    },
+    {
+      widgetKey: "PointPlot",
+      x: 6,
+      y: 5,
+      width: 6,
+      height: 5,
+    },
+    {
+      widgetKey: "DistributionPlot",
+      x: 0,
+      y: 5,
+      width: 6,
+      height: 5,
+    },
+  ],
+};
 
 // Loading the visualization components
 const BASE_LAYOUT = {
