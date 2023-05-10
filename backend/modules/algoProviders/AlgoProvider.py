@@ -7,7 +7,7 @@ class AlgoProvider:
     def __init__(self, url, name):
         self.url = url
         self.name = name
-        self.alive = None
+        self.alive = False
 
     def is_alive(self):
         # Try to load algorithms
@@ -18,16 +18,25 @@ class AlgoProvider:
         try:
             r = requests.get(self.url + "/algorithms")
             return get_http_response(r)
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+            requests.exceptions.HTTPError,
+        ):
             return None
 
     def to_json(self):
+        algorithms = None
+        if self.alive:
+            algorithms = self.get_algorithms()
+
         return {
             "name": self.name,
             "url": self.url,
             "status": self.alive,
-            "algorithms": self.get_algorithms(),
+            "algorithms": algorithms,
         }
+
 
 # ==== Utils ====
 def get_http_response(response):

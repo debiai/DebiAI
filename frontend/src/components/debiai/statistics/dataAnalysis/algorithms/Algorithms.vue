@@ -7,7 +7,7 @@
     >
       <div>
         <h3 class="padded aligned">
-          Add a new algorithm provider
+          Add a new Algo Provider
           <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
         </h3>
         <form
@@ -21,6 +21,7 @@
               <input
                 type="text"
                 v-model="algoProviderName"
+                style="width: 300px"
               />
             </span>
           </div>
@@ -31,6 +32,7 @@
               <input
                 type="text"
                 v-model="algoProviderURL"
+                style="width: 300px"
               />
             </span>
           </div>
@@ -51,12 +53,11 @@
       Algorithms
 
       <span>
-
         <button
           @click="newAlgoProviderModal = true"
           class="green"
         >
-          Add a new Algo Provider
+          + Add a new Algo Provider
         </button>
 
         <button
@@ -71,37 +72,38 @@
     <!-- Algo Provider list -->
     <h3>
       Use an algorithm
+      <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
     </h3>
-    <div id="algoProviders">
-      <h4 v-if="algoProviders.length === 0">No algo providers set</h4>
+    <div
+      id="algoProviders"
+      class="itemList"
+    >
+      <h4 v-if="algoProviders.length === 0">No Algo Providers set</h4>
       <!-- List algo providers -->
-      <div
-        class="algoProviders"
+      <AlgoProvider
         v-for="algoProvider in algoProviders"
         :key="algoProvider.name"
-      >
-        {{ algoProviders }}
-      </div>
+        :algoProvider="algoProvider"
+        @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
+      />
     </div>
   </div>
 </template>
 
 <script>
-// import Algo ProviderViewer from "./Algo ProviderViewer.vue";
-// import Algo Provider from "./Algo Provider";
+import AlgoProvider from "./AlgoProvider";
 
 export default {
   name: "Algorithms",
   components: {
-    // Algo ProviderViewer,
-    // Algo Provider,
+    AlgoProvider,
   },
   props: {},
   data: () => {
     return {
       newAlgoProviderModal: false,
       algoProviderName: "New algoProvider",
-      algoProviderURL: "http://localhost:3000/algoProvider",
+      algoProviderURL: "http://localhost:3020/algoProvider",
       algoProviders: [],
     };
   },
@@ -133,7 +135,7 @@ export default {
             msg: "Algo Provider added",
           });
           // this.$emit("cancel");
-          this.loadAlgorithms();
+          this.loadAlgoProviders();
         })
         .catch((e) => {
           console.log(e);
@@ -143,7 +145,6 @@ export default {
             title: "error",
             msg: resp ? resp : "Couldn't add the algoProvider",
           });
-
         });
     },
     deleteAlgoProvider(algoProviderName) {
@@ -154,7 +155,7 @@ export default {
             title: "success",
             msg: "Algo Provider removed",
           });
-          this.loadAlgorithms();
+          this.loadAlgoProviders();
         })
         .catch((e) => {
           console.log(e);
