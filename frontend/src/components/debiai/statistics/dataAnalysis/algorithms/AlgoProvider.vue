@@ -11,26 +11,10 @@
     </div>
 
     <!-- Status -->
-    <div>
-      <div
-        class="status available"
-        v-if="algoProvider.status"
-      >
-        ✓ Available
-      </div>
-      <div
-        class="status notavailable"
-        v-else
-      >
-        ❌ Not available
-      </div>
-    </div>
+    <AvailableTag :available="algoProvider.status" />
 
     <!-- Actions -->
-    <div
-      class="controls"
-      v-if="algoProvider.type === 'Web'"
-    >
+    <div class="controls">
       <!-- <button @click="getAlgoProviders">Retry</button> -->
       <button
         class="red"
@@ -82,22 +66,5 @@ export default {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.3rem;
-}
-
-/* Status */
-.algoProvider .status {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.9em;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: 2px solid;
-}
-.algoProvider .status.available {
-  color: var(--success);
-  border-color: var(--success);
-}
-.algoProvider .status.notavailable {
-  color: var(--danger);
-  border-color: var(--danger);
 }
 </style>

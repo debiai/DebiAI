@@ -50,7 +50,8 @@
 
     <!-- Title & cancel btn -->
     <h2 class="aligned spaced padded-bot">
-      Algorithms
+      Use an algorithm
+      <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
 
       <span>
         <button
@@ -70,10 +71,6 @@
     </h2>
 
     <!-- Algo Provider list -->
-    <h3>
-      Use an algorithm
-      <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
-    </h3>
     <div
       id="algoProviders"
       class="itemList"
