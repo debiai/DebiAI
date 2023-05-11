@@ -10,8 +10,12 @@
           Add a new Algo Provider
           <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
 
-          <button class="red" @click="newAlgoProviderModal = false"
-          >Cancel</button>
+          <button
+            class="red"
+            @click="newAlgoProviderModal = false"
+          >
+            Cancel
+          </button>
         </h3>
         <form
           id="formNewAlgoProvider"
@@ -30,7 +34,14 @@
           </div>
           <!-- Algo Provider description -->
           <div class="data">
-            <span class="name"> URL </span>
+            <span class="name">
+              URL
+              <DocumentationBlock>
+                Must be a valid URL, with the protocol (http:// or https://)
+                <br />
+                Make sure the Algo Provider is running and accessible by the DebiAI instance.
+              </DocumentationBlock>
+            </span>
             <span class="value">
               <input
                 type="text"
@@ -45,7 +56,7 @@
             @click="save"
             :disabled="!algoProviderNameOk"
           >
-            Save the Algo Provider
+            Add
           </button>
         </form>
       </div>

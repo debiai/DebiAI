@@ -17,6 +17,22 @@
       <!-- Status -->
       <AvailableTag :available="algoProvider.status" />
 
+      <!-- Number of algorithms -->
+      <div class="nbAlgo">
+        <div
+          v-if="algoProvider.status"
+          class="aligned"
+          style="gap: 0.4rem"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/algorithm.svg')"
+            width="23"
+            height="23"
+          />
+          {{ algoProvider.algorithms.length }}
+        </div>
+      </div>
+
       <!-- Actions -->
       <div class="controls">
         <button
@@ -32,7 +48,7 @@
     <transition name="fade">
       <div
         class="algorithms itemList"
-        v-if="displayAlgorithms"
+        v-if="displayAlgorithms && algoProvider.algorithms"
       >
         <h4 v-if="algoProvider.algorithms.length === 0">No Algorithms provided</h4>
         <Algorithm

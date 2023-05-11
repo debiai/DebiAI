@@ -37,6 +37,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  backdrop-filter: blur(1px);
+
+  animation: fadeIn 0.1s;
+}
+#modal:hover {
+  cursor: pointer;
 }
 
 #pannel {
@@ -46,5 +52,9 @@ export default {
   background-color: rgb(250, 250, 250);
   border-radius: 1vh;
   overflow: auto;
+}
+
+#pannel:hover {
+  cursor: default;
 }
 </style>

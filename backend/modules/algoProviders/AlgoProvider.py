@@ -25,6 +25,11 @@ class AlgoProvider:
         ):
             return None
 
+        except Exception as e:
+            print("Error in get_algorithms")
+            print(e)
+            return None
+
     def to_json(self):
         algorithms = None
         if self.is_alive():
