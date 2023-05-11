@@ -45,6 +45,7 @@ def test_add_layout():
                 "name": "testName",
             }
         ],
+        "selectedColorColumn": "TestColorColumn",
     }
     resp = requests.request("POST", url, headers={}, json=data)
     assert resp.status_code == 204
@@ -63,6 +64,7 @@ def test_add_layout():
     assert len(layouts[0]["layout"]) == 1
     assert layouts[0]["layout"][0]["x"] == data["layout"][0]["x"]
     assert layouts[0]["layout"][0]["y"] == data["layout"][0]["y"]
+    assert layouts[0]["selectedColorColumn"] == data["selectedColorColumn"]
 
     assert "id" in layouts[0]
     assert type(layouts[0]["id"]) is str

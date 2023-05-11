@@ -57,10 +57,11 @@
       @close="layoutModal = false"
     >
       <Layouts
-        @cancel="layoutModal = false"
-        @selected="loadLayout"
+        :data="data"
         :components="components"
         :gridstack="grid"
+        @cancel="layoutModal = false"
+        @selected="loadLayout"
       />
     </modal>
     <!-- WidgetCatalog -->
@@ -364,7 +365,7 @@ export default {
 
           if (lastLayout) {
             // Load the layout
-            this.loadLayout(lastLayout.layout);
+            this.loadLayout(lastLayout);
           } else {
             // No layout found, load default layout
             this.restoreDefaultLayout();
@@ -374,9 +375,30 @@ export default {
           console.log(e);
         });
     },
-    loadLayout(layout) {
+    loadLayout(layout_full) {
+      const layout = layout_full.layout;
+      const selectedColorColumn = layout_full.selectedColorColumn;
+
       this.clearLayout();
       this.layoutModal = false;
+
+      // Set selectedColorColumn
+      if (selectedColorColumn) {
+        // Get the column index
+        const column = this.data.columns.find((c) => c.label == selectedColorColumn);
+        const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+
+        // Set the column index
+        if (column == null) {
+          this.$store.commit("sendMessage", {
+            title: "warning",
+            msg: "The column " + selectedColorColumn + " hasn't been found",
+          });
+        } else if (coloredColumnIndex != column.index) {
+          this.$store.commit("setColoredColumnIndex", column.index);
+        }
+      } else this.$store.commit("setColoredColumnIndex", null);
+
       layout.forEach((c) => {
         // Get the key (previous layout version saved in cache)
         if (!c.widgetKey) c.widgetKey = c.key;
@@ -473,6 +495,12 @@ export default {
         layout: [],
         lastLayoutSaved: true, // This will erase the previous last layout saved
       };
+
+      // Add the selectedColorColumn
+      const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      if (coloredColumnIndex !== null) {
+        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
+      }
 
       // We remove some properties from the layout
       // Expected layout:
