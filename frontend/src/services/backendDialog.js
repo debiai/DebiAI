@@ -194,7 +194,6 @@ export default {
       .then((response) => response.data);
   },
   addSelection(sampleHashList, selectionName, requestId = null) {
-    console.log(requestId);
     let code = startRequest("Saving selection");
     return axios
       .post(

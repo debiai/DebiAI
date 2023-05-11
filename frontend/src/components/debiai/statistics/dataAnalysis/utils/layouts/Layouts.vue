@@ -204,7 +204,6 @@ export default {
       if (coloredColumnIndex !== null) {
         requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
       }
-      console.log(requestBody);
 
       // Send the request
       this.$backendDialog
