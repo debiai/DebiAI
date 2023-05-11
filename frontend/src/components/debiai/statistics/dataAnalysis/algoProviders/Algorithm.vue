@@ -1,136 +1,130 @@
 <template>
   <div
-    class="layout item selectable"
-    @click="(event) => click(event)"
+    class="algorithm item selectable"
+    @click="$emit('selected')"
   >
-    <div class="left">
-      <div
-        class="tag"
-        v-if="layout.lastLayoutSaved"
-      >
-        Last layout used
-      </div>
-      <h4 style="display: flex; align-items: center">
-        {{ layout.name }}
-        <!-- Display layout : -->
+    <div class="top">
+      <h4 class="title">
+        {{
+          algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
+        }}
       </h4>
-
-      <span
-        class="creationDate"
-        :title="$services.timeStampToDate(layout.creationDate)"
+      <p
+        class="version"
+        v-if="algorithm.version !== null && algorithm.version !== undefined"
       >
-        Created {{ $services.prettyTimeStamp(layout.creationDate) }}
-      </span>
+        {{ algorithm.version }}
+      </p>
+      <p class="description">
+        {{ algorithm.description }}
+      </p>
+      <p class="version">Created by {{ algorithm.author }}</p>
     </div>
-
-    <div class="center">
-      <div class="description">{{ layout.description }}</div>
-      <LayoutViewer :layout="layout.layout" />
-    </div>
-
-    <div class="right">
-      <button
-        class="red"
-        @click="(event) => deleteLayout(event)"
-      >
-        Delete
-      </button>
+    <div class="content">
+      <div class="details"></div>
+      <div class="section">
+        <h4 class="section-title">Inputs</h4>
+        <ul class="parameter-list">
+          <li
+            v-for="(input, index) in algorithm.inputs"
+            :key="index"
+          >
+            <p><strong>Name:</strong> {{ input.name }}</p>
+            <p><strong>Type:</strong> {{ input.type }}</p>
+            <p class="description"><strong>Description:</strong> {{ input.description }}</p>
+          </li>
+        </ul>
+      </div>
+      <div class="section">
+        <h4 class="section-title">Outputs</h4>
+        <ul class="parameter-list">
+          <li
+            v-for="(output, index) in algorithm.outputs"
+            :key="index"
+          >
+            <p><strong>Name:</strong> {{ output.name }}</p>
+            <p><strong>Type:</strong> {{ output.type }}</p>
+            <p class="description"><strong>Description:</strong> {{ output.description }}</p>
+          </li>
+        </ul>
+      </div>
+      <div class="section">
+        <h4 class="section-title">Parameters</h4>
+        <ul class="parameter-list">
+          <li
+            v-for="(parameter, index) in algorithm.parameters"
+            :key="index"
+          >
+            <p><strong>Name:</strong> {{ parameter.name }}</p>
+            <p><strong>Type:</strong> {{ parameter.type }}</p>
+            <p class="description"><strong>Description:</strong> {{ parameter.description }}</p>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import LayoutViewer from "./LayoutViewer.vue";
-
 export default {
-  name: "Layout",
-  components: {
-    LayoutViewer,
-  },
+  name: "Algorithm",
   props: {
-    layout: { type: Object, required: true },
-  },
-  methods: {
-    deleteLayout(event) {
-      event.stopPropagation();
-      this.$backendDialog
-        .deleteLayout(this.layout.id)
-        .then(() => {
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Layout deleted",
-          });
-          this.$emit("deleted");
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't delete the layout",
-          });
-        });
-    },
-    click(event) {
-      event.stopPropagation();
-      this.$emit("selected");
-    },
+    algorithm: { type: Object, required: true },
   },
 };
 </script>
 
 <style scoped>
-.layout {
-  display: flex;
-  align-items: stretch;
-  gap: 30px;
-  padding: 5px;
-}
-
-.layout .left {
+.algorithm {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+}
+.content {
+  display: flex;
   align-items: flex-start;
-  max-width: 100px;
-  padding: 10px;
-  text-align: left;
 }
-.layout .left .tag {
-  border: 2px solid rgb(70, 70, 70);
-  padding: 3px;
-  border-radius: 5px;
-  font-size: 0.8em;
-  margin-bottom: 5px;
-  opacity: 0.3;
-  font-weight: bold;
-}
-.layout .center {
-  flex: 1;
+
+.top {
+  margin: 0;
   display: flex;
-  justify-content: space-evenly;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 30px;
 }
-.layout .center .description {
-  padding: 10px;
-}
-.layout .right {
-  display: flex;
-  align-items: center;
-}
-.layout .creationDate {
-  text-align: right;
-  font-size: 0.7em;
-  opacity: 0.7;
-}
-.layout .description {
-  flex: 1;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-width: 300px;
-  opacity: 0.7;
+.top .version {
   font-size: 0.8em;
+  color: #999;
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: 0;
 }
-.layout .value {
-  text-align: left;
+.top .description {
+  max-width: 500px;
+  flex: 3;
+  margin: 0;
+}
+.description {
+  color: #909090;
+}
+
+.details {
+  margin-bottom: 10px;
+  padding: 20px;
+}
+
+.parameter-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.parameter-list li {
+  margin-bottom: 10px;
 }
 </style>

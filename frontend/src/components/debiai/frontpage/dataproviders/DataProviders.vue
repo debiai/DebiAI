@@ -68,7 +68,6 @@
             class="controls"
             v-if="dataProvider.type === 'Web'"
           >
-            <!-- <button @click="getDataProviders">Retry</button> -->
             <button
               class="red"
               @click="deleteDataProvider(dataProvider.name)"

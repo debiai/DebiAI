@@ -220,7 +220,7 @@ h3 {
 
 #algoProviders {
   overflow: auto;
-  max-height: 400px;
+  max-height: 70vh;
   text-align: left;
 }
 
