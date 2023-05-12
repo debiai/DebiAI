@@ -27,7 +27,6 @@
         {{ algorithm.description }}
       </p>
       <p class="version">Created by {{ algorithm.author }}</p>
-      <button class="green">Use algorithm</button>
     </div>
     <div class="content">
       <div class="section">
@@ -93,6 +92,29 @@
         </div>
       </div>
     </div>
+    <div class="bottom">
+      <!-- Displays the different results + the use btn -->
+      <div class="experiments">
+        <div
+          v-for="(experiment, index) in algorithm.experiments"
+          :key="index"
+          class="experiment"
+        >
+          <h5 class="experiment-title">Experiment {{ index + 1 }}</h5>
+          <div class="results">
+            <div
+              class="result"
+              v-for="result in experiment"
+              :key="result.name"
+            >
+              <div class="name">{{ result.name }}</div>
+              <div class="value">{{ result.value.toString() }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="green">Use algorithm</button>
+    </div>
   </div>
 </template>
 
@@ -137,12 +159,14 @@ export default {
   align-items: stretch;
 }
 
+/* Top */
 .top {
   margin: 0;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   padding-bottom: 30px;
+  flex-wrap: wrap;
 }
 .top .title {
   margin-top: 1px;
@@ -155,9 +179,6 @@ export default {
   padding: 2px 4px;
   margin: 0;
 }
-.top button {
-  margin-top: -4px;
-}
 .top .description {
   max-width: 500px;
   flex: 3;
@@ -165,6 +186,7 @@ export default {
   margin: 0;
 }
 
+/* Content */
 .content {
   flex: 1;
   display: flex;
@@ -186,7 +208,6 @@ export default {
   display: flex;
   gap: 10px;
   overflow: auto;
-  scrollbar-width: thin;
   padding-bottom: 10px;
 }
 .parameter {
@@ -216,5 +237,67 @@ export default {
   padding: 0 2px 0 2px;
   border-radius: 4px;
   font-size: 0.8em;
+}
+
+/* Bottom */
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 20px;
+}
+.bottom .experiments {
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  flex: 1;
+  border-radius: 4px;
+  gap: 10px;
+  padding-bottom: 15px;
+}
+
+.bottom .experiments .experiment {
+  display: flex;
+  padding: 10px;
+  flex-direction: column;
+
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px;
+}
+.bottom .experiments .experiment .experiment-title {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 5px;
+  font-size: 0.8em;
+  color: #909090;
+}
+
+.results {
+  display: flex;
+  gap: 10px;
+}
+
+.results .result {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 7px 3px 7px;
+  gap: 15px;
+}
+.results .result .name {
+  white-space: nowrap;
+}
+
+.results .result .value {
+  background-color: #fbfbfb;
+  border: 1px solid #ccc;
+  padding: 2px 7px 2px 7px;
+  border-radius: 4px;
+  max-width: 250px;
+  overflow: hidden;
 }
 </style>

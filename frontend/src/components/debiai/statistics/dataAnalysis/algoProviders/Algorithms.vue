@@ -100,14 +100,17 @@
       id="algoProviders"
       class="itemList"
     >
-      <h4 v-if="algoProviders.length === 0">No Algo Providers set</h4>
       <!-- List algo providers -->
-      <AlgoProvider
-        v-for="algoProvider in algoProviders"
-        :key="algoProvider.name"
-        :algoProvider="algoProvider"
-        @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
-      />
+      <transition-group name="fade">
+        <AlgoProvider
+          v-for="algoProvider in algoProviders"
+          :key="algoProvider.name"
+          :algoProvider="algoProvider"
+          @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
+        />
+      </transition-group>
+
+      <h4 v-if="algoProviders !== null && algoProviders.length === 0">No Algo Providers set</h4>
     </div>
   </div>
 </template>
@@ -126,7 +129,7 @@ export default {
       newAlgoProviderModal: false,
       algoProviderName: "New algoProvider",
       algoProviderURL: "http://localhost:3020/algoProvider",
-      algoProviders: [],
+      algoProviders: null,
     };
   },
   mounted() {
@@ -135,14 +138,43 @@ export default {
   },
   methods: {
     loadAlgoProviders() {
-      this.algoProviders = [];
+      this.algoProviders = null;
       this.$backendDialog
         .getAlgoProviders()
         .then((algoProviders) => {
           this.algoProviders = algoProviders;
+          this.algoProviders.forEach((algoProvider) => {
+            if (!algoProvider.algorithms) algoProvider.algorithms = [];
+            algoProvider.algorithms.forEach((algo) => {
+              algo.experiments = [
+                [
+                  { name: "Output A", value: 79 },
+                  { name: "Output B", value: "A" },
+                ],
+                [
+                  { name: "Output A", value: 79 },
+                  { name: "Output B", value: "A" },
+                ],
+                [
+                  { name: "Output A", value: 79 },
+                  { name: "Output B", value: "A" },
+                ],
+                [
+                  { name: "Output A", value: 79 },
+                  { name: "Output B", value: "A" },
+                ],
+                [
+                  { name: "Output A", value: 79 },
+                  { name: "Output B", value: "A" },
+                ],
+                [{ name: "test", value: [8, 9, 10] }],
+              ];
+            });
+          });
         })
         .catch((e) => {
           console.log(e);
+          this.algoProviders = [];
         });
     },
     save(e) {
@@ -200,7 +232,7 @@ export default {
 #AlgorithmsSelection {
   /* text-align: left; */
   min-height: 900px;
-  min-width: 800px;
+  min-width: 900px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
