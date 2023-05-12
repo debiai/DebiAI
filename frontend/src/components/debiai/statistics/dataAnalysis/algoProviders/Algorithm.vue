@@ -27,6 +27,12 @@
         {{ algorithm.description }}
       </p>
       <p class="version">Created by {{ algorithm.author }}</p>
+      <button
+        class="green"
+        @click="$emit('useAlgo')"
+      >
+        Use algorithm
+      </button>
     </div>
     <div class="content">
       <div class="section">
@@ -113,7 +119,6 @@
           </div>
         </div>
       </div>
-      <button class="green">Use algorithm</button>
     </div>
   </div>
 </template>
@@ -299,5 +304,6 @@ export default {
   border-radius: 4px;
   max-width: 250px;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

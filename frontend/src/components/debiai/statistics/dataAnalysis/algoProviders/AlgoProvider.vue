@@ -56,6 +56,7 @@
           :key="algo.id"
           :algorithm="algo"
           @deleteAlgo="deleteAlgo(algo.name)"
+          @useAlgo="$emit('useAlgo', algo)"
         />
       </div>
     </transition>

@@ -62,6 +62,18 @@
       </div>
     </modal>
 
+    <!-- Use algo -->
+    <modal
+      v-if="algoToUse"
+      @close="algoToUse = null"
+    >
+      <UseAlgorithm
+        :algoProvider="algoProviderToUse"
+        :algorithm="algoToUse"
+        @cancel="algoToUse = null"
+      />
+    </modal>
+
     <!-- Title & cancel btn -->
     <h2 class="aligned spaced padded-bot">
       Use an algorithm
@@ -107,6 +119,7 @@
           :key="algoProvider.name"
           :algoProvider="algoProvider"
           @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
+          @useAlgo="useAlgo(algoProvider, $event)"
         />
       </transition-group>
 
@@ -117,11 +130,13 @@
 
 <script>
 import AlgoProvider from "./AlgoProvider";
+import UseAlgorithm from "./UseAlgorithm";
 
 export default {
   name: "Algorithms",
   components: {
     AlgoProvider,
+    UseAlgorithm,
   },
   props: {},
   data: () => {
@@ -130,6 +145,9 @@ export default {
       algoProviderName: "New algoProvider",
       algoProviderURL: "http://localhost:3020/algoProvider",
       algoProviders: null,
+
+      algoToUse: null,
+      algoProviderToUse: null,
     };
   },
   mounted() {
@@ -146,29 +164,7 @@ export default {
           this.algoProviders.forEach((algoProvider) => {
             if (!algoProvider.algorithms) algoProvider.algorithms = [];
             algoProvider.algorithms.forEach((algo) => {
-              algo.experiments = [
-                [
-                  { name: "Output A", value: 79 },
-                  { name: "Output B", value: "A" },
-                ],
-                [
-                  { name: "Output A", value: 79 },
-                  { name: "Output B", value: "A" },
-                ],
-                [
-                  { name: "Output A", value: 79 },
-                  { name: "Output B", value: "A" },
-                ],
-                [
-                  { name: "Output A", value: 79 },
-                  { name: "Output B", value: "A" },
-                ],
-                [
-                  { name: "Output A", value: 79 },
-                  { name: "Output B", value: "A" },
-                ],
-                [{ name: "test", value: [8, 9, 10] }],
-              ];
+              algo.experiments = [];
             });
           });
         })
@@ -218,6 +214,10 @@ export default {
             msg: "Couldn't remove the algoProvider",
           });
         });
+    },
+    useAlgo(algoProvider, algo) {
+      this.algoToUse = algo;
+      this.algoProviderToUse = algoProvider;
     },
   },
   computed: {
