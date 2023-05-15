@@ -37,7 +37,12 @@
       <div class="controls">
         <button
           class="red"
-          @click="$emit('deleteAlgoProvider')"
+          @click="
+            (e) => {
+              e.stopPropagation();
+              $emit('deleteAlgoProvider');
+            }
+          "
         >
           Delete
         </button>
@@ -80,7 +85,6 @@ export default {
 
 <style scoped>
 .algoProvider {
-  width: 900px;
   display: flex;
   flex-direction: column;
   align-items: stretch;

@@ -144,7 +144,7 @@ export default {
       newAlgoProviderModal: false,
       algoProviderName: "New algoProvider",
       algoProviderURL: "http://localhost:3020/algoProvider",
-      algoProviders: null,
+      algoProviders: null, // null = loading, [] = empty, [algoProvider] = loaded
 
       algoToUse: null,
       algoProviderToUse: null,
@@ -156,12 +156,13 @@ export default {
   },
   methods: {
     loadAlgoProviders() {
-      this.algoProviders = null;
+      // this.algoProviders = null;
       this.$backendDialog
         .getAlgoProviders()
         .then((algoProviders) => {
           this.algoProviders = algoProviders;
           this.algoProviders.forEach((algoProvider) => {
+            // Add an empty experiments array to each algorithm
             if (!algoProvider.algorithms) algoProvider.algorithms = [];
             algoProvider.algorithms.forEach((algo) => {
               algo.experiments = [];
@@ -184,6 +185,9 @@ export default {
             title: "success",
             msg: "Algo Provider added",
           });
+          this.newAlgoProviderModal = false;
+          this.algoProviderName = "New algoProvider";
+          this.algoProviderURL = "http://localhost:3020/algoProvider";
           // this.$emit("cancel");
           this.loadAlgoProviders();
         })
@@ -205,7 +209,6 @@ export default {
             title: "success",
             msg: "Algo Provider removed",
           });
-          this.loadAlgoProviders();
         })
         .catch((e) => {
           console.log(e);
@@ -213,6 +216,9 @@ export default {
             title: "error",
             msg: "Couldn't remove the algoProvider",
           });
+        })
+        .finally(() => {
+          this.loadAlgoProviders();
         });
     },
     useAlgo(algoProvider, algo) {
@@ -231,8 +237,8 @@ export default {
 <style scoped>
 #AlgorithmsSelection {
   /* text-align: left; */
-  min-height: 900px;
-  min-width: 900px;
+  height: 80vh;
+  width: 80vw;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -263,8 +269,8 @@ h3 {
 
 #algoProviders {
   overflow: auto;
-  max-height: 70vh;
   text-align: left;
+  overscroll-behavior: contain;
 }
 
 #algoProviders h4 {

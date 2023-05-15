@@ -98,7 +98,10 @@
         </div>
       </div>
     </div>
-    <div class="bottom">
+    <div
+      class="bottom"
+      v-if="algorithm.experiments.length > 0"
+    >
       <!-- Displays the different results + the use btn -->
       <div class="experiments">
         <div
@@ -185,9 +188,9 @@ export default {
   margin: 0;
 }
 .top .description {
-  max-width: 500px;
-  flex: 3;
+  flex: 5;
   color: #909090;
+  min-width: 200px;
   margin: 0;
 }
 
@@ -203,6 +206,9 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+.content .section-title {
+  width: 50px;
 }
 .content .section .description {
   color: #909090;

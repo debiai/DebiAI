@@ -21,6 +21,8 @@
             algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
           }}
         </span>
+        <span style="padding: 0 10px"> from </span>
+        <span>{{ algoProvider.name }}</span>
       </div>
 
       <button
@@ -31,46 +33,34 @@
       </button>
     </div>
 
+    <div id="description">
+      {{ algorithm.description }}
+    </div>
+
     <!-- Algorithm inputs-->
-    <div class="content">
-      <h5 class="section-title">{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
-      <div class="parameter-list inputs">
-        <div
+    <div id="content">
+      <h5>{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
+      <div id="inputs">
+        <UseAlgorithmInput
           v-for="(input, index) in algorithm.inputs"
           :key="index"
-          class="parameter input"
-        >
-          <div class="name">
-            {{ input.name }}
-            <span
-              class="parameterType"
-              v-if="input.type == 'array'"
-              >Array of {{ input.arrayType }}s</span
-            >
-            <span
-              class="parameterType"
-              v-else
-              >{{ input.type }}</span
-            >
-            <DocumentationBlock
-              :followCursor="true"
-              v-if="inputDetail(input)"
-            >
-              <div v-html="inputDetail(input)"></div>
-            </DocumentationBlock>
-          </div>
-          <p class="description">{{ input.description }}</p>
-        </div>
+          :input="input"
+        />
       </div>
       <div v-if="algorithm.inputs.length === 0">
-        <p>No input</p>
+        <p>No inputs</p>
       </div>
     </div>
+
+    <button class="green">Run the algorithm</button>
   </div>
 </template>
 
 <script>
+import UseAlgorithmInput from "./UseAlgorithmInput.vue";
+
 export default {
+  components: { UseAlgorithmInput },
   name: "UseAlgo",
   props: {
     algorithm: {
@@ -86,27 +76,7 @@ export default {
     return {};
   },
   mounted() {},
-  methods: {
-    inputDetail(input) {
-      const optionalFields = [
-        { field: "default", name: "Default value" },
-        { field: "min", name: "Min number" },
-        { field: "max", name: "Max number" },
-        { field: "availableValues", name: "Suggested values" },
-        { field: "lengthMin", name: "Minimum length" },
-        { field: "lengthMax", name: "Maximum length" },
-      ];
-      let details = "";
-
-      optionalFields.forEach((field) => {
-        if (input[field.field] !== null && input[field.field] !== undefined) {
-          details += field.name + ": " + input[field.field] + "<br/>";
-        }
-      });
-
-      return details;
-    },
-  },
+  methods: {},
   computed: {},
 };
 </script>
@@ -117,7 +87,6 @@ export default {
   height: 800px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
 }
 
 #info {
@@ -130,49 +99,33 @@ export default {
 #info #algoName {
   font-weight: bold;
   color: #636363;
-  border-bottom: 1px solid #636363;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 2px 5px;
+}
+#description {
+  margin: 10px 0 10px 0;
+  text-align: left;
+  color: #898989;
 }
 
 /* Content */
-.content {
+#content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
 }
 
-.parameter-list {
+#content h5 {
+  align-self: flex-start;
+}
+
+#inputs {
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  overflow: auto;
-  padding-bottom: 10px;
 }
-.parameter {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px;
-  min-width: 150px;
-}
-.parameter .name {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 5px;
-  padding: 5px;
-}
-.parameter .name #DocumentationBlock {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-.parameter p {
-  margin: 4px;
-}
-.parameterType {
-  color: #909090;
-  border: 1px solid #ccc;
-  padding: 0 2px 0 2px;
-  border-radius: 4px;
-  font-size: 0.8em;
+button {
+  align-self: flex-end; 
 }
 </style>
