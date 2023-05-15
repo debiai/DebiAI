@@ -98,25 +98,26 @@ export default {
       this.value = this.input.availableValues[0];
   },
   methods: {
-    inputDetail(input) {
-      const optionalFields = [
-        { field: "default", name: "Default value" },
-        { field: "min", name: "Min number" },
-        { field: "max", name: "Max number" },
-        { field: "availableValues", name: "Suggested values" },
-        { field: "lengthMin", name: "Minimum length" },
-        { field: "lengthMax", name: "Maximum length" },
-      ];
-      let details = "";
+    // TODO: Arrays
+    // inputDetail(input) {
+    //   const optionalFields = [
+    //     { field: "default", name: "Default value" },
+    //     { field: "min", name: "Min number" },
+    //     { field: "max", name: "Max number" },
+    //     { field: "availableValues", name: "Suggested values" },
+    //     { field: "lengthMin", name: "Minimum length" },
+    //     { field: "lengthMax", name: "Maximum length" },
+    //   ];
+    //   let details = "";
 
-      optionalFields.forEach((field) => {
-        if (input[field.field] !== null && input[field.field] !== undefined) {
-          details += field.name + ": " + input[field.field] + "<br/>";
-        }
-      });
+    //   optionalFields.forEach((field) => {
+    //     if (input[field.field] !== null && input[field.field] !== undefined) {
+    //       details += field.name + ": " + input[field.field] + "<br/>";
+    //     }
+    //   });
 
-      return details;
-    },
+    //   return details;
+    // },
   },
   computed: {
     valueWithGoodType() {

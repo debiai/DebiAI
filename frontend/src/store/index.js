@@ -101,6 +101,9 @@ const SatisticalAnasysis = {
     // Filters
     filters: [],
     filtersEffecs: [],
+
+    // AlgoProviders
+    experiments: {}, // Format: { algoProviderName: { algoId: [experiment]} }
   },
   mutations: {
     setColoredColumnIndex(state, index) {
@@ -200,6 +203,14 @@ const SatisticalAnasysis = {
         // Recreating the array to trigger event
         state.filters = [...state.filters];
       }
+    },
+
+    // AlgoProviders
+    addExperiment(state, { algoProviderName, algoId, experiment }) {
+      if (!state.experiments[algoProviderName]) state.experiments[algoProviderName] = {};
+      if (!state.experiments[algoProviderName][algoId])
+        state.experiments[algoProviderName][algoId] = [];
+      state.experiments[algoProviderName][algoId].push(experiment);
     },
   },
 };

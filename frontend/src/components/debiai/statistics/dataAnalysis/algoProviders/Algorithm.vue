@@ -124,22 +124,42 @@
         </div>
       </div>
     </div>
+    <!-- Displays the different results -->
     <div
       class="bottom"
-      v-if="algorithm.experiments.length > 0"
+      v-if="experiments !== null && experiments.length > 0"
     >
-      <!-- Displays the different results + the use btn -->
       <div class="experiments">
         <div
-          v-for="(experiment, index) in algorithm.experiments"
+          v-for="(experiment, index) in experiments"
           :key="index"
           class="experiment"
         >
-          <h5 class="experiment-title">Experiment {{ index + 1 }}</h5>
+          <h5 class="experiment-title">
+            Experiment {{ index + 1 }}
+
+            <!-- Display Inputs -->
+            <DocumentationBlock
+              :followCursor="true"
+              v-if="experiment.inputs.length > 0"
+            >
+              Inputs:
+              <div class="inputs">
+                <div
+                  class="input"
+                  v-for="input in experiment.inputs"
+                  :key="input.name"
+                >
+                  <div class="name">{{ input.name }}</div>
+                  <div class="value">{{ input.value.toString() }}</div>
+                </div>
+              </div>
+            </DocumentationBlock>
+          </h5>
           <div class="results">
             <div
               class="result"
-              v-for="result in experiment"
+              v-for="result in experiment.results"
               :key="result.name"
             >
               <div class="name">{{ result.name }}</div>
@@ -156,8 +176,13 @@
 export default {
   name: "Algorithm",
   props: {
+    algoProvider: { type: Object, required: true },
     algorithm: { type: Object, required: true },
   },
+  data() {
+    return {};
+  },
+  mounted() {},
   methods: {
     inputDetail(input) {
       const optionalFields = [
@@ -181,6 +206,14 @@ export default {
       });
 
       return details;
+    },
+  },
+  computed: {
+    experiments() {
+      const allExperiments = this.$store.state.SatisticalAnasysis.experiments;
+      if (!allExperiments[this.algoProvider.name]) return null;
+      if (!allExperiments[this.algoProvider.name][this.algorithm.id]) return null;
+      return allExperiments[this.algoProvider.name][this.algorithm.id];
     },
   },
 };
@@ -323,19 +356,23 @@ export default {
   padding: 3px;
 }
 .bottom .experiments .experiment .experiment-title {
+  display: flex;
+  align-items: center;
   margin: 0;
   padding: 0;
   margin-bottom: 5px;
-  font-size: 0.8em;
+  font-size: 0.9em;
   color: #909090;
 }
 
-.results {
+.experiment .results,
+.experiment .inputs {
   display: flex;
   gap: 10px;
 }
 
-.results .result {
+.experiment .results .result,
+.experiment .inputs .input {
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
@@ -343,12 +380,13 @@ export default {
   padding: 3px 7px 3px 7px;
   gap: 15px;
 }
-.results .result .name {
+.experiment .results .result .name,
+.experiment .inputs .input .name {
   white-space: nowrap;
 }
 
-.results .result .value {
-  background-color: #fbfbfb;
+.experiment .results .result .value,
+.experiment .inputs .input .value {
   border: 1px solid #ccc;
   padding: 2px 7px 2px 7px;
   border-radius: 4px;

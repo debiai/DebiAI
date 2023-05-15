@@ -63,6 +63,7 @@
           v-for="algo in algoProvider.algorithms"
           :key="algo.id"
           :algorithm="algo"
+          :algoProvider="algoProvider"
           @deleteAlgo="deleteAlgo(algo.name)"
           @useAlgo="$emit('useAlgo', algo)"
         />

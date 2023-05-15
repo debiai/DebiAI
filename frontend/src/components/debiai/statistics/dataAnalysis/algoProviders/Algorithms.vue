@@ -165,9 +165,6 @@ export default {
           this.algoProviders.forEach((algoProvider) => {
             if (!algoProvider.algorithms) algoProvider.algorithms = [];
             algoProvider.algorithms.forEach((algo) => {
-              // Add an empty experiments array to each algorithm
-              algo.experiments = [];
-
               // Add an empty value array to each input
               if (!algo.inputs) algo.inputs = [];
               algo.inputs.forEach((input) => {
@@ -247,14 +244,24 @@ export default {
             msg: "The algorithm has run successfully",
           });
           this.algoToUse = null;
-          console.log(results);
-          algo.experiments.push(results);
+          this.$store.commit("addExperiment", {
+            algoProviderName: algoProvider.name,
+            algoId: algo.id,
+            experiment: {results, inputs},
+          });
+          this.loadAlgoProviders();
         })
         .catch((e) => {
           console.log(e);
+          if (e.response?.data) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: e.response?.data,
+            });
+          }
           this.$store.commit("sendMessage", {
             title: "error",
-            msg: "Couldn't run the algorithm",
+            msg: "Error running the algorithm.",
           });
         });
     },

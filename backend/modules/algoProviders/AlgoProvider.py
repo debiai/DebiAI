@@ -44,19 +44,36 @@ class AlgoProvider:
 
     def use_algorithm(self, algorithm_id, data):
         try:
+            print("Using algoProvider: " + self.url)
+            print("Using algorithm: " + algorithm_id)
+            print("With data: " + str(data))
             r = requests.post(self.url + "/algorithms/" + algorithm_id + "/run", json=data)
-            return get_http_response(r)
+            if r.raise_for_status() is None:
+                return get_valid_response(r)
         except (
             requests.exceptions.ConnectionError,
             requests.exceptions.Timeout,
-            requests.exceptions.HTTPError,
-        ):
-            return None
-
-        except Exception as e:
-            print("Error in use_algorithm")
+        ) as e:
+            print("The algoProvider is not reachable")
             print(e)
-            return None
+            raise AlgoProviderException("AlgoProvider not reachable", 500)
+        except requests.exceptions.HTTPError as e:
+            print("The algoProvider returned an error")
+            print(e)
+            if e.response.status_code == 500:
+                raise AlgoProviderException(
+                    "The algoProvider returned an error:" + str(e), 500
+                )
+            elif e.response.status_code == 400:
+                raise AlgoProviderException(str(e), 400)
+
+            elif e.response.status_code == 404:
+                raise AlgoProviderException(
+                    "The algoProvider may not have this algorithm, " + str(e), 404
+                )
+            else:
+                raise AlgoProviderException(str(e), 400)
+
 
 # ==== Utils ====
 def get_http_response(response):
