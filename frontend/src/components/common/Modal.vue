@@ -15,10 +15,25 @@ export default {
   data() {
     return {};
   },
+  mounted() {
+    // When the modal is opened, we want to disable scrolling on the body
+    const bodyOverflowStyle = document.body.style.overflow;
+    if (bodyOverflowStyle !== "hidden") {
+      document.body.style.overflow = "hidden";
+      this.preventBodyScroll = true;
+      // The preventBodyScroll variable is used in the beforeDestroy hook
+      // Usefull in case of recursive modals
+      // (the beforeDestroy would be called before the last modal is closed)
+    }
+  },
   methods: {
     outsideClick(e) {
       if (e.target.id === "modal") this.$emit("close");
     },
+  },
+  beforeDestroy() {
+    // When the modal is closed, we want to enable scrolling on the body
+    if (this.preventBodyScroll) document.body.style.overflow = "auto";
   },
 };
 </script>
