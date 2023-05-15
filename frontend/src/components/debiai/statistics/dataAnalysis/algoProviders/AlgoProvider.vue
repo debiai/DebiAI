@@ -18,7 +18,10 @@
       <AvailableTag :available="algoProvider.status" />
 
       <!-- Number of algorithms -->
-      <div class="nbAlgo">
+      <div
+        class="nbAlgo"
+        title="Number of algorithms provided by this provider"
+      >
         <div
           v-if="algoProvider.status"
           class="aligned"

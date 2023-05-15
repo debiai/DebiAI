@@ -3,6 +3,19 @@
     class="algorithm item"
     @click="$emit('selected')"
   >
+    <div
+      class="tags"
+      v-if="algorithm.tags"
+    >
+      <div
+        class="tag"
+        v-for="(tag, i) in algorithm.tags"
+        :key="i"
+      >
+        {{ tag }}
+      </div>
+    </div>
+
     <div class="top">
       <inline-svg
         :src="require('@/assets/svg/algorithm.svg')"
@@ -26,7 +39,19 @@
       <p class="description">
         {{ algorithm.description }}
       </p>
-      <p class="version">Created by {{ algorithm.author }}</p>
+      <p
+        class="version"
+        v-if="algorithm.author"
+      >
+        Created by {{ algorithm.author }}
+      </p>
+      <p
+        class="version"
+        v-else
+      >
+        No author
+      </p>
+
       <button
         class="green"
         @click="$emit('useAlgo')"
@@ -34,6 +59,7 @@
         Use algorithm
       </button>
     </div>
+
     <div class="content">
       <div class="section">
         <h5 class="section-title">{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
@@ -144,9 +170,13 @@ export default {
       ];
       let details = "";
 
+      const maxValueLength = 30;
       optionalFields.forEach((field) => {
         if (input[field.field] !== null && input[field.field] !== undefined) {
-          details += field.name + ": " + input[field.field] + "<br/>";
+          let fieldVal = input[field.field].toString().slice(0, maxValueLength);
+          if (input[field.field].toString().length > maxValueLength) fieldVal += "...";
+
+          details += field.name + ": <b>" + fieldVal + "</b><br/>";
         }
       });
 
@@ -168,6 +198,19 @@ export default {
 }
 
 /* Top */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.tags .tag {
+  border: solid 1px var(--white);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.9em;
+  color: var(--white);
+}
 .top {
   margin: 0;
   display: flex;
@@ -178,6 +221,7 @@ export default {
 }
 .top .title {
   margin-top: 1px;
+  font-size: 1.1em;
 }
 .top .version {
   font-size: 0.8em;

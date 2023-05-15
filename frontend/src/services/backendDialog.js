@@ -514,4 +514,13 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
+  useAlgorithm(algoProviderName, algoId, inputs) {
+    let code = startRequest("The algorithm is running");
+    return axios
+      .post(apiURL + "app/algo-providers/" + algoProviderName + "/algorithms/use/" + algoId, {
+        inputs,
+      })
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
 };

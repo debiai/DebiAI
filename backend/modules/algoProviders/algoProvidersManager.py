@@ -63,17 +63,12 @@ def algo_provider_exists(name):
 
 
 def get_single_algo_provider(name):
-    # Check if the algo provider is not disabled
-    config = get_config()
-    if not config["ALGO_PROVIDERS"]["enabled"]:
-        raise AlgoProviderException("Algo provider is disabled", 403)
-
     # Return the algo provider with the given name
     for d in algo_providers:
         if d.name == name:
             return d
 
-    raise AlgoProviderException("Data provider not found", 404)
+    raise AlgoProviderException("Algo provider not found", 404)
 
 
 def delete(name):

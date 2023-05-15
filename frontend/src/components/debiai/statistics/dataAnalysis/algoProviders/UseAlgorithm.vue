@@ -36,7 +36,6 @@
     <div id="description">
       {{ algorithm.description }}
     </div>
-
     <!-- Algorithm inputs-->
     <div id="content">
       <h5>{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
@@ -45,6 +44,7 @@
           v-for="(input, index) in algorithm.inputs"
           :key="index"
           :input="input"
+          v-on:inputValueUpdate="(val) => (input.value = val)"
         />
       </div>
       <div v-if="algorithm.inputs.length === 0">
@@ -52,7 +52,12 @@
       </div>
     </div>
 
-    <button class="green">Run the algorithm</button>
+    <button
+      class="green"
+      @click="$emit('use')"
+    >
+      Run the algorithm
+    </button>
   </div>
 </template>
 
@@ -126,6 +131,6 @@ export default {
   gap: 10px;
 }
 button {
-  align-self: flex-end; 
+  align-self: flex-end;
 }
 </style>

@@ -1242,13 +1242,13 @@ paths:
         404:
           description: Algo provider not found
 
-  /app/algo-providers/{name}/algorithms/use/{algoId}:
+  /app/algo-providers/{algoProviderName}/algorithms/use/{algoId}:
     post:
       summary: Use an algorithm of an Algo provider
       tags: [AlgoProviders]
       operationId: controller.algoProviders.use_algo
       parameters:
-        - name: name
+        - name: algoProviderName
           in: path
           type: string
           required: true

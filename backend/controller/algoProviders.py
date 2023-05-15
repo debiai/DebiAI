@@ -42,15 +42,17 @@ def post_algo_provider(data):
     return None, 204
 
 
-def use_algo(algoProvidersName, data):
+def use_algo(algoProviderName, algoId, data):
     # Check if algoProviders exists
-    if not algo_provider_manager.algo_provider_exists(algoProvidersName):
-        return "AlgoProvider does not exists", 404
+    if not algo_provider_manager.algo_provider_exists(algoProviderName):
+        return "AlgoProvider " + algoProviderName + " does not exists", 404
 
-    # Use algoProviders
-    algo_provider_manager.use(algoProvidersName)
-
-    return None, 204
+    try:
+        # Use algoProviders
+        algo_prodier = algo_provider_manager.get_single_algo_provider(algoProviderName)
+        return algo_prodier.use_algorithm(algoId, data), 200
+    except AlgoProviderException as e:
+        return e.message, e.status_code
 
 
 def delete_algo_provider(name):

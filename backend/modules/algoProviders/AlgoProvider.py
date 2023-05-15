@@ -42,6 +42,21 @@ class AlgoProvider:
             "algorithms": algorithms,
         }
 
+    def use_algorithm(self, algorithm_id, data):
+        try:
+            r = requests.post(self.url + "/algorithms/" + algorithm_id + "/run", json=data)
+            return get_http_response(r)
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+            requests.exceptions.HTTPError,
+        ):
+            return None
+
+        except Exception as e:
+            print("Error in use_algorithm")
+            print(e)
+            return None
 
 # ==== Utils ====
 def get_http_response(response):

@@ -1,7 +1,9 @@
 <template>
   <div class="input">
     <!-- {{ input }} -->
-    {{ input.name }}
+    <p>
+      {{ input.name }}
+    </p>
 
     <!-- Input type -->
     <span
@@ -36,7 +38,7 @@
     >
       <select v-model="value">
         <option
-          v-for="(value, index) in input.availableValues"
+          v-for="(value, index) in input.availableValues.slice(0, 100)"
           :key="index"
           :value="value"
         >
@@ -92,6 +94,8 @@ export default {
   mounted() {
     if (this.input.default !== null && this.input.default !== undefined)
       this.value = this.input.default;
+    else if (this.input.availableValues && this.input.availableValues.length > 0)
+      this.value = this.input.availableValues[0];
   },
   methods: {
     inputDetail(input) {
@@ -112,6 +116,17 @@ export default {
       });
 
       return details;
+    },
+  },
+  computed: {
+    valueWithGoodType() {
+      if (this.input.type === "number") return Number(this.value);
+      else return this.value;
+    },
+  },
+  watch: {
+    valueWithGoodType: function (val) {
+      this.$emit("inputValueUpdate", val);
     },
   },
 };

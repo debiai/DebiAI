@@ -71,6 +71,7 @@
         :algoProvider="algoProviderToUse"
         :algorithm="algoToUse"
         @cancel="algoToUse = null"
+        @use="useAlgo(algoProviderToUse, algoToUse)"
       />
     </modal>
 
@@ -119,7 +120,7 @@
           :key="algoProvider.name"
           :algoProvider="algoProvider"
           @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
-          @useAlgo="useAlgo(algoProvider, $event)"
+          @useAlgo="(algo) => selectAlgo(algoProvider, algo)"
         />
       </transition-group>
 
@@ -162,10 +163,16 @@ export default {
         .then((algoProviders) => {
           this.algoProviders = algoProviders;
           this.algoProviders.forEach((algoProvider) => {
-            // Add an empty experiments array to each algorithm
             if (!algoProvider.algorithms) algoProvider.algorithms = [];
             algoProvider.algorithms.forEach((algo) => {
+              // Add an empty experiments array to each algorithm
               algo.experiments = [];
+
+              // Add an empty value array to each input
+              if (!algo.inputs) algo.inputs = [];
+              algo.inputs.forEach((input) => {
+                input.value = null;
+              });
             });
           });
         })
@@ -221,9 +228,35 @@ export default {
           this.loadAlgoProviders();
         });
     },
-    useAlgo(algoProvider, algo) {
+    selectAlgo(algoProvider, algo) {
       this.algoToUse = algo;
       this.algoProviderToUse = algoProvider;
+    },
+    useAlgo(algoProvider, algo) {
+      const inputs = algo.inputs.map((input) => {
+        return {
+          name: input.name,
+          value: input.value,
+        };
+      });
+      this.$backendDialog
+        .useAlgorithm(algoProvider.name, algo.id, inputs)
+        .then((results) => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "The algorithm has run successfully",
+          });
+          this.algoToUse = null;
+          console.log(results);
+          algo.experiments.push(results);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't run the algorithm",
+          });
+        });
     },
   },
   computed: {
