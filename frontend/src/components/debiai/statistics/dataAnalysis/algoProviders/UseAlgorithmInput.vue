@@ -1,81 +1,109 @@
 <template>
   <div class="input">
-    <!-- {{ input }} -->
-    <p>
-      {{ input.name }}
-    </p>
+    <div class="top">
+      <p>
+        {{ input.name }}
+      </p>
 
-    <!-- Input type -->
-    <span
-      class="inputType"
-      v-if="input.type == 'array'"
-      >Array of {{ input.arrayType }}s</span
-    >
-    <span
-      class="inputType"
-      v-else
-      >{{ input.type }}</span
-    >
+      <!-- Input type -->
+      <span
+        :class="'inputType ' + (valueMatchInputType ? '' : 'error')"
+        v-if="input.type == 'array'"
+        >Array of {{ input.arrayType }}s</span
+      >
+      <span
+        class="inputType"
+        v-else
+        >{{ input.type }}</span
+      >
 
-    <!-- description -->
-    <p class="description">{{ input.description }}</p>
+      <!-- description -->
+      <p class="description">{{ input.description }}</p>
 
-    <!-- Values -->
-    <div
-      v-if="input.type === 'number' || input.type === 'string'"
-      title="Value of the input that will be sent to the Algo Provider"
-    >
-      <input
-        :type="input.type"
-        v-model="value"
-      />
-    </div>
+      <!-- Values -->
+      <div
+        v-if="input.type === 'number' || input.type === 'string'"
+        title="Value of the input that will be sent to the Algo Provider"
+      >
+        <input
+          :type="input.type"
+          v-model="value"
+        />
+      </div>
 
-    <!-- Suggestions: -->
-    <div
-      v-if="input.availableValues && input.availableValues.length > 0"
-      title="Values suggested by the Algo Provider"
-    >
-      <select v-model="value">
-        <option
-          v-for="(value, index) in input.availableValues.slice(0, 100)"
-          :key="index"
-          :value="value"
+      <!-- Suggestions: -->
+      <div
+        v-if="input.availableValues && input.availableValues.length > 0"
+        title="Values suggested by the Algo Provider"
+      >
+        <select v-model="value">
+          <option
+            v-for="(value, index) in input.availableValues.slice(0, 100)"
+            :key="index"
+            :value="value"
+          >
+            {{ value }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Min and max -->
+      <div
+        class="min"
+        v-if="input.type === 'number' && input.min !== null && input.min !== undefined"
+        title="Minimum value accepted by the Algo Provider"
+        :class="value < input.min ? 'error' : 'success'"
+      >
+        {{ ">=" }} {{ input.min }}
+      </div>
+      <div
+        class="max"
+        v-if="input.type === 'number' && input.max !== null && input.max !== undefined"
+        title="Maximum value accepted by the Algo Provider"
+        :class="value > input.max ? 'error' : 'success'"
+      >
+        {{ "<=" }} {{ input.max }}
+      </div>
+
+      <!-- Array input type-->
+      <div
+        v-if="input.type === 'array'"
+        class="arrayInputType"
+      >
+        <!-- input options -->
+        <div
+          :class="'option ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
+          @click="selectedArrayInputOption = 'manual'"
         >
-          {{ value }}
-        </option>
-      </select>
+          Manual
+        </div>
+        <div
+          :class="'option ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
+          @click="selectedArrayInputOption = 'column'"
+        >
+          Column analysis data
+        </div>
+        <div
+          :class="'option ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')"
+          @click="selectedArrayInputOption = 'columnSelectedData'"
+        >
+          Column selected data
+        </div>
+      </div>
     </div>
-
-    <!-- Min and max -->
-    <div
-      class="min"
-      v-if="input.type === 'number' && input.min !== null && input.min !== undefined"
-      title="Minimum value accepted by the Algo Provider"
-      :class="value < input.min ? 'error' : 'success'"
-    >
-      {{ ">=" }} {{ input.min }}
-    </div>
-    <div
-      class="max"
-      v-if="input.type === 'number' && input.max !== null && input.max !== undefined"
-      title="Maximum value accepted by the Algo Provider"
-      :class="value > input.max ? 'error' : 'success'"
-    >
-      {{ "<=" }} {{ input.max }}
-    </div>
-
-    <!-- Length min and max -->
-    <div
-      v-if="input.type === 'array'"
-      title="Range of the length of the input value that will be sent to the Algo Provider"
-    >
-      <input
-        type="number"
-        v-model.number="value"
-        :min="input.lengthMin"
-        :max="input.lengthMax"
-      />
+    <div class="bot">
+      <!-- Array input type-->
+      <div
+        v-if="input.type === 'array' && selectedArrayInputOption == 'manual'"
+        class="arrayInput"
+      >
+        Manual input, separated by commas:
+        <input
+          type="text"
+          v-model="value"
+          placeholder="1,2,3"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -89,6 +117,9 @@ export default {
   data: () => {
     return {
       value: null,
+
+      // Array input
+      selectedArrayInputOption: "manual",
     };
   },
   mounted() {
@@ -96,6 +127,7 @@ export default {
       this.value = this.input.default;
     else if (this.input.availableValues && this.input.availableValues.length > 0)
       this.value = this.input.availableValues[0];
+    this.$emit("inputValueUpdate", this.value);
   },
   methods: {
     // TODO: Arrays
@@ -109,20 +141,27 @@ export default {
     //     { field: "lengthMax", name: "Maximum length" },
     //   ];
     //   let details = "";
-
     //   optionalFields.forEach((field) => {
     //     if (input[field.field] !== null && input[field.field] !== undefined) {
     //       details += field.name + ": " + input[field.field] + "<br/>";
     //     }
     //   });
-
     //   return details;
     // },
   },
   computed: {
+    valueMatchInputType() {
+      if (this.input.type === "number") return !isNaN(this.value);
+      else if (this.input.type === "string") return typeof this.value === "string";
+      else if (this.input.type === "array") return Array.isArray(this.value);
+      else return true;
+    },
     valueWithGoodType() {
       if (this.input.type === "number") return Number(this.value);
-      else return this.value;
+      if (this.input.type === "array" && this.value !== null) {
+        if (this.input.arrayType === "number") return this.value.split(",").map((v) => Number(v));
+        else return this.value.split(",");
+      } else return this.value;
     },
   },
   watch: {
@@ -140,12 +179,15 @@ export default {
   padding: 0px 20px;
   font-size: 1.2em;
   display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  transition: 0.2s;
+}
+.top {
+  display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 5px;
-}
-.top p {
-  margin: 4px;
 }
 .inputType {
   color: #909090;
@@ -182,8 +224,49 @@ select {
   border-color: green;
 }
 .error {
-  color: red;
-  border-color: red;
+  color: var(--danger);
+  border-color: var(--danger);
   background-color: transparent;
+}
+
+/* arrayInputType */
+.arrayInputType {
+  display: flex;
+  gap: 5px;
+}
+.arrayInputType .option {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.9em;
+  background-color: #eee;
+}
+
+.arrayInputType .option:hover {
+  background-color: #ddd;
+}
+.arrayInputType .option.selected {
+  color: white;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.bot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+.arrayInput {
+  flex: 1;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.arrayInput input {
+  flex: 1;
 }
 </style>

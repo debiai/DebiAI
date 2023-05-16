@@ -44,20 +44,31 @@
           v-for="(input, index) in algorithm.inputs"
           :key="index"
           :input="input"
-          v-on:inputValueUpdate="(val) => (input.value = val)"
+          v-on:inputValueUpdate="
+            (val) => {
+              input.value = val;
+              updateBody();
+            }
+          "
         />
       </div>
       <div v-if="algorithm.inputs.length === 0">
         <p>No inputs</p>
       </div>
     </div>
+    <div id="bottom">
+      <fieldset id="requestBody">
+        <legend>Provided inputs</legend>
+        {{ requestBody }}
+      </fieldset>
 
-    <button
-      class="green"
-      @click="$emit('use')"
-    >
-      Run the algorithm
-    </button>
+      <button
+        class="green"
+        @click="$emit('use')"
+      >
+        Run the algorithm
+      </button>
+    </div>
   </div>
 </template>
 
@@ -78,18 +89,37 @@ export default {
     },
   },
   data: () => {
-    return {};
+    return {
+      requestBody: "",
+    };
   },
   mounted() {},
-  methods: {},
+  methods: {
+    updateBody() {
+      let body = "";
+      this.algorithm.inputs.forEach((input) => {
+        body += input.name + ": ";
+        if (input.value === null || input.value === undefined) body += "null,\n";
+        else {
+          if (input.type === "array") body += "[";
+          body += input.value.toString().slice(0, 100);
+          if (input.value.toString().length > 100) body += "...";
+          if (input.type === "array") body += "]";
+          body += ",\n";
+        }
+      });
+      body = body.slice(0, body.length - 2);
+      this.requestBody = body;
+    },
+  },
   computed: {},
 };
 </script>
 
 <style scoped>
 #UseAlgo {
-  width: 1000px;
-  height: 800px;
+  width: 75vw;
+  height: 75vh;
   display: flex;
   flex-direction: column;
 }
@@ -130,7 +160,28 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
-button {
-  align-self: flex-end;
+
+#bottom {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+#bottom #requestBody {
+  flex: 1;
+  height: 50px;
+  overflow: auto;
+}
+#bottom fieldset {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding-left: 20px;
+  white-space: pre-line;
+  text-align: start;
+}
+#bottom legend {
+  color: #636363;
+}
+#bottom button{
+  margin: 10px 0 5px 0;
 }
 </style>
