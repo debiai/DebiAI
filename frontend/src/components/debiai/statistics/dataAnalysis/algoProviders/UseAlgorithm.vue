@@ -44,6 +44,8 @@
           v-for="(input, index) in algorithm.inputs"
           :key="index"
           :input="input"
+          :data="data"
+          :selectedData="selectedData"
           v-on:inputValueUpdate="
             (val) => {
               input.value = val;
@@ -79,14 +81,10 @@ export default {
   components: { UseAlgorithmInput },
   name: "UseAlgo",
   props: {
-    algorithm: {
-      type: Object,
-      required: true,
-    },
-    algoProvider: {
-      type: Object,
-      required: true,
-    },
+    algorithm: { type: Object, required: true },
+    algoProvider: { type: Object, required: true },
+    data: { type: Object, required: true },
+    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -181,7 +179,7 @@ export default {
 #bottom legend {
   color: #636363;
 }
-#bottom button{
+#bottom button {
   margin: 10px 0 5px 0;
 }
 </style>

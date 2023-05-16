@@ -79,15 +79,21 @@
         </div>
         <div
           :class="'option ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
-          @click="selectedArrayInputOption = 'column'"
+          @click="
+            selectedArrayInputOption = 'column';
+            columnSelected(columnIndex);
+          "
         >
-          Column analysis data
+          Analysis Column data
         </div>
         <div
           :class="'option ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')"
-          @click="selectedArrayInputOption = 'columnSelectedData'"
+          @click="
+            selectedArrayInputOption = 'columnSelectedData';
+            columnSelected(columnIndex);
+          "
         >
-          Column selected data
+          Selected Column data
         </div>
       </div>
     </div>
@@ -104,15 +110,69 @@
           placeholder="1,2,3"
         />
       </div>
+
+      <!-- Column selection Modal -->
+      <modal
+        v-if="columnSelection"
+        @close="columnSelection = false"
+      >
+        <ColumnSelection
+          title="Select the X axis"
+          :data="data"
+          :validateRequiered="false"
+          :colorSelection="false"
+          :defaultSelected="[columnIndex]"
+          v-on:cancel="columnSelection = false"
+          v-on:colSelect="columnSelected"
+        />
+      </modal>
+      <div
+        v-if="
+          input.type === 'array' &&
+          ['column', 'columnSelectedData'].includes(selectedArrayInputOption)
+        "
+      >
+        <div class="arrayInput">
+          <Column
+            v-if="columnIndex !== null"
+            :column="data.columns.find((c) => c.index == columnIndex)"
+            :colorSelection="false"
+            v-on:selected="columnSelection = true"
+          />
+          <button
+            v-else
+            @click="columnSelection = true"
+          >
+            Select a column
+          </button>
+
+          <div
+            class="nbValues"
+            v-if="value !== null && value !== undefined"
+          >
+            {{ value.length }} values
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+// components
+import ColumnSelection from "../common/ColumnSelection.vue";
+import Column from "../common/Column";
+
 export default {
   name: "UseAlgo",
+  components: {
+    ColumnSelection,
+    Column,
+  },
   props: {
     input: { type: Object, required: true },
+    data: { type: Object, required: true },
+    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -120,6 +180,8 @@ export default {
 
       // Array input
       selectedArrayInputOption: "manual",
+      columnIndex: null,
+      columnSelection: false,
     };
   },
   mounted() {
@@ -130,24 +192,22 @@ export default {
     this.$emit("inputValueUpdate", this.value);
   },
   methods: {
-    // TODO: Arrays
-    // inputDetail(input) {
-    //   const optionalFields = [
-    //     { field: "default", name: "Default value" },
-    //     { field: "min", name: "Min number" },
-    //     { field: "max", name: "Max number" },
-    //     { field: "availableValues", name: "Suggested values" },
-    //     { field: "lengthMin", name: "Minimum length" },
-    //     { field: "lengthMax", name: "Maximum length" },
-    //   ];
-    //   let details = "";
-    //   optionalFields.forEach((field) => {
-    //     if (input[field.field] !== null && input[field.field] !== undefined) {
-    //       details += field.name + ": " + input[field.field] + "<br/>";
-    //     }
-    //   });
-    //   return details;
-    // },
+    columnSelected(index) {
+      if (index === null) return;
+
+      this.columnSelection = false;
+      this.columnIndex = index;
+      console.log("this.selectedArrayInputOption");
+      console.log(this.selectedArrayInputOption);
+      if (this.selectedArrayInputOption === "columnSelectedData") {
+        this.value = this.selectedData.map((id) => {
+          return this.data.columns[index].values[id];
+        });
+      } else {
+        this.value = this.data.columns[index].values;
+      }
+      this.$emit("inputValueUpdate", this.value);
+    },
   },
   computed: {
     valueMatchInputType() {
@@ -159,8 +219,12 @@ export default {
     valueWithGoodType() {
       if (this.input.type === "number") return Number(this.value);
       if (this.input.type === "array" && this.value !== null) {
-        if (this.input.arrayType === "number") return this.value.split(",").map((v) => Number(v));
-        else return this.value.split(",");
+        if (this.input.arrayType === "number") {
+          if (this.selectedArrayInputOption === "columnSelectedData") return this.value;
+          else if (this.selectedArrayInputOption === "column") return this.value;
+          else if (this.selectedArrayInputOption === "manual")
+            return this.value.split(",").map((v) => Number(v));
+        } else return this.value.split(",");
       } else return this.value;
     },
   },

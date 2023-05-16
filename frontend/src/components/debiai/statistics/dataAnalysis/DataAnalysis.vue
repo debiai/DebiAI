@@ -68,7 +68,11 @@
       v-if="algorithmModal"
       @close="algorithmModal = false"
     >
-      <Algorithms @cancel="algorithmModal = false" />
+      <Algorithms
+        @cancel="algorithmModal = false"
+        :data="data"
+        :selectedData="selectedData"
+      />
     </modal>
     <!-- WidgetCatalog -->
     <modal
@@ -78,8 +82,9 @@
       <WidgetCatalog
         @cancel="widgetCatalog = false"
         @add="addWidget"
-        @addWithConf="({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
-          "
+        @addWithConf="
+          ({ componentKey, configuration }) => addWidget(componentKey, null, configuration)
+        "
       />
     </modal>
 
@@ -616,7 +621,7 @@ header #widgetList {
   display: flex;
 }
 
-header #widgetList button+button {
+header #widgetList button + button {
   margin-left: 5px;
 }
 

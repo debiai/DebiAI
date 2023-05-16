@@ -70,6 +70,8 @@
       <UseAlgorithm
         :algoProvider="algoProviderToUse"
         :algorithm="algoToUse"
+        :data="data"
+        :selectedData="selectedData"
         @cancel="algoToUse = null"
         @use="useAlgo(algoProviderToUse, algoToUse)"
       />
@@ -139,7 +141,10 @@ export default {
     AlgoProvider,
     UseAlgorithm,
   },
-  props: {},
+  props: {
+    data: { type: Object, required: true },
+    selectedData: { type: Array, required: true },
+  },
   data: () => {
     return {
       newAlgoProviderModal: false,
@@ -247,7 +252,7 @@ export default {
           this.$store.commit("addExperiment", {
             algoProviderName: algoProvider.name,
             algoId: algo.id,
-            experiment: {results, inputs},
+            experiment: { results, inputs },
           });
           this.loadAlgoProviders();
         })
