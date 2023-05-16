@@ -368,8 +368,10 @@ export default {
 .experiment .results,
 .experiment .inputs {
   display: flex;
-  flex-direction: column;
   gap: 10px;
+}
+.experiment .inputs {
+  flex-direction: column;
 }
 
 .experiment .results .result,

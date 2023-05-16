@@ -7,7 +7,7 @@
 
       <!-- Input type -->
       <span
-        :class="'inputType ' + (valueMatchInputType ? '' : 'error')"
+        class="inputType"
         v-if="input.type == 'array'"
         >Array of {{ input.arrayType }}s</span
       >

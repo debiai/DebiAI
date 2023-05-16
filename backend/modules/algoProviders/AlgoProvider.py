@@ -47,7 +47,9 @@ class AlgoProvider:
             print("Using algoProvider: " + self.url)
             print("Using algorithm: " + algorithm_id)
             print("With data: " + str(data))
-            r = requests.post(self.url + "/algorithms/" + algorithm_id + "/run", json=data)
+            r = requests.post(
+                self.url + "/algorithms/" + algorithm_id + "/run", json=data
+            )
             if r.raise_for_status() is None:
                 return get_valid_response(r)
         except (
@@ -60,16 +62,22 @@ class AlgoProvider:
         except requests.exceptions.HTTPError as e:
             print("The algoProvider returned an error")
             print(e)
+            print(e.response.text)
+            print(e.response.json())
+
+            if "detail" in e.response.json():
+                raise AlgoProviderException(e.response.json()["detail"], 400)
+
             if e.response.status_code == 500:
                 raise AlgoProviderException(
-                    "The algoProvider returned an error:" + str(e), 500
+                    "AlgoProvider internal server error: " + str(e), 500
                 )
             elif e.response.status_code == 400:
-                raise AlgoProviderException(str(e), 400)
+                raise AlgoProviderException(e.response.text, 400)
 
             elif e.response.status_code == 404:
                 raise AlgoProviderException(
-                    "The algoProvider may not have this algorithm, " + str(e), 404
+                    "The algoProvider may not have this algorithm, " + e.response.text, 404
                 )
             else:
                 raise AlgoProviderException(str(e), 400)
