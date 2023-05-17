@@ -46,7 +46,6 @@ class AlgoProvider:
         try:
             print("Using algoProvider: " + self.url)
             print("Using algorithm: " + algorithm_id)
-            print("With data: " + str(data))
             r = requests.post(
                 self.url + "/algorithms/" + algorithm_id + "/run", json=data
             )

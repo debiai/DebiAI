@@ -394,6 +394,7 @@ export default {
   padding: 2px 7px 2px 7px;
   border-radius: 4px;
   max-width: 250px;
+  max-height: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
