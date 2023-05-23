@@ -62,7 +62,7 @@ def delete_algo_provider(name):
     if not deletion_allowed:
         return "AlgoProvider deletion is not allowed", 403
 
-    # Delete algub
+    # Delete the algoProvider
     try:
         algo_provider_manager.delete(name)
         return None, 204

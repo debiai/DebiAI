@@ -26,7 +26,11 @@ def init_config():
         "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
-        "ALGO_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
+        "ALGO_PROVIDERS_CONFIG": {
+            "enable_integrated": True,
+            "creation": True,
+            "deletion": True,
+        },
         "ALGO_PROVIDERS": {},
         "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
         "EXPORT_METHODS_LIST": {},
@@ -73,6 +77,11 @@ def init_config():
 
         # AlgoProvider
         if section == "ALGO_PROVIDERS_CONFIG":
+            if "enable_integrated" in config_parser[section]:
+                if str.lower(config_parser[section]["enable_integrated"]) == "false":
+                    print("Config file: Integrated AlgoProvider disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["enable_integrated"] = False
+
             if "creation" in config_parser[section]:
                 if str.lower(config_parser[section]["creation"]) == "false":
                     print("Config file: AlgoProvider creation disabled")
@@ -87,9 +96,13 @@ def init_config():
         if section == "ALGO_PROVIDERS":
             for algo_provider in config_parser[section]:
                 print(
-                    "Config file: detected AlgoProvider '" + algo_provider + "' from config file"
+                    "Config file: detected AlgoProvider '"
+                    + algo_provider
+                    + "' from config file"
                 )
-                config["ALGO_PROVIDERS"][algo_provider] = config_parser[section][algo_provider]
+                config["ALGO_PROVIDERS"][algo_provider] = config_parser[section][
+                    algo_provider
+                ]
             continue
 
         # Export methods
@@ -180,15 +193,22 @@ def init_config():
             config["WEB_DATA_PROVIDERS"][data_provider_name] = data_provider_url
 
         # Deal with AlgoProvider in env variables
-        if env_var == "DEBIAI_ALGO_PROVIDER_CREATION_ENABLED":
-            # Env var format: DEBIAI_ALGO_PROVIDER_CREATION_ENABLED=<True|False>
+        if env_var == "DEBIAI_ALGO_PROVIDERS_ENABLE_INTEGRATED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_ENABLE_INTEGRATED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Integrated Data Providers disabled")
+                config["DATA_PROVIDERS_CONFIG"]["enable_integrated"] = False
+            continue
+
+        if env_var == "DEBIAI_ALGO_PROVIDERS_CREATION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_CREATION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
                 print("Environment variables: AlgoProvider creation disabled")
                 config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
             continue
 
-        if env_var == "DEBIAI_ALGO_PROVIDER_DELETION_ENABLED":
-            # Env var format: DEBIAI_ALGO_PROVIDER_DELETION_ENABLED=<True|False>
+        if env_var == "DEBIAI_ALGO_PROVIDERS_DELETION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_DELETION_ENABLED=<True|False>
             if str.lower(os.environ[env_var]) == "false":
                 print("Environment variables: AlgoProvider deletion disabled")
                 config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False

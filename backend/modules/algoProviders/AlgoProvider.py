@@ -1,6 +1,10 @@
 # Class for AlgoProvider
 import requests, json
 from modules.algoProviders.AlgoProviderException import AlgoProviderException
+from modules.algoProviders.integratedAlgoProvider.integratedAlgoProvider import (
+    get_algorithms,
+    use_algorithm,
+)
 
 
 class AlgoProvider:
@@ -76,11 +80,41 @@ class AlgoProvider:
 
             elif e.response.status_code == 404:
                 raise AlgoProviderException(
-                    "The algoProvider may not have this algorithm, " + e.response.text, 404
+                    "The algoProvider may not have this algorithm, " + e.response.text,
+                    404,
                 )
             else:
                 raise AlgoProviderException(str(e), 400)
 
+
+class IntegratedAlgoProvider(AlgoProvider):
+    ### Integrated AlgoProvider
+    # Used to expose the algorithms that are integrated
+    # directly in DebiAI
+    def __init__(self):
+        self.url = "/app/algo-provider"
+        self.name = "Integrated Algo-provider"
+        self.alive = True
+
+    def is_alive(self):
+        return True
+
+    def get_algorithms(self):
+        return get_algorithms()
+
+    def use_algorithm(self, algorithm_id, data):
+        try:
+            print("Using integrated algo-provider")
+            print("Using algorithm: " + algorithm_id)
+            return use_algorithm(algorithm_id, data)
+        except TypeError as e:
+            print("The integrated algo-provider returned an error")
+            print(e)
+            raise AlgoProviderException(algorithm_id + " returned an error: " + str(e), 400)
+        except Exception as e:
+            print("The integrated algo-provider returned an error")
+            print(e)
+            raise AlgoProviderException("AlgoProvider internal server error", 500)
 
 # ==== Utils ====
 def get_http_response(response):
