@@ -1,6 +1,4 @@
 import os
-from modules.algoProviders.integratedAlgoProvider.algorithms.movingAverage import *
-
 
 def _get_algorithm_python(algorithm_name):
     """Get the python file of the algorithm
@@ -49,7 +47,11 @@ def get_algorithms():
     algorithms_python = []
     for file in algorithm_files:
         print("Importing " + file)
-        algorithms_python.append(_get_algorithm_python(file))
+        try:
+            algorithms_python.append(_get_algorithm_python(file))
+        except ModuleNotFoundError as e:
+            print("Error importing " + file)
+            print(e)
 
     # Get the algorithms (call the get_algorithm_details() function)
     algorithms = []
