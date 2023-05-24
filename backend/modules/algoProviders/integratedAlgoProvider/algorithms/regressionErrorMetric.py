@@ -1,4 +1,3 @@
-import os
 from ..utils import get_input_from_inputs
 
 # This algorithm is a simple regression metric calculator
@@ -12,7 +11,6 @@ from ..utils import get_input_from_inputs
 
 # Technical details (must respect the algo-api format):
 algorithm_description = {
-    "id": os.path.basename(__file__)[:-3],  # Name of the file
     "name": "Regression Metric",
     "description": """Calculates the regression metric of an error list according to a ceil.""",
     "author": "DebiAI",

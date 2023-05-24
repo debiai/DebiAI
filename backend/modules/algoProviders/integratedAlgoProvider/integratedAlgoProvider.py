@@ -1,5 +1,6 @@
 import os
 
+
 def _get_algorithm_python(algorithm_name):
     """Get the python file of the algorithm
 
@@ -27,7 +28,7 @@ def _get_algorithm_python(algorithm_name):
         fromlist=["*"],
     )
 
-    return algorithm_python
+    return (algorithm_name, algorithm_python)
 
 
 def get_algorithms():
@@ -56,7 +57,10 @@ def get_algorithms():
     # Get the algorithms (call the get_algorithm_details() function)
     algorithms = []
     for algorithm in algorithms_python:
-        algorithms.append(algorithm.get_algorithm_details())
+        algorithm_details = algorithm[1].get_algorithm_details()
+        # Add the id as the file name
+        algorithm_details["id"] = algorithm[0]
+        algorithms.append(algorithm_details)
 
     return algorithms
 
