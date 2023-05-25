@@ -68,12 +68,25 @@
       @close="algoToUse = null"
     >
       <UseAlgorithm
-        :algoProvider="algoProviderToUse"
+        :algoProvider="selectedAlgoProvider"
         :algorithm="algoToUse"
         :data="data"
         :selectedData="selectedData"
         @cancel="algoToUse = null"
-        @use="useAlgo(algoProviderToUse, algoToUse)"
+        @use="useAlgo(selectedAlgoProvider, algoToUse)"
+      />
+    </modal>
+
+    <!-- View experiments -->
+    <modal
+      v-if="algoToViewExperiments"
+      @close="algoToViewExperiments = null"
+    >
+      <Experiments
+        :algoProvider="selectedAlgoProvider"
+        :algorithm="algoToViewExperiments"
+        :data="data"
+        @cancel="algoToViewExperiments = null"
       />
     </modal>
 
@@ -123,6 +136,7 @@
           :algoProvider="algoProvider"
           @deleteAlgoProvider="deleteAlgoProvider(algoProvider.name)"
           @useAlgo="(algo) => selectAlgo(algoProvider, algo)"
+          @viewExperiments="(algo) => viewExperiments(algoProvider, algo)"
         />
       </transition-group>
 
@@ -134,12 +148,14 @@
 <script>
 import AlgoProvider from "./AlgoProvider";
 import UseAlgorithm from "./UseAlgorithm";
+import Experiments from "./Experiments";
 
 export default {
   name: "Algorithms",
   components: {
     AlgoProvider,
     UseAlgorithm,
+    Experiments,
   },
   props: {
     data: { type: Object, required: true },
@@ -153,7 +169,8 @@ export default {
       algoProviders: null, // null = loading, [] = empty, [algoProvider] = loaded
 
       algoToUse: null,
-      algoProviderToUse: null,
+      algoToViewExperiments: null,
+      selectedAlgoProvider: null,
     };
   },
   mounted() {
@@ -232,7 +249,11 @@ export default {
     },
     selectAlgo(algoProvider, algo) {
       this.algoToUse = algo;
-      this.algoProviderToUse = algoProvider;
+      this.selectedAlgoProvider = algoProvider;
+    },
+    viewExperiments(algoProvider, algo) {
+      this.algoToViewExperiments = algo;
+      this.selectedAlgoProvider = algoProvider;
     },
     useAlgo(algoProvider, algo) {
       const inputs = algo.inputs.map((input) => {

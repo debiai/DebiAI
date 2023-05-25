@@ -66,6 +66,7 @@
           :algoProvider="algoProvider"
           @deleteAlgo="deleteAlgo(algo.name)"
           @useAlgo="$emit('useAlgo', algo)"
+          @viewExperiments="$emit('viewExperiments', algo)"
         />
       </div>
     </transition>

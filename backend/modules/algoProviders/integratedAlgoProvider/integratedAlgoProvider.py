@@ -80,6 +80,6 @@ def use_algorithm(algorithmId, data):
     algorithm = _get_algorithm_python(algorithmId)
 
     # Use the algorithm
-    outputs = algorithm.use_algorithm(data["inputs"])
+    outputs = algorithm[1].use_algorithm(data["inputs"])
 
     return outputs

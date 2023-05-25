@@ -3,20 +3,41 @@
     class="algorithm item"
     @click="$emit('selected')"
   >
+    <!-- Top: Tags, controls -->
     <div
-      class="tags"
+      class="top"
       v-if="algorithm.tags"
     >
-      <div
-        class="tag"
-        v-for="(tag, i) in algorithm.tags"
-        :key="i"
-      >
-        {{ tag }}
+      <div class="tags">
+        <div
+          class="tag"
+          v-for="(tag, i) in algorithm.tags"
+          :key="i"
+        >
+          {{ tag }}
+        </div>
+      </div>
+
+      <div class="controls">
+        <button
+          class="info"
+          @click="$emit('viewExperiments')"
+          v-if="nbExperiments > 0"
+        >
+          <span class="badge">{{ nbExperiments }}</span>
+          Experiments
+        </button>
+        <button
+          class="green"
+          @click="$emit('useAlgo')"
+        >
+          Use algorithm
+        </button>
       </div>
     </div>
 
-    <div class="top">
+    <!-- Name, version, description, author -->
+    <div class="header">
       <inline-svg
         :src="require('@/assets/svg/algorithm.svg')"
         width="15"
@@ -39,27 +60,21 @@
       <p class="description">
         {{ algorithm.description }}
       </p>
-      <p
-        class="version"
+      <div
+        class="author"
         v-if="algorithm.author"
       >
         Created by {{ algorithm.author }}
-      </p>
-      <p
-        class="version"
+      </div>
+      <div
+        class="author"
         v-else
       >
         No author
-      </p>
-
-      <button
-        class="green"
-        @click="$emit('useAlgo')"
-      >
-        Use algorithm
-      </button>
+      </div>
     </div>
 
+    <!-- Displays the different parameters and results -->
     <div class="content">
       <div class="section">
         <h5 class="section-title">{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
@@ -124,51 +139,6 @@
         </div>
       </div>
     </div>
-    <!-- Displays the different results -->
-    <div
-      class="bottom"
-      v-if="experiments !== null && experiments.length > 0"
-    >
-      <div class="experiments">
-        <div
-          v-for="(experiment, index) in experiments"
-          :key="index"
-          class="experiment"
-        >
-          <h5 class="experiment-title">
-            Experiment {{ index + 1 }}
-
-            <!-- Display Inputs -->
-            <DocumentationBlock
-              :followCursor="true"
-              v-if="experiment.inputs.length > 0"
-            >
-              Inputs:
-              <div class="inputs">
-                <div
-                  class="input"
-                  v-for="input in experiment.inputs"
-                  :key="input.name"
-                >
-                  <div class="name">{{ input.name }}</div>
-                  <div class="value">{{ input.value.toString() }}</div>
-                </div>
-              </div>
-            </DocumentationBlock>
-          </h5>
-          <div class="results">
-            <div
-              class="result"
-              v-for="result in experiment.results"
-              :key="result.name"
-            >
-              <div class="name">{{ result.name }}</div>
-              <div class="value">{{ result.value.toString() }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -209,11 +179,9 @@ export default {
     },
   },
   computed: {
-    experiments() {
-      const allExperiments = this.$store.state.SatisticalAnasysis.experiments;
-      if (!allExperiments[this.algoProvider.name]) return null;
-      if (!allExperiments[this.algoProvider.name][this.algorithm.id]) return null;
-      return allExperiments[this.algoProvider.name][this.algorithm.id];
+    nbExperiments() {
+      // Use the store getter to get the experiments
+      return this.$store.getters.getAlgoNbExperiments(this.algoProvider.name, this.algorithm.id);
     },
   },
 };
@@ -231,20 +199,27 @@ export default {
 }
 
 /* Top */
-.tags {
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   margin-bottom: 10px;
 }
-.tags .tag {
+.top .tags .tag {
   border: solid 1px var(--white);
   border-radius: 4px;
   padding: 2px 4px;
   font-size: 0.9em;
   color: var(--white);
 }
-.top {
+/* Header */
+.header {
   margin: 0;
   display: flex;
   align-items: flex-start;
@@ -252,11 +227,11 @@ export default {
   padding-bottom: 30px;
   flex-wrap: wrap;
 }
-.top .title {
+.header .title {
   margin-top: 1px;
   font-size: 1.1em;
 }
-.top .version {
+.header .version {
   font-size: 0.8em;
   color: #999;
   border: 1px solid #999;
@@ -264,11 +239,15 @@ export default {
   padding: 2px 4px;
   margin: 0;
 }
-.top .description {
+.header .description {
   flex: 5;
   color: #909090;
   min-width: 200px;
   margin: 0;
+}
+.header .author {
+  font-size: 0.8em;
+  color: #999;
 }
 
 /* Content */
@@ -325,77 +304,5 @@ export default {
   padding: 0 2px 0 2px;
   border-radius: 4px;
   font-size: 0.8em;
-}
-
-/* Bottom */
-.bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 20px;
-}
-.bottom .experiments {
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  flex: 1;
-  border-radius: 4px;
-  gap: 10px;
-  padding-bottom: 15px;
-}
-
-.bottom .experiments .experiment {
-  display: flex;
-  padding: 10px;
-  flex-direction: column;
-
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 3px;
-}
-.bottom .experiments .experiment .experiment-title {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 5px;
-  font-size: 0.9em;
-  color: #909090;
-}
-
-.experiment .results,
-.experiment .inputs {
-  display: flex;
-  gap: 10px;
-}
-.experiment .inputs {
-  flex-direction: column;
-}
-
-.experiment .results .result,
-.experiment .inputs .input {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 3px 7px 3px 7px;
-  gap: 15px;
-}
-.experiment .results .result .name,
-.experiment .inputs .input .name {
-  white-space: nowrap;
-}
-
-.experiment .results .result .value,
-.experiment .inputs .input .value {
-  border: 1px solid #ccc;
-  padding: 2px 7px 2px 7px;
-  border-radius: 4px;
-  max-width: 250px;
-  max-height: 50px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>

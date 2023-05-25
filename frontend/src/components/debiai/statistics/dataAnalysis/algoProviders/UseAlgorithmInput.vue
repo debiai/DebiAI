@@ -84,7 +84,7 @@
             columnSelected(columnIndex);
           "
         >
-          Analysis Column data
+          Complete Column data
         </div>
         <div
           :class="'option ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')"
