@@ -88,6 +88,20 @@
             >
               <div class="name">{{ result.name }}</div>
               <div class="value">{{ result.value.toString() }}</div>
+
+              <button
+                v-if="canCreateColumnFromOutput(result) === true"
+                @click="createColumnFromOutput(result)"
+              >
+                Add to the analysis as a column
+              </button>
+              <button
+                v-else
+                :title="canCreateColumnFromOutput(result)"
+                disabled
+              >
+                Add to the analysis as a column
+              </button>
             </div>
           </div>
         </div>
@@ -97,6 +111,8 @@
 </template>
 
 <script>
+import dataLoader from "@/services/dataLoader";
+
 export default {
   name: "Experiments",
   props: {
@@ -150,6 +166,28 @@ export default {
       link.href = url;
       link.download = name + ".json";
       link.click();
+    },
+    canCreateColumnFromOutput(output) {
+      // We can only create a column from an array
+      if (!Array.isArray(output.value)) return "Can only create a column from an array";
+
+      // Case one, length of the array is the same as the number of data
+      if (output.value.length === this.data.nbLines) return true;
+
+      return "The length of the array is not the same as the number of data in the analysis";
+    },
+    createColumnFromOutput(output) {
+      // Create column
+      const col = dataLoader.createColumn(output.name, output.value, "Algorithm output", null);
+      const nbColumns = this.data.columns.length;
+      col.index = nbColumns;
+      this.data.columns.push(col);
+      this.data.labels.push(output.name);
+      this.data.nbColumns += 1;
+      this.$store.commit("sendMessage", {
+        title: "success",
+        msg: "Column added successfully",
+      });
     },
   },
   computed: {},
@@ -224,7 +262,7 @@ export default {
   align-items: center;
   justify-content: space-between;
 }
-.experiment .top button {
+.experiment button {
   padding: 0 5px 0 5px;
   font-size: 0.8em;
 }
@@ -258,5 +296,8 @@ export default {
   max-height: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.experiment .results .result button {
+  margin-left: auto;
 }
 </style>

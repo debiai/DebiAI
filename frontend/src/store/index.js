@@ -227,6 +227,9 @@ const SatisticalAnasysis = {
           ].filter((experiment) => experiment.id !== experimentId);
         }
       }
+
+      // Update for reactivity
+      state.experiments = { ...state.experiments };
     },
   },
   getters: {
