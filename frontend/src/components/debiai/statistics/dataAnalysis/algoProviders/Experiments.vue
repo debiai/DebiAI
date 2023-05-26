@@ -1,5 +1,47 @@
 <template>
   <div id="experiments">
+    <!-- column creation modal -->
+    <modal
+      v-if="columnCreationModal"
+      @close="columnCreationModal = false"
+    >
+      <form
+        id="columnCreationModal"
+        v-on:submit.prevent
+        style="display: flex; flex-direction: column; justify-content: space-between; height: 100%"
+      >
+        <h3 class="spaced aligned">
+          New column name
+          <button
+            @click="columnCreationModal = false"
+            class="red"
+          >
+            Cancel
+          </button>
+        </h3>
+        <div class="data">
+          <span class="name"> Column name </span>
+          <span class="value">
+            <input
+              type="text"
+              v-model="columnName"
+              style="flex: 2"
+            />
+          </span>
+        </div>
+        <span>
+          <button
+            type="submit"
+            @click="createColumn"
+            :disabled="!columnNameAvailable"
+          >
+            <!-- :disabled="!tagNameOk || !tagValueOk" -->
+            Create the column
+          </button>
+        </span>
+      </form>
+    </modal>
+
     <!-- Info -->
     <div
       id="info"
@@ -91,7 +133,7 @@
 
               <button
                 v-if="canCreateColumnFromOutput(result) === true"
-                @click="createColumnFromOutput(result)"
+                @click="createColumnButton(result)"
               >
                 Add to the analysis as a column
               </button>
@@ -123,6 +165,9 @@ export default {
   data() {
     return {
       experiments: [],
+      columnName: "",
+      columnCreationModal: false,
+      selectedOutput: null,
     };
   },
   mounted() {
@@ -176,9 +221,18 @@ export default {
 
       return "The length of the array is not the same as the number of data in the analysis";
     },
-    createColumnFromOutput(output) {
+    createColumnButton(output) {
+      this.selectedOutput = output;
+      this.columnName = output.name;
+      this.columnCreationModal = true;
+    },
+    createColumn() {
+      const output = this.selectedOutput;
+      this.columnCreationModal = false;
+      if (output === null) return;
+
       // Create column
-      const col = dataLoader.createColumn(output.name, output.value, "Algorithm output", null);
+      const col = dataLoader.createColumn(this.columnName, output.value, "Algorithm output", null);
       const nbColumns = this.data.columns.length;
       col.index = nbColumns;
       this.data.columns.push(col);
@@ -190,7 +244,11 @@ export default {
       });
     },
   },
-  computed: {},
+  computed: {
+    columnNameAvailable() {
+      return this.data.columns.filter((col) => col.label === this.columnName).length === 0;
+    },
+  },
 };
 </script>
 
@@ -299,5 +357,12 @@ export default {
 }
 .experiment .results .result button {
   margin-left: auto;
+}
+
+#columnCreationModal {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
