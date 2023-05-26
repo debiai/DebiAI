@@ -169,13 +169,13 @@ export default {
     create() {
       if (this.columnOk) {
         try {
-          let cuCol = customColumnCreator.customColumnCreation(
+          let customColumn = customColumnCreator.customColumnCreation(
             this.data,
             this.colName,
             this.firstColumn,
             this.rules
           );
-          this.$emit("create", cuCol);
+          this.$emit("create", customColumn);
         } catch (e) {
           console.error(e);
           this.$store.commit("sendMessage", {

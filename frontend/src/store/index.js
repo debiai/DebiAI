@@ -88,7 +88,6 @@ const ProjectPage = {
     },
     setDataProviderInfo(state, dataProviderInfo) {
       state.dataProviderInfo = dataProviderInfo;
-      console.log("DataProviderInfo", dataProviderInfo);
     },
   },
 };
@@ -228,10 +227,6 @@ const SatisticalAnasysis = {
           ].filter((experiment) => experiment.id !== experimentId);
         }
       }
-      console.log("deleted");
-
-      // Update reactivity
-      state.experiments = { ...state.experiments };
     },
   },
   getters: {
@@ -244,7 +239,7 @@ const SatisticalAnasysis = {
       if (state.experiments[algoProviderName] && state.experiments[algoProviderName][algoId])
         return state.experiments[algoProviderName][algoId].length;
       else return 0;
-    }
+    },
   },
 };
 

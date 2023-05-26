@@ -65,12 +65,20 @@
               </DocumentationBlock>
             </h5>
 
-            <button
-              class="red"
-              @click="deleteExperiment(experiment)"
-            >
-              x
-            </button>
+            <div class="controls">
+              <button
+                class="green"
+                @click="exportJson(experiment)"
+              >
+                Json
+              </button>
+              <button
+                class="red"
+                @click="deleteExperiment(experiment)"
+              >
+                Delete
+              </button>
+            </div>
           </div>
           <div class="results">
             <div
@@ -115,6 +123,33 @@ export default {
     deleteExperiment(experiment) {
       this.$store.commit("deleteExperiment", experiment.id);
       this.getExperiments();
+    },
+    exportJson(experiment) {
+      const experimentCopy = JSON.parse(JSON.stringify(experiment));
+      // Remove the id
+      delete experimentCopy.id;
+      // Remove the nb
+      delete experimentCopy.nb;
+      // Add the algorithm
+      experimentCopy.algorithm = this.algorithm;
+      // Add the algoProvider
+      experimentCopy.algoProvider = this.algoProvider;
+
+      // Create the filename
+      let name =
+        this.algorithm.name !== null && this.algorithm.name !== undefined
+          ? this.algorithm.name
+          : this.algorithm.id;
+
+      name += "_experiment_" + experiment.nb;
+
+      const json = JSON.stringify(experimentCopy, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name + ".json";
+      link.click();
     },
   },
   computed: {},
@@ -196,10 +231,8 @@ export default {
 .experiment .results,
 .experiment .inputs {
   display: flex;
-  gap: 10px;
-}
-.experiment .inputs {
   flex-direction: column;
+  gap: 5px;
 }
 
 .experiment .results .result,
