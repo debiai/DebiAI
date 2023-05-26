@@ -4,14 +4,20 @@
     <modal
       v-if="columnCreationModal"
       @close="columnCreationModal = false"
+      :errorMessages="[
+        columnName === '' ? 'The column name is empty' : '',
+        columnNameAvailable ? '' : 'The column name already used.',
+        selectedOutputNeedsDefault && !defaultValueAcceptable
+          ? 'The default value is missing.'
+          : '',
+      ]"
     >
       <form
         id="columnCreationModal"
         v-on:submit.prevent
-        style="display: flex; flex-direction: column; justify-content: space-between; height: 100%"
       >
         <h3 class="spaced aligned">
-          New column name
+          New column
           <button
             @click="columnCreationModal = false"
             class="red"
@@ -19,26 +25,57 @@
             Cancel
           </button>
         </h3>
-        <div class="data">
-          <span class="name"> Column name </span>
-          <span class="value">
-            <input
-              type="text"
-              v-model="columnName"
-              style="flex: 2"
-            />
-          </span>
-        </div>
-        <span>
-          <button
-            type="submit"
-            @click="createColumn"
-            :disabled="!columnNameAvailable"
+        <div
+          class="dataGroup"
+          style="flex-direction: column; gap: 10px"
+        >
+          <div class="data">
+            <span class="name"> Column name </span>
+            <span class="value">
+              <input
+                type="text"
+                v-model="columnName"
+                style="flex: 2"
+              />
+            </span>
+          </div>
+          <div
+            class="data"
+            v-if="selectedOutputNeedsDefault"
           >
-            <!-- :disabled="!tagNameOk || !tagValueOk" -->
-            Create the column
-          </button>
-        </span>
+            <span class="name">
+              Default value
+
+              <documentation-block>
+                The experiment results will be mapped
+                <br />to the data that where selected <br />when the experiment was created.
+                <br />
+                <br />
+                Because only a subset of the data was used,
+                <br />you need to specify a default value <br />for the other data.
+              </documentation-block>
+            </span>
+            <span class="value">
+              <input
+                type="text"
+                v-model="defaultValue"
+                style="flex: 2"
+              />
+            </span>
+          </div>
+        </div>
+        <button
+          type="submit"
+          @click="createColumn"
+          :disabled="
+            columnName === '' ||
+            !columnNameAvailable ||
+            (selectedOutputNeedsDefault && !defaultValueAcceptable)
+          "
+        >
+          <!-- :disabled="!tagNameOk || !tagValueOk" -->
+          Create the column
+        </button>
       </form>
     </modal>
 
@@ -93,6 +130,9 @@
                 :followCursor="true"
                 v-if="experiment.inputs.length > 0"
               >
+                <span v-if="experiment.selectedData">
+                  On {{ experiment.selectedData.length }} selected data.
+                </span>
                 Inputs:
                 <div class="inputs">
                   <div
@@ -130,16 +170,22 @@
             >
               <div class="name">{{ result.name }}</div>
               <div class="value">{{ result.value.toString() }}</div>
+              <div
+                class="value"
+                v-if="Array.isArray(result.value)"
+              >
+                {{ result.value.length }} elements
+              </div>
 
               <button
-                v-if="canCreateColumnFromOutput(result) === true"
-                @click="createColumnButton(result)"
+                v-if="canCreateColumnFromOutput(experiment, result) === true"
+                @click="createColumnButton(experiment, result)"
               >
                 Add to the analysis as a column
               </button>
               <button
                 v-else
-                :title="canCreateColumnFromOutput(result)"
+                :title="canCreateColumnFromOutput(experiment, result)"
                 disabled
               >
                 Add to the analysis as a column
@@ -166,8 +212,11 @@ export default {
     return {
       experiments: [],
       columnName: "",
+      defaultValue: 0,
       columnCreationModal: false,
       selectedOutput: null,
+      selectedOutputNeedsDefault: false,
+      selectedExperiment: null,
     };
   },
   mounted() {
@@ -179,7 +228,9 @@ export default {
         this.algoProvider.name,
         this.algorithm.id
       );
-      this.experiments.reverse();
+
+      // Sort the experiments by nb
+      this.experiments.sort((a, b) => a.nb - b.nb);
     },
     deleteExperiment(experiment) {
       this.$store.commit("deleteExperiment", experiment.id);
@@ -191,10 +242,15 @@ export default {
       delete experimentCopy.id;
       // Remove the nb
       delete experimentCopy.nb;
+      // Remove the selectedData
+      delete experimentCopy.selectedData;
+
       // Add the algorithm
       experimentCopy.algorithm = this.algorithm;
       // Add the algoProvider
-      experimentCopy.algoProvider = this.algoProvider;
+      experimentCopy.algoProvider = JSON.parse(JSON.stringify(this.algoProvider));
+      delete experimentCopy.algoProvider.algorithms;
+      delete experimentCopy.algoProvider.status;
 
       // Create the filename
       let name =
@@ -212,27 +268,50 @@ export default {
       link.download = name + ".json";
       link.click();
     },
-    canCreateColumnFromOutput(output) {
+    canCreateColumnFromOutput(experiment, output) {
       // We can only create a column from an array
       if (!Array.isArray(output.value)) return "Can only create a column from an array";
 
       // Case one, length of the array is the same as the number of data
       if (output.value.length === this.data.nbLines) return true;
 
-      return "The length of the array is not the same as the number of data in the analysis";
+      // Case two, length of the array is the same as the number of data
+      // that were selected when the algorithm was run
+      if (experiment.selectedData && output.value.length === experiment.selectedData.length)
+        return true;
+
+      return "The length of the array is not the same as the number of data in the analysis \n\
+      nor the number of data that were selected when the algorithm was run";
     },
-    createColumnButton(output) {
+    createColumnButton(experiment, output) {
       this.selectedOutput = output;
+      this.selectedExperiment = experiment;
       this.columnName = output.name;
       this.columnCreationModal = true;
+      if (experiment.selectedData && output.value.length === experiment.selectedData.length)
+        this.selectedOutputNeedsDefault = true;
+      else this.selectedOutputNeedsDefault = false;
     },
     createColumn() {
       const output = this.selectedOutput;
-      this.columnCreationModal = false;
       if (output === null) return;
 
+      let values;
+      if (
+        this.selectedExperiment.selectedData &&
+        output.value.length === this.selectedExperiment.selectedData.length
+      ) {
+        // Create an array of the default value
+        values = Array(this.data.nbLines).fill(this.defaultValue);
+        // Replace the default value by the output value
+        for (let i = 0; i < this.selectedExperiment.selectedData.length; i++)
+          values[this.selectedExperiment.selectedData[i]] = output.value[i];
+      } else {
+        values = output.value;
+      }
+
       // Create column
-      const col = dataLoader.createColumn(this.columnName, output.value, "Algorithm output", null);
+      const col = dataLoader.createColumn(this.columnName, values, "Algorithm output", null);
       const nbColumns = this.data.columns.length;
       col.index = nbColumns;
       this.data.columns.push(col);
@@ -242,11 +321,19 @@ export default {
         title: "success",
         msg: "Column added successfully",
       });
+
+      this.defaultValue = 0;
+      this.columnCreationModal = false;
     },
   },
   computed: {
     columnNameAvailable() {
       return this.data.columns.filter((col) => col.label === this.columnName).length === 0;
+    },
+    defaultValueAcceptable() {
+      return (
+        this.defaultValue !== null && this.defaultValue !== undefined && this.defaultValue !== ""
+      );
     },
   },
 };
@@ -360,9 +447,11 @@ export default {
 }
 
 #columnCreationModal {
-  width: 400px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+#columnCreationModal .name {
+  min-width: 130px;
 }
 </style>

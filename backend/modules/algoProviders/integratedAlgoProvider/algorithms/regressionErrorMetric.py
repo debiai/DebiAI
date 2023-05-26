@@ -35,7 +35,7 @@ algorithm_description = {
     ],
     "outputs": [
         {
-            "name": "regressionMetric",
+            "name": "Error is acceptable",
             "description": "Regression metric of the input list, True if the error is acceptable, False otherwise",
             "type": "array",
             "arrayType": "boolean",

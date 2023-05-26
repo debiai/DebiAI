@@ -82,6 +82,7 @@
           @click="
             selectedArrayInputOption = 'column';
             columnSelected(columnIndex);
+            columnSelection = true;
           "
         >
           Complete Column data
@@ -91,6 +92,7 @@
           @click="
             selectedArrayInputOption = 'columnSelectedData';
             columnSelected(columnIndex);
+            columnSelection = true;
           "
         >
           Selected Column data

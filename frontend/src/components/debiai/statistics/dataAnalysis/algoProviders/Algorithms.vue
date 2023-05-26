@@ -50,10 +50,10 @@
               />
             </span>
           </div>
-          <!-- Save btn -->
+          <!-- addDataProvider btn -->
           <button
             type="submit"
-            @click="save"
+            @click="addDataProvider"
             :disabled="!algoProviderNameOk"
           >
             Add
@@ -200,7 +200,7 @@ export default {
           this.algoProviders = [];
         });
     },
-    save(e) {
+    addDataProvider(e) {
       e.preventDefault();
 
       // Send the request
@@ -214,7 +214,6 @@ export default {
           this.newAlgoProviderModal = false;
           this.algoProviderName = "New algoProvider";
           this.algoProviderURL = "http://localhost:3020/algoProvider";
-          // this.$emit("cancel");
           this.loadAlgoProviders();
         })
         .catch((e) => {
@@ -270,10 +269,21 @@ export default {
             msg: "The algorithm has run successfully",
           });
           this.algoToUse = null;
+
+          const experiment = {
+            results,
+            inputs,
+          };
+
+          // Add the selected data to the experiment
+          if (this.selectedData.length > 0 && this.selectedData.length < this.data.nbLines) {
+            experiment.selectedData = this.selectedData;
+          }
+
           this.$store.commit("addExperiment", {
             algoProviderName: algoProvider.name,
             algoId: algo.id,
-            experiment: { results, inputs },
+            experiment: experiment,
           });
           this.loadAlgoProviders();
         })

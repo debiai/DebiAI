@@ -6,14 +6,30 @@
     <div id="pannel">
       <slot />
     </div>
+
+    <div id="errors">
+      <div
+        v-for="(error, index) in errorMessages"
+        :key="index"
+      >
+        <transition name="fade">
+          <div
+            class="error"
+            v-if="error"
+          >
+            {{ error }}
+          </div>
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "Modal",
-  data() {
-    return {};
+  props: {
+    errorMessages: { type: Array, default: () => [] },
   },
   mounted() {
     // When the modal is opened, we want to disable scrolling on the body
@@ -51,7 +67,8 @@ export default {
   overflow: auto;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  flex-direction: column;
   backdrop-filter: blur(1px);
 
   animation: fadeIn 0.1s;
@@ -71,5 +88,19 @@ export default {
 
 #pannel:hover {
   cursor: default;
+}
+
+#errors {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#errors .error {
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 10px;
 }
 </style>
