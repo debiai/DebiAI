@@ -50,10 +50,10 @@
               />
             </span>
           </div>
-          <!-- addDataProvider btn -->
+          <!-- addAlgoProvider btn -->
           <button
             type="submit"
-            @click="addDataProvider"
+            @click="addAlgoProvider"
             :disabled="!algoProviderNameOk"
           >
             Add
@@ -200,7 +200,7 @@ export default {
           this.algoProviders = [];
         });
     },
-    addDataProvider(e) {
+    addAlgoProvider(e) {
       e.preventDefault();
 
       // Send the request
