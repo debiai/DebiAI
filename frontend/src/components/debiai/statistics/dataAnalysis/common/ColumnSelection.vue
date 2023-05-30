@@ -221,7 +221,8 @@ export default {
         ),
         AlgorithmOutput: this.data.columns.filter(
           (c) =>
-            c.category === "Algorithm output" && c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
+            c.category === "Algorithm output" &&
+            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
       };
     },

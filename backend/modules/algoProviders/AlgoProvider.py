@@ -110,11 +110,14 @@ class IntegratedAlgoProvider(AlgoProvider):
         except TypeError as e:
             print("The integrated algo-provider returned an error")
             print(e)
-            raise AlgoProviderException(algorithm_id + " returned an error: " + str(e), 400)
+            raise AlgoProviderException(
+                algorithm_id + " returned an error: " + str(e), 400
+            )
         except Exception as e:
             print("The integrated algo-provider returned an error")
             print(e)
             raise AlgoProviderException("AlgoProvider internal server error", 500)
+
 
 # ==== Utils ====
 def get_http_response(response):
