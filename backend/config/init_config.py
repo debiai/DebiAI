@@ -4,7 +4,6 @@ import os, json
 
 config_path = "config/config.ini"
 config_parser = ConfigParser()
-config_parser.optionxform = str  # To preserve the case
 
 config = {}
 

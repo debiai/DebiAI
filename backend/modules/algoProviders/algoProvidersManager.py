@@ -1,12 +1,15 @@
 from config.init_config import get_config
 from modules.algoProviders.AlgoProviderException import AlgoProviderException
-from modules.algoProviders.AlgoProvider import AlgoProvider, IntegratedAlgoProvider
+from modules.algoProviders.AlgoProvider import AlgoProvider
+from modules.algoProviders.integratedAlgoProvider.integratedAlgoProvider import (
+    IntegratedAlgoProvider,
+)
 
 algo_providers = []
 
 
 def setup_algo_providers():
-    print("==================== ALGO PROVIDERS ======================")
+    print("================== ALGO PROVIDERS ==================")
     config = get_config()
     config_algo_providers = config["ALGO_PROVIDERS"]
 
