@@ -69,6 +69,10 @@ def algo_provider_exists(name):
             return True
     return False
 
+def add(algo_provider):
+    algo_providers.append(algo_provider)
+    return
+
 
 def get_single_algo_provider(name):
     # Return the algo provider with the given name
