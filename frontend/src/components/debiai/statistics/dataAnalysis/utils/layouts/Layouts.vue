@@ -1,39 +1,45 @@
 <template>
   <div id="layouts">
-    <!-- Title & cancel btn -->
-    <h2 class="aligned spaced padded-bot">
-      Dashboard layouts
-
-      <button
-        @click="$emit('cancel')"
-        class="red"
-      >
-        Close
-      </button>
-    </h2>
-
-    <!-- Layout save -->
-    <div
-      id="layoutSave"
-      class="aligned"
+    <!-- New layout modal -->
+    <Modal
+      v-if="showNewLayoutModal"
+      @close="showNewLayoutModal = false"
+      :errorMessages="[!layoutNameOk ? 'The layout name can\'t be empty' : '']"
     >
-      <!-- Form -->
-      <div>
-        <h3 class="padded aligned">
-          Save the current layout
-          <DocumentationBlock>
-            Saving the current layout will save the position of the widgets on the dashboard. <br />
-            The current configuration of the widgets will also be saved, it will be used when
-            loading the layout back.
-          </DocumentationBlock>
-        </h3>
-        <form
-          id="formNewLayout"
-          class="dataGroup"
-        >
-          <!-- Layout name -->
-          <div class="data">
-            <span class="name"> Name </span>
+      <div id="newLayoutModal">
+        <!-- Title -->
+        <span class="aligned spaced padded-bot">
+          <h3 class="aligned">
+            Save the current layout
+            <DocumentationBlock>
+              Saving the current layout will save the position of the widgets on the dashboard.
+              <br />
+              The current configuration of the widgets will also be saved, it will be used when
+              loading the layout back.
+              <br />
+              More information about layouts can be found in the
+              <a
+                href="https://debiai.irt-systemx.fr/dashboard/widgetConfigSave/"
+                target="_blank"
+                >documentation</a
+              >.
+            </DocumentationBlock>
+          </h3>
+
+          <button
+            @click="showNewLayoutModal = false"
+            class="red"
+          >
+            Cancel
+          </button>
+        </span>
+
+        <!-- Form -->
+        <form id="formNewLayout">
+          <!-- Left -->
+          <div id="left">
+            <!-- Layout name -->
+            <span class="name"> Layout name </span>
             <span class="value">
               <input
                 type="text"
@@ -41,9 +47,7 @@
                 style="flex: 1"
               />
             </span>
-          </div>
-          <!-- Layout description -->
-          <div class="data">
+            <!-- Layout description -->
             <span class="name"> Description </span>
             <span class="value">
               <textarea
@@ -52,25 +56,52 @@
                 placeholder="Optional layout description"
               />
             </span>
+
+            <!-- Save btn -->
+            <button
+              type="submit"
+              @click="save"
+              :disabled="!layoutNameOk"
+            >
+              Save the layout
+            </button>
           </div>
-          <!-- Save btn -->
-          <button
-            type="submit"
-            @click="save"
-            :disabled="!layoutNameOk"
-          >
-            Save the layout
-          </button>
+
+          <!-- Right -->
+          <div id="right">
+            <!-- LayoutVisualisation -->
+            <LayoutViewer
+              :layout="current_layout"
+              bigger
+            />
+          </div>
         </form>
       </div>
+    </Modal>
 
-      <!-- LayoutVisualisation -->
-      <LayoutViewer :layout="layout" />
-    </div>
+    <!-- Title & cancel btn -->
+    <span class="aligned spaced padded-bot">
+      <h2 class="aligned">Dashboard layouts</h2>
+
+      <span class="aligned">
+        <button
+          @click="showNewLayoutModal = true"
+          class="green"
+        >
+          Save the current layout
+        </button>
+        <button
+          @click="$emit('cancel')"
+          class="red"
+        >
+          Close
+        </button>
+      </span>
+    </span>
 
     <!-- Layout list -->
-    <h3>Load a saved layout</h3>
     <div id="savedLayouts">
+      <!-- Project layouts -->
       <div>
         <h4 class="layoutList">Project layouts:</h4>
         <div class="itemList">
@@ -90,6 +121,7 @@
           </div>
         </div>
       </div>
+      <!-- Rest of the layouts -->
       <div>
         <h4 class="layoutList">Other layouts:</h4>
         <div class="itemList">
@@ -129,16 +161,18 @@ export default {
   },
   data: () => {
     return {
-      layout: [],
+      current_layout: [],
+      savedLayouts: [],
+
+      showNewLayoutModal: false,
       layoutName: "New layout",
       layoutDescription: "",
-      savedLayouts: [],
     };
   },
   mounted() {
     // Get the current layout from the gridstack
     let gsPos = this.gridstack.save();
-    this.layout = [];
+    this.current_layout = [];
     gsPos.forEach((gsComp) => {
       const gridComponent = this.components.find((c) => gsComp.id == c.id);
       if (!gridComponent) return;
@@ -147,7 +181,7 @@ export default {
       gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
 
-      this.layout.push(gsComp);
+      this.current_layout.push(gsComp);
     });
 
     // Load the saved layouts
@@ -155,7 +189,6 @@ export default {
   },
   methods: {
     loadLayouts() {
-      this.layouts = [];
       this.$backendDialog
         .getLayouts()
         .then((layouts) => {
@@ -182,7 +215,7 @@ export default {
       // Expected layout:
       // [{ x, y, w, h, widgetKey, config }];
 
-      this.layout.forEach((component) => {
+      this.current_layout.forEach((component) => {
         requestBody.layout.push({
           x: component.x,
           y: component.y,
@@ -202,6 +235,7 @@ export default {
             msg: "Layout saved",
           });
           // this.$emit("cancel");
+          this.showNewLayoutModal = false;
           this.loadLayouts();
         })
         .catch((e) => {
@@ -243,7 +277,6 @@ export default {
         (layout) => layout.projectId === projectId && layout.dataProviderId === dataProviderId
       );
     },
-
     otherLayouts() {
       const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
       const projectId = this.$store.state.ProjectPage.projectId;
@@ -256,37 +289,57 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #layouts {
   /* text-align: left; */
-  max-height: 900px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 20px;
 }
 h3 {
   text-align: left;
   padding: 5px;
 }
 
-#layoutSave {
-  display: flex;
-  justify-content: center;
-}
-#formNewLayout {
-  flex-direction: column;
-}
-#formNewLayout .name {
-  width: 100px;
-}
-#formNewLayout .value {
-  flex: 1;
+/* Layout save */
+#newLayoutModal {
+  min-width: 700px;
+
+  #formNewLayout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-left: 20px;
+
+    input,
+    textarea {
+      flex: 1;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      transition: border-color 0.2s;
+      width: 350px;
+    }
+
+    #left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+
+      button {
+        align-self: flex-end;
+      }
+    }
+  }
 }
 
+/* Layout load */
 #savedLayouts {
   overflow: auto;
-  max-height: 400px;
+  max-height: 65vh;
   text-align: left;
 }
 #savedLayouts h4 {
