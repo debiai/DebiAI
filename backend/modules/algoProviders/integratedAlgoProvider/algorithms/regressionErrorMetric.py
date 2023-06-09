@@ -12,21 +12,28 @@ from ..utils import get_input_from_inputs
 # Technical details (must respect the algo-api format):
 algorithm_description = {
     "name": "Regression Metric",
-    "description": """Calculates the regression metric of an error list according to a ceil.""",
+    "description": """Calculates the regression metric of an error list according to a ceil. 
+    """,
     "author": "DebiAI",
     "version": "1.0.0",
     "creationDate": "2023-05-23",
     "tags": ["metrics", "regression"],
     "inputs": [
         {
-            "name": "list",
-            "description": "List of errors to calculate the regression metric of",
+            "name": "Ground truth",
+            "description": "List of ground truth values",
             "type": "array",
             "arrayType": "number",
         },
         {
-            "name": "ceil",
-            "description": "Maximum acceptable error, depends on the use case",
+            "name": "Predictions",
+            "description": "List of predictions, must have the same length as the ground truth list",
+            "type": "array",
+            "arrayType": "number",
+        },
+        {
+            "name": "Ceil",
+            "description": "Maximum acceptable error, depends on the use case, >= 0",
             "type": "number",
             "default": 5,
             "availableValues": [0.1, 5, 100, 10000],
@@ -35,14 +42,13 @@ algorithm_description = {
     ],
     "outputs": [
         {
-            "name": "Error is acceptable",
-            "description": "Regression metric of the input list, True if the error is acceptable, False otherwise",
+            "name": "Binary error",
+            "description": "Regression metric of the input list, False if abs(GDT - PRED) < ceil, True otherwise",
             "type": "array",
             "arrayType": "boolean",
         },
         {
-            "name": "percentage",
-            "description": "Percentage of acceptable errors",
+            "name": "Error percentage",
             "type": "number",
         },
     ],
@@ -55,20 +61,26 @@ def get_algorithm_details():
 
 def use_algorithm(inputs):
     # Get inputs
-    list = get_input_from_inputs(inputs, "list", "array", "number")
-    ceil = get_input_from_inputs(inputs, "ceil", "number")
+    gdt = get_input_from_inputs(inputs, "Ground truth", "array", "number")
+    predictions = get_input_from_inputs(inputs, "Predictions", "array", "number")
+    ceil = get_input_from_inputs(inputs, "Ceil", "number")
 
     # Check inputs
     if ceil < 0:
         raise TypeError("Ceil must be positive")
 
+    if len(gdt) != len(predictions):
+        raise TypeError("Ground truth and predictions must have the same length")
+
     # Calculate regression metric
     regressionMetric = []
-    for error in list:
+    for i in range(len(gdt)):
+        error = gdt[i] - predictions[i]
+
         if abs(error) < ceil:
-            regressionMetric.append(True)
-        else:
             regressionMetric.append(False)
+        else:
+            regressionMetric.append(True)
 
     percentage = regressionMetric.count(True) / len(regressionMetric)
     percentage = round(percentage * 100, 2)
@@ -76,11 +88,11 @@ def use_algorithm(inputs):
     # Return outputs
     return [
         {
-            "name": "regressionMetric",
+            "name": "Binary error",
             "value": regressionMetric,
         },
         {
-            "name": "percentage",
+            "name": "Error percentage",
             "value": percentage,
         },
     ]
