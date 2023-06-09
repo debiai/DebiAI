@@ -1,6 +1,6 @@
 {
   "name": "debiai_frontend",
-  "version": "0.23.2",
+  "version": "0.24.0",
   "description": "Frontend for Debiai, made with Vuejs",
   "license": "Apache-2.0",
   "scripts": {
