@@ -1,5 +1,8 @@
 <template>
-  <div id="layoutViewer">
+  <div
+    id="layoutViewer"
+    :class="{ bigger }"
+  >
     <!-- Display a layout in a graphical way -->
     <div v-if="layout.length === 0">No layout to display</div>
 
@@ -31,6 +34,7 @@ export default {
   components: {},
   props: {
     layout: { type: Array, required: true },
+    bigger: { type: Boolean, default: false },
   },
   data: () => {
     return {
@@ -66,6 +70,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+#layoutViewer.bigger {
+  width: 200px;
+  height: 200px;
 }
 .component {
   cursor: pointer;

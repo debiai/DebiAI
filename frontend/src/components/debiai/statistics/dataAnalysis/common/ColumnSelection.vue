@@ -219,6 +219,11 @@ export default {
           (c) =>
             c.category === "tag" && c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
         ),
+        AlgorithmOutput: this.data.columns.filter(
+          (c) =>
+            c.category === "Algorithm output" &&
+            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
+        ),
       };
     },
   },

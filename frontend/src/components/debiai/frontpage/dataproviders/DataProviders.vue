@@ -54,30 +54,20 @@
             </div>
           </div>
           <!-- Status -->
-          <div v-if="dataProvider.type === 'Web'">
-            <div
-              class="status available"
-              v-if="dataProvider.status"
-            >
-              ✓ Available
-            </div>
-            <div
-              class="status notavailable"
-              v-else
-            >
-              ❌ Not available
-            </div>
-          </div>
-          <div v-if="dataProvider.type === 'Python module Data Provider'">
-            <div class="status available">✓ Available</div>
-          </div>
+          <AvailableTag
+            v-if="dataProvider.type === 'Web'"
+            :available="dataProvider.status"
+          />
+          <AvailableTag
+            v-if="dataProvider.type === 'Python module Data Provider'"
+            available
+          />
 
           <!-- Actions -->
           <div
             class="controls"
             v-if="dataProvider.type === 'Web'"
           >
-            <!-- <button @click="getDataProviders">Retry</button> -->
             <button
               class="red"
               @click="deleteDataProvider(dataProvider.name)"
@@ -201,22 +191,5 @@ export default {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.3rem;
-}
-
-/* Status */
-.dataProvider .status {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.9em;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  border: 2px solid;
-}
-.dataProvider .status.available {
-  color: var(--success);
-  border-color: var(--success);
-}
-.dataProvider .status.notavailable {
-  color: var(--danger);
-  border-color: var(--danger);
 }
 </style>

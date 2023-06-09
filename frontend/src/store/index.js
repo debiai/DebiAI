@@ -100,6 +100,10 @@ const SatisticalAnasysis = {
     // Filters
     filters: [],
     filtersEffecs: [],
+
+    // AlgoProviders
+    experiments: {}, // Format: { algoProviderName: { algoId: [experiment]} }
+    nbExperiments: 0, // To help with reactivity
   },
   mutations: {
     setColoredColumnIndex(state, index) {
@@ -199,6 +203,45 @@ const SatisticalAnasysis = {
         // Recreating the array to trigger event
         state.filters = [...state.filters];
       }
+    },
+
+    // AlgoProviders
+    addExperiment(state, { algoProviderName, algoId, experiment }) {
+      state.nbExperiments++;
+      if (!state.experiments[algoProviderName]) state.experiments[algoProviderName] = {};
+      if (!state.experiments[algoProviderName][algoId])
+        state.experiments[algoProviderName][algoId] = [];
+
+      // add an id to the experiment
+      experiment.id = services.uuid();
+      experiment.nb = state.nbExperiments;
+      state.experiments[algoProviderName][algoId].push(experiment);
+    },
+
+    deleteExperiment(state, experimentId) {
+      // Delete experiment
+      for (let algoProviderName in state.experiments) {
+        for (let algoId in state.experiments[algoProviderName]) {
+          state.experiments[algoProviderName][algoId] = state.experiments[algoProviderName][
+            algoId
+          ].filter((experiment) => experiment.id !== experimentId);
+        }
+      }
+
+      // Update for reactivity
+      state.experiments = { ...state.experiments };
+    },
+  },
+  getters: {
+    getAlgoExperiments: (state) => (algoProviderName, algoId) => {
+      if (state.experiments[algoProviderName] && state.experiments[algoProviderName][algoId])
+        return state.experiments[algoProviderName][algoId];
+      else return [];
+    },
+    getAlgoNbExperiments: (state) => (algoProviderName, algoId) => {
+      if (state.experiments[algoProviderName] && state.experiments[algoProviderName][algoId])
+        return state.experiments[algoProviderName][algoId].length;
+      else return 0;
     },
   },
 };

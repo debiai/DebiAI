@@ -6,8 +6,6 @@ test_data_provider_name = "test_create_data_provider"
 
 data_providers = []
 
-# ============== PROJECTS =================
-
 
 def test_get_data_providers():
     global data_providers

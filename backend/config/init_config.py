@@ -4,7 +4,6 @@ import os, json
 
 config_path = "config/config.ini"
 config_parser = ConfigParser()
-config_parser.optionxform = str  # To preserve the case
 
 config = {}
 
@@ -21,15 +20,23 @@ def init_config():
 
     print("===================== CONFIG =======================")
 
-    # First, read the config file
-    config_parser.read(config_path)
+    # Default config
     config = {
         "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
+        "ALGO_PROVIDERS_CONFIG": {
+            "enable_integrated": True,
+            "creation": True,
+            "deletion": True,
+        },
+        "ALGO_PROVIDERS": {},
         "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
         "EXPORT_METHODS_LIST": {},
     }
+
+    # First, read the config file
+    config_parser.read(config_path)
 
     for section in config_parser.sections():
         # Data providers
@@ -64,6 +71,36 @@ def init_config():
                 )
                 config["WEB_DATA_PROVIDERS"][data_provider] = config_parser[section][
                     data_provider
+                ]
+            continue
+
+        # AlgoProvider
+        if section == "ALGO_PROVIDERS_CONFIG":
+            if "enable_integrated" in config_parser[section]:
+                if str.lower(config_parser[section]["enable_integrated"]) == "false":
+                    print("Config file: Integrated AlgoProvider disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["enable_integrated"] = False
+
+            if "creation" in config_parser[section]:
+                if str.lower(config_parser[section]["creation"]) == "false":
+                    print("Config file: AlgoProvider creation disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
+
+            if "deletion" in config_parser[section]:
+                if str.lower(config_parser[section]["deletion"]) == "false":
+                    print("Config file: AlgoProvider deletion disabled")
+                    config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False
+            continue
+
+        if section == "ALGO_PROVIDERS":
+            for algo_provider in config_parser[section]:
+                print(
+                    "Config file: detected AlgoProvider '"
+                    + algo_provider
+                    + "' from config file"
+                )
+                config["ALGO_PROVIDERS"][algo_provider] = config_parser[section][
+                    algo_provider
                 ]
             continue
 
@@ -153,6 +190,60 @@ def init_config():
             )
 
             config["WEB_DATA_PROVIDERS"][data_provider_name] = data_provider_url
+
+        # Deal with AlgoProvider in env variables
+        if env_var == "DEBIAI_ALGO_PROVIDERS_ENABLE_INTEGRATED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_ENABLE_INTEGRATED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Integrated Data Providers disabled")
+                config["DATA_PROVIDERS_CONFIG"]["enable_integrated"] = False
+            continue
+
+        if env_var == "DEBIAI_ALGO_PROVIDERS_CREATION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_CREATION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: AlgoProvider creation disabled")
+                config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
+            continue
+
+        if env_var == "DEBIAI_ALGO_PROVIDERS_DELETION_ENABLED":
+            # Env var format: DEBIAI_ALGO_PROVIDERS_DELETION_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: AlgoProvider deletion disabled")
+                config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False
+            continue
+
+        # Deal with AlgoProvider list in env variables
+        if "DEBIAI_ALGO_PROVIDER" in env_var:
+            # Env var format: DEBIAI_ALGO_PROVIDER_<name>=<url>
+            if len(env_var.split("_")) != 4:
+                print(
+                    "Environment variables: invalid environment variable '"
+                    + env_var
+                    + "', skipping"
+                )
+                print("Expected format: DEBIAI_ALGO_PROVIDER_<name>=<url>")
+                continue
+
+            algo_provider_name = env_var.split("_")[3]
+            algo_provider_url = os.environ[env_var]
+
+            if len(algo_provider_name) == 0:
+                print(
+                    "Environment variables: invalid AlgoProvider name '"
+                    + env_var
+                    + "', skipping"
+                )
+                print("Expected format: DEBIAI_ALGO_PROVIDER_<name>=<url>")
+                continue
+
+            print(
+                "Environment variables: detected AlgoProvider '"
+                + algo_provider_name
+                + "' from environment variables"
+            )
+
+            config["ALGO_PROVIDERS"][algo_provider_name] = algo_provider_url
 
         # Deal with Export Methods in env variables
         if env_var == "DEBIAI_EXPORT_METHODS_CREATION_ENABLED":

@@ -514,6 +514,60 @@ const max = (arr) => {
   return max;
 };
 
+function createColumn(label, values, category, type = null) {
+  // Creating the column object
+  const col = {
+    label,
+    index: i,
+    values: values,
+    type: null,
+    typeText: "",
+    category: category,
+  };
+
+  col.uniques = [...new Set(col.values)];
+  col.nbOccu = col.uniques.length;
+
+  // Cheking if the column is type text, number or got undefined values
+  if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
+    // undefined Values
+    col.type = undefined;
+    col.typeText = "undefined";
+    col.undefinedIndexs = col.values
+      .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
+      .filter((v) => v >= 0);
+    console.warn("Undefined values : " + label);
+    console.warn(col.uniques);
+    console.warn(col.values);
+  } else if (type === "text" || col.uniques.find((v) => isNaN(v))) {
+    // String Values
+    col.type = String;
+    col.typeText = "Class";
+    let tmpUniqMap = {};
+    col.valuesIndexUniques = col.uniques.map((str, i) => {
+      tmpUniqMap[str] = i;
+      return i;
+    });
+
+    col.valuesIndex = col.values.map((str) => tmpUniqMap[str]);
+    col.min = min(col.valuesIndexUniques);
+    col.max = max(col.valuesIndexUniques);
+  } else {
+    // Default Type
+    col.type = Number;
+    col.typeText = "Num";
+    col.values = col.values.map((v) => +v);
+    col.uniques = col.uniques.map((v) => +v);
+    col.nbOccu = col.uniques.length;
+    col.min = min(col.uniques);
+    col.max = max(col.uniques);
+    col.average = col.values.reduce((a, b) => a + b, 0) / col.values.length || 0;
+    if (col.uniques.length < 100) col.uniques.sort((a, b) => a - b);
+  }
+
+  return col;
+}
+
 async function arrayToJson(array, metaData) {
   let requestCode = startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
@@ -542,61 +596,14 @@ async function arrayToJson(array, metaData) {
 
   for await (const [i, label] of ret.labels.entries()) {
     // Creating the column object
-    let col = {
-      label,
-      index: i,
-      values: [],
-      type: null,
-      typeText: "",
-      category: "other",
-    };
+    const values = [];
+    for (let j = 1; j < ret.nbLines + 1; j++) values.push(array[j][i]);
+    const category = metaData.categories[i];
+    const type = metaData.type[i];
 
-    // Filling the column
-    for (let j = 1; j < ret.nbLines + 1; j++) col.values.push(array[j][i]);
+    const col = createColumn(label, values, category, type);
 
-    col.uniques = [...new Set(col.values)];
-    col.nbOccu = col.uniques.length;
-
-    // Cheking if the column is type text, number or got undefined values
-    if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
-      // undefined Values
-      col.type = undefined;
-      col.typeText = "undefined";
-      col.undefinedIndexs = col.values
-        .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
-        .filter((v) => v >= 0);
-      console.warn("Undefined values : " + label);
-      console.warn(col.uniques);
-      console.warn(col.values);
-    } else if (metaData.type[i] == "text" || col.uniques.find((v) => isNaN(v))) {
-      // String Values
-      col.type = String;
-      col.typeText = "Class";
-      let tmpUniqMap = {};
-      col.valuesIndexUniques = col.uniques.map((str, i) => {
-        tmpUniqMap[str] = i;
-        return i;
-      });
-
-      col.valuesIndex = col.values.map((str) => tmpUniqMap[str]);
-      col.min = min(col.valuesIndexUniques);
-      col.max = max(col.valuesIndexUniques);
-    } else {
-      // Default Type
-      col.type = Number;
-      col.typeText = "Num";
-      col.values = col.values.map((v) => +v);
-      col.uniques = col.uniques.map((v) => +v);
-      col.nbOccu = col.uniques.length;
-      col.min = min(col.uniques);
-      col.max = max(col.uniques);
-      col.average = col.values.reduce((a, b) => a + b, 0) / ret.nbLines || 0;
-      if (col.uniques.length < 100) col.uniques.sort((a, b) => a - b);
-    }
-
-    // deal with provided metaData
-    col.category = metaData.categories[i];
-
+    col.index = i;
     ret.columns[i] = col;
 
     updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
@@ -683,4 +690,9 @@ function isAnalysisLoading() {
   return true;
 }
 
-export default { loadProjectSamples, cancelAnalysis: cancelCallback, isAnalysisLoading };
+export default {
+  loadProjectSamples,
+  cancelAnalysis: cancelCallback,
+  isAnalysisLoading,
+  createColumn,
+};

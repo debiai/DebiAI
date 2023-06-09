@@ -336,7 +336,7 @@ export default {
       } else this.multipleYAxis = false;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
       if (conf.columnTag === null || conf.columnTag === undefined) this.columnTagIndex = null;
-      if ("columnTag" in conf) {
+      if ("columnTag" in conf && conf.columnTag !== null) {
         let c = this.data.columns.find((c) => c.label == conf.columnTag);
         if (c) this.columnTagIndex = c.index;
         else sendColNotFoundMessage(conf.columnTag);

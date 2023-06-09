@@ -64,6 +64,17 @@
         @selected="loadLayout"
       />
     </modal>
+    <!-- Algorithms -->
+    <modal
+      v-if="algorithmModal"
+      @close="algorithmModal = false"
+    >
+      <Algorithms
+        @cancel="algorithmModal = false"
+        :data="data"
+        :selectedData="selectedData"
+      />
+    </modal>
     <!-- WidgetCatalog -->
     <modal
       v-if="widgetCatalog"
@@ -92,6 +103,7 @@
       @saveSelection="saveSelection"
       @tagCreation="tagCreation"
       @exportSelection="exportSelection"
+      @useAlgorithm="useAlgorithm"
       @layout="layout"
       @restoreDefaultLayout="restoreDefaultLayout"
       @clearLayout="clearLayout"
@@ -176,6 +188,7 @@ import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
+import Algorithms from "./algoProviders/Algorithms";
 import Layouts from "./utils/layouts/Layouts";
 import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
@@ -194,6 +207,7 @@ export default {
     SelectionCreator,
     TagCreator,
     SelectionExportMenu,
+    Algorithms,
     Layouts,
     WidgetCatalog,
 
@@ -217,6 +231,7 @@ export default {
       saveSelectionWidget: false,
       tagCreationWidget: false,
       selectionExport: false,
+      algorithmModal: false,
       layoutModal: false,
       widgetCatalog: false,
 
@@ -245,6 +260,12 @@ export default {
           icon: "send",
           tooltip: "Export the selected samples",
           color: "var(--success)",
+        },
+        {
+          name: "useAlgorithm",
+          icon: "calculate",
+          tooltip: "Use an algorithm from the Algo Providers",
+          color: "var(--virtual)",
         },
         {
           name: "layout",
@@ -319,6 +340,8 @@ export default {
       },
     };
 
+    // Check thet the selector ".grid-stack" is present in the DOM
+    if (!document.querySelector(".grid-stack")) return;
     this.grid = GridStack.init(gridStackOptions);
     this.grid.on("resizestop", () => {
       // Create move event to update the plotly plots
@@ -565,6 +588,9 @@ export default {
     exportSelection() {
       this.selectionExport = true;
     },
+    useAlgorithm() {
+      this.algorithmModal = true;
+    },
     clearLayout() {
       while (this.components.length > 0) this.removeWidget(this.components[0]);
     },
@@ -607,7 +633,7 @@ export default {
     this.$store.commit("setColoredColumnIndex", 0);
 
     // Remove the grid
-    this.grid.destroy();
+    if (this.grid) this.grid.destroy();
   },
 };
 </script>

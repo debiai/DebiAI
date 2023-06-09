@@ -34,7 +34,12 @@ class PythonDataProvider(DataProvider):
     # Generic functions
     def __init__(self):
         pythonModuleUtils.init()
-        print("   Python module Data Provider initialized")
+        nb_projects = len(projects.get_projects())
+        print(
+            "   Python module Data Provider initialized with "
+            + str(nb_projects)
+            + " projects"
+        )
 
     @property
     def name(self):

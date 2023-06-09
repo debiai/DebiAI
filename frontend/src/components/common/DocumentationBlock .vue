@@ -90,3 +90,10 @@ export default {
   max-width: 500px;
 }
 </style>
+
+<style>
+/* Style for the slot */
+#docBlock * {
+  border-color: var(--infoDark);
+}
+</style>
