@@ -109,7 +109,7 @@
             v-for="layout in sameProjectLayouts"
             :key="layout.id"
             :layout="layout"
-            v-on:selected="$emit('selected', layout.layout)"
+            v-on:selected="$emit('selected', layout)"
             v-on:deleted="loadLayouts"
           />
           <div
@@ -129,7 +129,7 @@
             v-for="layout in otherLayouts"
             :key="layout.id"
             :layout="layout"
-            v-on:selected="$emit('selected', layout.layout)"
+            v-on:selected="$emit('selected', layout)"
             v-on:deleted="loadLayouts"
           />
           <div
@@ -156,6 +156,7 @@ export default {
     Layout,
   },
   props: {
+    data: { type: Object, required: true },
     components: { type: Array, required: true },
     gridstack: { type: Object, required: true },
   },
@@ -226,6 +227,12 @@ export default {
         });
       });
 
+      // Add the selectedColorColumn
+      const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      if (coloredColumnIndex !== null) {
+        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
+      }
+
       // Send the request
       this.$backendDialog
         .saveLayout(requestBody)
@@ -236,6 +243,7 @@ export default {
           });
           // this.$emit("cancel");
           this.showNewLayoutModal = false;
+          this.layoutName = "New layout";
           this.loadLayouts();
         })
         .catch((e) => {
@@ -291,7 +299,6 @@ export default {
 
 <style scoped lang="scss">
 #layouts {
-  /* text-align: left; */
   display: flex;
   flex-direction: column;
   align-items: stretch;

@@ -194,7 +194,6 @@ export default {
       .then((response) => response.data);
   },
   addSelection(sampleHashList, selectionName, requestId = null) {
-    console.log(requestId);
     let code = startRequest("Saving selection");
     return axios
       .post(
@@ -376,17 +375,12 @@ export default {
   getLayouts() {
     return axios.get(apiURL + "app/layouts/").then((response) => response.data);
   },
-  saveLayout({ layout, name, description, lastLayoutSaved }) {
+  saveLayout(body) {
     let code = startRequest("Saving layout");
+    body.projectId = projectId();
+    body.dataProviderId = dataProviderId();
     return axios
-      .post(apiURL + "app/layouts/", {
-        projectId: projectId(),
-        dataProviderId: dataProviderId(),
-        layout: layout,
-        name: name,
-        description: description,
-        lastLayoutSaved: lastLayoutSaved,
-      })
+      .post(apiURL + "app/layouts/", body)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },

@@ -26,6 +26,7 @@ LAYOUTS_PATH = "data/layouts.json"
 #            "name": "", # Name given to the widget (optional)
 #          },
 #       ],
+#       "selectedColorColumn": "col", # (optional)
 #   },
 #   ...
 # ]
@@ -94,6 +95,9 @@ def add_layout(data):
         "layout": layout_to_add,
         "lastLayoutSaved": False,
     }
+
+    if "selectedColorColumn" in data:
+        file_to_add["selectedColorColumn"] = data["selectedColorColumn"]
 
     layouts = get_layouts()
 

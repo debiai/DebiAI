@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.23.1
+  version: 0.23.2
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -894,6 +894,10 @@ paths:
                   If a layout with lastLayoutSaved=true already exists, it will
                   be replaced by the new one
                 default: false
+              selectedColorColumn:
+                type: string
+                description: Column selected to be used as color
+                x-nullable: true
 
       responses:
         204:
@@ -1818,6 +1822,10 @@ definitions:
       lastLayoutSaved:
         type: boolean
         description: True if this is the last layout saved
+      selectedColorColumn:
+        type: string
+        description: Column selected to be used as color
+        x-nullable: true
 
   dashboardLayout:
     description: Dashboard layout, list of widgets with their
