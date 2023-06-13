@@ -119,7 +119,7 @@
         @close="columnSelection = false"
       >
         <ColumnSelection
-          title="Select the X axis"
+          :title="'Select a column to use as input for ' + input.name"
           :data="data"
           :validateRequiered="false"
           :colorSelection="false"

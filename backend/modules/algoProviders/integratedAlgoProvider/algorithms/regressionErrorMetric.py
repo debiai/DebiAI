@@ -12,8 +12,7 @@ from ..utils import get_input_from_inputs
 # Technical details (must respect the algo-api format):
 algorithm_description = {
     "name": "Regression Metric",
-    "description": """Calculates the regression metric of an error list according to a ceil. 
-    """,
+    "description": """Calculates the regression error according to the ground truth, the predictions and a ceil value""",
     "author": "DebiAI",
     "version": "1.0.0",
     "creationDate": "2023-05-23",
