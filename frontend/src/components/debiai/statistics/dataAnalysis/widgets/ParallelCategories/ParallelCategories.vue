@@ -1,7 +1,7 @@
 <template>
   <div
     id="parCat"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <ColumnSelection
       v-if="settings"

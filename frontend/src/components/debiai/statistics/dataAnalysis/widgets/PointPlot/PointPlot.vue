@@ -1,7 +1,7 @@
 <template>
   <div
     id="pointPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Modals -->
     <!-- Xcol selection -->

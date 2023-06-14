@@ -1,7 +1,7 @@
 <template>
   <div
     id="intervalPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal

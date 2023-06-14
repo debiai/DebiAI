@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'SimpleStatistics' + index"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Column selection Modal -->
     <modal
@@ -384,7 +384,7 @@ export default {
 </script>
 
 <style scoped>
-.dataVisualisationWidget {
+.dataVisualizationWidget {
   display: flex;
   flex-direction: column;
 }

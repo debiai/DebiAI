@@ -78,7 +78,7 @@
 
       <!-- Loading anim, messages, warning & filters applied -->
       <div class="center">
-        <!-- Loading from backend -->
+        <!-- Loading animation -->
         <div
           v-if="loading"
           class="saving"
@@ -215,7 +215,7 @@
             fill="white"
           />
         </button>
-        <!-- dublicate btn -->
+        <!-- Copy btn -->
         <button
           class="green"
           :title="'Duplicate the ' + title + ' widget'"
@@ -240,7 +240,7 @@
             height="14"
           />
         </button>
-        <!-- Cross btn -->
+        <!-- Close btn -->
         <button
           class="red"
           :title="'Close ' + title + ' widget'"
@@ -340,6 +340,9 @@ export default {
         // canFilterSamples
         if ("selectDataOnPlot" in slotCom.componentInstance) this.canFilterSamples = true;
 
+        // canExportImage
+        if ("getImage" in slotCom.componentInstance) this.canExportImage = true;
+
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
         this.loading = false;
@@ -349,6 +352,7 @@ export default {
         setTimeout(() => this.getWidgetProperties(), 20);
       }
     },
+
     // Controls
     settings() {
       this.$emit("settings");
@@ -357,7 +361,7 @@ export default {
       this.$emit("redraw");
     },
     async remove() {
-      // Firt ask if the user wants to save the widget configuration
+      // First ask if the user wants to save the widget configuration
       if (this.canSaveConfiguration && this.confAsChanged) {
         let rep = await swal({
           title: "Save the widget configuration ?",
@@ -398,11 +402,17 @@ export default {
         return slotCom.getConf();
       } else return null;
     },
+    getImage() {
+      if (this.canExportImage) {
+        let slotCom = this.$slots.default[0].componentInstance;
+        return slotCom.getImage();
+      } else return null;
+    },
     copy() {
       if (this.canSaveConfiguration) {
         // Load configuration to copy
         let configuration = this.getComponentConf();
-        this.$emit("copy", { configuration, name: this.name + " copy" });
+        this.$emit("copy", { configuration, name: this.name });
       } else this.$emit("copy");
     },
 

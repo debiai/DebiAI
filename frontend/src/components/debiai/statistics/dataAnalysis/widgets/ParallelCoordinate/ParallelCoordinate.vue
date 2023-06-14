@@ -1,7 +1,7 @@
 <template>
   <div
     id="parCoord"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <ColumnSelection
       v-show="settings"

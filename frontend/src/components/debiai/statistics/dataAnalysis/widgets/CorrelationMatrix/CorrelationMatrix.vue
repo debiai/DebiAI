@@ -1,7 +1,7 @@
 <template>
   <div
     id="CorrelationMatrix"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modal -->
     <modal

@@ -1,7 +1,7 @@
 <template>
   <div
     id="WidgetTemplate"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     Empty Widget Template
   </div>

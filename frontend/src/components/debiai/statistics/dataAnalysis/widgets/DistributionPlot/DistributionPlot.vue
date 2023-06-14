@@ -1,7 +1,7 @@
 <template>
   <div
     id="repartitionPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modal -->
     <modal
@@ -218,6 +218,7 @@ import Column from "../../common/Column";
 
 // services
 import dataOperations from "../../../../../../services/statistics/dataOperations";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 import swal from "sweetalert";
 
 export default {
@@ -252,6 +253,7 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
+
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
       window.dispatchEvent(new Event("resize"));
@@ -602,6 +604,11 @@ export default {
           removeExisting: true,
         });
       }
+    },
+
+    // Export
+    async getImage() {
+      return await plotlyToImage(this.divRepPlot);
     },
 
     // axies selection

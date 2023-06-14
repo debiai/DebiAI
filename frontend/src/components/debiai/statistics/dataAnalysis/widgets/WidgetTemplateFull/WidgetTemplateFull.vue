@@ -1,7 +1,7 @@
 <template>
   <div
     id="WidgetTemplateFull"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Column selection modal -->
     <modal

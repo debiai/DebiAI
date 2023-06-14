@@ -1,7 +1,7 @@
 <template>
   <div
     id="confusionMatrix"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal

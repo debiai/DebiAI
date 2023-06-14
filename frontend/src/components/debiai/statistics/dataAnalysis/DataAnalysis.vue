@@ -107,8 +107,9 @@
       @layout="layout"
       @restoreDefaultLayout="restoreDefaultLayout"
       @clearLayout="clearLayout"
+      @exportAnalysisPage="exportAnalysisPage"
     />
-    <!-- floating wiget catalog menu -->
+    <!-- floating widget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
       <fab
         name="widgetCatalog"
@@ -196,6 +197,7 @@ import Footer from "./dataNavigation/Footer";
 // Services
 import componentsGridStackData from "../../../../services/statistics/gridstackComponents";
 import samplesFiltering from "../../../../services/statistics/samplesFiltering";
+import analysisExport from "../../../../services/statistics/analysisExport";
 
 export default {
   components: {
@@ -284,6 +286,12 @@ export default {
           icon: "delete",
           tooltip: "Clear layout",
           color: "var(--dangerDark)",
+        },
+        {
+          name: "exportAnalysisPage",
+          icon: "description",
+          tooltip: "Export the analysis page results",
+          color: "var(--info)",
         },
       ],
     };
@@ -477,7 +485,7 @@ export default {
       // Find the layout of the component
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 
-      // Create the componen with its configuration if possible
+      // Create the component with its configuration if possible
       this.addWidget(component.widgetKey, gsComp, configuration);
     },
     updateLayoutConfig() {
@@ -486,7 +494,6 @@ export default {
         component.config = this.$refs[component.id][0].getComponentConf();
       });
     },
-
     saveLayout() {
       // Get the current layout
       if (!this.grid) return;
@@ -597,6 +604,16 @@ export default {
     layout() {
       this.updateLayoutConfig();
       this.layoutModal = true;
+    },
+    async exportAnalysisPage() {
+      // Ask all the components to export their images
+      const images = [];
+      for (let i = 0; i < this.components.length; i++) {
+        const component = this.components[i];
+        images.push(await this.$refs[component.id][0].getImage());
+      }
+      console.log(images);
+      // analysisExport.getAnalysisExport(this.components);
     },
   },
   computed: {
