@@ -384,10 +384,6 @@ export default {
 </script>
 
 <style scoped>
-.dataVisualizationWidget {
-  display: flex;
-  flex-direction: column;
-}
 
 #columnStat {
   display: flex;

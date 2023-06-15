@@ -197,7 +197,7 @@ import Footer from "./dataNavigation/Footer";
 // Services
 import componentsGridStackData from "../../../../services/statistics/gridstackComponents";
 import samplesFiltering from "../../../../services/statistics/samplesFiltering";
-import analysisExport from "../../../../services/statistics/analysisExport";
+import {getAnalysisExport} from "../../../../services/statistics/analysisExport";
 
 export default {
   components: {
@@ -348,7 +348,7 @@ export default {
       },
     };
 
-    // Check thet the selector ".grid-stack" is present in the DOM
+    // Check that the selector ".grid-stack" is present in the DOM
     if (!document.querySelector(".grid-stack")) return;
     this.grid = GridStack.init(gridStackOptions);
     this.grid.on("resizestop", () => {
@@ -606,14 +606,28 @@ export default {
       this.layoutModal = true;
     },
     async exportAnalysisPage() {
-      // Ask all the components to export their images
-      const images = [];
+      // Ask all the components to export their results
+      const widgetsResults = [];
       for (let i = 0; i < this.components.length; i++) {
         const component = this.components[i];
-        images.push(await this.$refs[component.id][0].getImage());
+        const componentId = component.id;
+        const imageUrl = await this.$refs[componentId][0].getImage();
+        const config = this.$refs[componentId][0].getComponentConf();
+
+        widgetsResults.push({
+          id: componentId,
+          name: component.name,
+          widget: component.widgetKey,
+          imageUrl: imageUrl,
+          config: config,
+        });
       }
-      console.log(images);
-      // analysisExport.getAnalysisExport(this.components);
+
+      // Get the project name
+      const projectName = this.$store.state.ProjectPage.projectId;
+
+      // Generate the analysis export
+      getAnalysisExport(widgetsResults, projectName);
     },
   },
   computed: {
@@ -682,7 +696,7 @@ header #widgetList button + button {
 
 <style>
 /* Css for all plot childrens */
-.dataVisualisationWidget {
+.dataVisualizationWidget {
   height: 100%;
 }
 
