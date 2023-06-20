@@ -613,7 +613,7 @@ export default {
         const componentId = component.id;
         const imageUrl = await this.$refs[componentId][0].getImage();
         const config = this.$refs[componentId][0].getComponentConf();
-
+        
         widgetsResults.push({
           id: componentId,
           name: component.name,
@@ -622,7 +622,7 @@ export default {
           config: config,
         });
       }
-
+      
       // Get the project name
       const projectName = this.$store.state.ProjectPage.projectId;
 
@@ -640,11 +640,11 @@ export default {
     filters() {
       // Update the selected samples from the filters
       try {
-        let { selectedSampleIds, filtersEffecs } = samplesFiltering.getSelected(
+        let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
           this.filters,
           this.data
         );
-        this.$store.commit("setFiltersEffects", filtersEffecs);
+        this.$store.commit("setFiltersEffects", filtersEffects);
         this.selectedData = selectedSampleIds;
       } catch (error) {
         console.error(error);

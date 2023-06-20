@@ -41,7 +41,7 @@ export async function getAnalysisExport(widgetResults, projectName) {
   for (let i = 0; i < widgetResults.length; i++) {
     const widget = widgetResults[i];
     const imageUrl = widget.imageUrl;
-    if (!imageUrl) return;
+    if (!imageUrl) continue;
 
     const imageFilename = getImageName(i, widget);
     const imageBlob = await fetch(imageUrl).then((r) => r.blob());
