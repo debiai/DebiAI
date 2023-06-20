@@ -26,10 +26,10 @@ export async function plotlyToImage(plot, width = 400, height = 300, filename = 
   }
 }
 
-function getImageName(index, widget) {
+function getWidgetFileName(index, widget) {
   const name = widget.name.replace(/ /g, "-");
   const widgetName = widget.widget.replace(/ /g, "-");
-  return `${index + 1}_${widgetName}_${name}.jpeg`;
+  return `${index + 1}_${widgetName}_${name}`;
 }
 
 export async function getAnalysisExport(widgetResults, projectName) {
@@ -43,9 +43,21 @@ export async function getAnalysisExport(widgetResults, projectName) {
     const imageUrl = widget.imageUrl;
     if (!imageUrl) continue;
 
-    const imageFilename = getImageName(i, widget);
+    const imageFilename = getWidgetFileName(i, widget) + ".jpeg";
     const imageBlob = await fetch(imageUrl).then((r) => r.blob());
     imagesFolder.file(imageFilename, imageBlob, { base64: true });
+  }
+ 
+  // ===== Add the widget configurations in a folder
+  const confFolder = zip.folder("configurations");
+  for (let i = 0; i < widgetResults.length; i++) {
+    const widget = widgetResults[i];
+    const conf = widget.config;
+    if (!conf) continue;
+
+    const confFilename = getWidgetFileName(i, widget) + ".json";
+    const confBlob = new Blob([JSON.stringify(conf, null, 2)], { type: "application/json" });
+    confFolder.file(confFilename, confBlob);
   }
 
   // ===== Generate the markdown analysis file
@@ -63,15 +75,15 @@ export async function getAnalysisExport(widgetResults, projectName) {
     const widget = widgetResults[i];
     markdown += `\n## ${widget.widget} - ${widget.name}\n`;
 
-    // Config
+    // Link to config
     if (widget.config) {
-      const config = JSON.stringify(widget.config, null, 2);
-      markdown += `\n\`\`\`json\n${config}\n\`\`\`\n`;
+      const confFilename = getWidgetFileName(i, widget) + ".json";
+      markdown += `\n[Configuration](configurations/${confFilename})\n`;
     }
 
     // Image
     if (widget.imageUrl) {
-      const imageFilename = getImageName(i, widget);
+      const imageFilename = getWidgetFileName(i, widget) + ".jpeg";
       markdown += `\n![${widget.name}](images/${imageFilename})\n`;
     }
   }
