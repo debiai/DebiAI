@@ -3,7 +3,7 @@
 
 let getSelected = (filters, data) => {
   let selectedSampleIds = [...Array(data.nbLines).keys()]; // Stars with 100%
-  let filtersEffecs = {}; // number of samples left for each filters
+  let filtersEffects = {}; // number of samples left for each filters
 
   filters.forEach((filter) => {
     let column = data.columns.find((c) => c.index == filter.columnIndex);
@@ -28,10 +28,10 @@ let getSelected = (filters, data) => {
         column
       );
 
-    filtersEffecs[filter.id] = selectedSampleIds.length;
+    filtersEffects[filter.id] = selectedSampleIds.length;
   });
 
-  return { selectedSampleIds, filtersEffecs };
+  return { selectedSampleIds, filtersEffects };
 };
 
 let getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) => {
