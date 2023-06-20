@@ -22,6 +22,7 @@
 
 <script>
 import Plotly from "plotly.js/dist/plotly";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 // import swal from "sweetalert";
 
 // components
@@ -204,6 +205,12 @@ export default {
       setTimeout(() => {
         this.drawPlot();
       }, 0.1);
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divParCord);
     },
   },
   computed: {

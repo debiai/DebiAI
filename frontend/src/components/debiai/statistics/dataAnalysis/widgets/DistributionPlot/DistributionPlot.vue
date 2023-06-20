@@ -608,6 +608,7 @@ export default {
 
     // Export
     async getImage() {
+      // Return the URL of an image representing this widget results
       return await plotlyToImage(this.divRepPlot);
     },
 

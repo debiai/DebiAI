@@ -380,6 +380,27 @@ export default {
         }
       });
     },
+
+    // =============== Exporting ==============
+    exportJsonWithExportMethods() {
+      // You can export data with the export methods
+      // More info here : https://debiai.irt-systemx.fr/dashboard/dataExport/#exporting-widget-annotations
+
+      // Set the data that your widget can export with the following line:
+      this.$parent.$emit("setExport", {
+        foo: "bar",
+      });
+
+      // You can clear the data that your widget can export with the following line:
+      this.$parent.$emit("setExport", null);
+    },
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      // If this widget is a plotly widget, you can use the following function:
+      // const plotlyToImage = require("@/services/statistics/analysisExport").plotlyToImage;
+      // return await plotlyToImage(this.plotlyDiv);
+      // Refer to the other widgets to see how to use it.
+    },
   },
   computed: {
     coloredColumnIndex() {

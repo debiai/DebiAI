@@ -22,6 +22,7 @@
 
 <script>
 import Plotly from "plotly.js/dist/plotly";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
@@ -211,6 +212,11 @@ export default {
           removeExisting: true,
         });
       }
+    },
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divParCat);
     },
   },
   computed: {
