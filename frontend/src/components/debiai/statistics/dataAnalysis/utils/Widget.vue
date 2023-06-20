@@ -156,6 +156,20 @@
         class="options"
         v-if="!simple"
       >
+        <!-- export image btn -->
+        <button
+          v-if="canExportImage"
+          class="white aligned"
+          title="Download an image of the plot"
+          @click="downloadImage"
+          :disabled="loading"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/downloadImage.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
         <!-- export btn -->
         <button
           v-if="exportData !== null"
@@ -277,6 +291,7 @@ import DataExportMenu from "../dataExport/DataExportMenu";
 import FilterList from "../dataFilters/FilterList";
 
 import swal from "sweetalert";
+import { downloadImage } from "plotly.js/dist/plotly";
 
 export default {
   name: "Widget",
@@ -313,6 +328,7 @@ export default {
       // Export
       exportData: null,
       exportModal: false,
+      canExportImage: false,
     };
   },
   created() {
@@ -402,12 +418,6 @@ export default {
         return slotCom.getConf();
       } else return null;
     },
-    getImage() {
-      if (this.canExportImage) {
-        let slotCom = this.$slots.default[0].componentInstance;
-        return slotCom.getImage();
-      } else return null;
-    },
     copy() {
       if (this.canSaveConfiguration) {
         // Load configuration to copy
@@ -489,9 +499,43 @@ export default {
         ...exportData,
       };
     },
-
     startExport() {
       this.exportModal = true;
+    },
+    getImage() {
+      if (this.canExportImage) {
+        let slotCom = this.$slots.default[0].componentInstance;
+        return slotCom.getImage();
+      } else return null;
+    },
+    downloadImage() {
+      // Star a request
+      this.$store.commit("startRequest", {
+        name: "Downloading image",
+        code: this.index,
+      });
+      this.loading = true;
+
+      setTimeout(() => {
+        this.getImage()
+          .then((image) => {
+            if (image) {
+              let link = document.createElement("a");
+              link.href = image;
+
+              // Get the project name
+              const projectName = this.$store.state.ProjectPage.projectId;
+
+              const imageName = this.name.replace(/ /g, "_");
+              link.download = projectName + "_" + imageName;
+              link.click();
+            }
+          })
+          .finally(() => {
+            this.loading = false;
+            this.$store.commit("endRequest", this.index);
+          });
+      }, 100);
     },
 
     // Other
@@ -588,7 +632,7 @@ export default {
 }
 
 .options button + button {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .simple button.red {
