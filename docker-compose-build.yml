@@ -8,10 +8,12 @@ services:
     volumes:
       - ./debiai_data:/backend/data
     environment:
-      # Data providers (DEBIAI_DATA_PROVIDER_<name>=<url>)
-      # - DEBIAI_DATA_PROVIDER_MyDp1=http://localhost:3010
-      # - DEBIAI_DATA_PROVIDER_MyDp2=http://localhost:3011
+      # Data providers (DEBIAI_DATA_PROVIDER_<name>=<url>) Ref: https://debiai.irt-systemx.fr/dataInsertion/dataProviders/
+      # - DEBIAI_WEB_DATA_PROVIDER_my-web-provider1=http://localhost:3010/debiai
+      # - DEBIAI_WEB_DATA_PROVIDER_my-web-provider2=http://localhost:3011
 
       # Export methods (DEBIAI_EXPORT_METHOD_<name>="<type>, <parmeter1>, <parmeter 2>)
       # - DEBIAI_EXPORT_METHOD_MyExport1="kafka, local:9092, my_topic_1"
       # - DEBIAI_EXPORT_METHOD_MyExport2="kafka, local:9092, my_topic_2"
+
+      # Full list of parameters for each export method: https://github.com/debiai/debiai/blob/main/backend/config/config.env 
