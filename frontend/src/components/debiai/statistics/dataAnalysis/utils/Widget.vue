@@ -156,20 +156,6 @@
         class="options"
         v-if="!simple"
       >
-        <!-- export image btn -->
-        <button
-          v-if="canExportImage"
-          class="white aligned"
-          title="Download an image of the plot"
-          @click="downloadImage"
-          :disabled="loading"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/downloadImage.svg')"
-            height="14"
-            width="18"
-          />
-        </button>
         <!-- export btn -->
         <button
           v-if="exportData !== null"
@@ -213,6 +199,21 @@
             fill="white"
           />
         </button>
+        <!-- export image btn -->
+        <button
+          v-if="canExportImage"
+          class="info"
+          title="Download an image of the plot"
+          @click="downloadImage"
+          :disabled="loading"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/downloadImage.svg')"
+            height="14"
+            width="18"
+            style="filter: invert(95%)"
+          />
+        </button>
         <!-- save configuration btn -->
         <button
           v-if="canSaveConfiguration"
@@ -242,6 +243,7 @@
             fill="white"
           />
         </button>
+
         <!-- Settings btn -->
         <button
           class="warning"
@@ -627,6 +629,10 @@ export default {
   justify-content: flex-end;
 }
 
+.options button {
+  width: 35px;
+  padding: 2px 0px 2px 0px;
+}
 .options button.warning {
   width: 70px;
 }
