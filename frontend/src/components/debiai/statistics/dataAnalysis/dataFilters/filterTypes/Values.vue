@@ -2,9 +2,9 @@
   <div id="values">
     <!-- Add values modal -->
     <modal
-      v-if="addValuePannel"
+      v-if="addValuePanel"
       class="aligned"
-      @close="addValuePannel = false"
+      @close="addValuePanel = false"
     >
       <h4>
         Add a value filter on the
@@ -68,7 +68,7 @@
         </button>
         <button
           class="red"
-          @click="addValuePannel = false"
+          @click="addValuePanel = false"
         >
           Close
         </button>
@@ -87,7 +87,7 @@
       {{ value }}
     </div>
     <button
-      @click="addValuePannel = true"
+      @click="addValuePanel = true"
       v-if="!readOnly"
     >
       Add values
@@ -104,7 +104,7 @@ export default {
   },
   data() {
     return {
-      addValuePannel: false,
+      addValuePanel: false,
       newValue: null,
     };
   },
@@ -122,7 +122,7 @@ export default {
 
       this.$emit("valueAdded", { value: valueToAdd, id: this.filter.id });
       this.newValue = null;
-      if (closeAfter) this.addValuePannel = false;
+      if (closeAfter) this.addValuePanel = false;
     },
     removeValue(value) {
       this.$store.commit("removeValueFromFilter", {

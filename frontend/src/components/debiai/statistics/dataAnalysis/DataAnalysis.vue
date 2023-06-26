@@ -181,7 +181,7 @@ import "gridstack/dist/gridstack.css";
 import fab from "vue-fab"; // For the bubble floating menu
 
 // Widget
-import Widget from "./utils/Widget";
+import Widget from "./widget/Widget";
 import Vue from "vue";
 
 // Menu
@@ -305,10 +305,10 @@ export default {
       let selectionIds = this.$route.query.selectionIds;
       let selectionIntersection = this.$route.query.selectionIntersection;
       let modelIds = this.$route.query.modelIds;
-      let commomModelResults = this.$route.query.commomModelResults;
+      let commonModelResults = this.$route.query.commonModelResults;
 
       if (dataProviderId && projectId) {
-        // Go back to project page to start an analysis imediatly
+        // Go back to project page to start an analysis immediately
         this.$router.push({
           path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
           query: {
@@ -317,7 +317,7 @@ export default {
             selectionIds: selectionIds,
             selectionIntersection: selectionIntersection,
             modelIds: modelIds,
-            commomModelResults: commomModelResults,
+            commonModelResults: commonModelResults,
             startAnalysis: true,
           },
         });
@@ -695,7 +695,7 @@ header #widgetList button + button {
 </style>
 
 <style>
-/* Css for all plot childrens */
+/* Css for all plot children */
 .dataVisualizationWidget {
   height: 100%;
 }

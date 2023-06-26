@@ -5,7 +5,7 @@
       v-if="confSettings"
       @close="confSettings = false"
     >
-      <WidgetConfPannel
+      <WidgetConfPanel
         :widgetTitle="title"
         :widgetName="name"
         :confToSave="confToSave"
@@ -156,6 +156,18 @@
         class="options"
         v-if="!simple"
       >
+        <!-- Comment btn -->
+        <button
+          class="white"
+          title="Comment this widget"
+          @click="commentPanel = true"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/comment.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
         <!-- export btn -->
         <button
           v-if="exportData !== null"
@@ -174,6 +186,7 @@
         <button
           v-if="canFilterSamples && startFiltering"
           class="purple highlighted"
+          style="width: 85px"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
         >
@@ -222,12 +235,10 @@
           @click="saveConfiguration"
         >
           <inline-svg
-            :src="
-              confAsChanged ? require('@/assets/svg/save.svg') : require('@/assets/svg/gear.svg')
-            "
+            :src="require('@/assets/svg/save.svg')"
             width="14"
             height="14"
-            fill="white"
+            style="filter: invert(95%)"
           />
         </button>
         <!-- Copy btn -->
@@ -282,13 +293,13 @@
       </div>
     </div>
 
-    <!-- Display the visualisation tool -->
+    <!-- Display the visualization tool -->
     <slot />
   </div>
 </template>
 
 <script>
-import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
+import WidgetConfPanel from "./widgetConfigurationCreation/WidgetConfPanel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 import FilterList from "../dataFilters/FilterList";
 
@@ -297,7 +308,7 @@ import { downloadImage } from "plotly.js/dist/plotly";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel, DataExportMenu, FilterList },
+  components: { WidgetConfPanel, DataExportMenu, FilterList },
   props: {
     data: { type: Object, required: true },
     widgetKey: { type: String, required: true },

@@ -1,6 +1,6 @@
 <template>
-  <div id="WidgetConfPannel">
-    <!-- Pannel title & cancel button -->
+  <div id="WidgetConfPanel">
+    <!-- Panel title & cancel button -->
     <div
       id="heading"
       class="aligned spaced"
@@ -123,7 +123,7 @@ export default {
 </script>
 
 <style scoped>
-#WidgetConfPannel {
+#WidgetConfPanel {
   min-width: 65vw;
   display: flex;
   flex-direction: column;

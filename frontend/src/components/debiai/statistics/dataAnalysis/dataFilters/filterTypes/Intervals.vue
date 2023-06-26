@@ -2,8 +2,8 @@
   <div id="intervals">
     <!-- Add values modal -->
     <modal
-      v-if="addIntervalPannel"
-      @close="addIntervalPannel = false"
+      v-if="addIntervalPanel"
+      @close="addIntervalPanel = false"
     >
       <h4 class="aligned">
         Add an interval filter on the
@@ -16,7 +16,7 @@
         column
         <button
           class="red"
-          @click="addIntervalPannel = false"
+          @click="addIntervalPanel = false"
           style="margin-left: 80px"
         >
           Cancel
@@ -64,7 +64,7 @@
       v-on:remove="removeInterval(i)"
     />
     <button
-      @click="addIntervalPannel = true"
+      @click="addIntervalPanel = true"
       v-if="!readOnly"
     >
       Add interval
@@ -84,7 +84,7 @@ export default {
   },
   data() {
     return {
-      addIntervalPannel: false,
+      addIntervalPanel: false,
       newMin: null,
       newMax: null,
     };
@@ -107,7 +107,7 @@ export default {
         filterId: this.filter.id,
       });
       this.$emit("intervalAdded", { interval, id: this.filter.id });
-      if (closeAfter) this.addIntervalPannel = false;
+      if (closeAfter) this.addIntervalPanel = false;
     },
     removeInterval(i) {
       this.$store.commit("removeIntervalFromFilter", {
