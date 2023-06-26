@@ -143,7 +143,6 @@
           :data="data"
           :widgetKey="component.widgetKey"
           :title="component.name"
-          :simple="component.simple"
           :configuration="component.configuration"
           :index="component.id"
           :ref="component.id"

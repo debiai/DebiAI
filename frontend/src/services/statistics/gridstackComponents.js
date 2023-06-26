@@ -60,7 +60,6 @@ availableWidgets.keys().forEach((componentFilePath) => {
 
     let widgetName = configuration.name || componentKey;
     let widgetDescription = configuration.description || "";
-    let widgetSimple = configuration.simple || false;
 
     let widgetLayout;
     if ("layout" in configuration) {
@@ -73,7 +72,6 @@ availableWidgets.keys().forEach((componentFilePath) => {
     availableWidgetsConfiguration[componentKey] = {
       name: widgetName,
       description: widgetDescription,
-      simple: widgetSimple,
       widgetKey: componentKey,
       layout: widgetLayout,
     };

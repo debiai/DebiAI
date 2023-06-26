@@ -21,7 +21,6 @@ Create a `configuration.json` file in the directory :
         "minHeight": 2,
         "maxHeight": 15,
     },
-    "simple": false // Removes the widget header setting and save buttons
 }
 ```
 
