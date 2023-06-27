@@ -605,36 +605,74 @@ export default {
       this.layoutModal = true;
     },
     async exportAnalysisPage() {
-      // Ask all the components for their results
-      const widgetsResults = [];
-      for (let i = 0; i < this.components.length; i++) {
-        const component = this.components[i];
-        const componentId = component.id;
+      let proceed = true;
 
-        // Get image
-        const imageUrl = await this.$refs[componentId][0].getImage();
+      // Start progess bar
+      let requestCode = this.$services.uuid();
+      this.$store.commit("startRequest", {
+        name: "Generating analysis export",
+        code: requestCode,
+        progress: 0,
+        cancelCallback: () => {
+          proceed = false;
+        },
+      });
 
-        // Get configuration
-        const config = this.$refs[componentId][0].getComponentConf();
+      try {
+        // Ask all the components for their results
+        const widgetsResults = [];
+        for (let i = 0; i < this.components.length; i++) {
+          // Check if the user cancelled the export
+          if (!proceed) {
+            this.$store.commit("sendMessage", {
+              title: "success",
+              msg: "Export cancelled",
+            });
+            return;
+          }
 
-        // Get Comments
-        const comments = this.$refs[componentId][0].getComments();
+          // Update progress bar
+          this.$store.commit("updateRequestProgress", {
+            code: requestCode,
+            progress: i / this.components.length,
+          });
 
-        widgetsResults.push({
-          id: componentId,
-          name: component.name,
-          widget: component.widgetKey,
-          comments: comments,
-          imageUrl: imageUrl,
-          config: config,
+          const component = this.components[i];
+          const componentId = component.id;
+
+          // Get image
+          const imageUrl = await this.$refs[componentId][0].getImage();
+
+          // Get configuration
+          const config = this.$refs[componentId][0].getComponentConf();
+
+          // Get Comments
+          const comments = this.$refs[componentId][0].getComments();
+
+          widgetsResults.push({
+            id: componentId,
+            name: component.name,
+            widget: component.widgetKey,
+            comments: comments,
+            imageUrl: imageUrl,
+            config: config,
+          });
+        }
+
+        // Get the project name
+        const projectName = this.$store.state.ProjectPage.projectId;
+
+        // Generate the analysis export
+        getAnalysisExport(widgetsResults, projectName);
+      } catch (error) {
+        console.error(error);
+        this.$store.commit("sendMessage", {
+          title: "error",
+          msg: "Error while exporting the analysis",
         });
+      } finally {
+        this.$store.commit("endRequest", requestCode);
       }
-
-      // Get the project name
-      const projectName = this.$store.state.ProjectPage.projectId;
-
-      // Generate the analysis export
-      getAnalysisExport(widgetsResults, projectName);
     },
   },
   computed: {
