@@ -253,7 +253,6 @@ export default {
     selectedData: { type: Array, required: true },
   },
   created() {
-
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
       window.dispatchEvent(new Event("resize"));

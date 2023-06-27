@@ -62,12 +62,14 @@
         />
         Widget comments
         <documentation-block>
-          This is the widget comments section, here you can add comments to the widget. This can be used to write down your interpretation of the widget results.
-          <br>
-          <br>
-          The comment will we exported with the widget image/results when you export this analysis page.
-          <br>
-          <br>
+          This is the widget comments section, here you can add comments to the widget. This can be
+          used to write down your interpretation of the widget results.
+          <br />
+          <br />
+          The comment will we exported with the widget image/results when you export this analysis
+          page.
+          <br />
+          <br />
           The comments are saved locally for now, so they will be lost if you refresh the page.
         </documentation-block>
       </span>
