@@ -189,8 +189,8 @@ import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
 import Algorithms from "./algoProviders/Algorithms";
-import Layouts from "./utils/layouts/Layouts";
-import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
+import Layouts from "./widget/layouts/Layouts";
+import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
 // Services

@@ -58,6 +58,20 @@
         :readOnly="true"
       />
     </modal>
+
+    <!-- Widget Comment modal -->
+    <modal
+      v-if="commentModal"
+      @close="commentModal = false"
+    >
+      <Comments
+        :comments="comments"
+        @addComment="addComment"
+        @removeComment="removeComment"
+        @close="commentModal = false"
+      />
+    </modal>
+
     <!-- Widget -->
     <div
       id="widgetHeader"
@@ -152,16 +166,14 @@
       </div>
 
       <!-- Options : configuration, copy, settings, close btn, ... -->
-      <div
-        class="options"
-        v-if="!simple"
-      >
+      <div class="options">
         <!-- Comment btn -->
         <button
           class="white"
           title="Comment this widget"
-          @click="commentPanel = true"
+          @click="commentModal = true"
         >
+          <span v-if="comments.length">{{ comments.length }}</span>
           <inline-svg
             :src="require('@/assets/svg/comment.svg')"
             height="14"
@@ -173,11 +185,26 @@
           v-if="exportData !== null"
           class="white aligned"
           title="Export widget data"
+          style="width: 60px"
           @click="startExport"
         >
           Export
           <inline-svg
             :src="require('@/assets/svg/send.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
+        <!-- export image btn -->
+        <button
+          v-if="canExportImage"
+          class="white"
+          title="Download an image of the plot"
+          @click="downloadImage"
+          :disabled="loading"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/downloadImage.svg')"
             height="14"
             width="18"
           />
@@ -210,21 +237,6 @@
             width="14"
             height="14"
             fill="white"
-          />
-        </button>
-        <!-- export image btn -->
-        <button
-          v-if="canExportImage"
-          class="info"
-          title="Download an image of the plot"
-          @click="downloadImage"
-          :disabled="loading"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/downloadImage.svg')"
-            height="14"
-            width="18"
-            style="filter: invert(95%)"
           />
         </button>
         <!-- save configuration btn -->
@@ -281,16 +293,6 @@
           />
         </button>
       </div>
-      <div
-        class="options simple"
-        v-else
-      >
-        <button
-          class="red"
-          :title="'Close ' + title + ' widget'"
-          @click="remove"
-        ></button>
-      </div>
     </div>
 
     <!-- Display the visualization tool -->
@@ -302,19 +304,18 @@
 import WidgetConfPanel from "./widgetConfigurationCreation/WidgetConfPanel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 import FilterList from "../dataFilters/FilterList";
+import Comments from "./comments/Comments";
 
 import swal from "sweetalert";
-import { downloadImage } from "plotly.js/dist/plotly";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPanel, DataExportMenu, FilterList },
+  components: { WidgetConfPanel, DataExportMenu, FilterList, Comments },
   props: {
     data: { type: Object, required: true },
     widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
-    simple: { type: Boolean, default: false },
     configuration: { type: Object },
   },
   data() {
@@ -342,6 +343,10 @@ export default {
       exportData: null,
       exportModal: false,
       canExportImage: false,
+
+      // Comments
+      commentModal: false,
+      comments: [],
     };
   },
   created() {
@@ -551,6 +556,18 @@ export default {
       }, 100);
     },
 
+    // Comments
+    addComment({ title, text }) {
+      this.comments.push({
+        id: this.$services.uuid(),
+        title,
+        text,
+      });
+    },
+    removeComment(id) {
+      this.comments = this.comments.filter((comment) => comment.id !== id);
+    },
+
     // Other
     errorMessage(e) {
       this.error_msg = e;
@@ -651,12 +668,6 @@ export default {
 .options button + button {
   margin-left: 5px;
 }
-
-.simple button.red {
-  width: 20px;
-  height: 20px;
-}
-
 .center {
   flex: 1;
   display: flex;
