@@ -47,7 +47,7 @@ export async function getAnalysisExport(widgetResults, projectName) {
     const imageBlob = await fetch(imageUrl).then((r) => r.blob());
     imagesFolder.file(imageFilename, imageBlob, { base64: true });
   }
- 
+
   // ===== Add the widget configurations in a folder
   const confFolder = zip.folder("configurations");
   for (let i = 0; i < widgetResults.length; i++) {
@@ -85,6 +85,15 @@ export async function getAnalysisExport(widgetResults, projectName) {
     if (widget.imageUrl) {
       const imageFilename = getWidgetFileName(i, widget) + ".jpeg";
       markdown += `\n![${widget.name}](images/${imageFilename})\n`;
+    }
+
+    // Comments
+    if (widget.comments && widget.comments.length > 0) {
+      markdown += "\n### Comments\n";
+      widget.comments.forEach((comment) => {
+        markdown += "\n#### " + comment.title + "\n";
+        markdown += `\n${comment.text}\n`;
+      });
     }
   }
 

@@ -61,7 +61,17 @@
           style="margin-right: 3px"
         />
         Widget comments
+        <documentation-block>
+          This is the widget comments section, here you can add comments to the widget. This can be used to write down your interpretation of the widget results.
+          <br>
+          <br>
+          The comment will we exported with the widget image/results when you export this analysis page.
+          <br>
+          <br>
+          The comments are saved locally for now, so they will be lost if you refresh the page.
+        </documentation-block>
       </span>
+
       <span>
         <button
           class="green"
@@ -82,6 +92,13 @@
       id="commentList"
       class="itemList"
     >
+      <div
+        id="noComments"
+        v-if="comments.length === 0"
+      >
+        <h3>No comments yet</h3>
+      </div>
+
       <transition-group name="scale">
         <div
           class="comment item selectable"
@@ -151,6 +168,12 @@ export default {
 
   #title {
     padding-bottom: 30px;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
   }
 
   #commentList {
@@ -166,9 +189,12 @@ export default {
 
       .commentTitle {
         text-align: left;
+        word-break: break-all;
+        min-width: 140px;
       }
       .text {
         text-align: left;
+        word-break: break-all;
       }
 
       button {

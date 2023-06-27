@@ -196,7 +196,7 @@ import Footer from "./dataNavigation/Footer";
 // Services
 import componentsGridStackData from "../../../../services/statistics/gridstackComponents";
 import samplesFiltering from "../../../../services/statistics/samplesFiltering";
-import {getAnalysisExport} from "../../../../services/statistics/analysisExport";
+import { getAnalysisExport } from "../../../../services/statistics/analysisExport";
 
 export default {
   components: {
@@ -605,23 +605,31 @@ export default {
       this.layoutModal = true;
     },
     async exportAnalysisPage() {
-      // Ask all the components to export their results
+      // Ask all the components for their results
       const widgetsResults = [];
       for (let i = 0; i < this.components.length; i++) {
         const component = this.components[i];
         const componentId = component.id;
+
+        // Get image
         const imageUrl = await this.$refs[componentId][0].getImage();
+
+        // Get configuration
         const config = this.$refs[componentId][0].getComponentConf();
-        
+
+        // Get Comments
+        const comments = this.$refs[componentId][0].getComments();
+
         widgetsResults.push({
           id: componentId,
           name: component.name,
           widget: component.widgetKey,
+          comments: comments,
           imageUrl: imageUrl,
           config: config,
         });
       }
-      
+
       // Get the project name
       const projectName = this.$store.state.ProjectPage.projectId;
 
