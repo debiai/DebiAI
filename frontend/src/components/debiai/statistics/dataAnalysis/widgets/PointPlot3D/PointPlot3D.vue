@@ -1,7 +1,7 @@
 <template>
   <div
     id="pointPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal
@@ -146,6 +146,7 @@
 
 <script>
 import Plotly from "plotly.js/dist/plotly";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
@@ -375,6 +376,11 @@ export default {
     },
     setPointOpacity() {
       this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+    },
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divPointPlot);
     },
   },
   computed: {

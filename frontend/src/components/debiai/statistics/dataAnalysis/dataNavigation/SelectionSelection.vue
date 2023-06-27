@@ -1,6 +1,6 @@
 <template>
   <div id="SelectionSelection">
-    <div id="selectionsPannel">
+    <div id="selectionsPanel">
       <div id="title">
         <span class="aligned spaced">
           <h2>

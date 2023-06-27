@@ -1,7 +1,7 @@
 <template>
   <div
     id="confusionMatrix"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal
@@ -115,6 +115,7 @@
 
 <script>
 import dataOperations from "../../../../../../services/statistics/dataOperations";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 import Plotly from "plotly.js/dist/plotly";
 
 // components
@@ -547,6 +548,12 @@ export default {
           removeExisting: true,
         });
       }
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divConfusionMatrix);
     },
   },
   computed: {

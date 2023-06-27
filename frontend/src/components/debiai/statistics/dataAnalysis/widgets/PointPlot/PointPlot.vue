@@ -1,7 +1,7 @@
 <template>
   <div
     id="pointPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Modals -->
     <!-- Xcol selection -->
@@ -361,6 +361,7 @@
 
 <script>
 import Plotly from "plotly.js/dist/plotly";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
@@ -1211,6 +1212,12 @@ export default {
       this.axisYAuto = axisYAuto;
       this.axisYMin = axisYMin;
       this.axisYMax = axisYMax;
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divPointPlot);
     },
   },
   computed: {

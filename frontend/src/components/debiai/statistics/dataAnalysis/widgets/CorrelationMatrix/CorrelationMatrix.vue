@@ -1,7 +1,7 @@
 <template>
   <div
     id="CorrelationMatrix"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modal -->
     <modal
@@ -97,6 +97,7 @@
 
 <script>
 import Plotly from "plotly.js/dist/plotly";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
@@ -271,6 +272,12 @@ export default {
 
       this.$parent.$emit("drawed");
       this.matrixDrawed = true;
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divHeatMapPlot);
     },
   },
   watch: {

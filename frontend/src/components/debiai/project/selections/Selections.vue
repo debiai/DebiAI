@@ -22,8 +22,8 @@
       />
     </modal> -->
 
-    <div id="selectionsPannel">
-      <!-- Pannel header -->
+    <div id="selectionsPanel">
+      <!-- Panel header -->
       <div id="title">
         <span class="aligned">
           <h2>
@@ -298,7 +298,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
-#selectionsPannel {
+#selectionsPanel {
   flex: 1;
   padding: 10px;
   display: flex;

@@ -107,8 +107,9 @@
       @layout="layout"
       @restoreDefaultLayout="restoreDefaultLayout"
       @clearLayout="clearLayout"
+      @exportAnalysisPage="exportAnalysisPage"
     />
-    <!-- floating wiget catalog menu -->
+    <!-- floating widget catalog menu -->
     <div @click="widgetCatalog = !widgetCatalog">
       <fab
         name="widgetCatalog"
@@ -142,7 +143,6 @@
           :data="data"
           :widgetKey="component.widgetKey"
           :title="component.name"
-          :simple="component.simple"
           :configuration="component.configuration"
           :index="component.id"
           :ref="component.id"
@@ -180,7 +180,7 @@ import "gridstack/dist/gridstack.css";
 import fab from "vue-fab"; // For the bubble floating menu
 
 // Widget
-import Widget from "./utils/Widget";
+import Widget from "./widget/Widget";
 import Vue from "vue";
 
 // Menu
@@ -189,13 +189,14 @@ import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
 import Algorithms from "./algoProviders/Algorithms";
-import Layouts from "./utils/layouts/Layouts";
-import WidgetCatalog from "./utils/widgetCatalog/WidgetCatalog";
+import Layouts from "./widget/layouts/Layouts";
+import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 import Footer from "./dataNavigation/Footer";
 
 // Services
 import componentsGridStackData from "../../../../services/statistics/gridstackComponents";
 import samplesFiltering from "../../../../services/statistics/samplesFiltering";
+import { getAnalysisExport } from "../../../../services/statistics/analysisExport";
 
 export default {
   components: {
@@ -285,6 +286,12 @@ export default {
           tooltip: "Clear layout",
           color: "var(--dangerDark)",
         },
+        {
+          name: "exportAnalysisPage",
+          icon: "description",
+          tooltip: "Export the analysis page results",
+          color: "var(--info)",
+        },
       ],
     };
   },
@@ -297,10 +304,10 @@ export default {
       let selectionIds = this.$route.query.selectionIds;
       let selectionIntersection = this.$route.query.selectionIntersection;
       let modelIds = this.$route.query.modelIds;
-      let commomModelResults = this.$route.query.commomModelResults;
+      let commonModelResults = this.$route.query.commonModelResults;
 
       if (dataProviderId && projectId) {
-        // Go back to project page to start an analysis imediatly
+        // Go back to project page to start an analysis immediately
         this.$router.push({
           path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
           query: {
@@ -309,7 +316,7 @@ export default {
             selectionIds: selectionIds,
             selectionIntersection: selectionIntersection,
             modelIds: modelIds,
-            commomModelResults: commomModelResults,
+            commonModelResults: commonModelResults,
             startAnalysis: true,
           },
         });
@@ -340,7 +347,7 @@ export default {
       },
     };
 
-    // Check thet the selector ".grid-stack" is present in the DOM
+    // Check that the selector ".grid-stack" is present in the DOM
     if (!document.querySelector(".grid-stack")) return;
     this.grid = GridStack.init(gridStackOptions);
     this.grid.on("resizestop", () => {
@@ -477,7 +484,7 @@ export default {
       // Find the layout of the component
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 
-      // Create the componen with its configuration if possible
+      // Create the component with its configuration if possible
       this.addWidget(component.widgetKey, gsComp, configuration);
     },
     updateLayoutConfig() {
@@ -486,7 +493,6 @@ export default {
         component.config = this.$refs[component.id][0].getComponentConf();
       });
     },
-
     saveLayout() {
       // Get the current layout
       if (!this.grid) return;
@@ -598,6 +604,76 @@ export default {
       this.updateLayoutConfig();
       this.layoutModal = true;
     },
+    async exportAnalysisPage() {
+      let proceed = true;
+
+      // Start progess bar
+      let requestCode = this.$services.uuid();
+      this.$store.commit("startRequest", {
+        name: "Generating analysis export",
+        code: requestCode,
+        progress: 0,
+        cancelCallback: () => {
+          proceed = false;
+        },
+      });
+
+      try {
+        // Ask all the components for their results
+        const widgetsResults = [];
+        for (let i = 0; i < this.components.length; i++) {
+          // Check if the user cancelled the export
+          if (!proceed) {
+            this.$store.commit("sendMessage", {
+              title: "success",
+              msg: "Export cancelled",
+            });
+            return;
+          }
+
+          // Update progress bar
+          this.$store.commit("updateRequestProgress", {
+            code: requestCode,
+            progress: i / this.components.length,
+          });
+
+          const component = this.components[i];
+          const componentId = component.id;
+
+          // Get image
+          const imageUrl = await this.$refs[componentId][0].getImage();
+
+          // Get configuration
+          const config = this.$refs[componentId][0].getComponentConf();
+
+          // Get Comments
+          const comments = this.$refs[componentId][0].getComments();
+
+          widgetsResults.push({
+            id: componentId,
+            name: component.name,
+            widget: component.widgetKey,
+            comments: comments,
+            imageUrl: imageUrl,
+            config: config,
+          });
+        }
+
+        // Get the project name
+        const projectName = this.$store.state.ProjectPage.projectId;
+
+        // Generate the analysis export
+        getAnalysisExport(widgetsResults, projectName);
+      } catch (error) {
+        console.error(error);
+        this.$store.commit("sendMessage", {
+          title: "error",
+          msg: "Error while exporting the analysis",
+        });
+      } finally {
+        this.$store.commit("endRequest", requestCode);
+      }
+    },
   },
   computed: {
     filters() {
@@ -609,11 +685,11 @@ export default {
     filters() {
       // Update the selected samples from the filters
       try {
-        let { selectedSampleIds, filtersEffecs } = samplesFiltering.getSelected(
+        let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
           this.filters,
           this.data
         );
-        this.$store.commit("setFiltersEffects", filtersEffecs);
+        this.$store.commit("setFiltersEffects", filtersEffects);
         this.selectedData = selectedSampleIds;
       } catch (error) {
         console.error(error);
@@ -664,8 +740,8 @@ header #widgetList button + button {
 </style>
 
 <style>
-/* Css for all plot childrens */
-.dataVisualisationWidget {
+/* Css for all plot children */
+.dataVisualizationWidget {
   height: 100%;
 }
 

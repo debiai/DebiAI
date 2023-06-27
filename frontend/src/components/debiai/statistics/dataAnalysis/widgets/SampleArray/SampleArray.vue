@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'SampleArray' + index"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Columns selection Modals -->
     <ColumnSelection

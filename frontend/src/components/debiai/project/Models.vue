@@ -1,6 +1,6 @@
 <template>
   <div id="models">
-    <div id="modelsPannel">
+    <div id="modelsPanel">
       <div id="title">
         <h2>
           <inline-svg
@@ -114,13 +114,13 @@
               Union
               <input
                 type="checkbox"
-                id="commomModelResultsToggle"
+                id="commonModelResultsToggle"
                 class="customCbx"
                 style="display: none"
-                v-model="commomModelResults"
+                v-model="commonModelResults"
               />
               <label
-                for="commomModelResultsToggle"
+                for="commonModelResultsToggle"
                 class="toggle"
               >
                 <span></span>
@@ -177,7 +177,7 @@ export default {
     return {
       searchBar: "",
       selectedModelIds: [],
-      commomModelResults: true,
+      commonModelResults: true,
     };
   },
   mounted() {},
@@ -231,8 +231,8 @@ export default {
     },
   },
   watch: {
-    commomModelResults() {
-      this.$emit("setCommomModelResults", this.commomModelResults);
+    commonModelResults() {
+      this.$emit("setCommonModelResults", this.commonModelResults);
     },
   },
 };
@@ -245,7 +245,7 @@ export default {
   flex-direction: column;
 }
 
-#modelsPannel {
+#modelsPanel {
   flex: 1;
   padding: 10px;
   display: flex;

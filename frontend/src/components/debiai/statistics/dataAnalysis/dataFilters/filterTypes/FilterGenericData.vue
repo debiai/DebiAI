@@ -31,10 +31,10 @@
     <div
       id="fitlerEffect"
       class="aligned centered margedSide"
-      v-if="filtersEffecs && filtersEffecs[filter.id] !== undefined"
+      v-if="filtersEffects && filtersEffects[filter.id] !== undefined"
     >
       <span>
-        {{ filtersEffecs[filter.id] }}
+        {{ filtersEffects[filter.id] }}
       </span>
       <inline-svg
         class="margedSide"
@@ -80,8 +80,8 @@ export default {
     readOnly: { type: Boolean, default: false },
   },
   computed: {
-    filtersEffecs() {
-      return this.$store.state.SatisticalAnasysis.filtersEffecs;
+    filtersEffects() {
+      return this.$store.state.SatisticalAnasysis.filtersEffects;
     },
   },
 };

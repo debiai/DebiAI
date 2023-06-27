@@ -48,7 +48,7 @@
       <div style="display: flex">
         Custom column creation
         <DocumentationBlock>
-          Create a new column based on the analysis columns and some simple arythmetic operations.
+          Create a new column based on the analysis columns and some simple arithmetic operations.
         </DocumentationBlock>
       </div>
       <div>

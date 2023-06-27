@@ -1,6 +1,6 @@
 {
   "name": "debiai_frontend",
-  "version": "0.23.4",
+  "version": "0.23.5",
   "description": "Frontend for Debiai, made with Vuejs",
   "license": "Apache-2.0",
   "scripts": {
@@ -13,7 +13,9 @@
     "axios": "^0.21.4",
     "config.js": "^0.1.0",
     "core-js": "^3.6.4",
+    "file-saver": "^2.0.5",
     "gridstack": "^2.0.0",
+    "jszip": "^3.10.1",
     "marked": "^4.2.12",
     "mathjs": "^7.6.0",
     "plotly.js": "^2.18.1",

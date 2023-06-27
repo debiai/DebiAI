@@ -1,7 +1,7 @@
 <template>
   <div
     id="RangesliderPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal
@@ -223,6 +223,7 @@ import Plotly from "plotly.js/dist/plotly";
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
 import dataOperations from "@/services/statistics/dataOperations";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 export default {
   components: {
@@ -794,6 +795,12 @@ export default {
       // Remove the lines on the plot
       this.resetShapes();
       this.$parent.$emit("setExport", null);
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.plotDiv);
     },
   },
   computed: {

@@ -1,12 +1,12 @@
 <template>
   <div
     id="repartitionPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modal -->
     <modal
       v-if="xAxisSelection"
-      @close="cancelXaxiesSettings"
+      @close="cancelXaxisSettings"
     >
       <ColumnSelection
         title="Select the X axis"
@@ -14,8 +14,8 @@
         :validateRequiered="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
-        v-on:cancel="cancelXaxiesSettings"
-        v-on:colSelect="xAxiesSelect"
+        v-on:cancel="cancelXaxisSettings"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <!-- Second column selection Modal -->
@@ -30,7 +30,7 @@
         :colorSelection="true"
         :defaultSelected="[secondColumnIndex]"
         v-on:cancel="secondAxisSelection = false"
-        v-on:colSelect="secondAxiesSelect"
+        v-on:colSelect="secondAxisSelect"
       />
     </modal>
 
@@ -218,6 +218,7 @@ import Column from "../../common/Column";
 
 // services
 import dataOperations from "../../../../../../services/statistics/dataOperations";
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 import swal from "sweetalert";
 
 export default {
@@ -460,7 +461,7 @@ export default {
           },
         ];
 
-        // deal with the second axies
+        // deal with the second axis
         if (this.secondColumnIndex !== null) {
           let rep2 = dataOperations.getRepartition(
             secondSelectedX,
@@ -604,21 +605,27 @@ export default {
       }
     },
 
-    // axies selection
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divRepPlot);
+    },
+
+    // axis selection
     selectXaxis() {
       this.xAxisSelection = true;
     },
-    cancelXaxiesSettings() {
+    cancelXaxisSettings() {
       this.xAxisSelection = false;
     },
-    xAxiesSelect(index) {
+    xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.setBins();
       if (this.bins < 100) this.checkPlot();
       else this.clearPlot();
     },
-    secondAxiesSelect(index) {
+    secondAxisSelect(index) {
       this.secondColumnIndex = index;
       this.secondAxisSelection = false;
       this.dividePerColor = false;
@@ -688,7 +695,7 @@ export default {
   margin-left: 0px;
   margin-top: 10px;
 }
-/* Axies Selection */
+/* Axis Selection */
 
 #columnAxisSelection {
   flex: 1;

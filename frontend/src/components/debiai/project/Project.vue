@@ -50,7 +50,7 @@
             :nbResults="nbResults"
             v-on:modelSelected="modelSelected"
             v-on:modelDeleted="modelDeleted"
-            v-on:setCommomModelResults="(cmr) => (commomModelResults = cmr)"
+            v-on:setCommonModelResults="(cmr) => (commonModelResults = cmr)"
           />
         </div>
 
@@ -100,7 +100,7 @@ export default {
       nbSelectedSamples: 0,
       //    Models
       selectedModelIds: [], // TODO: fix bug when starting analysis with a model selected, if there is an error, the model is still in the list but look unselected
-      commomModelResults: true,
+      commonModelResults: true,
       nbEvaluatedSamples: 0,
       nbResults: 0,
     };
@@ -135,7 +135,7 @@ export default {
           let selectionIds = this.$route.query.selectionIds;
           let selectionIntersection = this.$route.query.selectionIntersection;
           let modelIds = this.$route.query.modelIds;
-          let commomModelResults = this.$route.query.commomModelResults;
+          let commonModelResults = this.$route.query.commonModelResults;
 
           // Convert str to lists
           if (selectionIds) selectionIds = selectionIds.split(".");
@@ -143,7 +143,7 @@ export default {
 
           // Convert str to Boolean
           selectionIntersection = selectionIntersection === true;
-          commomModelResults = commomModelResults === true;
+          commonModelResults = commonModelResults === true;
 
           // Start analysis
           this.loadData({
@@ -152,7 +152,7 @@ export default {
             selectionIds,
             selectionIntersection,
             modelIds,
-            commomModelResults,
+            commonModelResults,
           });
         }
       });
@@ -220,13 +220,13 @@ export default {
           selectionIds: this.selectedSelections.map((s) => s.id),
           selectionIntersection: this.selectionIntersection,
           modelIds: this.selectedModels.map((m) => m.id),
-          commonResults: this.commomModelResults,
+          commonResults: this.commonModelResults,
         })
         .finally(() => (this.loading = false))
         .then((res) => {
           this.nbSelectedSamples = res.nbFromSelection;
           this.nbEvaluatedSamples = res.nbSamples;
-          if (this.commomModelResults) this.nbResults = res.nbSamples * this.selectedModels.length;
+          if (this.commonModelResults) this.nbResults = res.nbSamples * this.selectedModels.length;
           else this.nbResults = null; // Will draw a "?" on the dashboard
         })
         .catch((e) => {
@@ -248,7 +248,7 @@ export default {
             selectionIds: this.selectedSelectionsIds,
             selectionIntersection: this.selectionIntersection,
             modelIds: this.selectedModelIds,
-            commomModelResults: this.commomModelResults,
+            commonModelResults: this.commonModelResults,
             startAnalysis: true,
           },
         });
@@ -260,7 +260,7 @@ export default {
           selectionIds: this.selectedSelectionsIds,
           selectionIntersection: this.selectionIntersection,
           modelIds: this.selectedModelIds,
-          commomModelResults: this.commomModelResults,
+          commonModelResults: this.commonModelResults,
         });
       }
     },
@@ -271,7 +271,7 @@ export default {
       selectionIds = [],
       selectionIntersection = false,
       modelIds = [],
-      commomModelResults = false,
+      commonModelResults = false,
     }) {
       console.time("LOAD TREE");
       this.loading = true;
@@ -281,7 +281,7 @@ export default {
           selectionIds,
           selectionIntersection,
           modelIds,
-          commomModelResults,
+          commonModelResults,
         })
         .then((data) => {
           // If no data, stop here, it has been canceled
@@ -316,7 +316,7 @@ export default {
               selectionIds,
               selectionIntersection,
               modelIds,
-              commomModelResults,
+              commonModelResults,
             },
             params: { data },
           });
@@ -408,7 +408,7 @@ export default {
     selectionIntersection() {
       this.updateNbSamples();
     },
-    commomModelResults() {
+    commonModelResults() {
       this.updateNbSamples();
     },
   },

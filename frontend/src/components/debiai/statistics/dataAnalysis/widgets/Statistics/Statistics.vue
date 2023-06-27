@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'SimpleStatistics' + index"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Column selection Modal -->
     <modal
@@ -19,8 +19,11 @@
       />
     </modal>
 
-    <div id="columnStat">
-      <!-- Column & settings -->
+    <!-- Column & settings -->
+    <div
+      id="settings"
+      v-if="settings"
+    >
       <div style="display: flex">
         <Column
           :column="selectedColumn"
@@ -31,7 +34,7 @@
         <div
           class="dataGroup"
           style="flex: 1"
-          v-if="absolueOption"
+          v-if="absoluteOption"
         >
           <div
             class="data"
@@ -46,7 +49,7 @@
                 type="checkbox"
                 :id="'absolute' + index"
                 class="customCbx"
-                v-model="absolue"
+                v-model="absolute"
                 style="display: none"
               />
               <label
@@ -59,6 +62,16 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="columnStat">
+      <!-- Title -->
+      <span>
+        <b>
+          {{ selectedColumn.label }}
+        </b>
+        statistics
+      </span>
 
       <!-- Column statistics -->
       <table id="columns">
@@ -101,7 +114,7 @@
       id="groupStat"
       v-else-if="statByColor !== null"
     >
-      <!-- Title -->
+      <!-- Title 2 -->
       <b>
         {{ selectedColumn.label }}
       </b>
@@ -206,10 +219,11 @@ export default {
   data() {
     return {
       // Settings
+      settings: true,
       selectedColumn: null,
       columnSelection: false,
-      absolueOption: false,
-      absolue: false,
+      absoluteOption: false,
+      absolute: false,
 
       // Statistics
       nbSelectedSamplesAtUpdate: null,
@@ -236,6 +250,9 @@ export default {
   created() {
     // Select the 3 firsts columns
     if (this.data.nbColumns > 0) this.selectCol(0);
+    this.$parent.$on("settings", () => {
+      this.settings = !this.settings;
+    });
   },
   mounted() {
     this.$parent.$on("redraw", this.updateStatistics);
@@ -244,8 +261,8 @@ export default {
     selectCol(index) {
       this.selectedColumn = this.data.columns.find((c) => c.index === index);
       this.columnSelection = false;
-      this.absolueOption = this.selectedColumn.type !== String && this.selectedColumn.min < 0;
-      this.absolue = false;
+      this.absoluteOption = this.selectedColumn.type !== String && this.selectedColumn.min < 0;
+      this.absolute = false;
 
       this.updateStatistics();
     },
@@ -257,7 +274,7 @@ export default {
         valuesText = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
       } else {
         values = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
-        if (this.absolue) values = values.map((v) => Math.abs(v));
+        if (this.absolute) values = values.map((v) => Math.abs(v));
       }
       this.nbSelectedSamplesAtUpdate = values.length;
 
@@ -276,13 +293,13 @@ export default {
       // Min
       this.min = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolue) this.min = dataOperations.humanize(this.selectedColumn.min);
+        if (!this.absolute) this.min = dataOperations.humanize(this.selectedColumn.min);
         else this.min = dataOperations.humanize(dataOperations.getMin(values));
 
       // Max
       this.max = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolue) this.max = dataOperations.humanize(this.selectedColumn.max);
+        if (!this.absolute) this.max = dataOperations.humanize(this.selectedColumn.max);
         else this.max = dataOperations.humanize(dataOperations.getMax(values));
 
       // Std & variance
@@ -376,7 +393,7 @@ export default {
     coloredColumnIndex(n) {
       this.$parent.colorWarning = this.colColorDisplayed !== n;
     },
-    absolue() {
+    absolute() {
       this.updateStatistics();
     },
   },
@@ -384,14 +401,11 @@ export default {
 </script>
 
 <style scoped>
-.dataVisualisationWidget {
-  display: flex;
-  flex-direction: column;
-}
-
 #columnStat {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
 }
 #columnStat #top {
   display: flex;

@@ -99,7 +99,7 @@ const SatisticalAnasysis = {
 
     // Filters
     filters: [],
-    filtersEffecs: [],
+    filtersEffects: [],
 
     // AlgoProviders
     experiments: {}, // Format: { algoProviderName: { algoId: [experiment]} }
@@ -145,8 +145,8 @@ const SatisticalAnasysis = {
 
       state.filters = [...state.filters, ...toSave];
     },
-    setFiltersEffects(state, filtersEffecs) {
-      state.filtersEffecs = filtersEffecs;
+    setFiltersEffects(state, filtersEffects) {
+      state.filtersEffects = filtersEffects;
     },
     clearAllFilters(state) {
       state.filters = [];

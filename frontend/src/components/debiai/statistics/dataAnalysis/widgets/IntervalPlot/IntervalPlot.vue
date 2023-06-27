@@ -1,7 +1,7 @@
 <template>
   <div
     id="intervalPlot"
-    class="dataVisualisationWidget"
+    class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
     <modal
@@ -154,6 +154,7 @@
 </template>
 
 <script>
+import { plotlyToImage } from "@/services/statistics/analysisExport";
 import Plotly from "plotly.js/dist/plotly";
 
 // components
@@ -431,6 +432,12 @@ export default {
       this.columnLowerIndex = index;
       this.lowerAxisSelection = false;
       this.intervalPlotDrawed = false;
+    },
+
+    // Export
+    async getImage() {
+      // Return the URL of an image representing this widget results
+      return await plotlyToImage(this.divIntervalPlot);
     },
   },
   computed: {

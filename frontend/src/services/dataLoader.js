@@ -19,7 +19,7 @@ function resetCurrentAnalysis() {
 }
 
 //
-//  Need to take position on wich columns stay availiable or not
+//  Need to take position on which columns stay available or not
 //
 const CATEGORIES = [
   { blName: "inputs", singleName: "input" },
@@ -623,7 +623,7 @@ async function loadProjectSamples({
   selectionIds = null,
   selectionIntersection = false,
   modelIds = null,
-  commomModelResults = false,
+  commonModelResults = false,
 }) {
   // Check if the analysis is already running
   if (isAnalysisLoading()) throw new Error("Analysis already running");
@@ -642,7 +642,7 @@ async function loadProjectSamples({
         selectionIds,
         selectionIntersection,
         modelIds,
-        commomModelResults
+        commonModelResults
       );
     } else {
       projectSamples = await loadData(selectionIds, selectionIntersection);

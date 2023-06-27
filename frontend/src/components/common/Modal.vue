@@ -3,7 +3,7 @@
     id="modal"
     @click.stop="outsideClick"
   >
-    <div id="pannel">
+    <div id="Panel">
       <slot />
     </div>
 
@@ -77,7 +77,7 @@ export default {
   cursor: pointer;
 }
 
-#pannel {
+#Panel {
   max-height: 90vh;
   max-width: 90vw;
   padding: 3vh;
@@ -86,7 +86,7 @@ export default {
   overflow: auto;
 }
 
-#pannel:hover {
+#Panel:hover {
   cursor: default;
 }
 

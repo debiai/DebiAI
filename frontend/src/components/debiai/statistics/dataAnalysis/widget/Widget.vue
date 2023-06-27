@@ -5,7 +5,7 @@
       v-if="confSettings"
       @close="confSettings = false"
     >
-      <WidgetConfPannel
+      <WidgetConfPanel
         :widgetTitle="title"
         :widgetName="name"
         :confToSave="confToSave"
@@ -58,6 +58,20 @@
         :readOnly="true"
       />
     </modal>
+
+    <!-- Widget Comment modal -->
+    <modal
+      v-if="commentModal"
+      @close="commentModal = false"
+    >
+      <Comments
+        :comments="comments"
+        @addComment="addComment"
+        @removeComment="removeComment"
+        @close="commentModal = false"
+      />
+    </modal>
+
     <!-- Widget -->
     <div
       id="widgetHeader"
@@ -78,7 +92,7 @@
 
       <!-- Loading anim, messages, warning & filters applied -->
       <div class="center">
-        <!-- Loading from backend -->
+        <!-- Loading animation -->
         <div
           v-if="loading"
           class="saving"
@@ -152,15 +166,26 @@
       </div>
 
       <!-- Options : configuration, copy, settings, close btn, ... -->
-      <div
-        class="options"
-        v-if="!simple"
-      >
+      <div class="options">
+        <!-- Comment btn -->
+        <button
+          class="white"
+          title="Comment this widget"
+          @click="commentModal = true"
+        >
+          <span v-if="comments.length">{{ comments.length }}</span>
+          <inline-svg
+            :src="require('@/assets/svg/comment.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
         <!-- export btn -->
         <button
           v-if="exportData !== null"
           class="white aligned"
           title="Export widget data"
+          style="width: 60px"
           @click="startExport"
         >
           Export
@@ -170,10 +195,25 @@
             width="18"
           />
         </button>
+        <!-- export image btn -->
+        <button
+          v-if="canExportImage"
+          class="white"
+          title="Download an image of the plot"
+          @click="downloadImage"
+          :disabled="loading"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/downloadImage.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
         <!-- filtering ongoing btn -->
         <button
           v-if="canFilterSamples && startFiltering"
           class="purple highlighted"
+          style="width: 85px"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
         >
@@ -207,15 +247,13 @@
           @click="saveConfiguration"
         >
           <inline-svg
-            :src="
-              confAsChanged ? require('@/assets/svg/save.svg') : require('@/assets/svg/gear.svg')
-            "
+            :src="require('@/assets/svg/save.svg')"
             width="14"
             height="14"
-            fill="white"
+            style="filter: invert(95%)"
           />
         </button>
-        <!-- dublicate btn -->
+        <!-- Copy btn -->
         <button
           class="green"
           :title="'Duplicate the ' + title + ' widget'"
@@ -228,6 +266,7 @@
             fill="white"
           />
         </button>
+
         <!-- Settings btn -->
         <button
           class="warning"
@@ -240,7 +279,7 @@
             height="14"
           />
         </button>
-        <!-- Cross btn -->
+        <!-- Close btn -->
         <button
           class="red"
           :title="'Close ' + title + ' widget'"
@@ -254,39 +293,29 @@
           />
         </button>
       </div>
-      <div
-        class="options simple"
-        v-else
-      >
-        <button
-          class="red"
-          :title="'Close ' + title + ' widget'"
-          @click="remove"
-        ></button>
-      </div>
     </div>
 
-    <!-- Display the visualisation tool -->
+    <!-- Display the visualization tool -->
     <slot />
   </div>
 </template>
 
 <script>
-import WidgetConfPannel from "./widgetConfigurationCreation/WidgetConfPannel";
+import WidgetConfPanel from "./widgetConfigurationCreation/WidgetConfPanel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 import FilterList from "../dataFilters/FilterList";
+import Comments from "./comments/Comments";
 
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPannel, DataExportMenu, FilterList },
+  components: { WidgetConfPanel, DataExportMenu, FilterList, Comments },
   props: {
     data: { type: Object, required: true },
     widgetKey: { type: String, required: true },
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
-    simple: { type: Boolean, default: false },
     configuration: { type: Object },
   },
   data() {
@@ -313,6 +342,11 @@ export default {
       // Export
       exportData: null,
       exportModal: false,
+      canExportImage: false,
+
+      // Comments
+      commentModal: false,
+      comments: [],
     };
   },
   created() {
@@ -340,6 +374,9 @@ export default {
         // canFilterSamples
         if ("selectDataOnPlot" in slotCom.componentInstance) this.canFilterSamples = true;
 
+        // canExportImage
+        if ("getImage" in slotCom.componentInstance) this.canExportImage = true;
+
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
         this.loading = false;
@@ -349,6 +386,7 @@ export default {
         setTimeout(() => this.getWidgetProperties(), 20);
       }
     },
+
     // Controls
     settings() {
       this.$emit("settings");
@@ -357,7 +395,7 @@ export default {
       this.$emit("redraw");
     },
     async remove() {
-      // Firt ask if the user wants to save the widget configuration
+      // First ask if the user wants to save the widget configuration
       if (this.canSaveConfiguration && this.confAsChanged) {
         let rep = await swal({
           title: "Save the widget configuration ?",
@@ -402,7 +440,7 @@ export default {
       if (this.canSaveConfiguration) {
         // Load configuration to copy
         let configuration = this.getComponentConf();
-        this.$emit("copy", { configuration, name: this.name + " copy" });
+        this.$emit("copy", { configuration, name: this.name });
       } else this.$emit("copy");
     },
 
@@ -479,9 +517,58 @@ export default {
         ...exportData,
       };
     },
-
     startExport() {
       this.exportModal = true;
+    },
+    getImage() {
+      if (this.canExportImage) {
+        let slotCom = this.$slots.default[0].componentInstance;
+        return slotCom.getImage();
+      } else return null;
+    },
+    downloadImage() {
+      // Star a request
+      this.$store.commit("startRequest", {
+        name: "Downloading image",
+        code: this.index,
+      });
+      this.loading = true;
+
+      setTimeout(() => {
+        this.getImage()
+          .then((image) => {
+            if (image) {
+              let link = document.createElement("a");
+              link.href = image;
+
+              // Get the project name
+              const projectName = this.$store.state.ProjectPage.projectId;
+
+              const imageName = this.name.replace(/ /g, "_");
+              link.download = projectName + "_" + imageName;
+              link.click();
+            }
+          })
+          .finally(() => {
+            this.loading = false;
+            this.$store.commit("endRequest", this.index);
+          });
+      }, 100);
+    },
+
+    // Comments
+    addComment({ title, text }) {
+      this.comments.push({
+        id: this.$services.uuid(),
+        title,
+        text,
+      });
+    },
+    removeComment(id) {
+      this.comments = this.comments.filter((comment) => comment.id !== id);
+    },
+    getComments() {
+      return this.comments;
     },
 
     // Other
@@ -573,19 +660,17 @@ export default {
   justify-content: flex-end;
 }
 
+.options button {
+  width: 35px;
+  padding: 2px 0px 2px 0px;
+}
 .options button.warning {
   width: 70px;
 }
 
 .options button + button {
-  margin-left: 10px;
+  margin-left: 5px;
 }
-
-.simple button.red {
-  width: 20px;
-  height: 20px;
-}
-
 .center {
   flex: 1;
   display: flex;
