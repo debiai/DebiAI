@@ -743,6 +743,7 @@ header #widgetList button + button {
 /* Css for all plot children */
 .dataVisualizationWidget {
   height: 100%;
+  min-height: 100px;
 }
 
 .plot {

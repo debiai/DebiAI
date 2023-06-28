@@ -49,6 +49,7 @@
       </div>
     </Modal>
 
+    <!-- Comments title -->
     <h3
       class="aligned spaced gapped"
       id="title"
@@ -60,7 +61,7 @@
           height="18"
           style="margin-right: 3px"
         />
-        Widget comments
+        Comments
         <documentation-block>
           This is the widget comments section, here you can add comments to the widget. This can be
           used to write down your interpretation of the widget results.
@@ -90,39 +91,45 @@
       </span>
     </h3>
 
+    <!-- Comment list-->
     <div
       id="commentList"
       class="itemList"
     >
-      <div
+      <!-- <div
         id="noComments"
         v-if="comments.length === 0"
       >
         <h3>No comments yet</h3>
-      </div>
+      </div> -->
 
       <transition-group name="scale">
         <div
-          class="comment item selectable"
+          class="comment item"
           v-for="comment in comments"
           :key="comment.id"
         >
-          <h3 class="commentTitle">
+          <h4 class="commentTitle">
             <inline-svg
               :src="require('@/assets/svg/comment.svg')"
-              width="18"
-              height="18"
+              width="13"
+              height="13"
               style="margin-right: 3px"
             />
             {{ comment.title }}
-          </h3>
+          </h4>
           <p class="text">{{ comment.text }}</p>
 
           <button
-            class="red"
+            class="white"
             @click="deleteComment(comment.id)"
+            title="Delete comment"
           >
-            Delete
+            <inline-svg
+              :src="require('@/assets/svg/close.svg')"
+              width="10"
+              height="10"
+            />
           </button>
         </div>
       </transition-group>
@@ -165,11 +172,12 @@ export default {
 
 <style lang="scss" scoped>
 #Comments {
-  min-width: 800px;
-  min-height: 500px;
+  border-top: 1px solid #ccc;
+  margin: 20px;
+  padding-top: 10px;
 
   #title {
-    padding-bottom: 30px;
+    padding-bottom: 10px;
 
     span {
       display: flex;
@@ -180,14 +188,12 @@ export default {
 
   #commentList {
     overflow: auto;
-    max-height: 500px;
 
     .comment {
       display: flex;
       gap: 30px;
-      padding: 10px;
+      padding: 0px;
       align-items: center;
-      max-width: 800px;
 
       .commentTitle {
         text-align: left;
@@ -197,6 +203,7 @@ export default {
       .text {
         text-align: left;
         word-break: break-all;
+        white-space: pre-wrap;
       }
 
       button {
