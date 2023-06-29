@@ -1,5 +1,5 @@
 import store from "../store";
-// import cacheService from './cacheService'
+import cacheService from "./cacheService";
 import services from "./services";
 
 const backendDialog = require("./backendDialog");
@@ -292,18 +292,23 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
   console.time("Loading the project data");
   // Pull the tree
   let retArray = [];
-  let retDataIdlist = [];
+  let retDataIdList = [];
 
   try {
     while (pulledData < nbSamples) {
       const samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
 
       // First, pull the samples from the browser memory
-      // let cachedSamples = await cacheService.getSamplesByIds(projectMetadata.timestamp, samplesToPull)
-      // let samplesToDownload = samplesToPull.filter(sampleId => !(sampleId in cachedSamples))
-      // retArray = [...retArray, ...Object.values(cachedSamples)]
-      // retDataIdlist = [...retDataIdlist, ...Object.keys(cachedSamples)]
-      const samplesToDownload = samplesToPull;
+      let cachedSamples = await cacheService.getSamplesByIds(
+        projectMetadata.timestamp,
+        samplesToPull
+      );
+      retArray = [...retArray, ...Object.values(cachedSamples)];
+      retDataIdList = [...retDataIdList, ...Object.keys(cachedSamples)];
+
+      // We ignore the samples that are already in the cache
+      const samplesToDownload = samplesToPull.filter((sampleId) => !(sampleId in cachedSamples));
+      // const samplesToDownload = samplesToPull;
 
       if (samplesToDownload.length) {
         // Then download the missing samples
@@ -334,10 +339,10 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
         // Stack the samples
         retArray = [...retArray, ...Object.values(map)];
-        retDataIdlist = [...retDataIdlist, ...Object.keys(map)];
+        retDataIdList = [...retDataIdList, ...Object.keys(map)];
 
         // Store the samples in the cache
-        // await cacheService.storeSamples(timestamp, map) TODO
+        await cacheService.saveSamples(projectMetadata.timestamp, map);
       }
 
       // Update the progress
@@ -351,7 +356,7 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
     endRequest(requestCode);
     console.timeEnd("Loading the project data");
   }
-  return { dataArray: retArray, sampleIdList: retDataIdlist };
+  return { dataArray: retArray, sampleIdList: retDataIdList };
 }
 
 // Model results

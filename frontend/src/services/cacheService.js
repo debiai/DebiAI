@@ -7,7 +7,7 @@ const DB_VERSION = 1;
 async function getDb(timestamp) {
   const projectId = store.state.ProjectPage.projectId;
   const dataProviderId = store.state.ProjectPage.dataProviderId;
-  const dbName = `${dataProviderId}_${projectId}`;
+  const dbName = `${dataProviderId}___${projectId}`;
 
   return new Promise((resolve, reject) => {
     let request = window.indexedDB.open(dbName, DB_VERSION);
@@ -18,7 +18,7 @@ async function getDb(timestamp) {
     };
 
     request.onsuccess = (e) => {
-      // Connection successfull
+      // Connection successful
       // Checking that the timestamp is the same
 
       let transaction = e.target.result.transaction("data", "readwrite");
@@ -80,11 +80,19 @@ async function getDb(timestamp) {
 }
 
 async function saveSamples(timestamp, samples) {
+  // Samples :
+  // {
+  //   id1: [...],
+  //   id2: [...],
+  //   ...
+  // }
+
   try {
     let db = await getDb(timestamp);
     console.time("Saving data to the cache");
 
     return new Promise((resolve) => {
+      // Init transaction
       let trans = db.transaction("samples", "readwrite");
       trans.oncomplete = () => {
         console.timeEnd("Saving data to the cache");
@@ -97,9 +105,13 @@ async function saveSamples(timestamp, samples) {
         resolve();
       };
 
+      // Get the sample store
       let sampleStore = trans.objectStore("samples");
 
-      samples.forEach((sample) => sampleStore.put(sample));
+      // Save all sample
+      Object.entries(samples).forEach(([sampleId, sample]) =>
+        sampleStore.put({ sampleId, data: sample })
+      );
     });
   } catch (error) {
     console.warn("Error while saving samples to cache");
@@ -140,62 +152,62 @@ async function getSamplesByIds(timestamp, sampleIds) {
   }
 }
 
-async function saveResults(timestamp, modelId, results) {
-  let db = await getDb(timestamp);
-  console.time("Saving results to the cache");
+// async function saveResults(timestamp, modelId, results) {
+//   let db = await getDb(timestamp);
+//   console.time("Saving results to the cache");
 
-  return new Promise((resolve) => {
-    let trans = db.transaction("results", "readwrite");
-    trans.oncomplete = () => {
-      console.timeEnd("Saving results to the cache");
-      resolve();
-    };
-    trans.onerror = (e) => {
-      console.timeEnd("Saving results to the cache");
-      console.log("Error");
-      console.log(e);
-      resolve();
-    };
+//   return new Promise((resolve) => {
+//     let trans = db.transaction("results", "readwrite");
+//     trans.oncomplete = () => {
+//       console.timeEnd("Saving results to the cache");
+//       resolve();
+//     };
+//     trans.onerror = (e) => {
+//       console.timeEnd("Saving results to the cache");
+//       console.log("Error");
+//       console.log(e);
+//       resolve();
+//     };
 
-    let resultsStore = trans.objectStore("results");
-    Object.entries(results).forEach(([sampleId, result]) =>
-      resultsStore.put({ sampleId, modelId, result })
-    );
-  });
-}
+//     let resultsStore = trans.objectStore("results");
+//     Object.entries(results).forEach(([sampleId, result]) =>
+//       resultsStore.put({ sampleId, modelId, result })
+//     );
+//   });
+// }
 
-async function getModelResultsByIds(timestamp, modelId, sampleIds) {
-  let db = await getDb(timestamp);
+// async function getModelResultsByIds(timestamp, modelId, sampleIds) {
+//   let db = await getDb(timestamp);
 
-  return new Promise((resolve) => {
-    let trans = db.transaction("results", "readonly");
-    let resultsStore = trans.objectStore("results");
-    let results = {};
-    let lastSample = sampleIds.length;
+//   return new Promise((resolve) => {
+//     let trans = db.transaction("results", "readonly");
+//     let resultsStore = trans.objectStore("results");
+//     let results = {};
+//     let lastSample = sampleIds.length;
 
-    console.time("Loading results from cache");
-    sampleIds.forEach((sampleId, i) => {
-      // For unknown reason, the modelID and sampleID in the double key
-      // need to be swapped :
-      let resultRequest = resultsStore.get([modelId, sampleId]);
-      resultRequest.onsuccess = () => {
-        if (resultRequest.result) results[sampleId] = resultRequest.result.result;
-        if (i == lastSample - 1) {
-          console.timeEnd("Loading results from cache");
-          resolve(results);
-        }
-      };
-      resultRequest.onerror = (e) => {
-        console.timeEnd("Loading results from cache");
-        console.log("Error");
-        console.log(e);
-        resolve(results);
-      };
-    });
-  });
-}
+//     console.time("Loading results from cache");
+//     sampleIds.forEach((sampleId, i) => {
+//       // For unknown reason, the modelID and sampleID in the double key
+//       // need to be swapped :
+//       let resultRequest = resultsStore.get([modelId, sampleId]);
+//       resultRequest.onsuccess = () => {
+//         if (resultRequest.result) results[sampleId] = resultRequest.result.result;
+//         if (i == lastSample - 1) {
+//           console.timeEnd("Loading results from cache");
+//           resolve(results);
+//         }
+//       };
+//       resultRequest.onerror = (e) => {
+//         console.timeEnd("Loading results from cache");
+//         console.log("Error");
+//         console.log(e);
+//         resolve(results);
+//       };
+//     });
+//   });
+// }
 
-// async function getAllRestults(db) {
+// async function getAllResults(db) {
 //   return new Promise((resolve) => {
 
 //     let trans = db.transaction(['results'], 'readonly');
@@ -220,6 +232,6 @@ async function getModelResultsByIds(timestamp, modelId, sampleIds) {
 export default {
   saveSamples,
   getSamplesByIds,
-  saveResults,
-  getModelResultsByIds,
+  // saveResults,
+  // getModelResultsByIds,
 };

@@ -26,6 +26,8 @@
       v-on:deleteProject="deleteProject"
       v-on:backToProjects="backToProjects"
     />
+
+    <!-- Project Content -->
     <transition name="fade">
       <div
         id="projectContent"
@@ -54,11 +56,22 @@
           />
         </div>
 
-        <!-- Start analysis -->
-        <Analysis
-          :disabled="!readyToAnalyse"
-          v-on:startAnalysis="startAnalysis"
-        />
+        <!-- cache and Start analysis btn -->
+        <div
+          id="bot"
+          class="card"
+        >
+          <CachePanel />
+
+          <button
+            id="startAnalysisBtn"
+            @click="startAnalysis(false)"
+            @mousedown.middle="startAnalysis(true)"
+            :disabled="!readyToAnalyze"
+          >
+            Start analysis
+          </button>
+        </div>
       </div>
     </transition>
   </div>
@@ -70,7 +83,7 @@ import ProjectInfo from "./ProjectInfo";
 import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
-import Analysis from "./Analysis.vue";
+import CachePanel from "./cache/CachePanel.vue";
 
 // Services
 import dataLoader from "../../../services/dataLoader";
@@ -83,7 +96,7 @@ export default {
     ProjectColumnsVisu,
     Models,
     Selections,
-    Analysis,
+    CachePanel,
   },
   data: () => {
     return {
@@ -389,7 +402,7 @@ export default {
     },
   },
   computed: {
-    readyToAnalyse() {
+    readyToAnalyze() {
       // return true if the ans can be run
       if (this.disabled || this.loading || this.nbSelectedSamples === 0) return false;
       if (this.selectedModelIds.length > 0 && this.nbEvaluatedSamples === 0) return false;
@@ -424,7 +437,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #project {
   text-align: left;
   display: flex;
@@ -442,6 +455,20 @@ export default {
 #selectionAndModels {
   display: flex;
   flex: 1;
-  max-height: 67vh;
+}
+
+#bot {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding: 10px;
+  height: 11vh;
+  gap: 30px;
+
+  #startAnalysisBtn {
+    height: 100%;
+    font-size: 1.2em;
+    width: 400px;
+  }
 }
 </style>
