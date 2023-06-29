@@ -26,6 +26,8 @@
               v-model="newCommentTitle"
               style="flex: 1"
               placeholder="Comment title"
+              @keydown.enter="addComment"
+              ref="newCommentTitle"
             />
           </span>
           <!-- Comment description -->
@@ -35,6 +37,7 @@
               v-model="newCommentText"
               style="height: 50px; flex: 1"
               placeholder="Comment text, write your interpretation of this widget results here"
+              @keydown.enter="addComment"
             />
           </span>
 
@@ -165,6 +168,15 @@ export default {
     },
     deleteComment(commentId) {
       this.$emit("removeComment", commentId);
+    },
+  },
+  watch: {
+    newCommentModal(val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.$refs.newCommentTitle.focus();
+        });
+      }
     },
   },
 };
