@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <!-- Wigdet configuration load or save modal -->
+    <!-- Widget configuration modal -->
     <modal
       v-if="confSettings"
       @close="confSettings = false"
@@ -30,7 +30,7 @@
       />
     </modal>
 
-    <!-- Local filters Display -->
+    <!-- Local filters modal -->
     <modal
       v-if="showLocalFilters"
       @close="showLocalFilters = false"
@@ -59,20 +59,7 @@
       />
     </modal>
 
-    <!-- Widget Comment modal -->
-    <modal
-      v-if="commentModal"
-      @close="commentModal = false"
-    >
-      <Comments
-        :comments="comments"
-        @addComment="addComment"
-        @removeComment="removeComment"
-        @close="commentModal = false"
-      />
-    </modal>
-
-    <!-- Widget -->
+    <!-- Widget Header -->
     <div
       id="widgetHeader"
       :class="'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')"
@@ -169,9 +156,9 @@
       <div class="options">
         <!-- Comment btn -->
         <button
-          class="white"
+          :class="'white ' + (commentModal ? 'highlighted' : '')"
           title="Comment this widget"
-          @click="commentModal = true"
+          @click="commentModal = !commentModal"
         >
           <span v-if="comments.length">{{ comments.length }}</span>
           <inline-svg
@@ -266,7 +253,6 @@
             fill="white"
           />
         </button>
-
         <!-- Settings btn -->
         <button
           class="warning"
@@ -295,8 +281,17 @@
       </div>
     </div>
 
-    <!-- Display the visualization tool -->
+    <!-- Display the Widget content -->
     <slot />
+
+    <!-- Widget Comments -->
+    <Comments
+      v-if="commentModal"
+      :comments="comments"
+      @addComment="addComment"
+      @removeComment="removeComment"
+      @close="commentModal = false"
+    />
   </div>
 </template>
 
@@ -358,6 +353,7 @@ export default {
     this.name = this.title;
   },
   mounted() {
+    // Get what the widget content can do
     this.getWidgetProperties();
   },
   methods: {
@@ -610,6 +606,14 @@ export default {
         // When all the filters has been removed, we can clear the filters
         this.$emit("filterCleared");
       }
+    },
+    commentModal(newVal) {
+      // Update the plot size when the comment modal is opened or closed
+      window.dispatchEvent(new Event("resize"));
+    },
+    comments(newVal) {
+      // Update the plot size when the comments are updated
+      window.dispatchEvent(new Event("resize"));
     },
   },
 };
