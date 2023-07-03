@@ -61,7 +61,7 @@
           id="bot"
           class="card"
         >
-          <CachePanel />
+          <CachePanel :project="project" />
 
           <button
             id="startAnalysisBtn"

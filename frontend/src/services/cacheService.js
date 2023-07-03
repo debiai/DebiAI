@@ -152,6 +152,30 @@ async function getSamplesByIds(timestamp, sampleIds) {
   }
 }
 
+async function getNbSamples(timestamp) {
+  // Get the number of samples in the cache for the current project
+  try {
+    let db = await getDb(timestamp);
+
+    return new Promise((resolve) => {
+      let trans = db.transaction("samples", "readonly");
+      let sampleStore = trans.objectStore("samples");
+      const request = sampleStore.count();
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      request.onerror = (e) => {
+        console.log("Error");
+        console.log(e);
+        resolve(0);
+      };
+    });
+  } catch (error) {
+    console.warn("Error while loading samples from cache");
+    return null;
+  }
+}
+
 // async function saveResults(timestamp, modelId, results) {
 //   let db = await getDb(timestamp);
 //   console.time("Saving results to the cache");
@@ -234,4 +258,5 @@ export default {
   getSamplesByIds,
   // saveResults,
   // getModelResultsByIds,
+  getNbSamples,
 };

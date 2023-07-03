@@ -253,7 +253,7 @@ async function getProjectMetadata({ considerResults }) {
 
   // Labels creation from project columns
   var metaData = {
-    timestamp: projectInfo.creationDate,
+    timestamp: projectInfo.updateDate,
     nbSamples: projectInfo.nbSamples,
     labels: ["Data ID"],
     categories: ["other"],
@@ -296,32 +296,33 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
   try {
     while (pulledData < nbSamples) {
-      const samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
+      let samplesToPull = sampleIds.slice(pulledData, pulledData + CHUNK_SIZE);
 
       // First, pull the samples from the browser memory
-      let cachedSamples = await cacheService.getSamplesByIds(
-        projectMetadata.timestamp,
-        samplesToPull
-      );
-      retArray = [...retArray, ...Object.values(cachedSamples)];
-      retDataIdList = [...retDataIdList, ...Object.keys(cachedSamples)];
+      if (projectMetadata.timestamp) {
+        let cachedSamples = await cacheService.getSamplesByIds(
+          projectMetadata.timestamp,
+          samplesToPull
+        );
+        retArray = [...retArray, ...Object.values(cachedSamples)];
+        retDataIdList = [...retDataIdList, ...Object.keys(cachedSamples)];
 
-      // We ignore the samples that are already in the cache
-      const samplesToDownload = samplesToPull.filter((sampleId) => !(sampleId in cachedSamples));
-      // const samplesToDownload = samplesToPull;
+        // We ignore the samples that are already in the cache
+        samplesToPull = samplesToPull.filter((sampleId) => !(sampleId in cachedSamples));
+      }
 
-      if (samplesToDownload.length) {
+      if (samplesToPull.length) {
         // Then download the missing samples
-        console.log(samplesToDownload.length + " samples to download");
+        console.log(samplesToPull.length + " samples to download");
 
         // Deal with the analysis info
         const analysis = { id: currentAnalysis.id, start: false, end: false };
         if (pulledData === 0) analysis.start = true;
-        if (pulledData + samplesToDownload.length === nbSamples) analysis.end = true;
+        if (pulledData + samplesToPull.length === nbSamples) analysis.end = true;
 
         // Send the request
         const downloadedSamples = await backendDialog.default.getBlocksFromSampleIds(
-          samplesToDownload,
+          samplesToPull,
           analysis
         );
 
@@ -342,7 +343,9 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
         retDataIdList = [...retDataIdList, ...Object.keys(map)];
 
         // Store the samples in the cache
-        await cacheService.saveSamples(projectMetadata.timestamp, map);
+        if (projectMetadata.timestamp)
+          // Removing the await here does not change the execution time
+          await cacheService.saveSamples(projectMetadata.timestamp, map);
       }
 
       // Update the progress

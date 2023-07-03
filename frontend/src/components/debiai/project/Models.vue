@@ -168,7 +168,7 @@
 <script>
 export default {
   props: {
-    project: { type: Object },
+    project: { type: Object, required: true },
     nbEvaluatedSamples: { type: Number },
     nbResults: { type: Number },
     nbSelectedSamples: { type: Number },
