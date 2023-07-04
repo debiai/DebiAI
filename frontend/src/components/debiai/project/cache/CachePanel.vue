@@ -37,12 +37,25 @@
       </div>
 
       <div id="nbCached">Project cached items: {{ nbCacheItems }}</div>
-      <button
-        @click="clearCache"
-        :disabled="loading"
-      >
-        Clear cache
-      </button>
+      <div id="buttons">
+        <button
+          id="clearCache"
+          @click="clearCache"
+          :disabled="loading"
+        >
+          Clear cache
+        </button>
+        <button
+          @click="getNbCacheItems"
+          class="warning"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/update.svg')"
+            width="10"
+            height="10"
+          />
+        </button>
+      </div>
     </div>
     <p
       v-else
@@ -82,16 +95,20 @@ export default {
   mounted() {
     // We need to know the project update date to use the cache
     if (this.project.updateDate) {
-      this.updateDate = this.project.updateDate;
-      cacheService.getNbSamples(this.updateDate).then((nb) => {
-        this.nbCacheItems = nb;
-      });
+      this.getNbCacheItems();
 
       // Check if the cache was previously disabled
       if (localStorage.getItem("useCache") === "false") this.useCache = false;
     }
   },
   methods: {
+    getNbCacheItems() {
+      this.nbCacheItems = null;
+      this.updateDate = this.project.updateDate;
+      cacheService.getNbSamples(this.updateDate).then((nb) => {
+        this.nbCacheItems = nb;
+      });
+    },
     clearCache() {
       // Start request
       this.loading = true;
@@ -154,6 +171,20 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    #buttons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      button {
+        height: 28px;
+      }
+
+      #clearCache {
+        flex: 1;
+      }
+    }
   }
   .warning {
     display: flex;
