@@ -30,7 +30,7 @@ def get_all_projects_from_data_provider(url, name):
 
         if "creationDate" not in projects[project_id]:
             projects[project_id]["creationDate"] = None
-        
+
         if "updateDate" not in projects[project_id]:
             projects[project_id]["updateDate"] = None
 

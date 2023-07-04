@@ -92,7 +92,7 @@ const ProjectPage = {
     },
     setUseCache(state, useCache) {
       state.enableCache = useCache;
-    }
+    },
   },
 };
 
