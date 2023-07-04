@@ -278,6 +278,12 @@ async function getProjectMetadata({ considerResults }) {
       metaData.categories.push("results");
     });
   }
+
+  // Get information about cache
+  const enableCache = store.state.ProjectPage.enableCache;
+  // Remove the timestamp is enough to disable the cache
+  if (!enableCache) metaData.timestamp = null;
+
   return metaData;
 }
 async function downloadSamplesData(projectMetadata, sampleIds) {
@@ -345,7 +351,7 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
         // Store the samples in the cache
         if (projectMetadata.timestamp)
           // Removing the await here does not change the execution time
-          await cacheService.saveSamples(projectMetadata.timestamp, map);
+          cacheService.saveSamples(projectMetadata.timestamp, map);
       }
 
       // Update the progress
@@ -428,6 +434,8 @@ async function loadData(selectionIds, selectionIntersection) {
     selectionIds,
     selectionIntersection
   );
+
+  if (currentAnalysis.canceled) return;
 
   // Download and convert the tree
   const { dataArray, sampleIdList } = await downloadSamplesData(projectMetadata, samplesToPull);

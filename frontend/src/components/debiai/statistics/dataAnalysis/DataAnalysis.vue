@@ -607,8 +607,8 @@ export default {
     async exportAnalysisPage() {
       let proceed = true;
 
-      // Start progess bar
-      let requestCode = this.$services.uuid();
+      // Start progress bar
+      const requestCode = this.$services.uuid();
       this.$store.commit("startRequest", {
         name: "Generating analysis export",
         code: requestCode,

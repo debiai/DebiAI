@@ -68,6 +68,7 @@ const ProjectPage = {
     projectColumns: [],
     projectResultsColumns: [],
     dataProviderInfo: null,
+    enableCache: true,
   },
   mutations: {
     setProjectId(state, projectId) {
@@ -89,6 +90,9 @@ const ProjectPage = {
     setDataProviderInfo(state, dataProviderInfo) {
       state.dataProviderInfo = dataProviderInfo;
     },
+    setUseCache(state, useCache) {
+      state.enableCache = useCache;
+    }
   },
 };
 

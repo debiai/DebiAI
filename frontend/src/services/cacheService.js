@@ -29,8 +29,8 @@ async function getDb(timestamp) {
         let timestampObj = timestampRequest.result;
         if (!timestampObj || !timestampObj.timestamp || timestampObj.timestamp !== timestamp) {
           // The database isn't up to date
-          // The dada need to be eraised in case of modifications
-          console.log("Reseting the project database");
+          // The dada need to be erased in case of modifications
+          console.log("Resetting the project database");
 
           // Samples store
           let sampleTransaction = e.target.result.transaction("samples", "readwrite");
@@ -75,6 +75,25 @@ async function getDb(timestamp) {
 
       // add the timestamp
       dataStore.put({ id: "timestamp", timestamp });
+    };
+  });
+}
+
+async function resetDb() {
+  const projectId = store.state.ProjectPage.projectId;
+  const dataProviderId = store.state.ProjectPage.dataProviderId;
+  const dbName = `${dataProviderId}___${projectId}`;
+
+  return new Promise((resolve, reject) => {
+    let request = window.indexedDB.deleteDatabase(dbName);
+
+    request.onerror = (e) => {
+      console.log("Error deleting db", e);
+      reject("Error");
+    };
+
+    request.onsuccess = (e) => {
+      resolve();
     };
   });
 }
@@ -255,6 +274,7 @@ async function getNbSamples(timestamp) {
 
 export default {
   saveSamples,
+  resetDb,
   getSamplesByIds,
   // saveResults,
   // getModelResultsByIds,
