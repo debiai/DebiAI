@@ -168,6 +168,7 @@
             <span
               class="createdDate"
               :title="$services.timeStampToDate(project.creationDate)"
+              v-if="project.creationDate"
             >
               Created {{ $services.prettyTimeStamp(project.creationDate) }}
             </span>
@@ -371,6 +372,7 @@ export default {
   margin: 0 20px 0 20px;
   border-bottom: solid rgba(0, 0, 0, 0.172) 2px;
   transition: background-color ease-out 0.1s;
+  min-height: 40px;
 }
 
 .project:first-child {

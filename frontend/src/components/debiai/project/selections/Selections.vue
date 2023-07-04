@@ -204,7 +204,7 @@ export default {
     //  Request
   },
   props: {
-    project: { type: Object },
+    project: { type: Object, required: true },
     nbSelectedSamples: { type: Number, default: 0 },
   },
   data: () => {
@@ -220,19 +220,8 @@ export default {
       selectedRequestId: null,
     };
   },
-  created() {
-    if (!this.project) {
-      // Load the selections
-      this.loadSelections();
-    }
-  },
+  mounted() {},
   methods: {
-    loadSelections() {
-      this.$backendDialog.getSelections().then((selections) => {
-        this.project = {};
-        this.project.selections = selections;
-      });
-    },
     selectSelection(selectionId) {
       if (this.selectedSelectionIds.includes(selectionId))
         this.selectedSelectionIds = this.selectedSelectionIds.filter((mId) => mId !== selectionId);
@@ -277,7 +266,7 @@ export default {
   },
   computed: {
     filteredSelections() {
-      if (this.project === null) return [];
+      if (!this.project || !this.project.selections) return [];
       if (this.searchBar === "") return this.project.selections;
       return this.project.selections.filter((s) =>
         s.name.toLowerCase().includes(this.searchBar.toLowerCase())

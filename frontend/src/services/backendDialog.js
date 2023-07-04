@@ -44,7 +44,6 @@ export default {
   },
   getProject() {
     let code = startRequest("Getting project data");
-    console.log(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId());
     return axios
       .get(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId())
       .finally(() => {

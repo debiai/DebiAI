@@ -10,6 +10,7 @@
       <transition name="fade">
         <p
           id="docBlock"
+          :class="{ top: top }"
           @mouseenter="show = true"
           @mouseleave="show = false"
           v-show="show"
@@ -26,6 +27,10 @@ export default {
   name: "DocumentationBlock",
   props: {
     followCursor: {
+      type: Boolean,
+      default: false,
+    },
+    top: {
       type: Boolean,
       default: false,
     },
@@ -88,6 +93,10 @@ export default {
   font-weight: normal;
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
   max-width: 500px;
+}
+
+#docBlock.top {
+  transform: translateY(-100%);
 }
 </style>
 

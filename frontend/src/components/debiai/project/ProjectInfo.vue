@@ -132,7 +132,7 @@
       <transition name="fade">
         <div
           id="dates"
-          v-if="project"
+          v-if="project && project.creationDate && project.updateDate"
         >
           <span :title="$services.timeStampToDate(project.creationDate)">
             Created {{ $services.prettyTimeStamp(project.creationDate) }}

@@ -28,6 +28,12 @@ def get_all_projects_from_data_provider(url, name):
         if "name" not in projects[project_id]:
             projects[project_id]["name"] = project_id
 
+        if "creationDate" not in projects[project_id]:
+            projects[project_id]["creationDate"] = None
+
+        if "updateDate" not in projects[project_id]:
+            projects[project_id]["updateDate"] = None
+
         project_list.append(
             {
                 "id": project_id,
@@ -36,8 +42,8 @@ def get_all_projects_from_data_provider(url, name):
                 "nbModels": projects[project_id]["nbModels"],
                 "nbSamples": projects[project_id]["nbSamples"],
                 "nbSelections": projects[project_id]["nbSelections"],
-                "creationDate": timeNow(),
-                "updateDate": timeNow(),
+                "creationDate": projects[project_id]["creationDate"],
+                "updateDate": projects[project_id]["updateDate"],
             }
         )
 
@@ -62,6 +68,18 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     else:
         nbSamples = None
 
+    # Check creationDate
+    if "creationDate" in project:
+        creationDate = project["creationDate"]
+    else:
+        creationDate = None
+
+    # Check updateDate
+    if "updateDate" in project:
+        updateDate = project["updateDate"]
+    else:
+        updateDate = None
+
     # Converting views to DebiAI projects
     return {
         "id": id_project,
@@ -72,8 +90,8 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "nbModels": len(models),
         "nbSamples": nbSamples,
         "nbSelections": len(selections),
-        "creationDate": timeNow(),
-        "updateDate": timeNow(),
+        "creationDate": creationDate,
+        "updateDate": updateDate,
         "selections": selections,
         "models": models,
     }
