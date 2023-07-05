@@ -1,7 +1,7 @@
 #############################################################################
 # Imports
 #############################################################################
-import modules.dataProviders.DataProviderException as DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 import modules.dataProviders.dataProviderManager as data_provider_manager
 import utils.samples.get_id_list as get_id_list
 
@@ -24,5 +24,5 @@ def get_list(dataProviderId, projectId, data):
         data_id_list = get_id_list.get_list(data_provider, projectId, data)
 
         return data_id_list, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code

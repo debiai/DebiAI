@@ -34,5 +34,5 @@ def get_data(dataProviderId, projectId, data):
             + dataProviderId,
             404,
         )
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code

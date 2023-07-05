@@ -1,4 +1,4 @@
-import modules.dataProviders.DataProviderException as DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 import modules.dataProviders.dataProviderManager as data_provider_manager
 import modules.dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
@@ -23,7 +23,7 @@ def post_project(data):
         project["dataProviderId"] = dataProviderId
 
         return project, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -33,7 +33,7 @@ def post_blocklevels(dataProviderId, projectId, blocklevels):
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data_provider.update_block_structure(projectId, blocklevels)
         return blocklevels, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -44,7 +44,7 @@ def post_resultsStructure(dataProviderId, projectId, resultStructure):
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data_provider.update_results_structure(projectId, resultStructure)
         return resultStructure, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -53,7 +53,7 @@ def post_block_tree(dataProviderId, projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         return data_provider.add_block_tree(projectId, data), 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -63,5 +63,5 @@ def add_results_dict(dataProviderId, projectId, modelId, data):
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data_provider.add_results_dict(projectId, modelId, data)
         return "Results added", 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code

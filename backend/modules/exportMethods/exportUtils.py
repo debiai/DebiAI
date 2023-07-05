@@ -1,6 +1,6 @@
 from config.init_config import get_config
 import modules.dataProviders.dataProviderManager as data_provider_manager
-import modules.dataProviders.DataProviderException as DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 import time
 
 from modules.exportMethods.methods.kafkaUtils import KafkaExportType
@@ -155,7 +155,7 @@ def exportSelection(dataProviderId, projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         project = data_provider.get_project(projectId)
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
     id_list = []

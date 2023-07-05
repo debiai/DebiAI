@@ -1,7 +1,7 @@
 #############################################################################
 # Imports
 #############################################################################
-import modules.dataProviders.DataProviderException as DataProviderException
+from modules.dataProviders.DataProviderException import DataProviderException
 import modules.dataProviders.dataProviderManager as data_provider_manager
 
 #############################################################################
@@ -28,7 +28,7 @@ def get_projects():
 
                 projectOverviews.extend(projects)
 
-        except DataProviderException.DataProviderException as e:
+        except DataProviderException as e:
             print("Warning get DP projects : " + e.message)
 
     return projectOverviews, 200
@@ -45,7 +45,7 @@ def get_project(dataProviderId, projectId):
         project["dataProviderId"] = dataProviderId
 
         return project, 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code
 
 
@@ -56,5 +56,5 @@ def delete_project(dataProviderId, projectId):
 
         data_provider.delete_project(projectId)
         return "Project deleted", 200
-    except DataProviderException.DataProviderException as e:
+    except DataProviderException as e:
         return e.message, e.status_code

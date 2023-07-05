@@ -65,7 +65,7 @@
           style="margin-right: 3px"
         />
         Comments
-        <documentation-block>
+        <documentation-block top>
           This is the widget comments section, here you can add comments to the widget. This can be
           used to write down your interpretation of the widget results.
           <br />
