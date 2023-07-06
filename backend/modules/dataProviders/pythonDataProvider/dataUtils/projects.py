@@ -41,11 +41,6 @@ def get_project(projectId):
 
         nbModels = len(os.listdir(DATA_PATH + projectId + "/models/"))
 
-        # Nb requests
-        nbRequests = 0
-        if os.path.exists(DATA_PATH + projectId + "/requests/"):
-            nbRequests = len(os.listdir(DATA_PATH + projectId + "/requests/"))
-
         # Nb selection
         if not os.path.exists(DATA_PATH + projectId + "/selections/"):
             raise Exception('The "selections" folder is missing')
@@ -57,11 +52,6 @@ def get_project(projectId):
             raise Exception('The "samplesHashmap.json" file is missing')
 
         nbSamples = len(hash.getHashmap(projectId))
-
-        # Nb tags
-        nbTags = 0
-        if os.path.exists(DATA_PATH + projectId + "/tags/"):
-            nbTags = len(os.listdir(DATA_PATH + projectId + "/tags/"))
 
         # project columns
         projectColumns = get_project_columns(projectId)
@@ -152,11 +142,14 @@ def get_project_columns(projectId):
     #     {
     #       "name": "block2",
     #       "contexts": [
-    #           { "name": "cont1", "type": "text" },
-    #           { "name": "cont2", "type": "text" },
+    #           { "name": "cont1", "type": "text", group:"group_1" },
+    #           { "name": "cont2", "type": "text", group:"group_1" },
     #       ]
     #     },
-    #     { "name": "block3", "contexts": [{ "name": "cont3", "type": "text" }] },
+    #     { "name": "block3", "contexts": [
+    #           { "name": "cont3", "type": "text", group:"group_1" }
+    #        ]
+    #     },
     #     {
     #       "name": "block4",
     #       "others": [{ "name": "other1", "type": "number" }],
@@ -174,9 +167,9 @@ def get_project_columns(projectId):
     # [
     #   { "name": "block1", "category": "other", "type": "auto" },
     #   { "name": "block2", "category": "other", "type": "auto" },
-    #   { "name": "cont1", "category": "context", "type": "text" },
-    #   { "name": "cont2", "category": "context", "type": "text" },
-    #   { "name": "cont3", "category": "context", "type": "text" },
+    #   { "name": "cont1", "category": "context", "type": "text", group: "group_1" },
+    #   { "name": "cont2", "category": "context", "type": "text", group: "group_1" },
+    #   { "name": "cont3", "category": "context", "type": "text", group: "group_1" },
     #   { "name": "block3", "category": "other", "type": "auto" },
     #   { "name": "other1", "category": "other", "type": "number" },
     #   { "name": "block4", "category": "other", "type": "auto" },
@@ -187,6 +180,14 @@ def get_project_columns(projectId):
 
     project_columns = []
 
+    def create_column(col, category):
+        column = {"name": col["name"], "category": category, "type": col["type"]}
+
+        if "group" in col:
+            column["group"] = col["group"]
+
+        return column
+
     for block in block_level_info:
         block_name = block["name"]
         project_columns.append(
@@ -195,35 +196,19 @@ def get_project_columns(projectId):
 
         if "groundTruth" in block:
             for ground_truth in block["groundTruth"]:
-                project_columns.append(
-                    {
-                        "name": ground_truth["name"],
-                        "category": "groundtruth",
-                        "type": ground_truth["type"],
-                    }
-                )
+                project_columns.append(create_column(ground_truth, "groundtruth"))
 
         if "contexts" in block:
             for context in block["contexts"]:
-                project_columns.append(
-                    {
-                        "name": context["name"],
-                        "category": "context",
-                        "type": context["type"],
-                    }
-                )
+                project_columns.append(create_column(context, "context"))
 
         if "inputs" in block:
             for input in block["inputs"]:
-                project_columns.append(
-                    {"name": input["name"], "category": "input", "type": input["type"]}
-                )
+                project_columns.append(create_column(input, "input"))
 
         if "others" in block:
             for other in block["others"]:
-                project_columns.append(
-                    {"name": other["name"], "category": "other", "type": other["type"]}
-                )
+                project_columns.append(create_column(other, "other"))
 
     return project_columns
 
@@ -255,7 +240,7 @@ def update_block_structure(projectId, blockStructure):
         update_project(projectId)
     except Exception as e:
         print(e)
-        raise "Something went wrong updating project structure"
+        raise Exception("Something went wrong updating project structure")
 
 
 def update_results_structure(projectId, resultStructure):

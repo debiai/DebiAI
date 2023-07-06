@@ -105,7 +105,7 @@ paths:
 
               canDelete:
                 type: object
-                description: Informations about what can be deleted by DebiAI
+                description: Information about what can be deleted by DebiAI
                 properties:
                   projects:
                     type: boolean
@@ -174,6 +174,24 @@ paths:
           description: The project name contain invalid characters
         403:
           description: A project with the same name already exist
+
+  /data-providers/{dataProviderId}/projects:
+    get:
+      summary: Get the projects overview for a data provider
+      tags: [Project]
+      operationId: controller.projects.get_data_providers_project
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectOverview"
 
   /data-providers/{dataProviderId}/projects/{projectId}:
     get:
@@ -1557,44 +1575,55 @@ definitions:
         description: last update date
 
   project:
+    allOf:
+      - $ref: "#/definitions/projectOverview"
+      - type: object
+        required:
+          - columns
+          - resultsStructure
+        properties:
+          columns:
+            description: list of the projects columns that will be used to display the data
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+          resultsStructure:
+            description: list of the projects columns that will be used to display the model results
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+  column:
+    description: column information, for data or model results
     type: object
     required:
       - name
+      - type
     properties:
       name:
         type: string
-        description: project ID
+        description: column name
+      category:
+        type: string
+        description: column category, by default it is 'other' or 'result' for model results
+        enum:
+          - other
+          - context
+          - input
+          - groundtruth
+      type:
+        type: string
+        description: column type
+        enum:
+          - auto
+          - text
+          - number
+          - boolean
 
-      columns:
-        type: array
-        items:
-          type: object
-          required:
-            - name
-            - category
-            - type
-          properties:
-            name:
-              type: string
-              description: column name
-            category:
-              type: string
-              description: column category
-              enum:
-                - other
-                - context
-                - input
-                - groundtruth
-            type:
-              type: string
-              description: column type
-              enum:
-                - auto
-                - text
-                - number
-                - boolean
-
-        description: list of the projects columns that will be used to display the data
+      group:
+        type: string
+        description: column group, used to group columns in the UI
 
   blockLevelInfo:
     type: object
@@ -1719,16 +1748,6 @@ definitions:
         items:
           type: object
         description: list of context (key - value)
-
-  dataTypeOut:
-    allOf:
-      - $ref: "#/definitions/dataType"
-      - type: object
-        required:
-          - id
-        properties:
-          id:
-            type: string
 
   # block & sample
   block:

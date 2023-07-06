@@ -103,8 +103,8 @@ def get_project_columns(project):
     # [
     #     { "name": "storage", "category": "other" },
     #     { "name": "age", "category": "context" },
-    #     { "name": "path", "category": "input" },
-    #     { "name": "label", "category": "groundtruth" },
+    #     { "name": "path", "category": "input", group: "image" },
+    #     { "name": "label", "category": "groundtruth", group: "image" },
     #     { "name": "type" }, # category is not specified, it will be "other"
     # ]
     if "columns" in project:
@@ -120,6 +120,9 @@ def get_project_columns(project):
                 col["type"] = column["type"]
             else:
                 col["type"] = "auto"
+
+            if "group" in column:
+                col["group"] = column["group"]
 
             project_columns.append(col)
 
