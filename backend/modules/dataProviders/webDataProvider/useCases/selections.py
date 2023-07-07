@@ -6,6 +6,14 @@ def get_project_selections(url, project_id):
     try:
         selections = api.get_selections(url, project_id)
 
+        if selections is None:
+            print(
+                "Error: No selections found for project {} on {}".format(
+                    project_id, url
+                )
+            )
+            raise DataProviderException("No selections found", 404)
+
         debiai_selections = []
         for selection in selections:
             selection_to_add = {
