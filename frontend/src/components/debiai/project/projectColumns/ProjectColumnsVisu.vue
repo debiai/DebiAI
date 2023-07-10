@@ -178,7 +178,6 @@ export default {
       font-weight: bold;
       margin-bottom: 10px;
     }
-
   }
 }
 </style>

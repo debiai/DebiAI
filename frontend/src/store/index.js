@@ -254,6 +254,6 @@ export default new Vuex.Store({
   modules: {
     Dashboard,
     ProjectPage,
-    StatisticalAnalysis
+    StatisticalAnalysis,
   },
 });

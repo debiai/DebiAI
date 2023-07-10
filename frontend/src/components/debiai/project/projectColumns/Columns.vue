@@ -53,7 +53,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     padding: 10px;
-    margin:  3px;
+    margin: 3px;
     border: 1px solid #00000027;
     border-radius: 10px;
   }
