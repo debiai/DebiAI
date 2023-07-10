@@ -327,6 +327,9 @@ paths:
                     - number
                     - string
                     - boolean
+                group:
+                  type: string
+                  description: Optional group name, used to group the results columns in the UI
           required: true
       responses:
         200:

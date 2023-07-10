@@ -43,6 +43,16 @@ export default {
       };
     },
   },
+  watch: {
+    isOpen() {
+      // Scroll to the bottom of the collapsible when it is opened
+      if (this.isOpen) {
+        this.$nextTick(() => {
+          this.$el.scrollIntoView({ behavior: "smooth" });
+        });
+      }
+    },
+  },
 };
 </script>
 
@@ -59,6 +69,7 @@ export default {
     color: #0000008a;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     // Harrow at the right of the header
     &:after {
