@@ -21,7 +21,6 @@
 export default {
   name: "Collapsible",
   components: {},
-  props: {},
   data: () => {
     return {
       isOpen: false,
@@ -48,7 +47,7 @@ export default {
       // Scroll to the bottom of the collapsible when it is opened
       if (this.isOpen) {
         this.$nextTick(() => {
-          this.$el.scrollIntoView({ behavior: "smooth" });
+          this.$el.scrollIntoView({ behavior: "smooth", block: "center" });
         });
       }
     },
@@ -78,9 +77,19 @@ export default {
     &.open:after {
       content: "▲";
     }
+
+    // Number of items in the collapsible
+    .nbItem {
+      background-color: #eee;
+      border-radius: 6px;
+      padding: 2px 4px;
+      margin-left: 10px;
+      border: 2px solid #ccc;
+      font-size: 0.9em;
+      color: #888;
+    }
   }
   .body {
-    padding: 5px;
     border-bottom: 1px solid #00000027;
     border-radius: 0 0 4px 4px;
   }

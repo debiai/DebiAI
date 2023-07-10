@@ -259,12 +259,14 @@ async function getProjectMetadata({ considerResults }) {
     labels: ["Data ID"],
     categories: ["other"],
     type: ["auto"],
+    groups: [null],
   };
 
   projectInfo.columns.forEach((column) => {
     metaData.labels.push(column.name);
     metaData.categories.push(column.category);
     metaData.type.push(column.type);
+    metaData.groups.push(column.group);
   });
 
   // In case we are loading the results
@@ -272,11 +274,15 @@ async function getProjectMetadata({ considerResults }) {
     // push model Name
     metaData.labels.push("model");
     metaData.categories.push("results");
+    metaData.type.push("auto");
+    metaData.groups.push(null);
 
     // push model expected results
-    projectInfo.resultStructure.forEach((data) => {
-      metaData.labels.push(data.name);
+    projectInfo.resultStructure.forEach((resultColumn) => {
+      metaData.labels.push(resultColumn.name);
       metaData.categories.push("results");
+      metaData.type.push(resultColumn.type);
+      metaData.groups.push(resultColumn.group);
     });
   }
 
@@ -531,7 +537,7 @@ const max = (arr) => {
   return max;
 };
 
-function createColumn(label, values, category, type = null) {
+function createColumn(label, values, category, type = null, group = null) {
   // Creating the column object
   const col = {
     label,
@@ -582,6 +588,9 @@ function createColumn(label, values, category, type = null) {
     if (col.uniques.length < 100) col.uniques.sort((a, b) => a - b);
   }
 
+  // Adding the group
+  if (group) col.group = group;
+
   return col;
 }
 
@@ -617,8 +626,9 @@ async function arrayToJson(array, metaData) {
     for (let j = 1; j < ret.nbLines + 1; j++) values.push(array[j][i]);
     const category = metaData.categories[i];
     const type = metaData.type[i];
+    const group = metaData.groups[i];
 
-    const col = createColumn(label, values, category, type);
+    const col = createColumn(label, values, category, type, group);
 
     col.index = i;
     ret.columns[i] = col;
@@ -628,6 +638,7 @@ async function arrayToJson(array, metaData) {
       "Preparing the analysis",
       "Column " + label + " " + (i + 1) + " / " + ret.nbColumns
     );
+    console.log(group, i, metaData.groups.length);
   }
 
   endRequest(requestCode);

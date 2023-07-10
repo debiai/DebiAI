@@ -29,14 +29,50 @@
       </div>
     </div>
     <div class="content">
-      <Column
-        v-for="col in columns"
-        :key="col.label"
-        :column="col"
-        :selected="selectedColumns.includes(col.index)"
-        :colorSelection="colorSelection"
-        v-on:selected="columnSelect"
-      />
+      <div
+        class="group"
+        v-for="(cols, group) in groupedColumns"
+        :key="group"
+      >
+        <div
+          v-if="group"
+          class="group-title"
+        >
+          <Collapsible style="margin: 3px">
+            <template v-slot:header>
+              <h4>
+                {{ group }}
+                <span class="nbItem"> {{ cols.length }} </span>
+              </h4>
+            </template>
+            <template v-slot:body>
+              <div class="columns">
+                <Column
+                  v-for="col in cols"
+                  :key="col.label"
+                  :column="col"
+                  :selected="selectedColumns.includes(col.index)"
+                  :colorSelection="colorSelection"
+                  v-on:selected="columnSelect"
+                />
+              </div>
+            </template>
+          </Collapsible>
+        </div>
+        <div
+          v-else
+          class="group-title"
+        >
+          <Column
+            v-for="col in cols"
+            :key="col.label"
+            :column="col"
+            :selected="selectedColumns.includes(col.index)"
+            :colorSelection="colorSelection"
+            v-on:selected="columnSelect"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,6 +99,24 @@ export default {
     },
     none() {
       this.$emit("none", this.name);
+    },
+  },
+  computed: {
+    groupedColumns() {
+      const groups = { "": [] };
+
+      this.columns.forEach((col) => {
+        if (col.group) {
+          if (!groups[col.group]) {
+            groups[col.group] = [];
+          }
+          groups[col.group].push(col);
+        } else {
+          groups[""].push(col);
+        }
+      });
+
+      return groups;
     },
   },
 };

@@ -180,16 +180,5 @@ export default {
     }
 
   }
-  .group {
-    .nbItem {
-      background-color: #eee;
-      border-radius: 6px;
-      padding: 2px 4px;
-      margin-left: 10px;
-      border: 2px solid #ccc;
-      font-size: 0.9em;
-      color: #888;
-    }
-  }
 }
 </style>
