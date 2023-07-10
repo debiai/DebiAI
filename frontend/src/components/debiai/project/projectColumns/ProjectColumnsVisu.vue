@@ -4,22 +4,34 @@
     <div id="columns">
       <div
         class="category"
-        v-for="(category, i) in Object.keys(columnsPerCategory)"
+        v-for="(category, i) in Object.keys(columnsPerGroup)"
         :key="i"
       >
         <div class="categoryName">{{ category }}:</div>
-        <div class="columns">
+        <div
+          v-for="group in Object.keys(columnsPerGroup[category])"
+          :key="group"
+          class="group"
+        >
+          <div v-if="group">
+            <!-- Grouped columns -->
+            <Collapsible style="margin: 3px">
+              <template v-slot:header>
+                <h4>{{ group }}</h4>
+              </template>
+              <template v-slot:body>
+                <div class="columns">
+                  <Columns :columns="columnsPerGroup[category][group]" />
+                </div>
+              </template>
+            </Collapsible>
+          </div>
           <div
-            class="column"
-            v-for="column in columnsPerCategory[category]"
-            :key="column.name"
+            v-else
+            class="group"
           >
-            <div class="columnName">
-              {{ column.name }}
-            </div>
-            <div class="columnType">
-              {{ column.type !== undefined ? column.type : "auto" }}
-            </div>
+            <!-- Ungrouped columns -->
+            <Columns :columns="columnsPerGroup[category][group]" />
           </div>
         </div>
       </div>
@@ -29,27 +41,18 @@
     <h3 v-if="projectResultsColumns.length">Results columns</h3>
     <div id="results">
       <div class="columns">
-        <div
-          class="column"
-          v-for="(column, i) in projectResultsColumns"
-          :key="i"
-        >
-          <div class="columnName">
-            {{ column.name }}
-          </div>
-          <div class="columnType">
-            {{ column.type !== undefined ? column.type : "auto" }}
-          </div>
-        </div>
+        <Columns :columns="projectResultsColumns" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Columns from "./Columns.vue";
+
 export default {
   name: "ProjectColumnsVisu",
-  components: {},
+  components: { Columns },
   data: () => {
     return {
       projectColumns: [],
@@ -91,53 +94,52 @@ export default {
       }
       return columnsPerCategory;
     },
+
+    columnsPerGroup() {
+      // A column can have a group
+      // This function returns, for each categories, the columns grouped by group
+      const categoriesGroups = {};
+      const categories = this.columnsPerCategory;
+
+      for (let category in categories) {
+        const columns = categories[category];
+        const groups = { "": [] };
+        for (let i = 0; i < columns.length; i++) {
+          const column = columns[i];
+          const group = column.group;
+          if (!group) groups[""].push(column);
+          else {
+            if (!groups[group]) groups[group] = [];
+            groups[group].push(column);
+          }
+        }
+        categoriesGroups[category] = groups;
+      }
+
+      return categoriesGroups;
+    },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #ProjectColumnsVisu {
   min-width: 400px;
   min-height: 300px;
   padding-top: 20px;
-}
-#projectColumns {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
 
-#columns {
-  padding-bottom: 20px;
-}
+  #columns {
+    padding-bottom: 20px;
+  }
 
-.category {
-  margin: 5px;
-  margin-top: 15px;
-}
+  .category {
+    margin: 5px;
+    margin-top: 15px;
 
-.categoryName {
-  font-weight: bold;
-}
-
-.columns {
-  display: flex;
-  flex-direction: column;
-}
-
-.column {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 10px;
-  margin: 1px;
-  border: 1px solid #00000027;
-  border-radius: 10px;
-}
-
-.columnType {
-  width: 50px;
-  text-align: right;
-  opacity: 0.5;
+    .categoryName {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  }
 }
 </style>

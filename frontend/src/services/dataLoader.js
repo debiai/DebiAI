@@ -98,8 +98,9 @@ async function getProjectSamplesIdList(
   // If the project is small, we gather all ID at once
   // If we are analyzing selections or models, we don't split the request (not implemented yet)
   if (
-    projectNbSamples !== null &&
-    (projectNbSamples <= accepteSize || selectionIds.length > 0 || modelIds.length > 0)
+    (projectNbSamples !== null && projectNbSamples <= accepteSize) ||
+    selectionIds.length > 0 ||
+    modelIds.length > 0
   ) {
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
