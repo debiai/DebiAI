@@ -34,6 +34,7 @@
         v-for="(cols, group) in groupedColumns"
         :key="group"
       >
+        <!-- Grouped columns -->
         <div
           v-if="group"
           class="group-title"
@@ -42,7 +43,19 @@
             <template v-slot:header>
               <h4>
                 {{ group }}
-                <span class="nbItem"> {{ cols.length }} </span>
+                <!-- Nb selected columns in group: -->
+                <span
+                  class="nbItem blue"
+                  v-if="getNbSelectedColumns(cols)"
+                >
+                  {{ getNbSelectedColumns(cols) }}
+                </span>
+
+                <span v-if="getNbSelectedColumns(cols)"> / </span>
+                <!-- Nb columns in group: -->
+                <span class="nbItem">
+                  {{ cols.length }}
+                </span>
               </h4>
             </template>
             <template v-slot:body>
@@ -59,6 +72,7 @@
             </template>
           </Collapsible>
         </div>
+        <!-- Ungrouped columns -->
         <div
           v-else
           class="group-title"
@@ -99,6 +113,9 @@ export default {
     },
     none() {
       this.$emit("none", this.name);
+    },
+    getNbSelectedColumns(columns) {
+      return columns.filter((col) => this.selectedColumns.includes(col.index)).length;
     },
   },
   computed: {

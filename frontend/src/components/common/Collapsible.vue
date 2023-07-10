@@ -61,14 +61,20 @@ export default {
   border-radius: 4px;
 
   .header {
-    padding: 10px;
+    padding: 7px 12px;
     border-bottom: 1px solid #00000027;
     cursor: pointer;
     background-color: #0000000d;
     color: #0000008a;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+
+    * {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      gap: 10px;
+    }
 
     // Harrow at the right of the header
     &:after {
@@ -83,10 +89,15 @@ export default {
       background-color: #eee;
       border-radius: 6px;
       padding: 2px 4px;
-      margin-left: 10px;
       border: 2px solid #ccc;
       font-size: 0.9em;
       color: #888;
+
+      &.blue {
+        background-color: #cfe2ff;
+        border-color: #4f89ca;
+        color: #3b6595;
+      }
     }
   }
   .body {

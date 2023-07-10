@@ -638,7 +638,6 @@ async function arrayToJson(array, metaData) {
       "Preparing the analysis",
       "Column " + label + " " + (i + 1) + " / " + ret.nbColumns
     );
-    console.log(group, i, metaData.groups.length);
   }
 
   endRequest(requestCode);
