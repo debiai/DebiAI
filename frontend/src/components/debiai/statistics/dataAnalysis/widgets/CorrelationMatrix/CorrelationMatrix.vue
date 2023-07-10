@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the columns to compute"
         :data="data"
-        :minimunSelection="2"
+        :minimumSelection="2"
         :cancelAvailable="true"
         :colorSelection="true"
         :defaultSelected="selectedColumns.map((c) => c.index)"

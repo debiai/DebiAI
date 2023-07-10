@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select a column"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[selectedColumn.index]"
         v-on:cancel="columnSelection = false"
@@ -383,7 +383,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
   },
   watch: {

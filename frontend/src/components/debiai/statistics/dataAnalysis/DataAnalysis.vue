@@ -416,7 +416,7 @@ export default {
       if (selectedColorColumn) {
         // Get the column index
         const column = this.data.columns.find((c) => c.label == selectedColorColumn);
-        const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+        const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
 
         // Set the column index
         if (column == null) {
@@ -526,7 +526,7 @@ export default {
       };
 
       // Add the selectedColorColumn
-      const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
       if (coloredColumnIndex !== null) {
         requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
       }
@@ -678,7 +678,7 @@ export default {
   computed: {
     filters() {
       // Get the filters form the store
-      return this.$store.state.SatisticalAnasysis.filters;
+      return this.$store.state.StatisticalAnalysis.filters;
     },
   },
   watch: {

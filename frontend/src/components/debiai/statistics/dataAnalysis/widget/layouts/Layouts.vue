@@ -228,7 +228,7 @@ export default {
       });
 
       // Add the selectedColorColumn
-      const coloredColumnIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
       if (coloredColumnIndex !== null) {
         requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
       }

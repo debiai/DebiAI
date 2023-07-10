@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="cancelXaxisSettings"
@@ -26,7 +26,7 @@
       <ColumnSelection
         title="Select a second column"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[secondColumnIndex]"
         v-on:cancel="secondAxisSelection = false"
@@ -638,7 +638,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);

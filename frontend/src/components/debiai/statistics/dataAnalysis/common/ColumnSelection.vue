@@ -7,7 +7,7 @@
       <h3>{{ title }}</h3>
       <div
         id="controls"
-        v-if="validateRequiered"
+        v-if="validateRequired"
       >
         <button
           class="warning"
@@ -25,17 +25,17 @@
       <div class="dataGroup">
         <div
           class="data"
-          v-if="validateRequiered"
+          v-if="validateRequired"
         >
           <div class="name">Selected columns</div>
           <div class="value">{{ selectedColumns.length }} / {{ data.nbColumns }}</div>
         </div>
         <div
           class="data"
-          v-if="minimunSelection > 0"
+          v-if="minimumSelection > 0"
         >
           <div class="name">Minimum required columns</div>
-          <div class="value">{{ minimunSelection }}</div>
+          <div class="value">{{ minimumSelection }}</div>
         </div>
       </div>
       <div class="buttons">
@@ -47,10 +47,10 @@
           Cancel
         </button>
         <button
-          v-if="validateRequiered"
+          v-if="validateRequired"
           class="green"
           @click="validate"
-          :disabled="selectedColumns.length < minimunSelection"
+          :disabled="selectedColumns.length < minimumSelection"
         >
           Validate
         </button>
@@ -82,12 +82,12 @@
       v-if="selectedColumns"
     >
       <Category
-        v-for="(columns, i) in categorys"
+        v-for="(columns, i) in categories"
         :key="i"
         :columns="columns"
         :selectedColumns="selectedColumns"
         :name="i"
-        :multipleSelection="validateRequiered"
+        :multipleSelection="validateRequired"
         :colorSelection="colorSelection"
         v-on:columnSelected="columnSelected"
         v-on:all="all"
@@ -113,15 +113,15 @@ export default {
   props: {
     data: { type: Object, required: true },
     title: { type: String, default: "Select multiple columns" },
-    validateRequiered: { type: Boolean, default: true },
-    minimunSelection: { type: Number, default: 0 },
+    validateRequired: { type: Boolean, default: true },
+    minimumSelection: { type: Number, default: 0 },
     cancelAvailable: { type: Boolean, default: true },
     colorSelection: { type: Boolean, default: false },
     defaultSelected: { type: Array, default: undefined },
   },
   created() {
     if (this.defaultSelected == undefined) {
-      if (this.validateRequiered) {
+      if (this.validateRequired) {
         this.selectedColumns = this.data.columns
           .filter((col) => col.nbOccu > 1 && col.type !== undefined)
           .map((col) => col.index);
@@ -129,7 +129,7 @@ export default {
     } else {
       this.selectedColumns = this.defaultSelected;
     }
-    document.addEventListener("keydown", this.keyAndler);
+    document.addEventListener("keydown", this.keyHandler);
   },
   mounted() {
     // Set focus on search bar
@@ -137,7 +137,7 @@ export default {
   },
 
   methods: {
-    keyAndler(k) {
+    keyHandler(k) {
       if (k.key == "Escape") {
         this.$emit("cancel");
       }
@@ -145,7 +145,7 @@ export default {
     columnSelected(colIndex) {
       this.$emit("colSelect", colIndex);
 
-      if (this.validateRequiered) {
+      if (this.validateRequired) {
         if (this.selectedColumns.includes(colIndex)) {
           this.selectedColumns = this.selectedColumns.filter((index) => index != colIndex);
         } else {
@@ -157,9 +157,9 @@ export default {
       this.$emit("validate", this.selectedColumns);
     },
     all(name) {
-      if (this.validateRequiered) {
+      if (this.validateRequired) {
         if (name) {
-          this.categorys[name].forEach((col) => {
+          this.categories[name].forEach((col) => {
             if (!this.selectedColumns.includes(col.index) && col.nbOccu > 1)
               this.selectedColumns.push(col.index);
           });
@@ -171,9 +171,9 @@ export default {
       }
     },
     none(name) {
-      if (this.validateRequiered) {
+      if (this.validateRequired) {
         if (name) {
-          this.categorys[name].forEach((col) => {
+          this.categories[name].forEach((col) => {
             this.selectedColumns = this.selectedColumns.filter((index) => index != col.index);
           });
         } else {
@@ -183,7 +183,7 @@ export default {
     },
   },
   computed: {
-    categorys: function () {
+    categories: function () {
       return {
         Others: this.data.columns.filter(
           (c) =>
@@ -233,7 +233,7 @@ export default {
     },
   },
   beforeDestroy() {
-    document.removeEventListener("keydown", this.keyAndler);
+    document.removeEventListener("keydown", this.keyHandler);
   },
 };
 </script>

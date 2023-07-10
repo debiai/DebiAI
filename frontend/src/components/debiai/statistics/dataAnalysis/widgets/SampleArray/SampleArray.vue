@@ -8,7 +8,7 @@
       v-show="settings"
       title="Select the columns to display in the array"
       :data="data"
-      :validateRequiered="true"
+      :validateRequired="true"
       :colorSelection="true"
       :defaultSelected="selectedColumnsIds"
       v-on:cancel="settings = false"

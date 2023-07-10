@@ -94,7 +94,7 @@ export default {
       let plotlyColumns = dataOperations.columnsCreation(columns, this.selectedData);
 
       // Color
-      let coloredColIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
       let colColor = this.data.columns[coloredColIndex];
       this.currentDrawedColorIndex = coloredColIndex;
 
@@ -216,7 +216,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !== this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
+        this.currentDrawedColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );

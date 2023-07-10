@@ -12,13 +12,13 @@ const Dashboard = {
     categoryList: ["input", "groundtruth", "context", "other"],
 
     // Dashboard
-    isLoadding: false,
+    isLoading: false,
     messages: [], // List of messages for the user
     requests: [], // Request pending to the backend
   },
   mutations: {
     setLoading(state, val) {
-      state.isLoadding = val;
+      state.isLoading = val;
     },
     // message
     sendMessage(state, msg) {
@@ -96,7 +96,7 @@ const ProjectPage = {
   },
 };
 
-const SatisticalAnasysis = {
+const StatisticalAnalysis = {
   state: {
     // Color
     coloredColumnIndex: 0,
@@ -254,6 +254,6 @@ export default new Vuex.Store({
   modules: {
     Dashboard,
     ProjectPage,
-    SatisticalAnasysis,
+    StatisticalAnalysis
   },
 });

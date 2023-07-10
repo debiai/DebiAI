@@ -12,7 +12,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
@@ -27,7 +27,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
@@ -42,7 +42,7 @@
       <ColumnSelection
         title="Select the point size axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
         v-on:cancel="sizeAxisSelection = false"
@@ -1222,7 +1222,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);

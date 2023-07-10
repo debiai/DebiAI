@@ -87,7 +87,7 @@ export default {
     // Plot
     checkPlot() {
       // Color
-      let coloredColIndex = this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
 
       let colColor;
       let nbColor;
@@ -222,7 +222,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !== this.$store.state.SatisticalAnasysis.coloredColumnIndex &&
+        this.currentDrawedColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );

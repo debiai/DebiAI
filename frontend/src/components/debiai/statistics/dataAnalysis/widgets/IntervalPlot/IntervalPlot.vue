@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
@@ -25,7 +25,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
@@ -39,7 +39,7 @@
       <ColumnSelection
         title="Select the upper axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnUpperIndex === null ? undefined : [columnUpperIndex]"
         v-on:cancel="upperAxisSelection = false"
@@ -53,7 +53,7 @@
       <ColumnSelection
         title="Select the lower axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnLowerIndex === null ? undefined : [columnLowerIndex]"
         v-on:cancel="lowerAxisSelection = false"
@@ -442,7 +442,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
   },
   watch: {
