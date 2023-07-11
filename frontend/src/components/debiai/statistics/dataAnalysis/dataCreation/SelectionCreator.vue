@@ -147,7 +147,7 @@ export default {
       );
     },
     filters() {
-      return this.$store.state.SatisticalAnasysis.filters.map((f) => {
+      return this.$store.state.StatisticalAnalysis.filters.map((f) => {
         f.columnLabel = f.column.label;
         return f;
       });

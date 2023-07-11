@@ -489,7 +489,7 @@ export default {
       this.selectedDataWarning = false;
 
       // The plot has been drawn, we can save a copy of the local filters
-      const storeFilters = this.$store.state.SatisticalAnasysis.filters;
+      const storeFilters = this.$store.state.StatisticalAnalysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
 
@@ -582,7 +582,7 @@ export default {
   computed: {
     // Filters
     widgetFilters() {
-      return this.$store.state.SatisticalAnasysis.filters.filter(
+      return this.$store.state.StatisticalAnalysis.filters.filter(
         (filter) => filter.from.widgetIndex === this.index
       );
     },
@@ -591,7 +591,7 @@ export default {
     },
     widgetFilterOrder() {
       // Place in the filtering order of the widget
-      return this.$store.state.SatisticalAnasysis.filters.findIndex(
+      return this.$store.state.StatisticalAnalysis.filters.findIndex(
         (filter) => filter.from.widgetIndex === this.index
       );
     },

@@ -8,7 +8,7 @@
       <ColumnSelection
         title="Select a column to filter"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         v-on:cancel="filterColumnSelection = false"
         v-on:colSelect="selectFilterColumn"
       />
@@ -228,7 +228,7 @@ export default {
   computed: {
     filters() {
       // We are reading the filters from the store in real time
-      return this.$store.state.SatisticalAnasysis.filters;
+      return this.$store.state.StatisticalAnalysis.filters;
     },
   },
 };

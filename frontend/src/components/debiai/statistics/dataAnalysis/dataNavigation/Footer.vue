@@ -8,7 +8,7 @@
       <ColumnSelection
         title="Select the workspace colored column"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="false"
         v-on:cancel="selectColoredCol = false"
         v-on:colSelect="coloredColSelect"
@@ -46,8 +46,8 @@
       <button @click="filtersMenu = true">
         <span
           class="badge"
-          v-if="$store.state.SatisticalAnasysis.filters.length"
-          >{{ $store.state.SatisticalAnasysis.filters.length }}</span
+          v-if="$store.state.StatisticalAnalysis.filters.length"
+          >{{ $store.state.StatisticalAnalysis.filters.length }}</span
         >
         <inline-svg
           :src="require('../../../../../assets/svg/filter.svg')"
@@ -135,7 +135,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
   },
 };

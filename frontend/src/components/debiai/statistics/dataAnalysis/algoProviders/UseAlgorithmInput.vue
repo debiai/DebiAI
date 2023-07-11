@@ -121,7 +121,7 @@
         <ColumnSelection
           :title="'Select a column to use as input for ' + input.name"
           :data="data"
-          :validateRequiered="false"
+          :validateRequired="false"
           :colorSelection="false"
           :defaultSelected="[columnIndex]"
           v-on:cancel="columnSelection = false"

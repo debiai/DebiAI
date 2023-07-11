@@ -69,7 +69,7 @@ export default {
   },
   computed: {
     selectedAsColor: function () {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex == this.column.index;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex == this.column.index;
     },
   },
 };

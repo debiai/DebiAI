@@ -89,7 +89,7 @@ async function getProjectSamplesIdList(
   // Returns the list of samples id for a project
   // this need to be done in a sequential way to avoid
   // too big requests
-  const accepteSize = projectMetadata.dataProvider.maxIdLimit;
+  const acceptedSize = projectMetadata.dataProvider.maxIdLimit;
   const projectNbSamples = projectMetadata.nbSamples;
 
   // If we have no samples, we don't search for samples ID
@@ -98,7 +98,7 @@ async function getProjectSamplesIdList(
   // If the project is small, we gather all ID at once
   // If we are analyzing selections or models, we don't split the request (not implemented yet)
   if (
-    (projectNbSamples !== null && projectNbSamples <= accepteSize) ||
+    (projectNbSamples !== null && projectNbSamples <= acceptedSize) ||
     selectionIds.length > 0 ||
     modelIds.length > 0
   ) {
@@ -125,8 +125,8 @@ async function getProjectSamplesIdList(
     try {
       console.time("getProjectSamplesIdList");
       while (true) {
-        const from = i * accepteSize;
-        const to = (i + 1) * accepteSize - 1;
+        const from = i * acceptedSize;
+        const to = (i + 1) * acceptedSize - 1;
 
         // Deal with the analysis info
         const analysis = { id: currentAnalysis.id, start: false, end: false };
@@ -145,12 +145,12 @@ async function getProjectSamplesIdList(
         console.log("Current samples ID list length: ", samplesIdList.length);
 
         // If we get less samples than the chunk size, we stop
-        if (res.samples.length < accepteSize) {
+        if (res.samples.length < acceptedSize) {
           console.log(
             "Last samples found while loading project samples ID list",
             res.samples.length,
             "<",
-            accepteSize
+            acceptedSize
           );
           break;
         }
@@ -176,7 +176,7 @@ async function getProjectSamplesIdList(
   } else {
     // We gather all the project samples ID
     // We need to split it in multiple requests
-    let nbRequest = Math.ceil(projectNbSamples / accepteSize);
+    let nbRequest = Math.ceil(projectNbSamples / acceptedSize);
     let samplesIdList = [];
 
     console.log("Splitting ID list request in ", nbRequest, " requests");
@@ -186,8 +186,8 @@ async function getProjectSamplesIdList(
     try {
       console.time("getProjectSamplesIdList");
       for (let i = 0; i < nbRequest; i++) {
-        const from = i * accepteSize;
-        const to = Math.min((i + 1) * accepteSize, projectNbSamples) - 1;
+        const from = i * acceptedSize;
+        const to = Math.min((i + 1) * acceptedSize, projectNbSamples) - 1;
 
         // Deal with the analysis info
         const analysis = { id: currentAnalysis.id, start: false, end: false };
@@ -234,7 +234,7 @@ async function getProjectSamplesIdList(
       " samples requested"
     );
 
-    // Check unicity of samples ID
+    // Check Uniqueness of samples ID
     let uniqueSamplesIdList = [...new Set(samplesIdList)];
     if (uniqueSamplesIdList.length !== samplesIdList.length)
       console.warn(
@@ -259,12 +259,14 @@ async function getProjectMetadata({ considerResults }) {
     labels: ["Data ID"],
     categories: ["other"],
     type: ["auto"],
+    groups: [null],
   };
 
   projectInfo.columns.forEach((column) => {
     metaData.labels.push(column.name);
     metaData.categories.push(column.category);
     metaData.type.push(column.type);
+    metaData.groups.push(column.group);
   });
 
   // In case we are loading the results
@@ -272,11 +274,15 @@ async function getProjectMetadata({ considerResults }) {
     // push model Name
     metaData.labels.push("model");
     metaData.categories.push("results");
+    metaData.type.push("auto");
+    metaData.groups.push(null);
 
     // push model expected results
-    projectInfo.resultStructure.forEach((data) => {
-      metaData.labels.push(data.name);
+    projectInfo.resultStructure.forEach((resultColumn) => {
+      metaData.labels.push(resultColumn.name);
       metaData.categories.push("results");
+      metaData.type.push(resultColumn.type);
+      metaData.groups.push(resultColumn.group);
     });
   }
 
@@ -383,14 +389,14 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
   try {
     // Not done because more time is spent storing the cache : First, pull the tree from the browser memory
     // let cachedResults = await cacheService.getModelResultsByIds(timestamp, modelId, sampleIds)
-    // let resutlsToDownload = sampleIds.filter(sampleId => !(sampleId in cachedResults))
+    // let resultsToDownload = sampleIds.filter(sampleId => !(sampleId in cachedResults))
 
     // add the cached results to our results without empty one
     // for (const sampleId in cachedResults)
     //   if (cachedResults[sampleId] !== null) modelResultsRet[sampleId] = cachedResults[sampleId]
 
     // Pull the tree
-    // let nbSamples = resutlsToDownload.length
+    // let nbSamples = resultsToDownload.length
     // if (nbSamples) console.log(nbSamples + " results to download");
 
     let nbSamples = sampleIds.length;
@@ -422,7 +428,7 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
-  // Downloading project meta data, requiered to interprate the tree
+  // Downloading project meta data, required to interpret the tree
   let projectMetadata = await getProjectMetadata({ considerResults: false });
 
   // Get the data provider info (pull limitations)
@@ -453,7 +459,7 @@ async function loadDataAndModelResults(
   modelIds,
   commonResults
 ) {
-  // Downloading project meta data, requiered to interprate the tree
+  // Downloading project meta data, required to interpret the tree
   let projectMetadata = await getProjectMetadata({ considerResults: true });
 
   // Get the data provider info (pull limitations)
@@ -531,7 +537,7 @@ const max = (arr) => {
   return max;
 };
 
-function createColumn(label, values, category, type = null) {
+function createColumn(label, values, category, type = null, group = null) {
   // Creating the column object
   const col = {
     label,
@@ -545,12 +551,12 @@ function createColumn(label, values, category, type = null) {
   col.uniques = [...new Set(col.values)];
   col.nbOccu = col.uniques.length;
 
-  // Cheking if the column is type text, number or got undefined values
+  // Checking if the column is type text, number or got undefined values
   if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
     // undefined Values
     col.type = undefined;
     col.typeText = "undefined";
-    col.undefinedIndexs = col.values
+    col.undefinedIndexes = col.values
       .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
       .filter((v) => v >= 0);
     console.warn("Undefined values : " + label);
@@ -581,6 +587,9 @@ function createColumn(label, values, category, type = null) {
     col.average = col.values.reduce((a, b) => a + b, 0) / col.values.length || 0;
     if (col.uniques.length < 100) col.uniques.sort((a, b) => a - b);
   }
+
+  // Adding the group
+  if (group) col.group = group;
 
   return col;
 }
@@ -617,8 +626,9 @@ async function arrayToJson(array, metaData) {
     for (let j = 1; j < ret.nbLines + 1; j++) values.push(array[j][i]);
     const category = metaData.categories[i];
     const type = metaData.type[i];
+    const group = metaData.groups[i];
 
-    const col = createColumn(label, values, category, type);
+    const col = createColumn(label, values, category, type, group);
 
     col.index = i;
     ret.columns[i] = col;
@@ -670,7 +680,7 @@ async function loadProjectSamples({
       let array = projectSamples.array;
       let sampleIdList = projectSamples.sampleIdList;
 
-      // Convert the the array in an column lists ready for analysing
+      // Convert the the array in an column lists ready for analyzing
       data = await arrayToJson(array, metaData);
       data.sampleIdList = sampleIdList;
     }

@@ -50,7 +50,7 @@ var customColumnCreation = function (data, colName, firstColumnIndex, rules) {
     // undefined Values
     col.type = undefined;
     col.typeText = "undefined";
-    col.undefinedIndexs = col.values
+    col.undefinedIndexes = col.values
       .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
       .filter((v) => v >= 0);
     console.warn("Undefined values : " + colName);

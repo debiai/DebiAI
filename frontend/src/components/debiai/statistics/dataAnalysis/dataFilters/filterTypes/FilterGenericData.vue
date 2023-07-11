@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     filtersEffects() {
-      return this.$store.state.SatisticalAnasysis.filtersEffects;
+      return this.$store.state.StatisticalAnalysis.filtersEffects;
     },
   },
 };

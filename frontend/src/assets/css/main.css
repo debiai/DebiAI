@@ -25,7 +25,7 @@
   /* Data Type */
   --number: #92cee6;
   --class: #ffc107;
-  /* Categorys */
+  /* Categories */
   --undefined: #dc3545;
   --other: #6e6e83;
   --context: #e85d04;
@@ -58,7 +58,7 @@ transition-group {
   padding: 0px;
 }
 
-/* === BUTON === */
+/* === BUTTON === */
 
 button {
   position: relative;
@@ -167,7 +167,7 @@ button .badge {
   color: white;
 }
 
-/* === RADIO BUTON === */
+/* === RADIO BUTTON === */
 
 .radioBtn {
   padding: 5px;
@@ -308,7 +308,7 @@ button .badge {
   padding: 6px;
 }
 
-.unselectable {
+.unelectable {
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;

@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the True axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnTindex]"
         v-on:cancel="cancelXaxiesSettings"
@@ -25,7 +25,7 @@
       <ColumnSelection
         title="Select the Predicted axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnPindex]"
         v-on:cancel="cancelYaxiesSettings"
@@ -558,7 +558,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);

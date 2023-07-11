@@ -8,7 +8,7 @@
       <ColumnSelection
         title="Select a column"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :defaultSelected="[
           selectedColToChange == 0 ? firstColumn : rules[selectedColToChange - 1].colIndex,
         ]"

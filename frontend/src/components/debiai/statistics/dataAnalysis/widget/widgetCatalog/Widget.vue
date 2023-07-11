@@ -74,7 +74,7 @@ Vue.use(VueProgressiveImage);
 export default {
   components: { WidgetConfList },
   props: {
-    widget: { requiered: true, type: Object },
+    widget: { required: true, type: Object },
     nbConfigurations: { type: Number, default: 0 },
   },
   data() {

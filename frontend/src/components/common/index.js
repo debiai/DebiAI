@@ -6,5 +6,6 @@ InlineSvg.name = "inline-svg";
 import Modal from "./Modal.vue";
 import DocumentationBlock from "./DocumentationBlock .vue";
 import AvailableTag from "./AvailableTag.vue";
+import Collapsible from "./Collapsible.vue";
 
-export default [Modal, DocumentationBlock, InlineSvg, AvailableTag];
+export default [Modal, DocumentationBlock, InlineSvg, AvailableTag, Collapsible];

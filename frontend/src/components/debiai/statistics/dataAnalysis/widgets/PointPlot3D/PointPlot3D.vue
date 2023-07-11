@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="cancelXaxiesSettings"
@@ -25,7 +25,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         v-on:cancel="cancelYaxiesSettings"
         :defaultSelected="[columnYindex]"
@@ -39,7 +39,7 @@
       <ColumnSelection
         title="Select the Z axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         v-on:cancel="cancelZaxiesSettings"
         :defaultSelected="[columnZindex]"
@@ -385,7 +385,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);

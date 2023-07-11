@@ -11,7 +11,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
@@ -25,7 +25,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         v-on:cancel="yAxisSelection = false"
         :defaultSelected="[columnYindex]"
@@ -54,7 +54,7 @@
       <ColumnSelection
         title="Select the backgroud color column"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnTagIndex === null ? undefined : [columnTagIndex]"
         v-on:cancel="tagAxisSelection = false"
@@ -805,7 +805,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);
