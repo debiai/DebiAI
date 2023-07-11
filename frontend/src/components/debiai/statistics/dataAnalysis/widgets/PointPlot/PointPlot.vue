@@ -12,7 +12,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequired="false"
+        :validateRequiered="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
@@ -27,7 +27,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequired="false"
+        :validateRequiered="false"
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
@@ -42,7 +42,7 @@
       <ColumnSelection
         title="Select the point size axis"
         :data="data"
-        :validateRequired="false"
+        :validateRequiered="false"
         :colorSelection="true"
         :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
         v-on:cancel="sizeAxisSelection = false"
@@ -247,13 +247,13 @@
             <div class="value">
               <input
                 type="checkbox"
-                :id="'avegareAsBar' + index"
+                :id="'averageAsBar' + index"
                 class="customCbx"
                 style="display: none"
-                v-model="avegareAsBar"
+                v-model="averageAsBar"
               />
               <label
-                :for="'avegareAsBar' + index"
+                :for="'averageAsBar' + index"
                 class="toggle"
               >
                 <span></span>
@@ -263,7 +263,7 @@
           <!-- Display null values -->
           <div
             class="data"
-            v-if="!avegareAsBar"
+            v-if="!averageAsBar"
           >
             <span class="name">Display null</span>
             <div class="value">
@@ -321,7 +321,7 @@
               type="checkbox"
               :id="'absolute' + index"
               class="customCbx"
-              v-model="absolue"
+              v-model="absolute"
               style="display: none"
             />
             <label
@@ -393,14 +393,14 @@ export default {
       columnYindex: 0,
       // Shared settings
       dividePerColor: true,
-      absolue: false,
+      absolute: false,
       // 2d point plot settings
       autoPointOpacity: true,
       pointOpacity: null,
       columnSizeIndex: null,
       maxPointSize: 50,
       // Line plot settings
-      avegareAsBar: false,
+      averageAsBar: false,
       displayNull: true,
       bins: 0,
       // Axis range
@@ -455,15 +455,15 @@ export default {
         columnY: this.data.columns[this.columnYindex].label,
         // Shared settings
         dividePerColor: this.dividePerColor,
-        absolue: this.absolue,
+        absolute: this.absolute,
         // 2d point plot settings
         autoPointOpacity: this.autoPointOpacity,
         // Line plot settings
-        avegareAsBar: this.avegareAsBar,
+        averageAsBar: this.averageAsBar,
         bins: this.bins,
       };
 
-      if (!this.avegareAsBar) conf.displayNull = this.displayNull;
+      if (!this.averageAsBar) conf.displayNull = this.displayNull;
       if (!this.autoPointOpacity) conf.pointOpacity = this.pointOpacity;
       if (this.columnSizeIndex !== null) {
         conf.maxPointSize = this.maxPointSize;
@@ -512,12 +512,12 @@ export default {
             msg: "The column " + conf.columnSized + " hasn't been found",
           });
       }
-      if ("absolue" in conf) this.absolue = conf.absolue;
+      if ("absolute" in conf) this.absolute = conf.absolute;
       if ("autoPointOpacity" in conf) this.autoPointOpacity = conf.autoPointOpacity;
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
       if ("columnSizeIndex" in conf) this.columnSizeIndex = conf.columnSizeIndex;
       if ("maxPointSize" in conf) this.maxPointSize = conf.maxPointSize;
-      if ("avegareAsBar" in conf) this.avegareAsBar = conf.avegareAsBar;
+      if ("averageAsBar" in conf) this.averageAsBar = conf.averageAsBar;
       if ("displayNull" in conf) this.displayNull = conf.displayNull;
       if ("bins" in conf) this.bins = conf.bins;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
@@ -544,12 +544,12 @@ export default {
           vm.columnXindex,
           vm.columnYindex,
           vm.dividePerColor,
-          vm.absolue,
+          vm.absolute,
           vm.autoPointOpacity,
           vm.pointOpacity,
           vm.columnSizeIndex,
           vm.maxPointSize,
-          vm.avegareAsBar,
+          vm.averageAsBar,
           vm.displayNull,
           vm.bins,
           vm.axisXAuto,
@@ -576,7 +576,7 @@ export default {
         confName += " Sized by " + this.data.columns[this.columnSizeIndex].label;
 
       // Add if y is absolute
-      if (this.absolue) confName += " (abs)";
+      if (this.absolute) confName += " (abs)";
 
       return confName;
     },
@@ -599,7 +599,7 @@ export default {
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
       // abs checked
-      if (this.absolue) valuesY = valuesY.map((val) => Math.abs(val));
+      if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
       // Color
       let colorscale = "Portland";
@@ -731,7 +731,7 @@ export default {
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
       // abs checked
-      if (this.absolue) valuesY = valuesY.map((val) => Math.abs(val));
+      if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
       let colColor = this.data.columns[this.coloredColumnIndex];
       if (colColor && this.dividePerColor) {
@@ -771,7 +771,7 @@ export default {
             name: String(colColor.uniques[colColorUniqueId]),
             x: stats.xSections,
             y: stats.average,
-            type: this.avegareAsBar ? "bar" : "scattergl",
+            type: this.averageAsBar ? "bar" : "scattergl",
             mode: "lines",
             line: {
               // color:
@@ -802,7 +802,7 @@ export default {
             x: stats.xSections,
             y: stats.average,
             mode: "lines",
-            type: this.avegareAsBar ? "bar" : "scattergl",
+            type: this.averageAsBar ? "bar" : "scattergl",
             name: "Average",
             line: { color: "red", width: 5, shape: "spline" },
             marker: { color: "#ff5869" },
@@ -920,7 +920,7 @@ export default {
         layout.title += " Sized by <b>" + colSize.label + "</b>";
 
       // Add if y is absolute
-      if (this.absolue) layout.yaxis.title.text += " (absolute value)";
+      if (this.absolute) layout.yaxis.title.text += " (absolute value)";
 
       // set y axies label text if string
       if (colY.type == String) {
@@ -996,7 +996,7 @@ export default {
       const selections = event.selections;
       const filters = [
         this.getFilterFromColumn(colx, selections[0].x0, selections[0].x1, false),
-        this.getFilterFromColumn(coly, selections[0].y1, selections[0].y0, this.absolue),
+        this.getFilterFromColumn(coly, selections[0].y1, selections[0].y0, this.absolute),
       ];
 
       // // Create the other filters
@@ -1013,7 +1013,7 @@ export default {
       //     coly,
       //     selections[i].y1,
       //     selections[0].y0,
-      //     this.absolue
+      //     this.absolute
       //   );
 
       //   if (filters[0].intervals) filters[0].intervals.push(nextFiltersx.intervals[0]);
@@ -1222,7 +1222,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
+      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
@@ -1238,13 +1238,13 @@ export default {
     pointOpacity: function () {
       this.pointPlotDrawed = false;
     },
-    absolue: function () {
+    absolute: function () {
       this.updateTraces();
     },
     displayNull: function () {
       if (this.linePlotDrawed) this.checkLinePlot();
     },
-    avegareAsBar: function () {
+    averageAsBar: function () {
       if (this.linePlotDrawed) this.checkLinePlot();
     },
     selectedData: function () {
