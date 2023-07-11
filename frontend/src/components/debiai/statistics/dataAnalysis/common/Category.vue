@@ -39,7 +39,7 @@
           v-if="group"
           class="group-title"
         >
-          <Collapsible style="margin: 3px; width: 320px;">
+          <Collapsible style="margin: 3px; width: 320px">
             <template v-slot:header>
               <h4>
                 {{ group }}
