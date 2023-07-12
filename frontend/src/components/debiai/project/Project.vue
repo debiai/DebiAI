@@ -33,6 +33,7 @@
         id="projectContent"
         v-if="project"
       >
+        <!-- Selections and models -->
         <div id="selectionAndModels">
           <!-- Data selection selection -->
           <Selections
@@ -61,8 +62,9 @@
           id="bot"
           class="card"
         >
+          <!-- Cache   -->
           <CachePanel :project="project" />
-
+          <!-- Start analysis  -->
           <button
             id="startAnalysisBtn"
             @click="startAnalysis(false)"
@@ -70,6 +72,15 @@
             :disabled="!readyToAnalyze"
           >
             Start analysis
+          </button>
+
+          <!-- Explorer mod -->
+          <button
+            id="startExplorationBtn"
+            @click="startExploration(false)"
+            @mousedown.middle="startExploration(true)"
+          >
+            Exploration mode
           </button>
         </div>
       </div>
@@ -277,6 +288,30 @@ export default {
         });
       }
     },
+    startExploration({ newTab }) {
+      if (newTab) {
+        let routeData = this.$router.resolve({
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
+          query: {
+            selectionIds: this.selectedSelectionsIds,
+            selectionIntersection: this.selectionIntersection,
+            modelIds: this.selectedModelIds,
+            commonModelResults: this.commonModelResults,
+            startAnalysis: true,
+          },
+        });
+        window.open(routeData.href, "_blank");
+      } else {
+        this.loadData({
+          dataProviderId: this.dataProviderId,
+          projectId: this.projectId,
+          selectionIds: this.selectedSelectionsIds,
+          selectionIntersection: this.selectionIntersection,
+          modelIds: this.selectedModelIds,
+          commonModelResults: this.commonModelResults,
+        });
+      }
+    },
 
     loadData({
       dataProviderId,
@@ -461,6 +496,7 @@ export default {
   display: flex;
   justify-content: center;
   flex-direction: row;
+  align-content: center;
   padding: 10px;
   height: 11vh;
   gap: 30px;
@@ -469,6 +505,12 @@ export default {
     height: 100%;
     font-size: 1.2em;
     width: 400px;
+  }
+
+  #startExplorationBtn {
+    font-size: 1.2em;
+    margin: 10px;
+    width: 200px;
   }
 }
 </style>
