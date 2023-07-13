@@ -55,6 +55,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     padding: 13px;
+    margin: 0 3px;
     border: 1px solid #00000027;
 
     &:first-child {

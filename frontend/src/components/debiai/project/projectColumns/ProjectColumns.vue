@@ -121,13 +121,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedColumnsIndex: {
+      type: Array,
+      default: () => [],
+      // The columns already selected
+    },
   },
   data: () => {
     return {
       selectedColumns: [],
     };
   },
-  created() {},
+  created() {
+    // Copy the selected columns
+    this.selectedColumns = [...this.selectedColumnsIndex];
+  },
   methods: {
     groupCategoriesPerGroup(categories) {
       // A column can have a group
@@ -158,6 +166,8 @@ export default {
       } else {
         this.selectedColumns.push(columnIndex);
       }
+
+      // The event will be emitted by the watcher
     },
     getNbSelectedColumns(columns) {
       // Return the number of selected columns in the given columns
@@ -187,6 +197,11 @@ export default {
 
     dataColumnsPerGroup() {
       return this.groupCategoriesPerGroup(this.columnsPerCategory);
+    },
+  },
+  watch: {
+    selectedColumns() {
+      this.$emit("selectedColumnsIndexUpdate", this.selectedColumns);
     },
   },
 };

@@ -2,7 +2,12 @@
   <div id="ColumnSelection">
     <div id="top">
       <h3 id="title">Select the columns you want to use for the exploration:</h3>
-      <button>Proceed ></button>
+      <button
+        :disabled="selectedColumnsIndex.length === 0"
+        @click="proceed"
+      >
+        Proceed >
+      </button>
     </div>
     <div
       id="columns"
@@ -10,8 +15,10 @@
     >
       <ProjectColumns
         :columns="projectColumns"
+        :selectedColumnsIndex="selectedColumnsIndex"
         title=""
         selectable
+        @selectedColumnsIndexUpdate="selectedColumnsIndex = $event"
       />
     </div>
   </div>
@@ -25,6 +32,7 @@ export default {
   data() {
     return {
       projectColumns: [],
+      selectedColumnsIndex: [],
     };
   },
   created() {
@@ -47,7 +55,7 @@ export default {
     //  ]
 
     if (this.projectColumns.length === 0) {
-      // Go back to project page to start the exploration immediately
+      // Go back to project page and start the exploration immediately
       this.$router.push({
         path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
         query: {
@@ -57,6 +65,30 @@ export default {
         },
       });
     }
+
+    const providedSelectedColumnsIndex = this.$route.query.selectedColumnsIndex;
+    if (providedSelectedColumnsIndex) {
+      // If the selected columns index is provided, we use it
+      this.selectedColumnsIndex = providedSelectedColumnsIndex;
+    }
+  },
+  methods: {
+    proceed() {
+      // Go to the aggregation page
+      this.$router.push({
+        name: "aggregation",
+        query: {
+          projectId: this.$route.query.projectId,
+          dataProviderId: this.$route.query.dataProviderId,
+          selectedColumnsIndex: this.selectedColumnsIndex,
+        },
+      });
+    },
+  },
+  computed: {
+    // selectedColumns() {
+    //   return this.selectedColumnsIndex.map((index) => this.projectColumns[index]);
+    // },
   },
 };
 </script>
