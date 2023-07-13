@@ -1,9 +1,10 @@
 <template>
   <div class="columns">
     <div
-      class="column"
+      :class="getColumnClass(column)"
       v-for="column in columns"
-      :key="column.name"
+      :key="column.index"
+      @click="selectColumn(column)"
     >
       <div class="columnName">
         {{ column.name }}
@@ -19,26 +20,27 @@
 export default {
   name: "Columns",
   components: {},
-  props: { columns: { type: Array, required: true } },
-  // Expected project columns example :
-  //  [
-  //      { "name": "storage", "category": "other" },
-  //      { "name": "age", "category": "context" },
-  //      { "name": "path", "category": "input" },
-  //      { "name": "label", "category": "groundtruth" },
-  //      { "name": "type" }, # category is not specified, it will be "other"
-  //  ]
-
-  // Expected project results columns example :
-  // [
-  //   { name: "Model prediction", type: "number" },
-  //   { name: "Model error", type: "number" },
-  // ];
+  props: {
+    columns: { type: Array, required: true },
+    selectable: { type: Boolean, default: false },
+    selectedColumns: { type: Array, default: () => [] },
+  },
   data: () => {
     return {};
   },
   created() {},
-  methods: {},
+  methods: {
+    selectColumn(column) {
+      this.$emit("selectColumn", column.index);
+    },
+    getColumnClass(column) {
+      return {
+        column: true,
+        selectable: this.selectable,
+        selected: this.selectedColumns.includes(column.index),
+      };
+    },
+  },
   computed: {},
 };
 </script>
@@ -52,10 +54,37 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 10px;
-    margin: 3px;
+    padding: 13px;
     border: 1px solid #00000027;
-    border-radius: 10px;
+
+    &:first-child {
+      margin-top: 0;
+      border-radius: 10px 10px 0 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+      border-radius: 0 0 10px 10px;
+    }
+
+    &.selected {
+      background-color: var(--primary);
+      color: white;
+      font-weight: bold;
+    }
+
+    &.selectable {
+      cursor: pointer;
+
+      // Add a 3D effect
+      &:hover {
+        box-shadow: 0 0 3px #00000027;
+      }
+
+      &:active {
+        box-shadow: 0 0 3px #00000027 inset;
+      }
+    }
   }
 
   .columnType {

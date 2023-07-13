@@ -30,6 +30,30 @@ let router = new Router({
         },
       ],
     },
+
+    // === Exploration
+    {
+      path: "/exploration",
+      component: () => import("../components/debiai/exploration/ExplorationMode"),
+      children: [
+        {
+          name: "columnSelection",
+          path: "/columnSelection",
+          component: () =>
+            import("../components/debiai/exploration/columnSelection/ColumnSelection"),
+        },
+        {
+          name: "aggregation",
+          path: "/aggregation",
+          component: () => import("../components/debiai/exploration/aggregation/Aggregation"),
+        },
+        {
+          name: "filtering",
+          path: "/filtering",
+          component: () => import("../components/debiai/exploration/filtering/Filtering"),
+        },
+      ],
+    },
   ],
 });
 const DEFAULT_TITLE = "DebiAI";

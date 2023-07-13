@@ -20,7 +20,7 @@
         </router-link>
       </h1>
       <div style="flex: 1"></div>
-      <h1 id="title2">Statistics</h1>
+      <h1 id="title2">Exploration</h1>
       <div style="flex: 1"></div>
 
       <!-- IRT Logo -->
@@ -41,4 +41,42 @@
 export default {};
 </script>
 
-<style></style>
+<style scoped lang="scss">
+#ExplorationMode {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 2px;
+  background-color: var(--primary);
+}
+
+#debiaiMenuLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  color: #fff;
+  text-decoration: none;
+  background: none;
+}
+
+#title2 {
+  align-self: center;
+}
+
+#title3 {
+  align-self: center;
+  padding-top: 9px;
+}
+
+#content {
+  flex: 1;
+  height: 100%;
+}
+</style>

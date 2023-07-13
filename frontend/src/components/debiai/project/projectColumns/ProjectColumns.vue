@@ -1,0 +1,214 @@
+<template>
+  <div id="ProjectColumns">
+    <h3
+      id="title"
+      v-if="title"
+    >
+      {{ title }}
+    </h3>
+    <div
+      id="selectionInfo"
+      v-if="selectable"
+    >
+      <div id="nbSelected">
+        <!-- Nb selected columns in group: -->
+        <span class="nbItem blue">
+          {{ getNbSelectedColumns(columns) }}
+        </span>
+
+        <span> / </span>
+        <!-- Nb columns in group: -->
+        <span class="nbItem"> {{ columns.length }} </span>
+      </div>
+
+      <div id="controls">
+        <button class="red">Unselect all</button>
+        <button class="green">Select all</button>
+      </div>
+    </div>
+    <div id="columns">
+      <div
+        class="category"
+        v-for="category in Object.keys(dataColumnsPerGroup)"
+        :key="category"
+      >
+        <div
+          class="categoryName"
+          v-if="category"
+        >
+          {{ category }}:
+        </div>
+        <div
+          v-for="group in Object.keys(dataColumnsPerGroup[category])"
+          :key="group"
+          class="group"
+        >
+          <div v-if="group">
+            <!-- Grouped columns -->
+            <Collapsible style="margin: 3px">
+              <template v-slot:header>
+                <!-- Group title -->
+                <h4>
+                  {{ group }}
+                  <!-- Nb selected columns in group: -->
+                  <span
+                    class="nbItem blue"
+                    v-if="selectable && getNbSelectedColumns(dataColumnsPerGroup[category][group])"
+                  >
+                    {{ getNbSelectedColumns(dataColumnsPerGroup[category][group]) }}
+                  </span>
+
+                  <span
+                    v-if="selectable && getNbSelectedColumns(dataColumnsPerGroup[category][group])"
+                  >
+                    /
+                  </span>
+                  <!-- Nb columns in group: -->
+                  <span class="nbItem"> {{ dataColumnsPerGroup[category][group].length }} </span>
+                </h4>
+              </template>
+              <template v-slot:body>
+                <div class="columns">
+                  <Columns
+                    :columns="dataColumnsPerGroup[category][group]"
+                    :selectable="selectable"
+                    :selectedColumns="selectedColumns"
+                    @selectColumn="selectColumn"
+                  />
+                </div>
+              </template>
+            </Collapsible>
+          </div>
+          <div
+            v-else
+            class="group"
+          >
+            <!-- Ungrouped columns -->
+            <Columns
+              :columns="dataColumnsPerGroup[category][group]"
+              :selectable="selectable"
+              :selectedColumns="selectedColumns"
+              @selectColumn="selectColumn"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="!columns.length">No columns</div>
+  </div>
+</template>
+
+<script>
+import Columns from "./Columns.vue";
+
+export default {
+  name: "ProjectColumns",
+  components: { Columns },
+  props: {
+    columns: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      default: "Columns",
+    },
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data: () => {
+    return {
+      selectedColumns: [],
+    };
+  },
+  created() {},
+  methods: {
+    groupCategoriesPerGroup(categories) {
+      // A column can have a group
+      // This function returns, for each categories, the columns grouped by group
+      const result = {};
+      for (let category in categories) {
+        const groups = { "": [] };
+        for (let column of categories[category]) {
+          const group = column.group;
+          if (!group) {
+            groups[""].push(column);
+            continue;
+          }
+
+          if (!groups[group]) groups[group] = [];
+          groups[group].push(column);
+        }
+        result[category] = groups;
+      }
+      return result;
+    },
+    selectColumn(columnIndex) {
+      if (!this.selectable) return;
+
+      // Add or remove the column from the selected columns
+      if (this.selectedColumns.includes(columnIndex)) {
+        this.selectedColumns = this.selectedColumns.filter((index) => index !== columnIndex);
+      } else {
+        this.selectedColumns.push(columnIndex);
+      }
+    },
+    getNbSelectedColumns(columns) {
+      // Return the number of selected columns in the given columns
+      let nbSelectedColumns = 0;
+      for (let column of columns)
+        if (this.selectedColumns.includes(column.index)) nbSelectedColumns++;
+
+      return nbSelectedColumns;
+    },
+  },
+  computed: {
+    columnsPerCategory() {
+      let columnsPerCategory = {};
+      // Iterate through all columns
+      for (let i = 0; i < this.columns.length; i++) {
+        // Get the current column and its category
+        let column = this.columns[i];
+        let category = column.category ? column.category + "s" : "";
+        // Capitalize first letter
+        category = category.charAt(0).toUpperCase() + category.slice(1);
+        // Add the column to its category
+        if (!columnsPerCategory[category]) columnsPerCategory[category] = [];
+        columnsPerCategory[category].push(column);
+      }
+      return columnsPerCategory;
+    },
+
+    dataColumnsPerGroup() {
+      return this.groupCategoriesPerGroup(this.columnsPerCategory);
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+#ProjectColumns {
+  min-width: 600px;
+  min-height: 300px;
+
+  #title {
+    margin-top: 15px;
+  }
+
+  #columns {
+    padding-bottom: 20px;
+  }
+
+  .category {
+    margin: 5px;
+    margin-top: 15px;
+
+    .categoryName {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  }
+}
+</style>

@@ -78,6 +78,11 @@ const ProjectPage = {
       state.dataProviderId = dataProviderId;
     },
     setProjectColumns(state, projectColumns) {
+      // Add an index to each column
+      projectColumns.forEach((col, index) => {
+        col.index = index;
+      });
+
       state.projectColumns = projectColumns;
     },
     setProjectResultsColumns(state, projectResultsColumns) {

@@ -15,7 +15,14 @@
           Close
         </button>
       </h2>
-      <ProjectColumnsVisu />
+      <ProjectColumns
+        :columns="project.columns"
+        title="Data columns"
+      />
+      <ProjectColumns
+        :columns="project.resultStructure"
+        title="Result columns"
+      />
     </Modal>
 
     <!-- ProjectInfo -->
@@ -91,7 +98,7 @@
 <script>
 // Components
 import ProjectInfo from "./ProjectInfo";
-import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
+import ProjectColumns from "./projectColumns/ProjectColumns.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
@@ -104,7 +111,7 @@ export default {
   name: "Project",
   components: {
     ProjectInfo,
-    ProjectColumnsVisu,
+    ProjectColumns,
     Models,
     Selections,
     CachePanel,
@@ -131,15 +138,16 @@ export default {
   },
   created() {
     // get data-provider ID and project ID from url path or router params
-    let dataProviderId = this.$route.params.dataProviderId
+    const dataProviderId = this.$route.params.dataProviderId
       ? this.$route.params.dataProviderId
       : this.$route.query.dataProviderId;
-    let projectId = this.$route.params.projectId
+    const projectId = this.$route.params.projectId
       ? this.$route.params.projectId
       : this.$route.query.projectId;
 
     // Check if we need to start analysis right away
-    let startAns = this.$route.query.startAnalysis;
+    const startAns = this.$route.query.startAnalysis;
+    const startExploration = this.$route.query.startExploration;
 
     if (dataProviderId && projectId) {
       this.dataProviderId = dataProviderId;
@@ -156,10 +164,10 @@ export default {
       this.loadProject().then(() => {
         if (startAns) {
           console.log("Start analysis");
-          let selectionIds = this.$route.query.selectionIds;
-          let selectionIntersection = this.$route.query.selectionIntersection;
-          let modelIds = this.$route.query.modelIds;
-          let commonModelResults = this.$route.query.commonModelResults;
+          const selectionIds = this.$route.query.selectionIds;
+          const selectionIntersection = this.$route.query.selectionIntersection;
+          const modelIds = this.$route.query.modelIds;
+          const commonModelResults = this.$route.query.commonModelResults;
 
           // Convert str to lists
           if (selectionIds) selectionIds = selectionIds.split(".");
@@ -178,6 +186,8 @@ export default {
             modelIds,
             commonModelResults,
           });
+        } else if (startExploration) {
+          this.startExploration(false);
         }
       });
     } else {
@@ -199,6 +209,24 @@ export default {
             (a, b) => b.updateDate - a.updateDate
           );
           this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
+
+          // Get the project columns
+          // Expected project columns example :
+          //  [
+          //      { "name": "storage", "category": "other" },
+          //      { "name": "age", "category": "context" },
+          //      { "name": "path", "category": "input" },
+          //      { "name": "label", "category": "groundtruth" },
+          //      { "name": "type" }, # category is not specified, it will be "other"
+          //  ]
+          if (!this.project.columns) this.project.columns = [];
+
+          // Expected project results columns example :
+          // [
+          //   { name: "Model prediction", type: "number" },
+          //   { name: "Model error", type: "number" },
+          // ];
+          if (!this.project.resultStructure) this.project.resultStructure = [];
 
           // Store some info
           this.$store.commit("setProjectColumns", this.project.columns);
@@ -293,22 +321,17 @@ export default {
         let routeData = this.$router.resolve({
           path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
           query: {
-            selectionIds: this.selectedSelectionsIds,
-            selectionIntersection: this.selectionIntersection,
-            modelIds: this.selectedModelIds,
-            commonModelResults: this.commonModelResults,
-            startAnalysis: true,
+            startExploration: true,
           },
         });
         window.open(routeData.href, "_blank");
       } else {
-        this.loadData({
-          dataProviderId: this.dataProviderId,
-          projectId: this.projectId,
-          selectionIds: this.selectedSelectionsIds,
-          selectionIntersection: this.selectionIntersection,
-          modelIds: this.selectedModelIds,
-          commonModelResults: this.commonModelResults,
+        this.$router.push({
+          name: "columnSelection",
+          query: {
+            dataProviderId: this.dataProviderId,
+            projectId: this.projectId,
+          },
         });
       }
     },
