@@ -1222,7 +1222,7 @@ export default {
   },
   computed: {
     coloredColumnIndex() {
-      return this.$store.state.SatisticalAnasysis.coloredColumnIndex;
+      return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
       return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
