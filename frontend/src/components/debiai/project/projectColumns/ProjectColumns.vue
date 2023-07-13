@@ -1,31 +1,44 @@
 <template>
   <div id="ProjectColumns">
+    <!-- Title of the column list -->
     <h3
       id="title"
       v-if="title"
     >
       {{ title }}
     </h3>
+
+    <!-- Selected columns info -->
     <div
       id="selectionInfo"
       v-if="selectable"
     >
       <div id="nbSelected">
-        <!-- Nb selected columns in group: -->
-        <span class="nbItem blue">
-          {{ getNbSelectedColumns(columns) }}
-        </span>
-
-        <span> / </span>
-        <!-- Nb columns in group: -->
-        <span class="nbItem"> {{ columns.length }} </span>
+        <NbItem
+          :nbSelected="getNbSelectedColumns(columns)"
+          :nbTotal="columns.length"
+        />
       </div>
 
       <div id="controls">
-        <button class="red">Unselect all</button>
-        <button class="green">Select all</button>
+        <button
+          class="red"
+          @click="selectedColumns = []"
+          :disabled="selectedColumns.length === 0"
+        >
+          Unselect all
+        </button>
+        <button
+          class="green"
+          @click="selectedColumns = columns.map((c) => c.index)"
+          :disabled="selectedColumns.length === columns.length"
+        >
+          Select all
+        </button>
       </div>
     </div>
+
+    <!-- Columns -->
     <div id="columns">
       <div
         class="category"
@@ -51,25 +64,16 @@
                 <h4>
                   {{ group }}
                   <!-- Nb selected columns in group: -->
-                  <span
-                    class="nbItem blue"
-                    v-if="selectable && getNbSelectedColumns(dataColumnsPerGroup[category][group])"
-                  >
-                    {{ getNbSelectedColumns(dataColumnsPerGroup[category][group]) }}
-                  </span>
-
-                  <span
-                    v-if="selectable && getNbSelectedColumns(dataColumnsPerGroup[category][group])"
-                  >
-                    /
-                  </span>
-                  <!-- Nb columns in group: -->
-                  <span class="nbItem"> {{ dataColumnsPerGroup[category][group].length }} </span>
+                  <NbItem
+                    v-if="selectable"
+                    :nbSelected="getNbSelectedColumns(dataColumnsPerGroup[category][group])"
+                    :nbTotal="dataColumnsPerGroup[category][group].length"
+                  />
                 </h4>
               </template>
               <template v-slot:body>
                 <div class="columns">
-                  <Columns
+                  <ColumnsDisplay
                     :columns="dataColumnsPerGroup[category][group]"
                     :selectable="selectable"
                     :selectedColumns="selectedColumns"
@@ -84,7 +88,7 @@
             class="group"
           >
             <!-- Ungrouped columns -->
-            <Columns
+            <ColumnsDisplay
               :columns="dataColumnsPerGroup[category][group]"
               :selectable="selectable"
               :selectedColumns="selectedColumns"
@@ -103,7 +107,7 @@ import Columns from "./Columns.vue";
 
 export default {
   name: "ProjectColumns",
-  components: { Columns },
+  components: { ColumnsDisplay: Columns },
   props: {
     columns: {
       type: Array,
@@ -195,6 +199,32 @@ export default {
 
   #title {
     margin-top: 15px;
+  }
+
+  #selectionInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding: 0 10px;
+
+    .nbItem {
+      font-weight: bold;
+    }
+
+    .blue {
+      color: #1e88e5;
+    }
+
+    #controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      button {
+        margin-left: 10px;
+      }
+    }
   }
 
   #columns {

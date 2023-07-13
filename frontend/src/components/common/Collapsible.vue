@@ -61,7 +61,8 @@ export default {
   border-radius: 4px;
 
   .header {
-    padding: 7px 12px;
+    padding: 9px 12px;
+    min-height: 20px;
     border-bottom: 1px solid #00000027;
     cursor: pointer;
     background-color: #0000000d;
@@ -82,22 +83,6 @@ export default {
     }
     &.open:after {
       content: "▲";
-    }
-
-    // Number of items in the collapsible
-    .nbItem {
-      background-color: #eee;
-      border-radius: 6px;
-      padding: 2px 4px;
-      border: 2px solid #ccc;
-      font-size: 0.9em;
-      color: #888;
-
-      &.blue {
-        background-color: #cfe2ff;
-        border-color: #4f89ca;
-        color: #3b6595;
-      }
     }
   }
   .body {

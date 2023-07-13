@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import "./assets/css/main.css";
+import "./assets/css/main.scss";
 import "./assets/css/imported.css";
 import Messenger from "./components/utils/Messenger.vue";
 import Loading from "./components/utils/Loading";
