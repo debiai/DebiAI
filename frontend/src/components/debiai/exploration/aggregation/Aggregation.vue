@@ -7,12 +7,13 @@
         Select the metrics used for the exploration and aggregate the columns if needed:
       </h3>
       <button
-        :disabled="!allAggregationFixed"
+        :disabled="!canProceed"
         @click="proceed"
       >
         Proceed >
       </button>
     </div>
+
     <!-- Metric selections -->
     <div
       id="metricSelection"
@@ -30,6 +31,7 @@
         </div>
       </div>
     </div>
+
     <!-- Loading animation -->
     <LoadingAnimation v-if="loading">
       Processing the aggregation based on the selected columns...
@@ -46,15 +48,17 @@
         <div
           id="warningMessage"
           class="tip warning"
-          v-show="!allAggregationFixed"
+          v-show="nbColumnsToAggregate > 0"
         >
-          The exploration mode only support columns with a certain number of unique values. If a
-          column has too many unique values, it will be ignored.
+          The exploration mode only support columns with a certain number of unique values,
+          <b> {{ maximumUniqueValues }} unique values at most</b>. If a column has too many unique
+          values, it will be ignored.
           <br />
           If you want to use a column with many unique values, you can aggregate it by chunks.
         </div>
       </transition>
 
+      <!-- Columns -->
       <div
         v-for="columnMetrics in selectedColumnsMetrics"
         :key="columnMetrics.label"
@@ -64,31 +68,46 @@
           :headerColor="columnAggregationValid(columnMetrics) ? 'green' : 'red'"
           :open="!columnAggregationValid(columnMetrics)"
         >
+          <!-- Column header -->
           <template v-slot:header>
             <div class="columnTitle">
+              <!-- Title -->
               <h4 class="label">
                 {{ columnMetrics.label }}
               </h4>
+              <!-- Unique values -->
               <div class="nbUniqueValues">
                 <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+
+                <!-- Chunk size -->
+                <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
               </div>
             </div>
           </template>
           <template v-slot:body>
-            <form @submit.prevent>
-              <h4>Aggregate the column by chunks</h4>
-              <!-- TODO: Doc with hints here -->
-              Number of chunks:
-              <input
-                type="number"
-                v-model.number="columnMetrics.chunkSize"
-                min="1"
-                max="10"
-                step="1"
-              />
-
-              <button type="submit">Aggregate</button>
-            </form>
+            <div class="aggregationParameters">
+              <div class="parameter">
+                <h4>Aggregate the column by chunks</h4>
+                <div class="chunks">
+                  Number of chunks:
+                  <button
+                    v-for="i in maximumUniqueValues"
+                    :key="i"
+                    :class="'chunk ' + (i === columnMetrics.nbChunks ? '' : 'white')"
+                    @click="
+                      columnMetrics.nbChunks = i === columnMetrics.nbChunks ? null : i;
+                      calculateNbColumnsToAggregate();
+                    "
+                  >
+                    {{ i }}
+                  </button>
+                </div>
+              </div>
+              <div class="parameter">
+                <h4>Aggregate the column using timestamp</h4>
+                <div>WIP</div>
+              </div>
+            </div>
           </template>
         </Collapsible>
       </div>
@@ -102,12 +121,14 @@ const maximumUniqueValues = 10;
 export default {
   data() {
     return {
+      maximumUniqueValues: maximumUniqueValues,
       metrics: ["Samples number"],
       selectedMetrics: ["Samples number"],
       projectColumns: [],
       selectedColumnsIndex: [],
 
       selectedColumnsMetrics: null,
+      nbColumnsToAggregate: 0,
       loading: true,
     };
   },
@@ -155,6 +176,14 @@ export default {
         .getColumnsMetrics(columnLabels)
         .then((metrics) => {
           this.selectedColumnsMetrics = metrics;
+
+          // Add a nbChunks property to each column
+          this.selectedColumnsMetrics.forEach((column) => {
+            column.nbChunks = null;
+          });
+
+          // Calculate the number of columns to aggregate
+          this.calculateNbColumnsToAggregate();
         })
         .catch((error) => {
           console.error(error);
@@ -172,10 +201,28 @@ export default {
       if (!"nbUniqueValues" in column) return false;
 
       if (column.nbUniqueValues > maximumUniqueValues) {
-        if (!column.aggregation) return false;
+        if (!column.nbChunks) return false;
       }
 
       return true;
+    },
+
+    calculateNbColumnsToAggregate() {
+      let nbColumns = 0;
+
+      // Check if some columns needs aggregation
+      // And if they do, check if the aggregation is fixed
+      for (let columnMetrics of this.selectedColumnsMetrics) {
+        if (columnMetrics.nbUniqueValues > maximumUniqueValues) {
+          if (!columnMetrics.nbChunks) {
+            nbColumns++;
+          }
+        }
+      }
+
+      this.$forceUpdate();
+
+      this.nbColumnsToAggregate = nbColumns;
     },
 
     // Router
@@ -202,19 +249,9 @@ export default {
     },
   },
   computed: {
-    allAggregationFixed() {
-      if (!this.selectedColumnsMetrics) return false;
-
-      // Check if some columns needs aggregation
-      // And if they do, check if the aggregation is fixed
-
-      for (let columnMetrics of this.selectedColumnsMetrics) {
-        if (columnMetrics.nbUniqueValues > maximumUniqueValues) {
-          if (!columnMetrics.aggregation) return false;
-        }
-      }
-
-      return true;
+    canProceed() {
+      // We need at least one metric
+      return this.selectedColumnsIndex.length - this.nbColumnsToAggregate > 0;
     },
   },
 };
@@ -313,9 +350,14 @@ export default {
         }
       }
 
-      form {
-        margin: 10px;
-        padding: 10px;
+      .aggregationParameters {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .parameter {
+          padding: 10px;
+        }
       }
     }
   }

@@ -289,7 +289,6 @@ button .badge {
   border-left: var(--infoDark) solid 5px;
   border-radius: 5px;
   color: white;
-  font-weight: bold;
   padding: 10px;
   margin: 10px;
   opacity: 0.8;
@@ -303,7 +302,7 @@ button .badge {
 .tip.warning {
   background-color: var(--warning);
   border-left: var(--warningDark) solid 5px;
-  color: unset;
+  color: black;
 }
 
 /* Other */
