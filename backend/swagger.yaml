@@ -864,6 +864,49 @@ paths:
         200:
           description: selection deleted
 
+  # Exploration
+  /data-providers/{dataProviderId}/projects/{projectId}/columnsMetrics:
+    post:
+      summary: Get the project columns metrics such as the columns unique values
+      tags: [Exploration]
+      operationId: controller.exploration.get_columns_metrics
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - columnLabels
+            properties:
+              columnLabels:
+                type: array
+                items:
+                  type: string
+                description: List of the column names
+      responses:
+        200:
+          description: Project columns metrics
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - columnLabel
+                - nbUniqueValues
+              properties:
+                label:
+                  type: string
+                nbUniqueValues:
+                  type: integer
+
   # Analysis layouts
   /app/layouts/:
     get:

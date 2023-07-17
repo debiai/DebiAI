@@ -1,6 +1,5 @@
 from modules.dataProviders.DataProviderException import DataProviderException
 import modules.dataProviders.dataProviderManager as data_provider_manager
-import modules.dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 
 # Project

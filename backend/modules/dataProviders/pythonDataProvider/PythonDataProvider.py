@@ -5,6 +5,7 @@ from modules.dataProviders.pythonDataProvider.dataUtils import (
     projects,
     samples,
     selections,
+    exploration,
     models,
     tree,
 )
@@ -131,6 +132,13 @@ class PythonDataProvider(DataProvider):
     def delete_selection(self, project_id, selection_id):
         # Selection deletion
         return selections.delete_selection(project_id, selection_id)
+
+    # Exploration
+    @project_must_exist
+    def get_columns_metrics(self, project_id, column_labels):
+        # Get columns metrics
+        # Return object { column_label: { metrics } }
+        return exploration.get_columns_metrics(project_id, column_labels)
 
     # Models
     @project_must_exist

@@ -59,6 +59,12 @@ class DataProvider(ABC):
     def delete_selection(self, id):
         pass
 
+    # Exploration
+    @abstractmethod
+    def get_columns_metrics(self, _projectId, _columnLabels):
+        # Return a list of metrics for each column
+        pass
+
     # Models
     @abstractmethod
     def get_models(self):

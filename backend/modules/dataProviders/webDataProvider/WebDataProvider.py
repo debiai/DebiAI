@@ -20,10 +20,7 @@ from modules.dataProviders.webDataProvider.http.api import get_info, get_status
 from modules.dataProviders.DataProviderException import DataProviderException
 
 
-#
 # Class role is supposed to expose methods for every data Providers
-#
-#
 class WebDataProvider(DataProvider):
     def __init__(self, url, name):
         self.url = url
@@ -88,6 +85,12 @@ class WebDataProvider(DataProvider):
 
     def delete_selection(self, project_id, selection_id):
         return useCaseSelections.delete_selection(self.url, project_id, selection_id)
+
+    # ==== Exploration ====
+    def get_columns_metrics(self, project_id, column_labels):
+        raise DataProviderException(
+            "WebDataProvider does not support get_columns_metrics"
+        )
 
     # ==== Models ====
     def get_models(self, project_id):
