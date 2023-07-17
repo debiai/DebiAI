@@ -80,12 +80,7 @@
       <!-- Loading anim, messages, warning & filters applied -->
       <div class="center">
         <!-- Loading animation -->
-        <div
-          v-if="loading"
-          class="saving"
-        >
-          <span></span><span></span><span></span>
-        </div>
+        <LoadingAnimation v-if="loading" />
 
         <!-- Error icon -->
         <div
@@ -714,46 +709,5 @@ export default {
 
 .dataError:hover {
   filter: brightness(80%);
-}
-
-/* Loading Anim */
-@keyframes blink {
-  0% {
-    opacity: 0.2;
-  }
-
-  20% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.2;
-  }
-}
-
-.saving {
-  margin-left: 5px;
-}
-
-.saving span {
-  animation-name: blink;
-  animation-duration: 1.4s;
-  animation-iteration-count: infinite;
-  animation-fill-mode: both;
-  height: 10px;
-  width: 10px;
-  border-radius: 50%;
-  background-color: cadetblue;
-  display: inline-block;
-  margin-right: 2.5px;
-  margin-left: 2.5px;
-}
-
-.saving span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.saving span:nth-child(3) {
-  animation-delay: 0.4s;
 }
 </style>

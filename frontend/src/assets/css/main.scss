@@ -295,8 +295,15 @@ button .badge {
   opacity: 0.8;
   transition: all ease-out 0.1s;
 }
+
 .tip:hover {
   opacity: 1;
+}
+
+.tip.warning {
+  background-color: var(--warning);
+  border-left: var(--warningDark) solid 5px;
+  color: unset;
 }
 
 /* Other */

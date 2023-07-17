@@ -1,17 +1,24 @@
 <template>
   <div id="Aggregation">
+    <!-- Back, title, proceed buttons -->
     <div id="top">
       <button @click="back">&lt; Column selection</button>
       <h3 id="title">
         Select the metrics used for the exploration and aggregate the columns if needed:
       </h3>
-      <button>Proceed ></button>
+      <button
+        :disabled="!allAggregationFixed"
+        @click="proceed"
+      >
+        Proceed >
+      </button>
     </div>
+    <!-- Metric selections -->
     <div
       id="metricSelection"
       class="card"
     >
-      <h4>Available metrics:</h4>
+      <h3>Available metrics:</h3>
       <div id="metrics">
         <div
           :class="'metric ' + (selectedMetrics.includes(metric) ? 'selected' : '')"
@@ -23,10 +30,75 @@
         </div>
       </div>
     </div>
+    <!-- Loading animation -->
+    <LoadingAnimation v-if="loading">
+      Processing the aggregation based on the selected columns...
+    </LoadingAnimation>
+
+    <!-- Columns metrics -->
+    <div
+      v-else
+      id="columnsMetrics"
+      class="card"
+    >
+      <h3>Selected columns:</h3>
+      <transition name="fade">
+        <div
+          id="warningMessage"
+          class="tip warning"
+          v-show="!allAggregationFixed"
+        >
+          The exploration mode only support columns with a certain number of unique values. If a
+          column has too many unique values, it will be ignored.
+          <br />
+          If you want to use a column with many unique values, you can aggregate it by chunks.
+        </div>
+      </transition>
+
+      <div
+        v-for="columnMetrics in selectedColumnsMetrics"
+        :key="columnMetrics.label"
+        class="column"
+      >
+        <Collapsible
+          :headerColor="columnAggregationValid(columnMetrics) ? 'green' : 'red'"
+          :open="!columnAggregationValid(columnMetrics)"
+        >
+          <template v-slot:header>
+            <div class="columnTitle">
+              <h4 class="label">
+                {{ columnMetrics.label }}
+              </h4>
+              <div class="nbUniqueValues">
+                <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+              </div>
+            </div>
+          </template>
+          <template v-slot:body>
+            <form @submit.prevent>
+              <h4>Aggregate the column by chunks</h4>
+              <!-- TODO: Doc with hints here -->
+              Number of chunks:
+              <input
+                type="number"
+                v-model.number="columnMetrics.chunkSize"
+                min="1"
+                max="10"
+                step="1"
+              />
+
+              <button type="submit">Aggregate</button>
+            </form>
+          </template>
+        </Collapsible>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+const maximumUniqueValues = 10;
+
 export default {
   data() {
     return {
@@ -34,6 +106,9 @@ export default {
       selectedMetrics: ["Samples number"],
       projectColumns: [],
       selectedColumnsIndex: [],
+
+      selectedColumnsMetrics: null,
+      loading: true,
     };
   },
   created() {
@@ -58,6 +133,9 @@ export default {
         },
       });
     }
+
+    // Load the metrics
+    this.loadColumnsMetrics();
   },
   methods: {
     selectMetric(metric) {
@@ -68,6 +146,39 @@ export default {
       }
     },
 
+    loadColumnsMetrics() {
+      const columnLabels = this.selectedColumnsIndex.map(
+        (index) => this.projectColumns[index].name
+      );
+
+      this.$backendDialog
+        .getColumnsMetrics(columnLabels)
+        .then((metrics) => {
+          this.selectedColumnsMetrics = metrics;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "An error occurred while loading the metrics.",
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    columnAggregationValid(column) {
+      if (!"nbUniqueValues" in column) return false;
+
+      if (column.nbUniqueValues > maximumUniqueValues) {
+        if (!column.aggregation) return false;
+      }
+
+      return true;
+    },
+
+    // Router
     back() {
       this.$router.push({
         name: "columnSelection",
@@ -77,6 +188,33 @@ export default {
           selectedColumnsIndex: this.selectedColumnsIndex,
         },
       });
+    },
+    proceed() {
+      this.$router.push({
+        name: "exploration",
+        query: {
+          projectId: this.$route.query.projectId,
+          dataProviderId: this.$route.query.dataProviderId,
+          selectedColumnsIndex: this.selectedColumnsIndex,
+          selectedMetrics: this.selectedMetrics,
+        },
+      });
+    },
+  },
+  computed: {
+    allAggregationFixed() {
+      if (!this.selectedColumnsMetrics) return false;
+
+      // Check if some columns needs aggregation
+      // And if they do, check if the aggregation is fixed
+
+      for (let columnMetrics of this.selectedColumnsMetrics) {
+        if (columnMetrics.nbUniqueValues > maximumUniqueValues) {
+          if (!columnMetrics.aggregation) return false;
+        }
+      }
+
+      return true;
     },
   },
 };
@@ -105,12 +243,15 @@ export default {
   #metricSelection {
     max-width: 900px;
     width: 80%;
-    margin: 20px;
-    padding: 30px;
+    margin: 10px;
+    padding: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 20px;
+    h3 {
+      margin: 10px;
+    }
 
     #metrics {
       display: flex;
@@ -136,6 +277,45 @@ export default {
           color: white;
           font-weight: bold;
         }
+      }
+    }
+  }
+
+  #columnsMetrics {
+    max-width: 900px;
+    width: 80%;
+    margin: 10px;
+    padding: 10px;
+
+    h3 {
+      margin: 10px;
+    }
+
+    .column {
+      margin: 5px;
+
+      .columnTitle {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+
+        .label {
+          font-weight: bold;
+        }
+
+        .nbUniqueValues {
+          border-radius: 5px;
+          border: 1px solid;
+          padding: 5px;
+        }
+      }
+
+      form {
+        margin: 10px;
+        padding: 10px;
       }
     }
   }

@@ -306,6 +306,23 @@ export default {
       });
   },
 
+  // ====== Exploration
+  getColumnsMetrics(columnLabels) {
+    let code = startRequest("Loading columns metrics");
+    return axios
+      .post(
+        apiURL +
+          "data-providers/" +
+          dataProviderId() +
+          "/projects/" +
+          projectId() +
+          "/columnsMetrics",
+        { columnLabels }
+      )
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+
   // ====== DataAnalysis
 
   // Operation center

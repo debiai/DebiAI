@@ -21,12 +21,24 @@
 export default {
   name: "Collapsible",
   components: {},
+  props: {
+    open: {
+      type: Boolean,
+      default: false,
+    },
+    headerColor: {
+      type: String,
+      default: "black",
+    },
+  },
   data: () => {
     return {
       isOpen: false,
     };
   },
-  created() {},
+  created() {
+    this.isOpen = this.open;
+  },
   methods: {},
   computed: {
     collapsibleClass() {
@@ -39,6 +51,7 @@ export default {
       return {
         header: true,
         open: this.isOpen,
+        [this.headerColor]: true,
       };
     },
   },
@@ -62,8 +75,10 @@ export default {
 
   .header {
     padding: 9px 12px;
+
     min-height: 20px;
     border-bottom: 1px solid #00000027;
+
     cursor: pointer;
     background-color: #0000000d;
     color: #0000008a;
@@ -80,9 +95,36 @@ export default {
     // Harrow at the right of the header
     &:after {
       content: "▼";
+      margin: 5px 5px 0 10px;
     }
     &.open:after {
       content: "▲";
+      margin: 3px 5px 0 10px;
+    }
+
+    // Header color
+    &:before {
+      width: 20px;
+      height: 20px;
+      margin: 3px 10px 0 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50px;
+      color: white;
+      font-size: 0.8em;
+    }
+    &.green:before {
+      content: "✔";
+      background-color: var(--success);
+    }
+    &.blue:before {
+      content: "i";
+      background-color: var(--success);
+    }
+    &.red:before {
+      content: "✖";
+      background-color: var(--danger);
     }
   }
   .body {
