@@ -33,90 +33,102 @@
     </div>
 
     <!-- Loading animation -->
-    <LoadingAnimation v-if="loading">
-      Processing the aggregation based on the selected columns...
-    </LoadingAnimation>
+    <LoadingAnimation v-if="loading"> Gathering the selected columns metrics... </LoadingAnimation>
 
     <!-- Columns metrics -->
-    <div
-      v-else
-      id="columnsMetrics"
-      class="card"
-    >
-      <h3>Selected columns:</h3>
-      <transition name="fade">
-        <div
-          id="warningMessage"
-          class="tip warning"
-          v-show="nbColumnsToAggregate > 0"
-        >
-          The exploration mode only support columns with a certain number of unique values,
-          <b> {{ maximumUniqueValues }} unique values at most</b>. If a column has too many unique
-          values, it will be ignored.
-          <br />
-          If you want to use a column with many unique values, you can aggregate it by chunks.
-        </div>
-      </transition>
-
-      <!-- Columns -->
+    <transition name="fade">
       <div
-        v-for="columnMetrics in selectedColumnsMetrics"
-        :key="columnMetrics.label"
-        class="column"
+        v-if="!loading"
+        id="columnsMetrics"
+        class="card"
       >
-        <Collapsible
-          :headerColor="columnAggregationValid(columnMetrics) ? 'green' : 'red'"
-          :open="!columnAggregationValid(columnMetrics)"
-        >
-          <!-- Column header -->
-          <template v-slot:header>
-            <div class="columnTitle">
-              <!-- Title -->
-              <h4 class="label">
-                {{ columnMetrics.label }}
-              </h4>
-              <!-- Unique values -->
-              <div class="nbUniqueValues">
-                <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+        <h3>Selected columns:</h3>
+        <transition name="fade">
+          <div
+            id="warningMessage"
+            class="tip warning"
+            v-show="nbColumnsToAggregate > 0"
+          >
+            The exploration mode only support columns with a certain number of unique values,
+            <b> {{ maximumUniqueValues }} unique values at most</b>. If a column has too many unique
+            values, it will be ignored.
+            <br />
+            If you want to use a column with many unique values, you can aggregate it by chunks.
+          </div>
+        </transition>
 
-                <!-- Chunk size -->
-                <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
-              </div>
-            </div>
-          </template>
-          <template v-slot:body>
-            <div class="aggregationParameters">
-              <div class="parameter">
-                <h4>Aggregate the column by chunks</h4>
-                <div class="chunks">
-                  Number of chunks:
-                  <button
-                    v-for="i in maximumUniqueValues"
-                    :key="i"
-                    :class="'chunk ' + (i === columnMetrics.nbChunks ? '' : 'white')"
-                    @click="
-                      columnMetrics.nbChunks = i === columnMetrics.nbChunks ? null : i;
-                      calculateNbColumnsToAggregate();
-                    "
-                  >
-                    {{ i }}
-                  </button>
+        <!-- Columns -->
+        <div
+          v-for="columnMetrics in selectedColumnsMetrics"
+          :key="columnMetrics.label"
+          class="column"
+        >
+          <Collapsible
+            :headerColor="columnAggregationValid(columnMetrics) ? 'green' : 'red'"
+            :headerTitle="
+              columnAggregationValid(columnMetrics)
+                ? ''
+                : 'The number of unique values is too high to be used in the exploration mode.'
+            "
+          >
+            <!-- Column header -->
+            <template v-slot:header>
+              <div
+                class="columnTitle"
+                :title="
+                  columnAggregationValid(columnMetrics)
+                    ? ''
+                    : 'The number of unique values is too high to be used in the exploration mode.'
+                "
+              >
+                <!-- Title -->
+                <h4 class="label">
+                  {{ columnMetrics.label }}
+                </h4>
+                <!-- Unique values -->
+                <div class="nbUniqueValues">
+                  <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+
+                  <!-- Chunk size -->
+                  <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
                 </div>
               </div>
-              <div class="parameter">
-                <h4>Aggregate the column using timestamp</h4>
-                <div>WIP</div>
+            </template>
+            <template v-slot:body>
+              <div class="aggregationParameters">
+                <div class="parameter">
+                  <h4>Aggregate the column by chunks</h4>
+                  <div class="chunks">
+                    Number of chunks:
+                    <br />
+                    <button
+                      v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
+                      :key="i"
+                      :class="'chunk ' + (i === columnMetrics.nbChunks ? '' : 'white')"
+                      @click="
+                        columnMetrics.nbChunks = i === columnMetrics.nbChunks ? null : i;
+                        calculateNbColumnsToAggregate();
+                      "
+                    >
+                      {{ i }}
+                    </button>
+                  </div>
+                </div>
+                <!-- <div class="parameter">
+                  <h4>Aggregate the column using timestamp</h4>
+                  <div>WIP</div>
+                </div> -->
               </div>
-            </div>
-          </template>
-        </Collapsible>
+            </template>
+          </Collapsible>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
-const maximumUniqueValues = 10;
+const maximumUniqueValues = 20;
 
 export default {
   data() {
@@ -357,6 +369,9 @@ export default {
 
         .parameter {
           padding: 10px;
+        }
+        .chunk {
+          padding: 5px 12px;
         }
       }
     }

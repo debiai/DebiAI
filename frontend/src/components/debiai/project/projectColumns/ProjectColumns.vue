@@ -22,14 +22,14 @@
 
       <div id="controls">
         <button
-          class="red"
+          class="white"
           @click="selectedColumns = []"
           :disabled="selectedColumns.length === 0"
         >
           Unselect all
         </button>
         <button
-          class="green"
+          class="white"
           @click="selectedColumns = columns.map((c) => c.index)"
           :disabled="selectedColumns.length === columns.length"
         >

@@ -22,7 +22,7 @@ def get_columns_metrics(project_id, column_labels):
         results.append(
             {
                 "label": column_label,
-                "nbUniqueValues": randint(1, 20),
+                "nbUniqueValues": randint(1, 35),
             }
         )
 

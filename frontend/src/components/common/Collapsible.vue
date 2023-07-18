@@ -3,6 +3,7 @@
     <div
       :class="headerClass"
       @click="isOpen = !isOpen"
+      :title="headerTitle"
     >
       <slot name="header"></slot>
     </div>
@@ -29,6 +30,10 @@ export default {
     headerColor: {
       type: String,
       default: "black",
+    },
+    headerTitle: {
+      type: String,
+      default: "",
     },
   },
   data: () => {
@@ -58,7 +63,7 @@ export default {
   watch: {
     isOpen() {
       // Scroll to the bottom of the collapsible when it is opened
-      if (this.isOpen) {
+      if (this.isOpen && !this.open) {
         this.$nextTick(() => {
           this.$el.scrollIntoView({ behavior: "smooth", block: "center" });
         });
