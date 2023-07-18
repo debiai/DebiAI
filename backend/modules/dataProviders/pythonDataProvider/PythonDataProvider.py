@@ -137,8 +137,11 @@ class PythonDataProvider(DataProvider):
     @project_must_exist
     def get_columns_metrics(self, project_id, column_labels):
         # Get columns metrics
-        # Return object { column_label: { metrics } }
         return exploration.get_columns_metrics(project_id, column_labels)
+
+    def get_combinatorial_metrics(self, project_id, columns):
+        # Get combinatorial metrics
+        return exploration.get_combinatorial_metrics(project_id, columns)
 
     # Models
     @project_must_exist

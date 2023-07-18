@@ -92,6 +92,11 @@ class WebDataProvider(DataProvider):
             "WebDataProvider does not support get_columns_metrics"
         )
 
+    def get_combinatorial_metrics(self, project_id, columns):
+        raise DataProviderException(
+            "WebDataProvider does not support get_combinatorial_metrics"
+        )
+
     # ==== Models ====
     def get_models(self, project_id):
         return get_models_info(self.url, project_id)

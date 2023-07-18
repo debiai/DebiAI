@@ -322,6 +322,21 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
+  getColumnsCombinatorialMetrics(columns) {
+    let code = startRequest("Loading columns combinatorial metrics");
+    return axios
+      .post(
+        apiURL +
+          "data-providers/" +
+          dataProviderId() +
+          "/projects/" +
+          projectId() +
+          "/combinatorialMetrics",
+        {columns}
+      )
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
 
   // ====== DataAnalysis
 

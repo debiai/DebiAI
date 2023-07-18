@@ -250,12 +250,13 @@ export default {
     },
     proceed() {
       this.$router.push({
-        name: "exploration",
+        name: "filtering",
         query: {
           projectId: this.$route.query.projectId,
           dataProviderId: this.$route.query.dataProviderId,
           selectedColumnsIndex: this.selectedColumnsIndex,
           selectedMetrics: this.selectedMetrics,
+          selectedColumnsMetrics: this.selectedColumnsMetrics,
         },
       });
     },

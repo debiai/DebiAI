@@ -65,6 +65,11 @@ class DataProvider(ABC):
         # Return a list of metrics for each column
         pass
 
+    @abstractmethod
+    def get_combinatorial_metrics(self, _projectId, _columns):
+        # Return a list of metrics for each columns combinatorial
+        pass
+
     # Models
     @abstractmethod
     def get_models(self):

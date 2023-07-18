@@ -867,7 +867,7 @@ paths:
   # Exploration
   /data-providers/{dataProviderId}/projects/{projectId}/columnsMetrics:
     post:
-      summary: Get the project columns metrics such as the columns unique values
+      summary: Get some columns metrics such as the columns number of unique values
       tags: [Exploration]
       operationId: controller.exploration.get_columns_metrics
       parameters:
@@ -906,6 +906,79 @@ paths:
                   type: string
                 nbUniqueValues:
                   type: integer
+
+  /data-providers/{dataProviderId}/projects/{projectId}/combinatorialMetrics:
+    post:
+      summary:
+        Get some combinatorial metrics such as the number of unique values
+        for each combination of columns
+      tags: [Exploration]
+      operationId: controller.exploration.get_combinatorial_metrics
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - columns
+            properties:
+              columns:
+                type: array
+                description: List of columns with their name and number of chunks
+                items:
+                  type: object
+                  required:
+                    - label
+                  properties:
+                    label:
+                      type: string
+                      description: Column name
+                    nbChunks:
+                      type: ["integer", "null"]
+                      description:
+                        Number of chunks used to reduce the columns unique
+                        values
+
+      responses:
+        200:
+          description: Project combinatorial metrics
+          schema:
+            type: object
+            required:
+              - combinations
+              - totalCombinations
+            properties:
+              combinations:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - combination
+                    - metrics
+                  properties:
+                    combination:
+                      type: array
+                      description: List of the column values, same order as the columnLabels
+                      items:
+                        type: string
+                    metrics:
+                      type: object
+                      properties:
+                        nbValues:
+                          type: integer
+                          description: Number of unique values for the combination
+                          # More metrics can be added in the future
+              totalCombinations:
+                type: integer
+                description: Total number of combinations
 
   # Analysis layouts
   /app/layouts/:
