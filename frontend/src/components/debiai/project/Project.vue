@@ -165,9 +165,9 @@ export default {
         if (startAns) {
           console.log("Start analysis");
           const selectionIds = this.$route.query.selectionIds;
-          const selectionIntersection = this.$route.query.selectionIntersection;
+          let selectionIntersection = this.$route.query.selectionIntersection;
           const modelIds = this.$route.query.modelIds;
-          const commonModelResults = this.$route.query.commonModelResults;
+          let commonModelResults = this.$route.query.commonModelResults;
 
           // Convert str to lists
           if (selectionIds) selectionIds = selectionIds.split(".");
