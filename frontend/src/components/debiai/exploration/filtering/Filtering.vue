@@ -1,5 +1,70 @@
 <template>
   <div id="Filtering">
+    <!-- Combinations list modal -->
+    <Modal
+      v-if="showCombinationsList"
+      @close="showCombinationsList = false"
+    >
+      <div class="aligned spaced">
+        <h3>Combinations list</h3>
+        <button @click="showCombinationsList = false">Close</button>
+      </div>
+      <div id="combinationsListModal">
+        <br />
+        <table>
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th
+                v-for="i in selectedColumnsIndex"
+                :key="i"
+              >
+                {{ projectColumns[i].name }}
+              </th>
+              <th
+                v-for="metric in Object.keys(combinationsMetrics[0].metrics)"
+                :key="metric"
+                class="metric"
+              >
+                {{ metric }}
+              </th>
+            </tr>
+          </thead>
+
+          <tbody id="combinationsList">
+            <tr
+              class="combination"
+              v-for="(combination, i) in combinationsMetrics"
+              :key="i"
+            >
+              <!-- Combination number -->
+              <td class="number">
+                {{ i + 1 }}
+              </td>
+
+              <!-- Combination values -->
+              <td
+                class="value"
+                v-for="(value, j) in combination.combination"
+                :key="j"
+              >
+                {{ value }}
+              </td>
+
+              <!-- Metrics -->
+              <td
+                class="metric"
+                v-for="(metric, j) in combination.metrics"
+                :key="j"
+              >
+                {{ metric }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Modal>
+
     <!-- Back btn and title -->
     <div id="top">
       <button @click="back">&lt; Aggregation panel</button>
@@ -14,6 +79,7 @@
       Gathering the selected columns combinations...
     </LoadingAnimation>
 
+    <!-- Plot and warning message-->
     <div
       id="content"
       class="card"
@@ -32,9 +98,15 @@
 
       <!-- Parallel categories plot -->
       <div id="parallelCategories" />
+    </div>
 
-      <!-- Combinations -->
+    <!-- Combinations -->
+    <div
+      class="card"
+      id="combinations"
+    >
       <div class="padded">Total possible combinations: {{ nbCombinations }}</div>
+      <button @click="showCombinationsList = true">All combinations</button>
     </div>
   </div>
 </template>
@@ -47,7 +119,11 @@ export default {
     return {
       loading: true,
       tooManyCombinationsWarning: false,
+      showCombinationsList: false,
+      selectedColumnsIndex: [],
+      projectColumns: [],
 
+      combinationsMetrics: [],
       nbCombinations: 0,
     };
   },
@@ -112,7 +188,6 @@ export default {
           if (metrics.totalCombinations > metrics.combinations.length)
             this.tooManyCombinationsWarning = true;
 
-
           this.nbCombinations = metrics.totalCombinations;
 
           this.drawPlot();
@@ -152,8 +227,8 @@ export default {
         margin: {
           l: 20,
           r: 30,
-          b: 0,
-          t: 20,
+          b: 20,
+          t: 30,
         },
       };
 
@@ -199,6 +274,51 @@ export default {
 
     button {
       min-width: 120px;
+    }
+  }
+  #content {
+    padding: 5px;
+  }
+  #combinations {
+    margin: 3px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  #combinationsListModal {
+    max-height: 600px;
+    min-width: 800px;
+    margin-top: 20px;
+    padding-right: 10px;
+    overflow: auto;
+
+    // Table style:
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      position: relative;
+      border-collapse: collapse;
+    }
+
+    th {
+      position: sticky;
+      padding: 8px;
+      top: 0;
+      background-color: #f2f2f2;
+    }
+    td {
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .metric {
+      text-align: right;
+      border-left: 1px solid #ddd;
     }
   }
 }
