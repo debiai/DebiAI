@@ -130,7 +130,7 @@
       </h3>
 
       <div id="filterList">
-        <transition-group name="scaleRight">
+        <TransitionGroup name="scaleRight">
           <div
             class="filter"
             v-for="filter in filters"
@@ -139,7 +139,7 @@
             <div class="name">{{ filter.columnLabel }}:</div>
             <div class="value">{{ filter.value }}</div>
           </div>
-        </transition-group>
+        </TransitionGroup>
       </div>
 
       <!-- Selected combinations -->
@@ -156,8 +156,8 @@
         <transition-group name="scaleRight">
           <div
             class="combination"
-            v-for="(combination, i) in selectedCombinations"
-            :key="i"
+            v-for="combination in selectedCombinations"
+            :key="combination.index"
           >
             <div class="values">
               <div
@@ -182,6 +182,18 @@
         </transition-group>
       </div>
 
+      <!-- Metrics -->
+      <h3 v-if="selectedCombinations.length > 0">Metrics</h3>
+
+      <div
+        id="metrics"
+        v-if="selectedCombinations.length > 0"
+      >
+        Total selected samples: {{ totalSelectedSamples }} / {{ totalSamples }} ({{
+          ((totalSelectedSamples / totalSamples) * 100).toFixed(2)
+        }}%)
+      </div>
+
       <!-- Nothing selected tip -->
       <transition name="fade">
         <div v-if="filters.length === 0">
@@ -190,6 +202,14 @@
           </div>
         </div>
       </transition>
+    </div>
+    <div
+      id="controls"
+      class="aligned padded onRight"
+      v-if="selectedCombinations.length > 0"
+    >
+      <button>Create a selection</button>
+      <button>Analyze the data</button>
     </div>
   </div>
 </template>
@@ -281,6 +301,11 @@ export default {
 
           this.nbCombinations = metrics.totalCombinations;
           this.nonNullCombinations = this.combinationsMetrics.filter((c) => c.metrics.nbValues > 0);
+          // Add an index to each combination
+          this.nonNullCombinations = this.nonNullCombinations.map((c, i) => {
+            c.index = i;
+            return c;
+          });
 
           this.drawPlot();
         })
@@ -327,7 +352,7 @@ export default {
           b: 20,
           t: 30,
         },
-        height: 600,
+        height: 390,
       };
 
       const plotDiv = document.getElementById("parallelCategories");
@@ -396,6 +421,14 @@ export default {
       });
     },
   },
+  computed: {
+    totalSamples() {
+      return this.combinationsMetrics.reduce((acc, comb) => acc + comb.metrics.nbValues, 0);
+    },
+    totalSelectedSamples() {
+      return this.selectedCombinations.reduce((acc, comb) => acc + comb.metrics.nbValues, 0);
+    },
+  },
 };
 </script>
 
@@ -419,7 +452,7 @@ export default {
   }
   #content {
     padding: 5px;
-    height: 600px;
+    height: 400px;
   }
   #combinations {
     margin: 3px;
@@ -530,7 +563,7 @@ export default {
           .metric {
             display: flex;
             border: 1px solid rgb(85, 85, 85);
-            padding: 10px;
+            padding: 4px;
             gap: 5px;
             border-radius: 5px;
           }
