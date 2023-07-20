@@ -378,3 +378,15 @@ button .badge {
 .scale-leave-to {
   height: 0px;
 }
+
+.scaleRight-enter-active,
+.scaleRight-leave-active {
+  overflow: hidden;
+  width: 20px;
+  transition: width 60ms ease-out;
+}
+
+.scaleRight-enter,
+.scaleRight-leave-to {
+  width: 0px;
+}
