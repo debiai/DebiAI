@@ -108,6 +108,45 @@
       <div class="padded">Total possible combinations: {{ nbCombinations }}</div>
       <button @click="showCombinationsList = true">All combinations</button>
     </div>
+
+    <!-- Filters -->
+    <div
+      class="card"
+      id="filters"
+    >
+      <h3 class="aligned spaced" style="height: 30px;">
+        Filters
+
+        <transition name="fade">
+          <button
+            v-if="filters.length > 0"
+            @click="clearFilters"
+          >
+            Clear filters
+          </button>
+        </transition>
+      </h3>
+      <transition name="fade">
+        <div
+          id="filterList"
+          v-if="filters.length > 0"
+        >
+          <div
+            class="filter"
+            v-for="filter in filters"
+            :key="filter.columnLabel"
+          >
+            <div class="name">{{ filter.columnLabel }}:</div>
+            <div class="value">{{ filter.value }}</div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="tip">
+            No filter applied, click on a path in the Parallel Categories diagram to add a filter.
+          </div>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -125,6 +164,8 @@ export default {
 
       combinationsMetrics: [],
       nbCombinations: 0,
+
+      filters: [],
     };
   },
   mounted() {
@@ -192,6 +233,7 @@ export default {
             this.tooManyCombinationsWarning = true;
 
           this.nbCombinations = metrics.totalCombinations;
+          this.nonNullCombinations = this.combinationsMetrics.filter((c) => c.metrics.nbValues > 0);
 
           this.drawPlot();
         })
@@ -208,18 +250,17 @@ export default {
     },
 
     drawPlot() {
-      const nonNullCombinations = this.combinationsMetrics.filter((c) => c.metrics.nbValues > 0);
       const columnsCombinations = [];
 
       this.selectedColumnsMetrics.forEach((column, i) => {
-        const combinations = nonNullCombinations.map((c) => c.combination[i]);
+        const combinations = this.nonNullCombinations.map((c) => c.combination[i]);
 
         columnsCombinations.push({ label: column.label, values: combinations });
       });
 
-      const counts = nonNullCombinations.map((c) => c.metrics.nbValues);
+      const counts = this.nonNullCombinations.map((c) => c.metrics.nbValues);
 
-      const colors = Array(nonNullCombinations.length).fill(0);
+      const colors = new Int8Array(this.nonNullCombinations.length);
 
       const trace = {
         type: "parcats",
@@ -255,21 +296,36 @@ export default {
       // Update color on selection and click
 
       plotDiv.on("plotly_click", (points_data) => {
-        console.log(nonNullCombinations);
-        console.log(points_data);
-
-        var new_color = new Int8Array(nonNullCombinations.length);
+        const new_color = new Int8Array(this.nonNullCombinations.length);
 
         for (var i = 0; i < points_data.points.length; i++) {
           new_color[points_data.points[i].pointNumber] = 1;
-          console.log(points_data.points[i].pointNumber);
         }
-
-        console.log(new_color);
 
         // Update color of selected paths in parallel categories diagram
         Plotly.restyle(plotDiv, { "line.color": new_color }, 0);
+
+        // Construct the filters
+        this.filters = [];
+        for (const constraintColumnIndex of Object.keys(points_data.constraints)) {
+          if (constraintColumnIndex === "color") continue;
+
+          this.filters.push({
+            columnLabel: this.selectedColumnsMetrics[constraintColumnIndex].label,
+            value: points_data.constraints[constraintColumnIndex],
+          });
+        }
       });
+    },
+
+    clearFilters() {
+      this.filters = [];
+      const colors = new Int8Array(this.nonNullCombinations.length);
+      Plotly.restyle(
+        document.getElementById("parallelCategories"),
+        { "line.color": colors, "line.cmin": 0, "line.cmax": 1 },
+        0
+      );
     },
 
     // Router
@@ -349,6 +405,36 @@ export default {
     .metric {
       text-align: right;
       border-left: 1px solid #ddd;
+    }
+  }
+  #filters {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    #filterList {
+      display: flex;
+      flex-direction: row;
+      overflow: auto;
+      padding-bottom: 20px;
+      gap: 10px;
+
+      .filter {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+
+        .name {
+          font-weight: bold;
+        }
+      }
     }
   }
 }
