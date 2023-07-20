@@ -72,10 +72,10 @@
     </div>
 
     <!-- Loading animation -->
-    <LoadingAnimation v-if="loading">
-      <br />
-      <br />
-      <br />
+    <LoadingAnimation
+      v-if="loading"
+      center
+    >
       Gathering the selected columns combinations...
     </LoadingAnimation>
 
@@ -84,22 +84,20 @@
       id="content"
       class="card"
     >
-      <!-- Warning message -->
-      <div
-        class="tip warning"
-        v-show="tooManyCombinationsWarning"
-      >
-        The number of combinations is too high to be used in the exploration mode and has been
-        reduced in order to avoid a crash.
-        <br />
-        If you want to use a column with many unique values, you can aggregate it by chunks or
-        reduce the number of columns.
-      </div>
-
       <!-- Parallel categories plot -->
       <div id="parallelCategories" />
     </div>
-
+    <!-- Warning message -->
+    <div
+      class="tip warning"
+      v-show="tooManyCombinationsWarning"
+    >
+      The number of combinations is too high to be used in the exploration mode and has been reduced
+      in order to avoid a crash.
+      <br />
+      If you want to use a column with many unique values, you can aggregate it by chunks or reduce
+      the number of columns.
+    </div>
     <!-- Combinations -->
     <div
       class="card"
@@ -109,12 +107,16 @@
       <button @click="showCombinationsList = true">All combinations</button>
     </div>
 
-    <!-- Filters -->
+    <!-- Filters & metrics-->
     <div
       class="card"
       id="filters"
     >
-      <h3 class="aligned spaced" style="height: 30px;">
+      <!-- Selected filters -->
+      <h3
+        class="aligned spaced"
+        style="height: 30px"
+      >
         Filters
 
         <transition name="fade">
@@ -126,11 +128,9 @@
           </button>
         </transition>
       </h3>
-      <transition name="fade">
-        <div
-          id="filterList"
-          v-if="filters.length > 0"
-        >
+
+      <div id="filterList">
+        <transition-group name="scaleRight">
           <div
             class="filter"
             v-for="filter in filters"
@@ -139,8 +139,52 @@
             <div class="name">{{ filter.columnLabel }}:</div>
             <div class="value">{{ filter.value }}</div>
           </div>
-        </div>
-        <div v-else>
+        </transition-group>
+      </div>
+
+      <!-- Selected combinations -->
+      <h3
+        v-if="selectedCombinations.length > 0"
+        class="aligned spaced"
+      >
+        Selected combinations
+      </h3>
+      <div
+        id="combinationList"
+        v-if="selectedCombinations.length > 0"
+      >
+        <transition-group name="scaleRight">
+          <div
+            class="combination"
+            v-for="(combination, i) in selectedCombinations"
+            :key="i"
+          >
+            <div class="values">
+              <div
+                class="value"
+                v-for="(value, j) in combination.combination"
+                :key="j"
+              >
+                {{ value }}
+              </div>
+            </div>
+            <div class="metrics">
+              <div
+                class="metric"
+                v-for="(metric, j) in combination.metrics"
+                :key="j"
+              >
+                <div class="name">{{ j }}:</div>
+                <div class="value">{{ metric }}</div>
+              </div>
+            </div>
+          </div>
+        </transition-group>
+      </div>
+
+      <!-- Nothing selected tip -->
+      <transition name="fade">
+        <div v-if="filters.length === 0">
           <div class="tip">
             No filter applied, click on a path in the Parallel Categories diagram to add a filter.
           </div>
@@ -166,6 +210,7 @@ export default {
       nbCombinations: 0,
 
       filters: [],
+      selectedCombinations: [],
     };
   },
   mounted() {
@@ -177,6 +222,8 @@ export default {
       this.$router.push("/");
       return;
     }
+    this.$store.commit("setDataProviderId", dataProviderId);
+    this.$store.commit("setProjectId", projectId);
 
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
@@ -280,6 +327,7 @@ export default {
           b: 20,
           t: 30,
         },
+        height: 600,
       };
 
       const plotDiv = document.getElementById("parallelCategories");
@@ -315,11 +363,18 @@ export default {
             value: points_data.constraints[constraintColumnIndex],
           });
         }
+
+        // Get the selected combinations
+        this.selectedCombinations = [];
+        for (const pointNumber of points_data.points) {
+          this.selectedCombinations.push(this.nonNullCombinations[pointNumber.pointNumber]);
+        }
       });
     },
 
     clearFilters() {
       this.filters = [];
+      this.selectedCombinations = [];
       const colors = new Int8Array(this.nonNullCombinations.length);
       Plotly.restyle(
         document.getElementById("parallelCategories"),
@@ -364,6 +419,7 @@ export default {
   }
   #content {
     padding: 5px;
+    height: 600px;
   }
   #combinations {
     margin: 3px;
@@ -413,7 +469,7 @@ export default {
     flex-direction: column;
     gap: 10px;
 
-    #filterList {
+    #filterList span {
       display: flex;
       flex-direction: row;
       overflow: auto;
@@ -423,8 +479,6 @@ export default {
       .filter {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
         gap: 10px;
         padding: 5px;
         border: 1px solid #ddd;
@@ -433,6 +487,53 @@ export default {
 
         .name {
           font-weight: bold;
+        }
+      }
+    }
+    #combinationList span {
+      display: flex;
+      flex-direction: row;
+      overflow: auto;
+      padding-bottom: 20px;
+      gap: 10px;
+
+      .combination {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+
+        max-height: 100px;
+
+        .values {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+
+          .value {
+            font-size: 0.8em;
+            white-space: nowrap;
+
+            &:not(:last-child)::after {
+              content: ">";
+            }
+          }
+        }
+
+        .metrics {
+          display: flex;
+          gap: 10px;
+
+          .metric {
+            display: flex;
+            border: 1px solid rgb(85, 85, 85);
+            padding: 10px;
+            gap: 5px;
+            border-radius: 5px;
+          }
         }
       }
     }

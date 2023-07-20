@@ -39,6 +39,8 @@ def get_combinatorial_metrics(project_id, columns):
     from time import sleep
     from random import randint
 
+    sleep(1)
+
     # First, get each columns unique values
     columns_unique_values = []
 
@@ -85,7 +87,7 @@ def get_combinatorial_metrics(project_id, columns):
             {
                 "combination": combination,
                 "metrics": {
-                    "nbValues": pow(randint(1, 100), 2) if randint(1,10) == 1 else 0,
+                    "nbValues": pow(randint(1, 100), 2) if randint(1, 10) == 1 else 0,
                     # "nbValues": 1
                 },
             }

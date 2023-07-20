@@ -1,5 +1,8 @@
 <template>
-  <div id="LoadingAnimation">
+  <div
+    id="LoadingAnimation"
+    :class="classObject"
+  >
     <div id="text">
       <slot />
     </div>
@@ -10,6 +13,16 @@
 <script>
 export default {
   name: "LoadingAnimation",
+  props: {
+    center: { type: Boolean, default: false },
+  },
+  computed: {
+    classObject() {
+      return {
+        center: this.center,
+      };
+    },
+  },
 };
 </script>
 
@@ -46,6 +59,13 @@ export default {
     color: cadetblue;
     text-align: center;
     font-weight: bold;
+  }
+
+  &.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
