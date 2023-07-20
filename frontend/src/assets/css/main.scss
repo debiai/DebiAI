@@ -333,6 +333,11 @@ button .badge {
 .centered {
   justify-content: center;
 }
+
+.onRight {
+  justify-content: flex-end;
+}
+
 .gapped {
   gap: 10px;
 }
