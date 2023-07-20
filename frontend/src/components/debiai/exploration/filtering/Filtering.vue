@@ -132,7 +132,10 @@ export default {
     let dataProviderId = this.$route.query.dataProviderId;
     let projectId = this.$route.query.projectId;
 
-    if (!dataProviderId || !projectId) this.$router.push("/");
+    if (!dataProviderId || !projectId) {
+      this.$router.push("/");
+      return;
+    }
 
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
@@ -205,22 +208,28 @@ export default {
     },
 
     drawPlot() {
-      const colWithSelectedSamples = [];
-
       const nonNullCombinations = this.combinationsMetrics.filter((c) => c.metrics.nbValues > 0);
+      const columnsCombinations = [];
 
       this.selectedColumnsMetrics.forEach((column, i) => {
         const combinations = nonNullCombinations.map((c) => c.combination[i]);
 
-        colWithSelectedSamples.push({ label: column.label, values: combinations });
+        columnsCombinations.push({ label: column.label, values: combinations });
       });
 
       const counts = nonNullCombinations.map((c) => c.metrics.nbValues);
 
+      const colors = Array(nonNullCombinations.length).fill(0);
+
       const trace = {
         type: "parcats",
-        dimensions: colWithSelectedSamples,
+        dimensions: columnsCombinations,
         counts: counts,
+        line: {
+          color: colors,
+          cmin: 0,
+          cmax: 1,
+        },
       };
 
       let layout = {
@@ -232,7 +241,9 @@ export default {
         },
       };
 
-      Plotly.newPlot("parallelCategories", [trace], layout, {
+      const plotDiv = document.getElementById("parallelCategories");
+
+      Plotly.newPlot(plotDiv, [trace], layout, {
         displayModeBar: false,
         responsive: true,
       });
@@ -240,6 +251,25 @@ export default {
       // Set plot selection event
       // this.divParCat.removeListener("plotly_click", this.selectDataOnPlot);
       // this.divParCat.on("plotly_click", this.selectDataOnPlot);
+
+      // Update color on selection and click
+
+      plotDiv.on("plotly_click", (points_data) => {
+        console.log(nonNullCombinations);
+        console.log(points_data);
+
+        var new_color = new Int8Array(nonNullCombinations.length);
+
+        for (var i = 0; i < points_data.points.length; i++) {
+          new_color[points_data.points[i].pointNumber] = 1;
+          console.log(points_data.points[i].pointNumber);
+        }
+
+        console.log(new_color);
+
+        // Update color of selected paths in parallel categories diagram
+        Plotly.restyle(plotDiv, { "line.color": new_color }, 0);
+      });
     },
 
     // Router
@@ -251,7 +281,7 @@ export default {
           dataProviderId: this.$route.query.dataProviderId,
           selectedColumnsIndex: this.selectedColumnsIndex,
         },
-        // TODO: Pass aggrerations
+        // TODO: Pass agrerations
       });
     },
   },
