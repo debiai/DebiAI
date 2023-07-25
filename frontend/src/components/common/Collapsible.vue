@@ -1,12 +1,30 @@
 <template>
   <div :class="collapsibleClass">
+    <!-- Header -->
     <div
       :class="headerClass"
       @click="isOpen = !isOpen"
       :title="headerTitle"
     >
+      <inline-svg
+        id="arrow"
+        :src="require('@/assets/svg/arrowRight.svg')"
+        width="10"
+        height="10"
+      />
+
+      <div
+        :class="colorTagClass"
+        v-if="headerColor"
+      >
+        <span v-if="headerColor === 'green'">✔</span>
+        <span v-if="headerColor === 'blue'">i</span>
+        <span v-if="headerColor === 'red'">✖</span>
+      </div>
       <slot name="header"></slot>
     </div>
+
+    <!-- Content -->
     <transition name="fade">
       <div
         class="body"
@@ -29,7 +47,7 @@ export default {
     },
     headerColor: {
       type: String,
-      default: "black",
+      default: null,
     },
     headerTitle: {
       type: String,
@@ -56,6 +74,11 @@ export default {
       return {
         header: true,
         open: this.isOpen,
+      };
+    },
+    colorTagClass() {
+      return {
+        colorTag: true,
         [this.headerColor]: true,
       };
     },
@@ -88,7 +111,8 @@ export default {
     background-color: #0000000d;
     color: #0000008a;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 
     * {
       display: flex;
@@ -97,39 +121,37 @@ export default {
       gap: 10px;
     }
 
-    // Harrow at the right of the header
-    &:after {
-      content: "▼";
-      margin: 5px 5px 0 10px;
+    #arrow {
+      transform: rotate(0deg);
+      transition: transform 0.2s ease-out;
     }
-    &.open:after {
-      content: "▲";
-      margin: 3px 5px 0 10px;
+
+    &.open {
+      #arrow {
+        transform: rotate(90deg);
+      }
     }
 
     // Header color
-    &:before {
+    .colorTag {
       width: 20px;
-      height: 20px;
-      margin: 3px 10px 0 0;
+      height: 19px;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: 50px;
       color: white;
       font-size: 0.8em;
-    }
-    &.green:before {
-      content: "✔";
-      background-color: var(--success);
-    }
-    &.blue:before {
-      content: "i";
-      background-color: var(--success);
-    }
-    &.red:before {
-      content: "✖";
-      background-color: var(--danger);
+      transition: background-color 0.2s;
+      &.green {
+        background-color: var(--success);
+      }
+      &.blue {
+        background-color: var(--success);
+      }
+      &.red {
+        background-color: var(--danger);
+      }
     }
   }
   .body {
