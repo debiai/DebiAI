@@ -5,10 +5,28 @@
       v-if="showCombinationsList"
       @close="showCombinationsList = false"
     >
+      <!-- Title and checkbox -->
       <div class="aligned spaced">
         <h3>Combinations list</h3>
+        <div id="sortByValuesCheckBox">
+          Sort by number of values
+          <input
+            type="checkbox"
+            id="sortByValuesCB"
+            class="customCbx"
+            v-model="sortCombinationsByValues"
+            style="display: none"
+          />
+          <label
+            for="sortByValuesCB"
+            class="toggle"
+          >
+            <span></span>
+          </label>
+        </div>
         <button @click="showCombinationsList = false">Close</button>
       </div>
+      <!-- Table of all the combinations with their metrics. -->
       <div id="combinationsListModal">
         <br />
         <table>
@@ -34,7 +52,7 @@
           <tbody id="combinationsList">
             <tr
               class="combination"
-              v-for="(combination, i) in combinationsMetrics"
+              v-for="(combination, i) in combinationsMetricsDisplay"
               :key="i"
             >
               <!-- Combination number -->
@@ -99,110 +117,117 @@
       the number of columns.
     </div>
     <!-- Combinations -->
-    <div
-      class="card"
-      id="combinations"
-    >
-      <div class="padded">Total possible combinations: {{ nbCombinations }}</div>
-      <button @click="showCombinationsList = true">All combinations</button>
-    </div>
+    <transition name="fade">
+      <div
+        class="card"
+        id="combinations"
+        v-if="!loading"
+      >
+        <div class="padded">Total combinations number: {{ nbCombinations }}</div>
+        <button @click="showCombinationsList = true">All combinations</button>
+      </div>
+    </transition>
 
     <!-- Filters & metrics-->
-    <div
-      class="card"
-      id="filters"
-    >
-      <!-- Selected filters -->
-      <h3
-        class="aligned spaced"
-        style="height: 30px"
-      >
-        Filters
-
-        <transition name="fade">
-          <button
-            v-if="filters.length > 0"
-            @click="clearFilters"
-          >
-            Clear filters
-          </button>
-        </transition>
-      </h3>
-
-      <div id="filterList">
-        <TransitionGroup name="scaleRight">
-          <div
-            class="filter"
-            v-for="filter in filters"
-            :key="filter.columnLabel"
-          >
-            <div class="name">{{ filter.columnLabel }}:</div>
-            <div class="value">{{ filter.value }}</div>
-          </div>
-        </TransitionGroup>
-      </div>
-
-      <!-- Selected combinations -->
-      <h3
-        v-if="selectedCombinations.length > 0"
-        class="aligned spaced"
-      >
-        Selected combinations
-      </h3>
+    <transition name="fade">
       <div
-        id="combinationList"
-        v-if="selectedCombinations.length > 0"
+        class="card"
+        id="filters"
+        v-if="!loading"
       >
-        <transition-group name="scaleRight">
-          <div
-            class="combination"
-            v-for="combination in selectedCombinations"
-            :key="combination.index"
-          >
-            <div class="values">
-              <div
-                class="value"
-                v-for="(value, j) in combination.combination"
-                :key="j"
-              >
-                {{ value }}
-              </div>
+        <!-- Selected filters -->
+        <h3
+          class="aligned spaced"
+          style="height: 30px"
+        >
+          Filters
+
+          <transition name="fade">
+            <button
+              v-if="filters.length > 0"
+              @click="clearFilters"
+            >
+              Clear filters
+            </button>
+          </transition>
+        </h3>
+
+        <div id="filterList">
+          <TransitionGroup name="scaleRight">
+            <div
+              class="filter"
+              v-for="filter in filters"
+              :key="filter.columnLabel"
+            >
+              <div class="name">{{ filter.columnLabel }}:</div>
+              <div class="value">{{ filter.value }}</div>
             </div>
-            <div class="metrics">
-              <div
-                class="metric"
-                v-for="(metric, j) in combination.metrics"
-                :key="j"
-              >
-                <div class="name">{{ j }}:</div>
-                <div class="value">{{ metric }}</div>
-              </div>
-            </div>
-          </div>
-        </transition-group>
-      </div>
-
-      <!-- Metrics -->
-      <h3 v-if="selectedCombinations.length > 0">Metrics</h3>
-
-      <div
-        id="metrics"
-        v-if="selectedCombinations.length > 0"
-      >
-        Total selected samples: {{ totalSelectedSamples }} / {{ totalSamples }} ({{
-          ((totalSelectedSamples / totalSamples) * 100).toFixed(2)
-        }}%)
-      </div>
-
-      <!-- Nothing selected tip -->
-      <transition name="fade">
-        <div v-if="filters.length === 0">
-          <div class="tip">
-            No filter applied, click on a path in the Parallel Categories diagram to add a filter.
-          </div>
+          </TransitionGroup>
         </div>
-      </transition>
-    </div>
+
+        <!-- Selected combinations -->
+        <h3
+          v-if="selectedCombinations.length > 0"
+          class="aligned spaced"
+        >
+          Selected combinations
+        </h3>
+        <div
+          id="combinationList"
+          v-if="selectedCombinations.length > 0"
+        >
+          <transition-group name="scaleRight">
+            <div
+              class="combination"
+              v-for="combination in selectedCombinations"
+              :key="combination.index"
+            >
+              <div class="values">
+                <div
+                  class="value"
+                  v-for="(value, j) in combination.combination"
+                  :key="j"
+                >
+                  {{ value }}
+                </div>
+              </div>
+              <div class="metrics">
+                <div
+                  class="metric"
+                  v-for="(metric, j) in combination.metrics"
+                  :key="j"
+                >
+                  <div class="name">{{ j }}:</div>
+                  <div class="value">{{ metric }}</div>
+                </div>
+              </div>
+            </div>
+          </transition-group>
+        </div>
+
+        <!-- Metrics -->
+        <h3 v-if="selectedCombinations.length > 0">Metrics</h3>
+
+        <div
+          id="metrics"
+          v-if="selectedCombinations.length > 0"
+        >
+          Total selected samples: {{ totalSelectedSamples }} / {{ totalSamples }} ({{
+            ((totalSelectedSamples / totalSamples) * 100).toFixed(2)
+          }}%)
+        </div>
+
+        <!-- Nothing selected tip -->
+        <transition name="fade">
+          <div v-if="filters.length === 0">
+            <div class="tip">
+              No filter applied, select a path on the parallel categories diagram to add a filter.
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
+
     <div
       id="controls"
       class="aligned padded onRight"
@@ -228,6 +253,7 @@ export default {
 
       combinationsMetrics: [],
       nbCombinations: 0,
+      sortCombinationsByValues: false,
 
       filters: [],
       selectedCombinations: [],
@@ -277,6 +303,7 @@ export default {
 
     // Load the combinations metrics
     this.combinationsMetrics = [];
+    this.combinationsMetricsSorted = [];
     this.loadCombinations();
   },
   methods: {
@@ -294,7 +321,10 @@ export default {
       this.$backendDialog
         .getColumnsCombinatorialMetrics(parameters)
         .then((metrics) => {
-          this.combinationsMetrics = metrics.combinations;
+          this.combinationsMetrics = [...metrics.combinations];
+          this.combinationsMetricsSorted = metrics.combinations.sort(
+            (a, b) => b.metrics.nbValues - a.metrics.nbValues
+          );
 
           if (metrics.totalCombinations > metrics.combinations.length)
             this.tooManyCombinationsWarning = true;
@@ -428,6 +458,10 @@ export default {
     totalSelectedSamples() {
       return this.selectedCombinations.reduce((acc, comb) => acc + comb.metrics.nbValues, 0);
     },
+    combinationsMetricsDisplay() {
+      if (this.sortCombinationsByValues) return this.combinationsMetricsSorted;
+      return this.combinationsMetrics;
+    },
   },
 };
 </script>
@@ -462,6 +496,14 @@ export default {
     align-items: center;
     gap: 10px;
   }
+  #sortByValuesCheckBox {
+    padding: 5px;
+    background-color: #e1e1e1;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
   #combinationsListModal {
     max-height: 600px;
     min-width: 800px;
@@ -470,7 +512,6 @@ export default {
     overflow: auto;
 
     // Table style:
-
     table {
       border-collapse: collapse;
       width: 100%;
