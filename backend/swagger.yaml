@@ -865,7 +865,7 @@ paths:
           description: selection deleted
 
   # Exploration
-  /data-providers/{dataProviderId}/projects/{projectId}/columnsMetrics:
+  /data-providers/{dataProviderId}/projects/{projectId}/exploration/columnsMetrics:
     post:
       summary: Get some columns metrics such as the columns number of unique values
       tags: [Exploration]
@@ -907,7 +907,7 @@ paths:
                 nbUniqueValues:
                   type: integer
 
-  /data-providers/{dataProviderId}/projects/{projectId}/combinatorialMetrics:
+  /data-providers/{dataProviderId}/projects/{projectId}/exploration/combinatorialMetrics:
     post:
       summary:
         Get some combinatorial metrics such as the number of unique values
@@ -979,6 +979,53 @@ paths:
               totalCombinations:
                 type: integer
                 description: Total number of combinations
+
+  /data-providers/{dataProviderId}/projects/{projectId}/exploration/dataIdList:
+    post:
+      summary: Get the list of dataId for a given filter list
+      tags: [Exploration]
+      operationId: controller.exploration.get_data_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - filters
+            properties:
+              filters:
+                type: array
+                description: List of filters build with the exploration mode
+                items:
+                  type: object
+                  required:
+                    - columnLabel
+                    - value
+                  properties:
+                    columnLabel:
+                      type: string
+                      description: Column name
+                    value:
+                      type: ["number", "string"]
+                      # type: array
+                      # description: List of values to filter
+                      # items:
+
+      responses:
+        200:
+          description: Project dataId list
+          schema:
+            type: array
+            items:
+              type: string
 
   # Analysis layouts
   /app/layouts/:

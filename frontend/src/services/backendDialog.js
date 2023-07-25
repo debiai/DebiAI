@@ -316,7 +316,7 @@ export default {
           dataProviderId() +
           "/projects/" +
           projectId() +
-          "/columnsMetrics",
+          "/exploration/columnsMetrics",
         { columnLabels }
       )
       .finally(() => endRequest(code))
@@ -331,8 +331,23 @@ export default {
           dataProviderId() +
           "/projects/" +
           projectId() +
-          "/combinatorialMetrics",
-        {columns}
+          "/exploration/combinatorialMetrics",
+        { columns }
+      )
+      .finally(() => endRequest(code))
+      .then((response) => response.data);
+  },
+  getDataIdListFromFilters(filters) {
+    let code = startRequest("Loading data id list from filters");
+    return axios
+      .post(
+        apiURL +
+          "data-providers/" +
+          dataProviderId() +
+          "/projects/" +
+          projectId() +
+          "/exploration/dataIdList",
+        { filters }
       )
       .finally(() => endRequest(code))
       .then((response) => response.data);

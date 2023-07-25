@@ -71,3 +71,16 @@ def get_list(data_provider, project_id, data):
         "nbFromSelection": nb_from_selection,
         "nbFromModels": nb_from_models,
     }
+
+
+# Get the id list of the samples of a project from a list of filters
+def get_id_list_from_filters(data_provider, project_id, filters):
+    # Get samples id list from filters
+    # Return Arr[id]
+    from random import randint
+    from time import sleep
+
+    sleep(3)
+
+    id_list = data_provider.get_id_list(project_id, None, 0, 100 + randint(0, 100))
+    return id_list

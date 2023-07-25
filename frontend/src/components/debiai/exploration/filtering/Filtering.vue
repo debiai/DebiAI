@@ -105,6 +105,7 @@
       <!-- Parallel categories plot -->
       <div id="parallelCategories" />
     </div>
+
     <!-- Warning message -->
     <div
       class="tip warning"
@@ -116,6 +117,7 @@
       If you want to use a column with many unique values, you can aggregate it by chunks or reduce
       the number of columns.
     </div>
+
     <!-- Combinations -->
     <transition name="fade">
       <div
@@ -228,13 +230,19 @@
       </div>
     </transition>
 
+    <!-- Controls -->
     <div
       id="controls"
       class="aligned padded onRight"
       v-if="selectedCombinations.length > 0"
     >
-      <button>Create a selection</button>
-      <button>Analyze the data</button>
+      <button
+        :disabled="dataIdLoading"
+        @click="createSelection"
+      >
+        Create a selection
+      </button>
+      <button :disabled="dataIdLoading">Analyze the data</button>
     </div>
   </div>
 </template>
@@ -257,6 +265,8 @@ export default {
 
       filters: [],
       selectedCombinations: [],
+
+      dataIdLoading: false,
     };
   },
   mounted() {
@@ -450,6 +460,43 @@ export default {
         // TODO: Pass agrerations
       });
     },
+    createSelection() {
+      // Get the data ids of the selected combinations
+      this.dataIdLoading = true;
+      this.$backendDialog
+        .getDataIdListFromFilters(this.filters)
+        .then((dataIds) => {
+          // Create the selection
+          this.$backendDialog
+            .addSelection(dataIds, "Exploration selection")
+            .then(() => {
+              console.log("3");
+              this.$store.commit("sendMessage", {
+                title: "success",
+                msg: "The selection has been created.",
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              this.$store.commit("sendMessage", {
+                title: "error",
+                msg: "An error occurred while creating the selection.",
+              });
+            })
+            .finally(() => {
+              this.dataIdLoading = false;
+            });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "An error occurred while getting the data ids of the selected combinations.",
+          });
+          this.dataIdLoading = false;
+        });
+    },
+    analyzeData() {},
   },
   computed: {
     totalSamples() {

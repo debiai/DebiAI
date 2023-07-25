@@ -32,7 +32,7 @@ const CATEGORIES = [
 
 // Requests functions
 function startRequest(name, cancelCallback = null) {
-  let requestCode = services.uuid();
+  const requestCode = services.uuid();
   store.commit("startRequest", { name, code: requestCode, cancelCallback });
   return requestCode;
 }
