@@ -13,6 +13,7 @@
         <div id="axisControls">
           <!-- Axis buttons -->
           <div class="dataGroup axis">
+            <!-- X axis -->
             <div class="data">
               <div class="name">X axis</div>
               <div class="value">
@@ -21,8 +22,24 @@
                   :colorSelection="true"
                   v-on:selected="xAxisSelection = true"
                 />
+                <!-- AbsX -->
+                Absolute value :
+                <input
+                  type="checkbox"
+                  :id="'absX' + index"
+                  class="customCbx"
+                  v-model="absX"
+                  style="display: none"
+                />
+                <label
+                  :for="'absX' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
               </div>
             </div>
+            <!-- Y axis -->
             <div class="data">
               <div class="name">Y axis</div>
               <div class="value">
@@ -31,55 +48,52 @@
                   :colorSelection="true"
                   v-on:selected="yAxisSelection = true"
                 />
+                <!-- AbsY -->
+                Absolute value :
+                <input
+                  type="checkbox"
+                  :id="'absY' + index"
+                  class="customCbx"
+                  v-model="absY"
+                  style="display: none"
+                />
+                <label
+                  :for="'absY' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
               </div>
             </div>
-
-            <!-- Scatter point opacity control -->
-            <!-- <div class="dataGroup otherControls">
-            <div class="data">
-              <div class="name">Scatter point opacity</div>
-              <div class="value">
-                <div style="flex: 1">
-                  Auto :
-                  <input
-                    type="checkbox"
-                    v-model="autoPointOpacity"
-                  />
-                </div>
-
-                <div class="name">opacity :</div>
-                <div class="value">
-                  <input
-                    type="number"
-                    v-if="!autoPointOpacity"
-                    v-model="pointOpacity"
-                    :step="0.05"
-                    :min="0.01"
-                    :max="1"
-                  />
-                  <div v-else>{{ Math.round(pointOpacity * 1000) / 1000 }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="data">
-              <div class="name">Point size</div>
+            <!-- Divided per color -->
+            <div
+              class="data"
+              id="dividePerColor"
+              v-if="coloredColumnIndex !== null"
+            >
+              <div class="name">Divided per color</div>
               <div class="value">
                 <input
-                  type="number"
-                  v-model="pointSize"
-                  :min="0"
-                  :max="100"
+                  type="checkbox"
+                  :id="'dividePerColor' + index"
+                  class="customCbx"
+                  v-model="dividePerColor"
+                  style="display: none"
                 />
+                <label
+                  :for="'dividePerColor' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
               </div>
             </div>
-          </div> -->
           </div>
 
           <!-- Draw -->
           <button
             id="drawBtn"
-            @click="drawPlot"
-            :disabled="plotDrawn"
+            @click="checkPlot"
           >
             Draw
           </button>
@@ -150,13 +164,12 @@ export default {
       // Conf
       columnXIndex: 0,
       columnYIndex: 0,
-      pointSize: 2,
-      autoPointOpacity: true,
-      pointOpacity: 0,
+      dividePerColor: true,
+      absX: false,
+      absY: false,
 
       // Other
       currentDrawnColorIndex: null,
-      plotDrawn: false,
     };
   },
   props: {
@@ -169,7 +182,7 @@ export default {
       this.settings = !this.settings;
       if (!this.settings) window.dispatchEvent(new Event("resize"));
     });
-    this.$parent.$on("redraw", this.drawPlot);
+    this.$parent.$on("redraw", this.checkPlot);
   },
   mounted() {
     this.divPointPlot = document.getElementById("NightStarPlot" + this.index);
@@ -185,11 +198,10 @@ export default {
         // Axis
         columnX: this.data.columns[this.columnXIndex].label,
         columnY: this.data.columns[this.columnYIndex].label,
-        pointSize: this.pointSize,
-        autoPointOpacity: this.autoPointOpacity,
+        dividePerColor: this.dividePerColor,
+        absX: this.absX,
+        absY: this.absY,
       };
-
-      if (!this.autoPointOpacity) conf.pointOpacity = this.pointOpacity;
 
       return conf;
     },
@@ -213,10 +225,39 @@ export default {
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
-      if ("pointSize" in conf) this.pointSize = conf.pointSize;
-      if ("autoPointOpacity" in conf) this.autoPointOpacity = conf.autoPointOpacity;
-      if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
+      if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
+      if ("absX" in conf) this.absX = conf.absX;
+      if ("absY" in conf) this.absY = conf.absY;
+
+      // Draw plot
+      this.checkPlot(true);
     },
+
+    // Plot
+    checkPlot(failFast = false) {
+      const colColor = this.data.columns[this.coloredColumnIndex];
+
+      if (
+        this.coloredColumnIndex !== null &&
+        this.dividePerColor &&
+        colColor.uniques.length > 100
+      ) {
+        if (failFast) return false;
+
+        swal({
+          title: "Long calculation: do you want to proceed ?",
+          text: "Night star plot: You have selected more than 100 uniques color values. This may take a while !",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((validate) => {
+          if (validate) this.drawPlot();
+        });
+      } else {
+        this.drawPlot();
+      }
+    },
+
     drawPlot() {
       const starsToDraw = [];
 
@@ -231,8 +272,12 @@ export default {
       const maxY = colY.type == Number ? colY.max : colY.uniques.length - 1;
 
       // Apply selection
-      const valuesX = this.selectedData.map((i) => colX.values[i]);
-      const valuesY = this.selectedData.map((i) => colY.values[i]);
+      let valuesX = this.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.selectedData.map((i) => colY.values[i]);
+
+      // Apply abs
+      if (this.absX) valuesX = valuesX.map((v) => Math.abs(v));
+      if (this.absY) valuesY = valuesY.map((v) => Math.abs(v));
 
       // Color
       const colorscale = "Portland";
@@ -240,8 +285,10 @@ export default {
       const color = 0;
 
       let colColor;
-      if (this.coloredColumnIndex !== null) {
+      let extraPlotName = "";
+      if (this.coloredColumnIndex !== null && this.dividePerColor) {
         colColor = this.data.columns[this.coloredColumnIndex];
+        extraPlotName = " grouped by " + colColor.label;
 
         let selectedColors;
         if (colColor.type == String)
@@ -280,11 +327,12 @@ export default {
             name: colColor.uniques[i],
           });
         });
-
       } else {
+        const averageX = valuesX.reduce((a, b) => a + b, 0) / valuesX.length;
+        const averageY = valuesY.reduce((a, b) => a + b, 0) / valuesY.length;
         starsToDraw.push({
-          x: valuesX.reduce((a, b) => a + b, 0) / valuesX.length,
-          y: valuesY.reduce((a, b) => a + b, 0) / valuesY.length,
+          x: averageX,
+          y: averageY,
           stdX: Math.sqrt(
             valuesX.map((x) => Math.pow(x - averageX, 2)).reduce((a, b) => a + b, 0) /
               valuesX.length
@@ -299,11 +347,8 @@ export default {
       }
 
       // Convert to plotly format
-      const traces = [];
-
-      starsToDraw.forEach((star) => {
-        console.log(star.name);
-        const trace = {
+      const traces = starsToDraw.map((star) => {
+        return {
           name: star.name,
           x: [star.x],
           y: [star.y],
@@ -324,12 +369,11 @@ export default {
             showscale,
           },
         };
-
-        traces.push(trace);
       });
 
+      // Layout
       const layout = {
-        title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
+        title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>" + extraPlotName,
         xaxis: {
           range: [minX, maxX],
           type: this.data.columns[this.columnXIndex].type == String ? "category" : "-",
@@ -352,13 +396,21 @@ export default {
         },
       };
 
+      if (this.absX) {
+        layout.xaxis.title.text += "(absolute value)";
+        if (layout.xaxis.range[0] < 0) layout.xaxis.range[0] = 0;
+      }
+      if (this.absY) {
+        layout.yaxis.title.text += "(absolute value)";
+        if (layout.yaxis.range[0] < 0) layout.yaxis.range[0] = 0;
+      }
+
       // Draw
       Plotly.react(this.divPointPlot, traces, layout, {
         displayModeBar: false,
         responsive: true,
       });
 
-      this.plotDrawn = true;
       this.$parent.$emit("drawn");
       this.currentDrawnColorIndex = this.coloredColumnIndex;
       this.settings = false;
@@ -368,12 +420,10 @@ export default {
     xAxisSelect(index) {
       this.columnXIndex = index;
       this.xAxisSelection = false;
-      this.plotDrawn = false;
     },
     yAxisSelect(index) {
       this.columnYIndex = index;
       this.yAxisSelection = false;
-      this.plotDrawn = false;
     },
     setPointOpacity() {
       this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
@@ -396,20 +446,13 @@ export default {
     autoPointOpacity: function (newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {
-      this.plotDrawn = false;
-    },
-    pointSize: function () {
-      this.plotDrawn = false;
-    },
+    pointOpacity: function () {},
+    pointSize: function () {},
     selectedData: function () {
-      this.plotDrawn = false;
       this.$parent.selectedDataWarning = true;
       if (this.autoPointOpacity) this.setPointOpacity();
     },
-    coloredColumnIndex: function () {
-      this.plotDrawn = false;
-    },
+    coloredColumnIndex: function () {},
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
@@ -446,6 +489,9 @@ export default {
 .dataGroup {
   margin: 10px;
   margin-bottom: 0px;
+}
+#dividePerColor {
+  margin-top: 10px;
 }
 
 .otherControls {
