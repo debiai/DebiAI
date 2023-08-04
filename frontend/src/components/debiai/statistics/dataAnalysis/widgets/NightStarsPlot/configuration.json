@@ -1,7 +1,5 @@
 {
     "name": "Night stars plot",
     "description": "Standard deviation of categorical in a 2D plot",
-    "layout": {
-        "height": 6
-    }
+    "layout": {}
 }
