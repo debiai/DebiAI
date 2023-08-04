@@ -348,7 +348,7 @@ export default {
     this.$on("loading", (loading) => (this.loading = loading));
     this.$on("errorMessage", this.errorMessage);
     this.$on("setExport", this.setExport);
-    this.$on("drawed", this.drawed);
+    this.$on("drawn", this.drawn);
     this.timeout = null;
     this.name = this.title;
   },
@@ -485,7 +485,7 @@ export default {
       });
       this.$emit("filterCleared");
     },
-    drawed() {
+    drawn() {
       this.selectedDataWarning = false;
 
       // The plot has been drawn, we can save a copy of the local filters

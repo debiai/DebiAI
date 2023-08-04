@@ -223,7 +223,7 @@ export default {
 
       // We tell the parent that the widget was displayed
       // This will remove some warning and store the current filters
-      this.$parent.$emit("drawed");
+      this.$parent.$emit("drawn");
     },
 
     // =============== Widget configuration ===============
@@ -408,7 +408,7 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {

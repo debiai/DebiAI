@@ -127,7 +127,7 @@
             class="customCbx"
             v-model="smooth"
             style="display: none"
-            @click="intervalPlotDrawed = false"
+            @click="intervalPlotDrawn = false"
           />
           <label
             :for="'smoothCbxIntPlot' + index"
@@ -138,7 +138,7 @@
         </div>
       </div>
       <button
-        :disabled="intervalPlotDrawed"
+        :disabled="intervalPlotDrawn"
         @click="updateTraces"
       >
         Draw
@@ -184,7 +184,7 @@ export default {
       columnLowerIndex: 0,
 
       // === Other ===
-      intervalPlotDrawed: false,
+      intervalPlotDrawn: false,
     };
   },
   props: {
@@ -265,7 +265,7 @@ export default {
       }
       // Boolean operation to prevent string or object
       if ("smooth" in conf) this.smooth = conf.smooth === true;
-      this.intervalPlotDrawed = false;
+      this.intervalPlotDrawn = false;
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -371,8 +371,8 @@ export default {
 
       let layout = this.gerenateLayout({ colX, colY });
       this.drawPlot([upperTrace, lowerTrace, yTrace], layout); // regenererate or generate plot
-      this.intervalPlotDrawed = true;
-      this.$parent.$emit("drawed");
+      this.intervalPlotDrawn = true;
+      this.$parent.$emit("drawn");
     },
 
     // Draw
@@ -416,22 +416,22 @@ export default {
     xAxiesSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
-      this.intervalPlotDrawed = false;
+      this.intervalPlotDrawn = false;
     },
     yAxiesSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
-      this.intervalPlotDrawed = false;
+      this.intervalPlotDrawn = false;
     },
     upperAxisSelect(index) {
       this.columnUpperIndex = index;
       this.upperAxisSelection = false;
-      this.intervalPlotDrawed = false;
+      this.intervalPlotDrawn = false;
     },
     lowerAxisSelect(index) {
       this.columnLowerIndex = index;
       this.lowerAxisSelection = false;
-      this.intervalPlotDrawed = false;
+      this.intervalPlotDrawn = false;
     },
 
     // Export
@@ -447,7 +447,7 @@ export default {
   },
   watch: {
     selectedData() {
-      if (this.intervalPlotDrawed) this.$parent.selectedDataWarning = true;
+      if (this.intervalPlotDrawn) this.$parent.selectedDataWarning = true;
     },
   },
 };

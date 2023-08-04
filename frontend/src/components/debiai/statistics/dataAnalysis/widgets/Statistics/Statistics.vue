@@ -377,7 +377,7 @@ export default {
         this.colColorDisplayed = null;
       }
 
-      this.$parent.$emit("drawed");
+      this.$parent.$emit("drawn");
       this.$parent.colorWarning = false;
     },
   },

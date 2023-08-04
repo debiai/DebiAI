@@ -116,7 +116,7 @@ export default {
       // Settings
       settings: true,
       significativOnly: false,
-      matrixDrawed: false,
+      matrixDrawn: false,
       axisSelection: false,
       selectedMatrixType: "pearson",
       error: false,
@@ -152,7 +152,7 @@ export default {
         .filter((c) => c.nbOccu > 1);
 
       this.axisSelection = false;
-      this.matrixDrawed = false;
+      this.matrixDrawn = false;
 
       this.calculate();
     },
@@ -270,8 +270,8 @@ export default {
         responsive: true,
       });
 
-      this.$parent.$emit("drawed");
-      this.matrixDrawed = true;
+      this.$parent.$emit("drawn");
+      this.matrixDrawn = true;
     },
 
     // Export
@@ -285,7 +285,7 @@ export default {
       this.$parent.$emit("loading", this.loading);
     },
     selectedData() {
-      this.matrixDrawed = false;
+      this.matrixDrawn = false;
       this.$parent.selectedDataWarning = true;
     },
     significativOnly() {
