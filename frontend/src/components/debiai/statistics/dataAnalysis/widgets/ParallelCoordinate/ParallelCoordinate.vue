@@ -40,7 +40,7 @@ export default {
     return {
       settings: true,
       selectedColumnsIds: [],
-      currentDrawedColorIndex: null,
+      currentDrawnColorIndex: null,
     };
   },
   props: {
@@ -96,7 +96,7 @@ export default {
       // Color
       let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
       let colColor = this.data.columns[coloredColIndex];
-      this.currentDrawedColorIndex = coloredColIndex;
+      this.currentDrawnColorIndex = coloredColIndex;
 
       let colorscale = "Portland";
       let showscale = false;
@@ -137,7 +137,7 @@ export default {
         responsive: true,
       });
 
-      this.$parent.$emit("drawed");
+      this.$parent.$emit("drawn");
 
       // Plot selection update
       this.divParCord.removeListener("plotly_restyle", this.selectDataOnPlot);
@@ -216,7 +216,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
+        this.currentDrawnColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );

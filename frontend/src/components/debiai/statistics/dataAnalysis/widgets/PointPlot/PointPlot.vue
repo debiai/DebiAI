@@ -120,7 +120,7 @@
           <button
             class="drawBtn"
             @click="pointPlot"
-            v-if="!pointPlotDrawed"
+            v-if="!pointPlotDrawn"
           >
             Draw 2D points
           </button>
@@ -147,7 +147,7 @@
                 class="red"
                 @click="
                   columnSizeIndex = null;
-                  pointPlotDrawed = false;
+                  pointPlotDrawn = false;
                 "
               >
                 Remove
@@ -177,7 +177,7 @@
                 v-model="maxPointSize"
                 :min="1"
                 :step="5"
-                @change="pointPlotDrawed = false"
+                @change="pointPlotDrawn = false"
               />
             </div>
           </div>
@@ -218,7 +218,7 @@
           <button
             class="drawBtn orange"
             @click="checkLinePlot"
-            v-if="!linePlotDrawed"
+            v-if="!linePlotDrawn"
           >
             Draw statistics
           </button>
@@ -237,7 +237,7 @@
                 type="number"
                 v-model="bins"
                 :min="1"
-                @change="linePlotDrawed = false"
+                @change="linePlotDrawn = false"
               />
             </div>
           </div>
@@ -412,9 +412,9 @@ export default {
       axisYMax: 1,
 
       // === Other ===
-      pointPlotDrawed: false,
-      linePlotDrawed: false,
-      currentDrawedColorIndex: null,
+      pointPlotDrawn: false,
+      linePlotDrawn: false,
+      currentDrawnColorIndex: null,
     };
   },
   props: {
@@ -583,8 +583,8 @@ export default {
 
     // Plot
     updateTraces() {
-      if (this.pointPlotDrawed) this.pointPlot();
-      if (this.linePlotDrawed) this.checkLinePlot();
+      if (this.pointPlotDrawn) this.pointPlot();
+      if (this.linePlotDrawn) this.checkLinePlot();
     },
 
     // Point plot
@@ -669,18 +669,18 @@ export default {
 
       // Draw
       this.clearPointPlot();
-      if (this.linePlotDrawed) {
+      if (this.linePlotDrawn) {
         Plotly.addTraces(this.divPointPlot, [pointData], 0);
         this.updateLayout(layout);
       } else this.drawPlot([pointData], layout); // regenererate or generate plot
 
-      this.pointPlotDrawed = true;
-      this.$parent.$emit("drawed");
-      this.currentDrawedColorIndex = this.coloredColumnIndex;
+      this.pointPlotDrawn = true;
+      this.$parent.$emit("drawn");
+      this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
     clearPointPlot() {
       // remove the first trace
-      if (!this.linePlotDrawed) Plotly.purge(this.divPointPlot);
+      if (!this.linePlotDrawn) Plotly.purge(this.divPointPlot);
       else {
         let tracesToDelete = [];
         this.divPointPlot.data.forEach((trace, i) => {
@@ -689,7 +689,7 @@ export default {
 
         Plotly.deleteTraces(this.divPointPlot, tracesToDelete);
       }
-      this.pointPlotDrawed = false;
+      this.pointPlotDrawn = false;
     },
 
     // Line plot
@@ -863,18 +863,18 @@ export default {
       let layout = this.gerenateLayout({ colX, colY, colColor });
 
       this.clearLinePlot();
-      if (this.pointPlotDrawed) {
+      if (this.pointPlotDrawn) {
         Plotly.addTraces(this.divPointPlot, traces);
         this.updateLayout(layout);
       } else this.drawPlot(traces, layout); // regenererate or generate plot
 
-      this.linePlotDrawed = true;
-      this.$parent.$emit("drawed");
-      this.currentDrawedColorIndex = this.coloredColumnIndex;
+      this.linePlotDrawn = true;
+      this.$parent.$emit("drawn");
+      this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
     clearLinePlot() {
       // remove the last two traces
-      if (!this.pointPlotDrawed) Plotly.purge(this.divPointPlot);
+      if (!this.pointPlotDrawn) Plotly.purge(this.divPointPlot);
       else {
         let tracesToDelete = [];
         this.divPointPlot.data.forEach((trace, i) => {
@@ -883,7 +883,7 @@ export default {
 
         Plotly.deleteTraces(this.divPointPlot, tracesToDelete);
       }
-      this.linePlotDrawed = false;
+      this.linePlotDrawn = false;
     },
 
     // Draw
@@ -1146,19 +1146,19 @@ export default {
     },
     filterStarted() {
       // Set the layout on select mod
-      if (this.pointPlotDrawed || this.linePlotDrawed)
+      if (this.pointPlotDrawn || this.linePlotDrawn)
         Plotly.relayout(this.divPointPlot, { dragmode: "select" });
     },
     filterEnded() {
       // Remove the layout select mod
-      if (this.pointPlotDrawed || this.linePlotDrawed)
+      if (this.pointPlotDrawn || this.linePlotDrawn)
         Plotly.relayout(this.divPointPlot, { dragmode: "zoom" });
 
       this.$parent.$emit("setExport", null);
     },
     filterCleared() {
       // Remove the selection on the plot
-      if (this.pointPlotDrawed || this.linePlotDrawed)
+      if (this.pointPlotDrawn || this.linePlotDrawn)
         Plotly.restyle(this.divPointPlot, "selectedpoints", null);
 
       this.$parent.$emit("setExport", null);
@@ -1168,44 +1168,44 @@ export default {
     xAxiesSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
-      this.pointPlotDrawed = false;
-      this.linePlotDrawed = false;
+      this.pointPlotDrawn = false;
+      this.linePlotDrawn = false;
       this.setBins();
     },
     yAxiesSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
-      this.pointPlotDrawed = false;
-      this.linePlotDrawed = false;
+      this.pointPlotDrawn = false;
+      this.linePlotDrawn = false;
     },
     sizeAxiesSelect(index) {
       this.columnSizeIndex = index;
       this.sizeAxisSelection = false;
-      this.pointPlotDrawed = false;
+      this.pointPlotDrawn = false;
     },
     swap() {
-      let memoryLinePlotDrawed = this.linePlotDrawed;
+      let memoryLinePlotDrawn = this.linePlotDrawn;
       let temp = this.columnYindex;
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
       this.setBins();
 
-      this.linePlotDrawed = memoryLinePlotDrawed;
+      this.linePlotDrawn = memoryLinePlotDrawn;
       this.updateTraces();
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
       if (colX.type == String) this.bins = Math.min(colX.nbOccu, 300);
       else this.bins = Math.min(colX.nbOccu, 30);
-      this.linePlotDrawed = false;
+      this.linePlotDrawn = false;
     },
     setPointOpacity() {
       this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
     },
     axisRangeSelect({ axisXAuto, axisXMin, axisXMax, axisYAuto, axisYMin, axisYMax }) {
       this.axisRangeModal = false;
-      this.pointPlotDrawed = false;
-      this.linePlotDrawed = false;
+      this.pointPlotDrawn = false;
+      this.linePlotDrawn = false;
       this.axisXAuto = axisXAuto;
       this.axisXMin = axisXMin;
       this.axisXMax = axisXMax;
@@ -1225,7 +1225,7 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {
@@ -1236,19 +1236,19 @@ export default {
       if (newVal) this.setPointOpacity();
     },
     pointOpacity: function () {
-      this.pointPlotDrawed = false;
+      this.pointPlotDrawn = false;
     },
     absolute: function () {
       this.updateTraces();
     },
     displayNull: function () {
-      if (this.linePlotDrawed) this.checkLinePlot();
+      if (this.linePlotDrawn) this.checkLinePlot();
     },
     averageAsBar: function () {
-      if (this.linePlotDrawed) this.checkLinePlot();
+      if (this.linePlotDrawn) this.checkLinePlot();
     },
     selectedData: function () {
-      if (!this.$parent.startFiltering && (this.pointPlotDrawed || this.linePlotDrawed))
+      if (!this.$parent.startFiltering && (this.pointPlotDrawn || this.linePlotDrawn))
         this.$parent.selectedDataWarning = true;
     },
     redrawRequiered(o, n) {

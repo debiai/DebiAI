@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       settings: true,
-      currentDrawedColorIndex: null,
+      currentDrawnColorIndex: null,
 
       // Conf
       selectedColumnsIds: [],
@@ -166,8 +166,8 @@ export default {
       this.divParCat.removeListener("plotly_click", this.selectDataOnPlot);
       this.divParCat.on("plotly_click", this.selectDataOnPlot);
 
-      this.currentDrawedColorIndex = colColor ? colColor.index : null;
-      this.$parent.$emit("drawed");
+      this.currentDrawnColorIndex = colColor ? colColor.index : null;
+      this.$parent.$emit("drawn");
     },
 
     selectColumns(selectedColumnsId) {
@@ -185,13 +185,13 @@ export default {
         let filters = [];
         Object.keys(parCatSelections).forEach((columnIdx) => {
           if (columnIdx === "color") {
-            if (!this.selectedColumnsIds.includes(this.currentDrawedColorIndex)) {
+            if (!this.selectedColumnsIds.includes(this.currentDrawnColorIndex)) {
               filters.push({
                 type: "values",
-                columnIndex: this.currentDrawedColorIndex,
+                columnIndex: this.currentDrawnColorIndex,
                 values: [
                   "" +
-                    this.data.columns[this.currentDrawedColorIndex].uniques[parCatSelections.color],
+                    this.data.columns[this.currentDrawnColorIndex].uniques[parCatSelections.color],
                 ],
               });
             }
@@ -222,7 +222,7 @@ export default {
   computed: {
     redrawRequiered() {
       return !(
-        this.currentDrawedColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
+        this.currentDrawnColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
         !this.settings &&
         this.selectedColumnsIds.length > 0
       );

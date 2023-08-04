@@ -159,7 +159,7 @@
                 class="red"
                 @click="
                   columnTagIndex = null;
-                  plotDrawed = false;
+                  plotDrawn = false;
                 "
               >
                 Remove
@@ -203,7 +203,7 @@
       <button
         id="drawBtn"
         @click="drawPlot"
-        :disabled="plotDrawed"
+        :disabled="plotDrawn"
       >
         Draw
       </button>
@@ -248,8 +248,8 @@ export default {
       columnTagIndex: null,
 
       // Other
-      currentDrawedColorIndex: null,
-      plotDrawed: false,
+      currentDrawnColorIndex: null,
+      plotDrawn: false,
     };
   },
   props: {
@@ -342,7 +342,7 @@ export default {
         if (c) this.columnTagIndex = c.index;
         else sendColNotFoundMessage(conf.columnTag);
       }
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -549,9 +549,9 @@ export default {
       this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
       this.plotDiv.on("plotly_click", this.selectDataOnPlot);
 
-      this.plotDrawed = true;
-      this.$parent.$emit("drawed");
-      this.currentDrawedColorIndex = this.coloredColumnIndex;
+      this.plotDrawn = true;
+      this.$parent.$emit("drawn");
+      this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
     drawLine(x) {
       const lineStyle = {
@@ -657,17 +657,17 @@ export default {
     xAxiesSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     yAxiesSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     yMultipleAxisSelect(indexs) {
       this.selectedYColumnsIds = indexs;
       this.yMultipleAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     swap() {
       let temp = this.columnYindex;
@@ -678,7 +678,7 @@ export default {
     tagAxiesSelect(index) {
       this.columnTagIndex = index;
       this.tagAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     // Filters
     selectDataOnPlot(data) {
@@ -808,12 +808,12 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {
     dividePerColor() {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     selectedData() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
@@ -822,7 +822,7 @@ export default {
       this.$parent.colorWarning = n;
     },
     multipleYAxis() {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
   },
 };

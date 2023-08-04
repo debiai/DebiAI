@@ -99,7 +99,7 @@
         <button
           id="drawBtn"
           @click="checkMatrix"
-          :disabled="plotDrawed"
+          :disabled="plotDrawn"
         >
           Draw
         </button>
@@ -137,10 +137,10 @@ export default {
 
       // Settings
       settings: true,
-      plotDrawed: false,
+      plotDrawn: false,
       trueAxisSelection: false,
       predAxisSelection: false,
-      currentDrawedColorIndex: null,
+      currentDrawnColorIndex: null,
     };
   },
   props: {
@@ -260,7 +260,7 @@ export default {
           matrixList.push(this.fillMatrix(allUniques, colorTruth, colorPred));
         });
 
-        this.currentDrawedColorIndex = this.coloredColumnIndex;
+        this.currentDrawnColorIndex = this.coloredColumnIndex;
       }
       this.drawMatrix(matrixList, allUniques);
       console.timeEnd("ConfusionMatrix");
@@ -417,8 +417,8 @@ export default {
         responsive: true,
       });
 
-      this.matrixDrawed = true;
-      this.$parent.$emit("drawed");
+      this.matrixDrawn = true;
+      this.$parent.$emit("drawn");
 
       // Set the filter events
       this.divConfusionMatrix.removeListener("plotly_click", this.selectDataOnPlot);
@@ -434,12 +434,12 @@ export default {
     xAxiesSelect(index) {
       this.columnTindex = index;
       this.trueAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     yAxiesSelect(index) {
       this.columnPindex = index;
       this.predAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     swap() {
       let temp = this.columnPindex;
@@ -561,7 +561,7 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.dividePerColor && this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {

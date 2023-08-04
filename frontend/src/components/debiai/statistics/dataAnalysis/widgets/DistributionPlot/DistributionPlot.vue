@@ -185,7 +185,7 @@
                 type="number"
                 v-model="bins"
                 :min="1"
-                @change="plotDrawed = false"
+                @change="plotDrawn = false"
               />
             </div>
           </div>
@@ -197,7 +197,7 @@
         id="drawBtn"
         type="submit"
         @click="checkPlot"
-        :disabled="plotDrawed"
+        :disabled="plotDrawn"
       >
         Draw
       </button>
@@ -241,10 +241,10 @@ export default {
       bins: 0,
 
       // Other
-      plotDrawed: false,
+      plotDrawn: false,
       xAxisSelection: false,
       secondAxisSelection: false,
-      currentDrawedColorIndex: null,
+      currentDrawnColorIndex: null,
     };
   },
   props: {
@@ -538,9 +538,9 @@ export default {
         displayModeBar: false,
         responsive: true,
       });
-      this.currentDrawedColorIndex = this.coloredColumnIndex;
-      this.plotDrawed = true;
-      this.$parent.$emit("drawed");
+      this.currentDrawnColorIndex = this.coloredColumnIndex;
+      this.plotDrawn = true;
+      this.$parent.$emit("drawn");
 
       // Set selection events
       this.divRepPlot.removeListener("plotly_click", this.selectDataOnPlot);
@@ -549,7 +549,7 @@ export default {
 
     clearPlot() {
       Plotly.purge(this.divRepPlot);
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
 
     // Filters
@@ -587,9 +587,9 @@ export default {
         if (this.coloredColumnIndex != null && this.dividePerColor) {
           filters.push({
             type: "values",
-            columnIndex: this.currentDrawedColorIndex,
+            columnIndex: this.currentDrawnColorIndex,
             values: [
-              "" + this.data.columns[this.currentDrawedColorIndex].uniques[selec.curveNumber],
+              "" + this.data.columns[this.currentDrawnColorIndex].uniques[selec.curveNumber],
             ],
           });
         }
@@ -641,7 +641,7 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {
@@ -655,10 +655,10 @@ export default {
       this.checkPlot();
     },
     selectedData: function () {
-      if (!this.$parent.startFiltering && this.plotDrawed) this.$parent.selectedDataWarning = true;
+      if (!this.$parent.startFiltering && this.plotDrawn) this.$parent.selectedDataWarning = true;
     },
     coloredColumnIndex: function () {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     redrawRequiered(o, n) {
       this.$parent.colorWarning = n;

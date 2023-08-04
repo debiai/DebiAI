@@ -130,7 +130,7 @@
         <button
           id="drawBtn"
           @click="drawPlot"
-          :disabled="plotDrawed"
+          :disabled="plotDrawn"
         >
           Draw
         </button>
@@ -174,8 +174,8 @@ export default {
       pointOpacity: 0,
 
       // Other
-      currentDrawedColorIndex: null,
-      plotDrawed: false,
+      currentDrawnColorIndex: null,
+      plotDrawn: false,
     };
   },
   props: {
@@ -335,9 +335,9 @@ export default {
         responsive: true,
       });
 
-      this.plotDrawed = true;
-      this.$parent.$emit("drawed");
-      this.currentDrawedColorIndex = this.coloredColumnIndex;
+      this.plotDrawn = true;
+      this.$parent.$emit("drawn");
+      this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
 
     // axies selection
@@ -362,17 +362,17 @@ export default {
     xAxiesSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     yAxiesSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     zAxiesSelect(index) {
       this.columnZindex = index;
       this.zAxisSelection = false;
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     setPointOpacity() {
       this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
@@ -388,7 +388,7 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequiered() {
-      return !(this.currentDrawedColorIndex !== this.coloredColumnIndex);
+      return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
   watch: {
@@ -396,18 +396,18 @@ export default {
       if (newVal) this.setPointOpacity();
     },
     pointOpacity: function () {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     pointSize: function () {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     selectedData: function () {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
       this.$parent.selectedDataWarning = true;
       if (this.autoPointOpacity) this.setPointOpacity();
     },
     coloredColumnIndex: function () {
-      this.plotDrawed = false;
+      this.plotDrawn = false;
     },
     redrawRequiered(o, n) {
       this.$parent.colorWarning = n;
