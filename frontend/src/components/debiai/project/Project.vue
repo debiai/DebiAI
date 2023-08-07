@@ -86,7 +86,7 @@ import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
 
 // Services
-import dataLoader from "../../../services/dataLoader";
+import dataLoader from "@/services/dataLoader";
 import swal from "sweetalert";
 
 export default {

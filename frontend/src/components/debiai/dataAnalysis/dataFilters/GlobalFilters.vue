@@ -138,7 +138,6 @@
 // Component
 import ColumnSelection from "../common/ColumnSelection";
 import RequestCreation from "./RequestCreation";
-// import Requests from "../../../project/requests/Requests.vue";
 import FilterList from "./FilterList.vue";
 
 export default {

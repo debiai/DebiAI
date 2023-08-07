@@ -203,7 +203,7 @@ import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
 
 // Services
-import dataOperations from "../../../../../../services/statistics/dataOperations";
+import dataOperations from "@/services/statistics/dataOperations";
 import { std, variance } from "mathjs";
 
 export default {

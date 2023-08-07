@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import dataOperations from "../../../../../../services/statistics/dataOperations";
+import dataOperations from "@/services/statistics/dataOperations";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
 import Plotly from "plotly.js/dist/plotly";
 

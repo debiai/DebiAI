@@ -87,7 +87,7 @@
           :disabled="!confName"
         >
           <inline-svg
-            :src="require('../../../../../../assets/svg/save.svg')"
+            :src="require('@/assets/svg/save.svg')"
             width="10"
             height="10"
             fill="black"
@@ -100,7 +100,7 @@
           :disabled="!confName"
         >
           <inline-svg
-            :src="require('../../../../../../assets/svg/save.svg')"
+            :src="require('@/assets/svg/save.svg')"
             width="10"
             height="10"
             fill="white"

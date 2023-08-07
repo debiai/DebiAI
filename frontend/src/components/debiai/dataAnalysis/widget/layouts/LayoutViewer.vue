@@ -17,7 +17,7 @@
         height: (component.height / lowestY) * 100 - 3 + '%',
         'background-image':
           'url(' +
-          require(`@/components/debiai/statistics/dataAnalysis/widgets/${component.widgetKey}/icon.png`) +
+          require(`@/components/debiai/dataAnalysis/widgets/${component.widgetKey}/icon.png`) +
           ')',
       }"
     >

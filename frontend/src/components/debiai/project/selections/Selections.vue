@@ -28,7 +28,7 @@
         <span class="aligned">
           <h2>
             <inline-svg
-              :src="require('../../../../assets/svg/loupe.svg')"
+              :src="require('@/assets/svg/loupe.svg')"
               width="20"
               height="20"
             />
@@ -54,7 +54,7 @@
             @click="selectionCreation = !selectionCreation"
           >
             <inline-svg
-              :src="require('../../../../assets/svg/request.svg')"
+              :src="require('@/assets/svg/request.svg')"
               width="12"
               height="12"
               fill="white"
@@ -102,7 +102,7 @@
             title="Selection sample number"
           >
             <inline-svg
-              :src="require('../../../../assets/svg/data.svg')"
+              :src="require('@/assets/svg/data.svg')"
               height="15"
             />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
           </div>
@@ -173,7 +173,7 @@
               {{ nbSelectedSamples }}
             </span>
             <inline-svg
-              :src="require('../../../../assets/svg/data.svg')"
+              :src="require('@/assets/svg/data.svg')"
               width="20"
               height="20"
               fill="white"

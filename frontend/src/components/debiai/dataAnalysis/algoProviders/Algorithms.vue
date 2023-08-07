@@ -107,7 +107,7 @@
           @click="loadAlgoProviders"
         >
           <inline-svg
-            :src="require('../../../../../assets/svg/update.svg')"
+            :src="require('@/assets/svg/update.svg')"
             width="10"
             height="10"
           />

@@ -369,7 +369,7 @@ import Column from "../../common/Column";
 import AxiesRangeSelection from "../../common/AxiesRangeSelection";
 
 // services
-import dataOperations from "../../../../../../services/statistics/dataOperations";
+import dataOperations from "@/services/statistics/dataOperations";
 import swal from "sweetalert";
 
 export default {

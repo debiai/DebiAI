@@ -1,3 +1,93 @@
+<!-- <template>
+  <div id="statistics">
+    <div id="header">
+      <h1>
+        <router-link
+          id="debiaiMenuLogo"
+          :to="
+            '/dataprovider/' +
+            $store.state.ProjectPage.dataProviderId +
+            '/project/' +
+            $store.state.ProjectPage.projectId
+          "
+          >&#8592;
+          <img
+            src="@/assets/images/DebiAI.png"
+            alt="DebiAI"
+            height="48"
+          />
+        </router-link>
+      </h1>
+      <div style="flex: 1"></div>
+      <h1 id="title2">Statistics</h1>
+      <div style="flex: 1"></div>
+
+      <img
+        id="title3"
+        src="@/assets/images/SystemX.png"
+        alt="SystemX"
+        height="38"
+      />
+    </div>
+    <div id="content">
+      <router-view />
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Statistics",
+  components: {},
+  data: () => {
+    return {};
+  },
+  mounted() {},
+  methods: {},
+  computed: {},
+};
+</script>
+
+<style scoped>
+#statistics {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 2px;
+  background-color: var(--primary);
+}
+
+#debiaiMenuLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  color: #fff;
+  text-decoration: none;
+  background: none;
+}
+
+#title2 {
+  align-self: center;
+}
+
+#title3 {
+  align-self: center;
+  padding-top: 9px;
+}
+
+#content {
+  flex: 1;
+  height: 100%;
+}
+</style> -->
+
 <template>
   <div
     id="dataAnalysis"
@@ -90,7 +180,7 @@
     </modal>
 
     <!-- floating menu -->
-    <fab
+    <!-- <fab
       name="menu"
       bg-color="var(--primaryDark)"
       position="top-right"
@@ -108,9 +198,9 @@
       @restoreDefaultLayout="restoreDefaultLayout"
       @clearLayout="clearLayout"
       @exportAnalysisPage="exportAnalysisPage"
-    />
+    /> -->
     <!-- floating widget catalog menu -->
-    <div @click="widgetCatalog = !widgetCatalog">
+    <!-- <div @click="widgetCatalog = !widgetCatalog">
       <fab
         name="widgetCatalog"
         bg-color="var(--success)"
@@ -120,8 +210,27 @@
         main-icon="add"
         z-index="2"
       />
-    </div>
-    <header />
+    </div> -->
+
+    <!-- Header menu -->
+    <!-- Displays:
+      The DebiAI logo
+      The name of the project 
+      The number of selected data 
+      A button for the filters and for the colored column
+    -->
+    <Header
+      :data="data"
+      :selectedData="selectedData"
+    />
+
+    <!-- Side menu -->
+    <!-- <div
+      class="header"
+      id="myHeader"
+    >
+      <h2>My Header</h2>
+    </div> -->
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
@@ -159,12 +268,6 @@
         </Widget>
       </div>
     </div>
-
-    <!-- Bottom menu -->
-    <Footer
-      :data="data"
-      :selectedData="selectedData"
-    />
   </div>
   <div
     id="dataAnalysis"
@@ -184,6 +287,7 @@ import Widget from "./widget/Widget";
 import Vue from "vue";
 
 // Menu
+import Header from "./Header";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
@@ -191,12 +295,11 @@ import SelectionExportMenu from "./dataExport/SelectionExportMenu";
 import Algorithms from "./algoProviders/Algorithms";
 import Layouts from "./widget/layouts/Layouts";
 import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
-import Footer from "./dataNavigation/Footer";
 
 // Services
-import componentsGridStackData from "../../../../services/statistics/gridstackComponents";
-import samplesFiltering from "../../../../services/statistics/samplesFiltering";
-import { getAnalysisExport } from "../../../../services/statistics/analysisExport";
+import componentsGridStackData from "@/services/statistics/gridstackComponents";
+import samplesFiltering from "@/services/statistics/samplesFiltering";
+import { getAnalysisExport } from "@/services/statistics/analysisExport";
 
 export default {
   components: {
@@ -204,6 +307,7 @@ export default {
     Widget,
 
     // Menu
+    Header,
     CustomColumnCreator,
     SelectionCreator,
     TagCreator,
@@ -212,7 +316,6 @@ export default {
     Layouts,
     WidgetCatalog,
 
-    Footer,
 
     // Other
     fab, // (Floating Action Button)
@@ -715,20 +818,6 @@ export default {
 </script>
 
 <style scoped>
-header {
-  display: flex;
-  background-color: var(--third);
-  height: 43px;
-}
-
-header #widgetList {
-  display: flex;
-}
-
-header #widgetList button + button {
-  margin-left: 5px;
-}
-
 /* Grid stack */
 .grid-stack-item {
   overflow: hidden;

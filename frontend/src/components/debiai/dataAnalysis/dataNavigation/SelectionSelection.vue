@@ -5,7 +5,7 @@
         <span class="aligned spaced">
           <h2>
             <inline-svg
-              :src="require('../../../../../assets/svg/loupe.svg')"
+              :src="require('@/assets/svg/loupe.svg')"
               width="20"
               height="20"
             />
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import Selection from "../../../project/selections/Selection.vue";
+import Selection from "../../project/selections/Selection.vue";
 
 export default {
   components: { Selection },

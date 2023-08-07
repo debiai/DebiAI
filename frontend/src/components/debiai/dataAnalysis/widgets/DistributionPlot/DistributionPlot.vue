@@ -217,7 +217,7 @@ import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
 
 // services
-import dataOperations from "../../../../../../services/statistics/dataOperations";
+import dataOperations from "@/services/statistics/dataOperations";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
 import swal from "sweetalert";
 

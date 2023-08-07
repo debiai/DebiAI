@@ -1,6 +1,6 @@
 # Adding a new widget to the DebiAI dashboard
 
-After [starting the DebiAI in development mode](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation/development.html), you can create a folder in the `frontend/src/components/debiai/statistics/dataAnalysis/widgets` directory with the name of your widget for example: `MyWidget`.
+After [starting the DebiAI in development mode](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation/development.html), you can create a folder in the `frontend/src/components/debiai/dataAnalysis/widgets` directory with the name of your widget for example: `MyWidget`.
 
 ## Configuration
 Create a `configuration.json` file in the directory :

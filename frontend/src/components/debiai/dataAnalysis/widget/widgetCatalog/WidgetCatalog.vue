@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import componentsGridStackData from "../../../../../../services/statistics/gridstackComponents";
+import componentsGridStackData from "@/services/statistics/gridstackComponents";
 import Widget from "./Widget";
 import { marked } from "marked";
 

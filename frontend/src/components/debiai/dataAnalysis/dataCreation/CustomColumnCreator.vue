@@ -124,7 +124,7 @@
 
 <script>
 // services
-import customColumnCreator from "../../../../../services/statistics/customColumnCreator";
+import customColumnCreator from "@/services/statistics/customColumnCreator";
 
 // components
 import ColumnSelection from "../common/ColumnSelection";

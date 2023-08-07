@@ -9,7 +9,7 @@
       <!-- Widget icon image -->
       <progressive-img
         :src="
-          require(`@/components/debiai/statistics/dataAnalysis/widgets/${widget.componentKey}/icon.png`)
+          require(`@/components/debiai/dataAnalysis/widgets/${widget.componentKey}/icon.png`)
         "
         class="icon"
       />
@@ -34,7 +34,7 @@
           >
             {{ nbConfigurations }}
             <inline-svg
-              :src="require('../../../../../../assets/svg/preset.svg')"
+              :src="require('@/assets/svg/preset.svg')"
               width="18"
               height="18"
             />

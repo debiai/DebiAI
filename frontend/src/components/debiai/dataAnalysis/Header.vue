@@ -1,5 +1,5 @@
 <template>
-  <div id="Footer">
+  <div id="Header">
     <!-- colored column selection modal -->
     <modal
       v-if="selectColoredCol"
@@ -35,7 +35,7 @@
     <div id="leftBtns">
       <button @click="selectDataset = !selectDataset">
         <inline-svg
-          :src="require('../../../../../assets/svg/loupe.svg')"
+          :src="require('@/assets/svg/loupe.svg')"
           width="10"
           height="10"
           fill="white"
@@ -50,7 +50,7 @@
           >{{ $store.state.StatisticalAnalysis.filters.length }}</span
         >
         <inline-svg
-          :src="require('../../../../../assets/svg/filter.svg')"
+          :src="require('@/assets/svg/filter.svg')"
           width="10"
           height="10"
           fill="white"
@@ -93,11 +93,11 @@
 </template>
 
 <script>
-import SelectionSelection from "./SelectionSelection";
-import SelectedDataInfo from "./SelectedDataInfo";
-import Column from "../common/Column";
-import ColumnSelection from "../common/ColumnSelection";
-import GlobalFilters from "../dataFilters/GlobalFilters";
+import SelectionSelection from "./dataNavigation/SelectionSelection";
+import SelectedDataInfo from "./dataNavigation/SelectedDataInfo";
+import Column from "./common/Column";
+import ColumnSelection from "./common/ColumnSelection";
+import GlobalFilters from "./dataFilters/GlobalFilters";
 
 export default {
   components: {
@@ -142,17 +142,16 @@ export default {
 </script>
 
 <style scoped>
-#Footer {
+#Header {
   height: 30px;
   background-color: var(--primaryDark);
-  position: fixed;
-  left: 0;
-  bottom: 0;
   width: 100%;
-
+  position: fixed;
+  top: 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 100;
 }
 
 #coloredColumn {
