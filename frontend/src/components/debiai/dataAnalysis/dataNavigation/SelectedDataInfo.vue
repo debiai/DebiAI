@@ -33,7 +33,6 @@ export default {
   display: flex;
   align-items: center;
   height: 100%;
-  color: white;
 }
 #selectedSamples {
   display: flex;
@@ -52,15 +51,20 @@ export default {
 }
 
 #selectedBar {
-  border: solid white 1px;
   height: 13px;
   width: 10vw;
   margin: 0px 15px;
   margin-bottom: 2px;
+  padding: 1px;
+
+  border: solid black 1px;
+  border-radius: 5px;
 }
 #selectedBarValue {
-  background: white;
   height: 13px;
+
+  background: black;
   transition: width 0.2s ease;
+  border-radius: 5px;
 }
 </style>

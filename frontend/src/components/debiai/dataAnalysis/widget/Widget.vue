@@ -619,7 +619,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
   height: 98%;
 }
@@ -662,19 +662,29 @@ export default {
 .options {
   display: flex;
   justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.5s;
+
+  button {
+    width: 35px;
+    padding: 2px 0px 2px 0px;
+  }
+  button.warning {
+    width: 70px;
+  }
+
+  button + button {
+    margin-left: 5px;
+  }
 }
 
-.options button {
-  width: 35px;
-  padding: 2px 0px 2px 0px;
-}
-.options button.warning {
-  width: 70px;
+.card:hover {
+  .options {
+    opacity: 1;
+    transition: opacity 0.1s;
+  }
 }
 
-.options button + button {
-  margin-left: 5px;
-}
 .center {
   flex: 1;
   display: flex;
@@ -683,77 +693,77 @@ export default {
 
   padding-left: 4px;
   padding-right: 4px;
-}
 
-/* Warning */
-.updateWarning {
-  display: flex;
-  align-items: center;
-  color: var(--warning);
-  padding: 0px 8px 0px 8px;
-}
-
-/* Set all the text to no wram and overflow hidden */
-.updateWarning * {
-  white-space: nowrap;
-  overflow: hidden;
-}
-.updateWarning button {
-  padding: 1px 5px 1px 5px;
-  margin-left: 10px;
-}
-
-/* Error */
-.dataError {
-  color: #ea5050;
-  margin: 0px 10px 0px 10px;
-  padding: 0px 8px 0px 8px;
-
-  cursor: pointer;
-}
-
-.dataError:hover {
-  filter: brightness(80%);
-}
-
-/* Loading Anim */
-@keyframes blink {
-  0% {
-    opacity: 0.2;
+  /* Warning */
+  .updateWarning {
+    display: flex;
+    align-items: center;
+    color: var(--warning);
+    padding: 0px 8px 0px 8px;
   }
 
-  20% {
-    opacity: 1;
+  /* Set all the text to no wram and overflow hidden */
+  .updateWarning * {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .updateWarning button {
+    padding: 1px 5px 1px 5px;
+    margin-left: 10px;
   }
 
-  100% {
-    opacity: 0.2;
+  /* Error */
+  .dataError {
+    color: #ea5050;
+    margin: 0px 10px 0px 10px;
+    padding: 0px 8px 0px 8px;
+
+    cursor: pointer;
   }
-}
 
-.saving {
-  margin-left: 5px;
-}
+  .dataError:hover {
+    filter: brightness(80%);
+  }
 
-.saving span {
-  animation-name: blink;
-  animation-duration: 1.4s;
-  animation-iteration-count: infinite;
-  animation-fill-mode: both;
-  height: 10px;
-  width: 10px;
-  border-radius: 50%;
-  background-color: cadetblue;
-  display: inline-block;
-  margin-right: 2.5px;
-  margin-left: 2.5px;
-}
+  /* Loading Anim */
+  @keyframes blink {
+    0% {
+      opacity: 0.2;
+    }
 
-.saving span:nth-child(2) {
-  animation-delay: 0.2s;
-}
+    20% {
+      opacity: 1;
+    }
 
-.saving span:nth-child(3) {
-  animation-delay: 0.4s;
+    100% {
+      opacity: 0.2;
+    }
+  }
+
+  .saving {
+    margin-left: 5px;
+  }
+
+  .saving span {
+    animation-name: blink;
+    animation-duration: 1.4s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: cadetblue;
+    display: inline-block;
+    margin-right: 2.5px;
+    margin-left: 2.5px;
+  }
+
+  .saving span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .saving span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
 }
 </style>

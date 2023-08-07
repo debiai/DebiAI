@@ -1,93 +1,3 @@
-<!-- <template>
-  <div id="statistics">
-    <div id="header">
-      <h1>
-        <router-link
-          id="debiaiMenuLogo"
-          :to="
-            '/dataprovider/' +
-            $store.state.ProjectPage.dataProviderId +
-            '/project/' +
-            $store.state.ProjectPage.projectId
-          "
-          >&#8592;
-          <img
-            src="@/assets/images/DebiAI.png"
-            alt="DebiAI"
-            height="48"
-          />
-        </router-link>
-      </h1>
-      <div style="flex: 1"></div>
-      <h1 id="title2">Statistics</h1>
-      <div style="flex: 1"></div>
-
-      <img
-        id="title3"
-        src="@/assets/images/SystemX.png"
-        alt="SystemX"
-        height="38"
-      />
-    </div>
-    <div id="content">
-      <router-view />
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  name: "Statistics",
-  components: {},
-  data: () => {
-    return {};
-  },
-  mounted() {},
-  methods: {},
-  computed: {},
-};
-</script>
-
-<style scoped>
-#statistics {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-#header {
-  display: flex;
-  align-items: center;
-  color: white;
-  padding: 2px;
-  background-color: var(--primary);
-}
-
-#debiaiMenuLogo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: red;
-  color: #fff;
-  text-decoration: none;
-  background: none;
-}
-
-#title2 {
-  align-self: center;
-}
-
-#title3 {
-  align-self: center;
-  padding-top: 9px;
-}
-
-#content {
-  flex: 1;
-  height: 100%;
-}
-</style> -->
-
 <template>
   <div
     id="dataAnalysis"
@@ -128,6 +38,13 @@ export default {
         @cancel="tagCreationWidget = false"
         @created="tagCreationWidget = false"
       />
+    </modal>
+    <!-- Selection selection modal -->
+    <modal
+      v-if="selectionSelect"
+      @close="selectionSelect = false"
+    >
+      <SelectionSelection @cancel="selectionSelect = false" />
     </modal>
     <!-- Selection export -->
     <modal
@@ -222,6 +139,7 @@ export default {
     <Header
       :data="data"
       :selectedData="selectedData"
+      @addWidget="widgetCatalog = !widgetCatalog"
     />
 
     <!-- Side menu -->
@@ -269,12 +187,6 @@ export default {
       </div>
     </div>
   </div>
-  <div
-    id="dataAnalysis"
-    v-else
-  >
-    Loading
-  </div>
 </template>
 
 <script>
@@ -289,6 +201,7 @@ import Vue from "vue";
 // Menu
 import Header from "./Header";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
+import SelectionSelection from "./dataNavigation/SelectionSelection";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
@@ -309,13 +222,13 @@ export default {
     // Menu
     Header,
     CustomColumnCreator,
+    SelectionSelection,
     SelectionCreator,
     TagCreator,
     SelectionExportMenu,
     Algorithms,
     Layouts,
     WidgetCatalog,
-
 
     // Other
     fab, // (Floating Action Button)
@@ -332,9 +245,10 @@ export default {
 
       // Modals
       customColumnCreation: false,
+      selectionExport: false,
+      selectionSelect: false,
       saveSelectionWidget: false,
       tagCreationWidget: false,
-      selectionExport: false,
       algorithmModal: false,
       layoutModal: false,
       widgetCatalog: false,
@@ -818,6 +732,10 @@ export default {
 </script>
 
 <style scoped>
+#dataAnalysis {
+  padding-top: 60px; /* Height of Header */
+}
+
 /* Grid stack */
 .grid-stack-item {
   overflow: hidden;
@@ -829,7 +747,7 @@ export default {
 </style>
 
 <style>
-/* Css for all plot children */
+/* Css for all widgets */
 .dataVisualizationWidget {
   height: 100%;
   min-height: 100px;
@@ -840,6 +758,7 @@ export default {
 }
 
 .grid-stack {
+  margin-left: 300px; /* Width of Sidebar */
   background-color: lightgray;
 }
 
