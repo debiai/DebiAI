@@ -39,7 +39,7 @@
         @created="tagCreationWidget = false"
       />
     </modal>
-    <!-- Selection selection modal -->
+    <!-- Selection selection -->
     <modal
       v-if="selectionSelect"
       @close="selectionSelect = false"
@@ -143,12 +143,7 @@
     />
 
     <!-- Side menu -->
-    <!-- <div
-      class="header"
-      id="myHeader"
-    >
-      <h2>My Header</h2>
-    </div> -->
+    <SideBar :menuList="menuList" />
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
@@ -200,6 +195,7 @@ import Vue from "vue";
 
 // Menu
 import Header from "./Header";
+import SideBar from "./SideBar";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionSelection from "./dataNavigation/SelectionSelection";
 import SelectionCreator from "./dataCreation/SelectionCreator";
@@ -221,6 +217,7 @@ export default {
 
     // Menu
     Header,
+    SideBar,
     CustomColumnCreator,
     SelectionSelection,
     SelectionCreator,
@@ -256,58 +253,92 @@ export default {
       // Menu
       menuList: [
         {
-          name: "customColumn",
+          name: "Selections",
+          icon: "loop",
+          menuList: [
+            {
+              name: "Open a selection",
+              description: "Open a new analysis with another selection",
+              callback: this.selectionSelectionBtn,
+            },
+            {
+              name: "Create a new selection",
+              description: "Create a new selection from the currently selected samples",
+              callback: this.saveSelection,
+            },
+          ],
+        },
+        {
+          name: "Virtual columns",
           icon: "playlist_add",
-          tooltip: "Add a virtual column",
-          color: "var(--success)",
+          menuList: [
+            {
+              name: "Add a virtual column",
+              description: "Create a new virtual column based on the other columns and a formula",
+              callback: this.customColumn,
+            },
+          ],
         },
         {
-          name: "saveSelection",
-          icon: "save",
-          tooltip: "Create a new selection",
-          color: "var(--success)",
-        },
-        {
-          name: "tagCreation",
+          name: "Tags",
           icon: "local_offer",
-          tooltip: "Tag the selected samples",
-          color: "var(--success)",
+          menuList: [
+            {
+              name: "Tag the selected samples",
+              description: "Create a new column with a tag for the selected samples",
+              callback: this.tagCreation,
+            },
+          ],
         },
         {
-          name: "exportSelection",
+          name: "Export",
           icon: "send",
-          tooltip: "Export the selected samples",
-          color: "var(--success)",
+          menuList: [
+            {
+              name: "Export the selected samples",
+              description: "Export the selected samples according to different export methods",
+              callback: this.exportSelection,
+            },
+            {
+              name: "Export the analysis page",
+              description:
+                "Generate a markdown file with the analysis images, comments and configuration",
+              callback: this.exportAnalysisPage,
+            },
+          ],
         },
         {
-          name: "useAlgorithm",
+          name: "Custom algorithms",
           icon: "calculate",
-          tooltip: "Use an algorithm from the Algo Providers",
-          color: "var(--virtual)",
+          menuList: [
+            {
+              name: "Use a custom algorithm",
+              description: "Use a custom algorithm from the configured algo-providers",
+              callback: this.useAlgorithm,
+            },
+          ],
         },
         {
-          name: "layout",
+          name: "Layout",
           icon: "auto_awesome_mosaic",
-          tooltip: "Save or load layout",
-          color: "var(--info)",
-        },
-        {
-          name: "restoreDefaultLayout",
-          icon: "undo",
-          tooltip: "Restore the default layout",
-          color: "var(--warning)",
-        },
-        {
-          name: "clearLayout",
-          icon: "delete",
-          tooltip: "Clear layout",
-          color: "var(--dangerDark)",
-        },
-        {
-          name: "exportAnalysisPage",
-          icon: "description",
-          tooltip: "Export the analysis page results",
-          color: "var(--info)",
+          menuList: [
+            {
+              name: "Save or load layout",
+              description:
+                "Save the current layout to load it later, or load a previously saved layout",
+              callback: this.layout,
+            },
+            {
+              name: "Restore default layout",
+              description: "Clear the current layout and restore the default one",
+              callback: this.restoreDefaultLayout,
+            },
+            {
+              name: "Clear layout",
+              description: "Clear the current layout and enjoy a blank page",
+              callback: this.clearLayout,
+            },
+          ],
         },
       ],
     };
@@ -602,6 +633,9 @@ export default {
         msg: "Column created successfully",
       });
     },
+    selectionSelectionBtn() {
+      this.selectionSelect = true;
+    },
     saveSelection() {
       this.saveSelectionWidget = true;
     },
@@ -758,7 +792,7 @@ export default {
 }
 
 .grid-stack {
-  margin-left: 300px; /* Width of Sidebar */
+  margin-left: 102px; /* Width of Sidebar */
   background-color: lightgray;
 }
 
