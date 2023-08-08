@@ -96,6 +96,43 @@
       />
     </modal>
 
+    <!-- WIDGET GRIDSTACK BOARD -->
+    <div class="grid-stack">
+      <div
+        v-for="component in components"
+        :key="component.id"
+        :id="component.id"
+        :data-gs-id="component.id"
+        :data-gs-x="component.layout.x"
+        :data-gs-y="component.layout.y"
+        :data-gs-width="component.layout.width"
+        :data-gs-min-width="component.layout.minWidth"
+        :data-gs-max-width="component.layout.maxWidth"
+        :data-gs-height="component.layout.height"
+        :data-gs-min-height="component.layout.minHeight"
+        :data-gs-max-height="component.layout.maxHeight"
+      >
+        <Widget
+          :data="data"
+          :widgetKey="component.widgetKey"
+          :title="component.name"
+          :configuration="component.configuration"
+          :index="component.id"
+          :ref="component.id"
+          v-on:remove="removeWidget(component)"
+          v-on:copy="(configuration) => copyWidget({ component, configuration })"
+        >
+          <component
+            :is="component.widgetKey"
+            :component="component"
+            :data="data"
+            :selectedData="selectedData"
+            :index="component.id"
+          />
+        </Widget>
+      </div>
+    </div>
+
     <!-- floating menu -->
     <!-- <fab
       name="menu"
@@ -144,43 +181,6 @@
 
     <!-- Side menu -->
     <SideBar :menuList="menuList" />
-
-    <!-- WIDGET GRIDSTACK BOARD -->
-    <div class="grid-stack">
-      <div
-        v-for="component in components"
-        :key="component.id"
-        :id="component.id"
-        :data-gs-id="component.id"
-        :data-gs-x="component.layout.x"
-        :data-gs-y="component.layout.y"
-        :data-gs-width="component.layout.width"
-        :data-gs-min-width="component.layout.minWidth"
-        :data-gs-max-width="component.layout.maxWidth"
-        :data-gs-height="component.layout.height"
-        :data-gs-min-height="component.layout.minHeight"
-        :data-gs-max-height="component.layout.maxHeight"
-      >
-        <Widget
-          :data="data"
-          :widgetKey="component.widgetKey"
-          :title="component.name"
-          :configuration="component.configuration"
-          :index="component.id"
-          :ref="component.id"
-          v-on:remove="removeWidget(component)"
-          v-on:copy="(configuration) => copyWidget({ component, configuration })"
-        >
-          <component
-            :is="component.widgetKey"
-            :component="component"
-            :data="data"
-            :selectedData="selectedData"
-            :index="component.id"
-          />
-        </Widget>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -792,7 +792,7 @@ export default {
 }
 
 .grid-stack {
-  margin-left: 102px; /* Width of Sidebar */
+  margin-left: 80px; /* Width of Sidebar */
   background-color: lightgray;
 }
 
