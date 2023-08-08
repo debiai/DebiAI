@@ -19,9 +19,14 @@
         v-for="section in menuList"
         :key="section.name"
       >
-        <div class="side">
+        <div
+          :class="'head' + (openedSection === section.name ? ' open' : '')"
+          @click="
+            openedSection == section.name ? (openedSection = null) : (openedSection = section.name)
+          "
+        >
           <!-- The visible part when the mouse is not hovering the sidebar -->
-          <div class="svg">
+          <div class="icon">
             <inline-svg
               :src="require('@/assets/svg/filter.svg')"
               width="18"
@@ -31,32 +36,43 @@
           </div>
 
           <!-- The opening part when the mouse is hovering the sidebar -->
-          <transition name="scale">
+          <transition name="fade">
             <div
-              class="name"
               v-show="mouseHover"
+              class="side"
             >
-              {{ section.name }}
+              <div class="name">
+                {{ section.name }}
+              </div>
+
+              <div class="arrow">
+                <inline-svg
+                  id="arrow"
+                  :src="require('@/assets/svg/arrowRight.svg')"
+                  width="10"
+                  height="10"
+                />
+              </div>
             </div>
           </transition>
         </div>
 
-        <!-- The opening part when the mouse is hovering the sidebar -->
-        <!-- <transition name="fade">
+        <!-- The opening part when you select a section -->
+        <transition name="scale">
           <div
             class="subsections"
-            v-show="mouseHover"
+            v-show="openedSection === section.name"
           >
             <div
               class="subSection"
               v-for="subSection in section.menuList"
               :key="subSection.name"
             >
-              <div class="subSectionName">{{ subSection.name }}</div>
-              <div class="subSectionDescription">{{ subSection.description }}</div>
+              <div class="name">{{ subSection.name }}</div>
+              <!-- <div class="subSectionDescription">{{ subSection.description }}</div> -->
             </div>
           </div>
-        </transition> -->
+        </transition>
       </div>
     </div>
   </div>
@@ -86,29 +102,39 @@ export default {
   data() {
     return {
       mouseHover: false,
+
+      openedSection: null,
     };
+  },
+
+  watch: {
+    mouseHover() {
+      if (!this.mouseHover) {
+        this.openedSection = null;
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 #background {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 62px;
-  left: 0px;
-  z-index: 0;
+  // width: 100%;
+  // height: 100%;
+  // position: fixed;
+  // top: 62px;
+  // left: 0px;
+  // z-index: 0;
 
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(1px);
+  // background: rgba(0, 0, 0, 0.2);
+  // backdrop-filter: blur(1px);
 }
 
 #SideBar {
   width: 80px;
   height: 100%;
   position: fixed;
-  top: 62px;
+  top: 60px;
   left: 0px;
   z-index: 0;
 
@@ -116,12 +142,13 @@ export default {
   border-right: #bab9bf 2px solid;
 
   transition: all 0.3s;
+  overflow: hidden;
 
   .section {
-    padding: 10px 10px;
     font-size: 14px;
 
-    .side {
+    .head {
+      padding: 10px 10px 10px 30px;
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
@@ -129,16 +156,79 @@ export default {
       gap: 10px;
       height: 40px;
 
+      padding-right: 20px;
       color: #494949;
+      transition: padding 0.3s ease-out;
+      cursor: pointer;
+
+      &:hover {
+        background: #d8d8d8;
+      }
+
+      .side {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        height: 40px;
+
+        .name {
+          white-space: nowrap;
+          font-weight: 700;
+        }
+
+        .arrow {
+          transition: transform 0.1s ease-out;
+          transform: rotate(90deg);
+        }
+      }
+
+      &.open {
+        .arrow {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+
+    .subsections {
+      display: flex;
+      flex-direction: column;
+
+      .subSection {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        height: 20px;
+
+        padding: 10px 10px 10px 50px;
+        cursor: pointer;
+
+        &:hover {
+          background: #d8d8d8;
+          .name {
+            color: black;
+            text-decoration: underline;
+          }
+        }
+
+        .name {
+          white-space: nowrap;
+        }
+      }
     }
   }
 
   &:hover {
-    width: 400px;
+    // Open the sidebar
+    width: 300px;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
 
     .section {
-      .side {
+      .head {
+        padding-left: 20px;
       }
     }
   }
