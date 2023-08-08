@@ -1,79 +1,69 @@
 <template>
-  <div>
-    <!-- Background -->
-    <transition name="fade">
-      <div
-        id="background"
-        v-show="mouseHover"
-      />
-    </transition>
-
-    <!-- SideBar -->
+  <!-- SideBar -->
+  <div
+    id="SideBar"
+    @mouseover="mouseHover = true"
+    @mouseleave="mouseHover = false"
+  >
     <div
-      id="SideBar"
-      @mouseover="mouseHover = true"
-      @mouseleave="mouseHover = false"
+      class="section"
+      v-for="section in menuList"
+      :key="section.name"
     >
       <div
-        class="section"
-        v-for="section in menuList"
-        :key="section.name"
+        :class="'head' + (openedSection === section.name ? ' open' : '')"
+        @click="
+          openedSection == section.name ? (openedSection = null) : (openedSection = section.name)
+        "
       >
-        <div
-          :class="'head' + (openedSection === section.name ? ' open' : '')"
-          @click="
-            openedSection == section.name ? (openedSection = null) : (openedSection = section.name)
-          "
-        >
-          <!-- The visible part when the mouse is not hovering the sidebar -->
-          <div class="icon">
-            <inline-svg
-              :src="require('@/assets/svg/filter.svg')"
-              width="18"
-              height="18"
-              style="margin-right: 3px"
-            />
-          </div>
-
-          <!-- The opening part when the mouse is hovering the sidebar -->
-          <transition name="fade">
-            <div
-              v-show="mouseHover"
-              class="side"
-            >
-              <div class="name">
-                {{ section.name }}
-              </div>
-
-              <div class="arrow">
-                <inline-svg
-                  id="arrow"
-                  :src="require('@/assets/svg/arrowRight.svg')"
-                  width="10"
-                  height="10"
-                />
-              </div>
-            </div>
-          </transition>
+        <!-- The visible part when the mouse is not hovering the sidebar -->
+        <div class="icon">
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="18"
+            height="18"
+            style="margin-right: 3px"
+          />
         </div>
 
-        <!-- The opening part when you select a section -->
-        <transition name="scale">
+        <!-- The opening part when the mouse is hovering the sidebar -->
+        <transition name="fade">
           <div
-            class="subsections"
-            v-show="openedSection === section.name"
+            v-show="mouseHover"
+            class="side"
           >
-            <div
-              class="subSection"
-              v-for="subSection in section.menuList"
-              :key="subSection.name"
-            >
-              <div class="name">{{ subSection.name }}</div>
-              <!-- <div class="subSectionDescription">{{ subSection.description }}</div> -->
+            <div class="name">
+              {{ section.name }}
+            </div>
+
+            <div class="arrow">
+              <inline-svg
+                id="arrow"
+                :src="require('@/assets/svg/arrowRight.svg')"
+                width="10"
+                height="10"
+              />
             </div>
           </div>
         </transition>
       </div>
+
+      <!-- The opening part when you select a section -->
+      <transition name="scale">
+        <div
+          class="subsections"
+          v-show="openedSection === section.name"
+        >
+          <div
+            class="subSection"
+            v-for="subSection in section.menuList"
+            :key="subSection.name"
+          >
+            <div class="name">{{ subSection.name }}</div>
+            <!-- <div class="subSectionDescription">{{ subSection.description }}</div> -->
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -118,18 +108,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#background {
-  // width: 100%;
-  // height: 100%;
-  // position: fixed;
-  // top: 62px;
-  // left: 0px;
-  // z-index: 0;
-
-  // background: rgba(0, 0, 0, 0.2);
-  // backdrop-filter: blur(1px);
-}
-
 #SideBar {
   width: 80px;
   height: 100%;
