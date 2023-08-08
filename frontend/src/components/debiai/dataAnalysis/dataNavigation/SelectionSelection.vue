@@ -5,7 +5,7 @@
         <span class="aligned spaced">
           <h2>
             <inline-svg
-              :src="require('@/assets/svg/loupe.svg')"
+              :src="require('@/assets/svg/loop.svg')"
               width="20"
               height="20"
             />

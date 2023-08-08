@@ -270,7 +270,7 @@ export default {
         },
         {
           name: "Virtual columns",
-          icon: "playlist_add",
+          icon: "addColumn",
           menuList: [
             {
               name: "Add a virtual column",
@@ -281,7 +281,7 @@ export default {
         },
         {
           name: "Tags",
-          icon: "local_offer",
+          icon: "tag",
           menuList: [
             {
               name: "Tag the selected samples",
@@ -309,7 +309,7 @@ export default {
         },
         {
           name: "Custom algorithms",
-          icon: "calculate",
+          icon: "algorithm",
           menuList: [
             {
               name: "Use a custom algorithm",
@@ -320,7 +320,7 @@ export default {
         },
         {
           name: "Layout",
-          icon: "auto_awesome_mosaic",
+          icon: "layout",
           menuList: [
             {
               name: "Save or load layout",

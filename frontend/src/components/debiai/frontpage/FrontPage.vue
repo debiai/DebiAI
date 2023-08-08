@@ -73,7 +73,7 @@
           title="Project selections"
         >
           <inline-svg
-            :src="require('@/assets/svg/loupe.svg')"
+            :src="require('@/assets/svg/loop.svg')"
             width="14"
             height="14"
           />
@@ -143,7 +143,7 @@
               title="Number of selections"
             >
               <inline-svg
-                :src="require('@/assets/svg/loupe.svg')"
+                :src="require('@/assets/svg/loop.svg')"
                 width="14"
                 height="14"
               />

@@ -58,7 +58,7 @@
               title="Project selections"
             >
               <inline-svg
-                :src="require('../../../assets/svg/loupe.svg')"
+                :src="require('../../../assets/svg/loop.svg')"
                 width="25"
                 height="25"
                 fill="white"
