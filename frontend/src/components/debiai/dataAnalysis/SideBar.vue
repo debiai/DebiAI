@@ -10,18 +10,17 @@
       v-for="section in menuList"
       :key="section.name"
     >
+      <!-- Section icon and name -->
       <div
-        :class="'head' + (openedSection === section.name ? ' open' : '')"
-        @click="
-          openedSection == section.name ? (openedSection = null) : (openedSection = section.name)
-        "
+        :class="'head' + (openedSections[section.name] ? ' open' : '')"
+        @click="selectSection(section.name)"
       >
         <!-- The visible part when the mouse is not hovering the sidebar -->
         <div class="icon">
           <inline-svg
-            :src="require('@/assets/svg/filter.svg')"
-            width="18"
-            height="18"
+            :src="require('@/assets/svg/' + section.icon + '.svg')"
+            width="22"
+            height="22"
             style="margin-right: 3px"
           />
         </div>
@@ -48,22 +47,54 @@
         </transition>
       </div>
 
-      <!-- The opening part when you select a section -->
+      <!-- Subsections, the opening part when you select a section -->
       <transition name="scale">
         <div
           class="subsections"
-          v-show="openedSection === section.name"
+          v-show="openedSections[section.name] && mouseHover"
         >
           <div
             class="subSection"
             v-for="subSection in section.menuList"
             :key="subSection.name"
+            @click="subSection.callback()"
           >
             <div class="name">{{ subSection.name }}</div>
-            <!-- <div class="subSectionDescription">{{ subSection.description }}</div> -->
+            <div class="description">{{ subSection.description }}</div>
           </div>
         </div>
       </transition>
+    </div>
+
+    <div
+      class="section"
+      id="documentation"
+    >
+      <!-- Section icon and name -->
+      <div
+        class="head"
+        @click="openDocumentation()"
+      >
+        <!-- The visible part when the mouse is not hovering the sidebar -->
+        <div class="icon">
+          <inline-svg
+            :src="require('@/assets/svg/question.svg')"
+            width="35"
+            height="35"
+            style="margin-right: 3px"
+          />
+        </div>
+
+        <!-- The opening part when the mouse is hovering the sidebar -->
+        <transition name="fade">
+          <div
+            v-show="mouseHover"
+            class="side"
+          >
+            <div class="name">Documentation</div>
+          </div>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
@@ -93,14 +124,33 @@ export default {
     return {
       mouseHover: false,
 
-      openedSection: null,
+      openedSections: {}, // { sectionName: true/false }
     };
+  },
+
+  created() {
+    this.menuList.forEach((section) => {
+      this.openedSections[section.name] = false;
+    });
+  },
+
+  methods: {
+    selectSection(sectionName) {
+      this.openedSections[sectionName] = !this.openedSections[sectionName];
+      this.$forceUpdate();
+    },
+    openDocumentation() {
+      window.open("https://debiai.irt-systemx.fr/dashboard/#analysis-page", "_blank");
+    },
   },
 
   watch: {
     mouseHover() {
       if (!this.mouseHover) {
-        this.openedSection = null;
+        // Close all sections
+        this.menuList.forEach((section) => {
+          this.openedSections[section.name] = false;
+        });
       }
     },
   },
@@ -110,14 +160,18 @@ export default {
 <style lang="scss" scoped>
 #SideBar {
   width: 80px;
-  height: 100%;
+  height: calc(100vh - 80px);
   position: fixed;
   top: 60px;
   left: 0px;
   z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 
   background: #e8e8e8;
   border-right: #bab9bf 2px solid;
+  padding-top: 20px;
 
   transition: all 0.3s;
   overflow: hidden;
@@ -176,10 +230,9 @@ export default {
 
       .subSection {
         display: flex;
-        flex-direction: row;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
         gap: 10px;
-        height: 20px;
 
         padding: 10px 10px 10px 50px;
         cursor: pointer;
@@ -195,7 +248,23 @@ export default {
         .name {
           white-space: nowrap;
         }
+
+        .description {
+          text-align: left;
+          font-size: 12px;
+          color: #494949;
+          opacity: 0.8;
+          width: 200px;
+        }
       }
+    }
+  }
+
+  #documentation {
+    margin-top: auto;
+
+    .head {
+      padding-left: 23px;
     }
   }
 
@@ -203,6 +272,7 @@ export default {
     // Open the sidebar
     width: 300px;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+    background: #f8f8f8;
 
     .section {
       .head {
