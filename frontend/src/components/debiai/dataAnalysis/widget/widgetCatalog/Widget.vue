@@ -8,9 +8,7 @@
     >
       <!-- Widget icon image -->
       <progressive-img
-        :src="
-          require(`@/components/debiai/dataAnalysis/widgets/${widget.componentKey}/icon.png`)
-        "
+        :src="require(`@/components/debiai/dataAnalysis/widgets/${widget.componentKey}/icon.png`)"
         class="icon"
       />
 

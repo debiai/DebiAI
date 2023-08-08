@@ -133,39 +133,6 @@
       </div>
     </div>
 
-    <!-- floating menu -->
-    <!-- <fab
-      name="menu"
-      bg-color="var(--primaryDark)"
-      position="top-right"
-      main-tooltip="Menu"
-      main-icon="menu"
-      fixed-tooltip="true"
-      z-index="2"
-      :actions="menuList"
-      @customColumn="customColumn"
-      @saveSelection="saveSelection"
-      @tagCreation="tagCreation"
-      @exportSelection="exportSelection"
-      @useAlgorithm="useAlgorithm"
-      @layout="layout"
-      @restoreDefaultLayout="restoreDefaultLayout"
-      @clearLayout="clearLayout"
-      @exportAnalysisPage="exportAnalysisPage"
-    /> -->
-    <!-- floating widget catalog menu -->
-    <!-- <div @click="widgetCatalog = !widgetCatalog">
-      <fab
-        name="widgetCatalog"
-        bg-color="var(--success)"
-        size="small"
-        position="right"
-        main-tooltip="Add a widget"
-        main-icon="add"
-        z-index="2"
-      />
-    </div> -->
-
     <!-- Header menu -->
     <!-- Displays:
       The DebiAI logo
