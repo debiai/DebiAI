@@ -131,6 +131,16 @@ button.white {
   border-color: var(--white);
   color: rgb(70, 70, 70);
 }
+button.simple {
+  border: solid #a8a8a8 2px;
+  border-radius: 5px;
+  padding: 5px;
+
+  background: transparent;
+  text-decoration: none;
+  color: black;
+  font-weight: normal;
+}
 
 button.highlighted {
   transform: scale(1.1);

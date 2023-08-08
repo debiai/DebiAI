@@ -25,53 +25,80 @@
       />
     </modal>
 
-    <!-- DebiAI Logo -->
-    <router-link
-      id="debiaiMenuLogo"
-      :to="
-        '/dataprovider/' +
-        $store.state.ProjectPage.dataProviderId +
-        '/project/' +
-        $store.state.ProjectPage.projectId
-      "
-    >
-      <img
-        src="@/assets/images/DebiAI_black.png"
-        alt="DebiAI"
-        height="48"
-      />
-    </router-link>
+    <!-- DebiAI Logo and project name -->
 
-    <!-- Filters panel button -->
-    <button @click="filtersMenu = true">
-      <span
-        class="badge"
-        v-if="$store.state.StatisticalAnalysis.filters.length"
-        >{{ $store.state.StatisticalAnalysis.filters.length }}</span
+    <div id="logoAndName">
+      <!-- DebiAI Logo -->
+      <router-link
+        id="debiaiMenuLogo"
+        :to="
+          '/dataprovider/' +
+          $store.state.ProjectPage.dataProviderId +
+          '/project/' +
+          $store.state.ProjectPage.projectId
+        "
       >
-      <inline-svg
-        :src="require('@/assets/svg/filter.svg')"
-        width="10"
-        height="10"
-        fill="white"
-        style="margin-right: 3px"
-      />
-      <u>Global filters</u>
-    </button>
+        <img
+          src="@/assets/images/DebiAI_black.png"
+          alt="DebiAI"
+          height="48"
+        />
+      </router-link>
 
-    <!-- Selected data info -->
-    <SelectedDataInfo
-      :data="data"
-      :selectedData="selectedData"
-      v-on:dataSelection="dataSelection"
-    />
+      <!-- Project name -->
+      <div id="projectName">
+        <router-link :to="'/'">Projects</router-link>
+        /
+        <router-link
+          :to="
+            '/dataprovider/' +
+            $store.state.ProjectPage.dataProviderId +
+            '/project/' +
+            $store.state.ProjectPage.projectId
+          "
+          >{{ $store.state.ProjectPage.projectId }}</router-link
+        >
+        / analysis
+      </div>
+    </div>
+
+    <!-- Filters panel button and selected data info -->
+    <div id="filtersAndSelectedData">
+      <!-- Filters panel button -->
+      <button
+        @click="filtersMenu = true"
+        id="filtersMenu"
+        class="simple"
+      >
+        <span
+          class="badge"
+          v-if="$store.state.StatisticalAnalysis.filters.length"
+          >{{ $store.state.StatisticalAnalysis.filters.length }}</span
+        >
+        <inline-svg
+          :src="require('@/assets/svg/filter.svg')"
+          width="10"
+          height="10"
+          fill="black"
+          style="margin-right: 3px"
+        />
+        <u>Global filters</u>
+      </button>
+
+      <!-- Selected data info -->
+      <SelectedDataInfo
+        :data="data"
+        :selectedData="selectedData"
+        v-on:dataSelection="dataSelection"
+      />
+    </div>
 
     <!-- Colored column info -->
     <div
       id="coloredColumn"
       v-if="coloredColumnIndex !== null"
     >
-      Colored col :
+      Colored column :
       <Column
         :column="data.columns.find((c) => c.index == coloredColumnIndex)"
         :colorSelection="false"
@@ -83,7 +110,12 @@
       id="coloredColumn"
       v-else
     >
-      <button @click="selectColoredCol = true">Select a colored column</button>
+      <button
+        @click="selectColoredCol = true"
+        class="simple"
+      >
+        Select a colored column
+      </button>
     </div>
 
     <!-- Add widget button -->
@@ -159,8 +191,9 @@ export default {
   z-index: 1;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  gap: 30px;
 
   background-color: #f6f6f6;
   border-bottom: solid #a8a8a8 2px;
@@ -171,6 +204,38 @@ export default {
 
   img {
     margin-left: 10px;
+  }
+
+  #logoAndName {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+
+    #debiaiMenuLogo {
+      margin-right: 10px;
+    }
+
+    #projectName {
+      font-size: 18px;
+      font-weight: bold;
+      color: #a8a8a8;
+
+      a {
+        color: rgb(53, 53, 53);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  #filtersAndSelectedData {
+    display: flex;
+    align-items: center;
+    gap: 30px;
   }
 
   #addWidgetButton {
@@ -185,7 +250,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
 }
 #coloredColumn u {
   margin-left: 3px;
