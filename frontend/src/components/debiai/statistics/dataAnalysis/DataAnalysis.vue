@@ -18,7 +18,6 @@
     <!-- saveSelectionWidget -->
     <SelectionCreator
       v-if="saveSelectionWidget"
-      @close="saveSelectionWidget = false"
       :data="data"
       :selectedData="selectedData"
       @cancel="saveSelectionWidget = false"
