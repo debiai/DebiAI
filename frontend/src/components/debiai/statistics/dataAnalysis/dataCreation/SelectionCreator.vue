@@ -1,8 +1,25 @@
 <template>
-  <div id="SelectionCreator">
-    <form v-on:submit.prevent>
-      <b
-        >Create a new selection from the selected data
+  <modal
+    @close="$emit('cancel')"
+    :errorMessages="[selectionNameNull ? 'The selection name can\'t be empty' : '']"
+    :warningMessages="[selectionExists ? 'A selection with this name already exists' : '']"
+  >
+    <div id="SelectionCreator">
+      <!-- Title -->
+      <b class="aligned centered">
+        <h3
+          style="padding-right: 40px"
+          class="aligned centered"
+        >
+          Create a new selection from the selected data
+          <documentation-block>
+            A selection is a named list of samples ID. <br />
+            <br />
+            By creating a selection, you can save the currently selected samples <br />
+            and open them later.
+            <br />
+          </documentation-block>
+        </h3>
         <button
           @click="$emit('cancel')"
           class="red"
@@ -10,26 +27,29 @@
           Cancel
         </button>
       </b>
-      <div class="dataGroup">
-        <!-- selection name -->
-        <div class="data">
-          <div class="name">Selection name</div>
-          <div class="value">
-            <input
-              type="text"
-              v-model="selectionName"
-              style="flex: 1"
-            />
+
+      <!-- Form -->
+      <form v-on:submit.prevent>
+        <div class="dataGroup">
+          <!-- selection name -->
+          <div class="data">
+            <div class="name">Selection name</div>
+            <div class="value">
+              <input
+                type="text"
+                v-model="selectionName"
+                style="flex: 1"
+              />
+            </div>
           </div>
-        </div>
-        <!-- nb samples -->
-        <div class="data">
-          <div class="name">Selected samples</div>
-          <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
-        </div>
-        <!-- saveRequestAsWell -->
-        <!-- TODO : Revert for the requests update -->
-        <!-- <div class="data">
+          <!-- nb samples -->
+          <div class="data">
+            <div class="name">Selected samples</div>
+            <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
+          </div>
+          <!-- saveRequestAsWell -->
+          <!-- TODO : Revert for the requests update -->
+          <!-- <div class="data">
           <div class="name">Save the request as well</div>
           <div class="value">
             No
@@ -46,25 +66,26 @@
             Yes
           </div>
         </div> -->
-        <!-- nb filters:  -->
-        <!-- <div :class="saveRequestAsWell ? 'data ' : 'data date'">
+          <!-- nb filters:  -->
+          <!-- <div :class="saveRequestAsWell ? 'data ' : 'data date'">
           <div class="name">Number of filters</div>
           <div class="value">
             {{ filters.length }}
           </div>
         </div> -->
-      </div>
-      <div style="display: flex; justify-content: flex-end">
-        <button
-          type="submit"
-          @click="save"
-          :disabled="!selectionNameOk"
-        >
-          Save
-        </button>
-      </div>
-    </form>
-  </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end">
+          <button
+            type="submit"
+            @click="save"
+            :disabled="!selectionNameOk"
+          >
+            Create
+          </button>
+        </div>
+      </form>
+    </div>
+  </modal>
 </template>
 
 <script>
@@ -122,15 +143,16 @@ export default {
       this.$backendDialog
         .addSelection(selectedIds, this.selectionName, requestId)
         .then(() => {
-          this.$backendDialog.getSelections().then((selections) => {
-            this.createdSelections = selections;
-            // this.$store.commit("setProjectSelections", selections);
-            this.$store.commit("sendMessage", {
-              title: "success",
-              msg: "Selection saved successfully",
-            });
-            this.$emit("cancel");
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Selection saved successfully",
           });
+          this.$emit("cancel");
+
+          // this.$backendDialog.getSelections().then((selections) => {
+          //   this.createdSelections = selections;
+          //   this.$store.commit("setProjectSelections", selections);
+          // });
         })
         .catch(() => {
           this.$store.commit("sendMessage", {
@@ -141,10 +163,17 @@ export default {
     },
   },
   computed: {
+    selectionNameNull() {
+      return this.selectionName === null || this.selectionName === "";
+    },
+    selectionExists() {
+      if (this.createdSelections === null) return false;
+
+      const selectionNames = this.createdSelections.map((s) => s.name);
+      return selectionNames.includes(this.selectionName);
+    },
     selectionNameOk() {
-      return (
-        this.createdSelections !== null && !this.createdSelections.includes(this.selectionName)
-      );
+      return !this.selectionNameNull; // && !this.selectionExists;
     },
     filters() {
       return this.$store.state.StatisticalAnalysis.filters.map((f) => {

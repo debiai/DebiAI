@@ -16,17 +16,13 @@
       />
     </modal>
     <!-- saveSelectionWidget -->
-    <modal
+    <SelectionCreator
       v-if="saveSelectionWidget"
-      @close="saveSelectionWidget = false"
-    >
-      <SelectionCreator
-        :data="data"
-        :selectedData="selectedData"
-        @cancel="saveSelectionWidget = false"
-        @done="saveSelectionWidget = false"
-      />
-    </modal>
+      :data="data"
+      :selectedData="selectedData"
+      @cancel="saveSelectionWidget = false"
+      @done="saveSelectionWidget = false"
+    />
     <!-- tagCreationWidget -->
     <modal
       v-if="tagCreationWidget"
