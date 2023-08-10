@@ -89,9 +89,8 @@
 </template>
 
 <script>
-import DocumentationBlock from "../../../../common/DocumentationBlock .vue";
+
 export default {
-  components: { DocumentationBlock },
   name: "SelectionCreator",
   data() {
     return {
