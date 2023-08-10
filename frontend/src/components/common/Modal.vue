@@ -21,6 +21,19 @@
           </div>
         </transition>
       </div>
+      <div
+        v-for="(warning, index) in warningMessages"
+        :key="index + warningMessages.length"
+      >
+        <transition name="fade">
+          <div
+            class="error warning"
+            v-if="warning"
+          >
+            {{ warning }}
+          </div>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +43,7 @@ export default {
   name: "Modal",
   props: {
     errorMessages: { type: Array, default: () => [] },
+    warningMessages: { type: Array, default: () => [] },
   },
   mounted() {
     // When the modal is opened, we want to disable scrolling on the body
@@ -54,7 +68,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 #modal {
   z-index: 5;
   position: fixed;
@@ -72,9 +86,10 @@ export default {
   backdrop-filter: blur(1px);
 
   animation: fadeIn 0.1s;
-}
-#modal:hover {
-  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 #Panel {
@@ -84,10 +99,10 @@ export default {
   background-color: rgb(250, 250, 250);
   border-radius: 1vh;
   overflow: auto;
-}
 
-#Panel:hover {
-  cursor: default;
+  &:hover {
+    cursor: default;
+  }
 }
 
 #errors {
@@ -96,11 +111,17 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-#errors .error {
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 10px;
+
+  .error {
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 10px;
+  }
+
+  .warning {
+    background-color: #ffc108;
+    color: #181616;
+  }
 }
 </style>
