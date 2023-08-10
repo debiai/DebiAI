@@ -89,7 +89,6 @@
 </template>
 
 <script>
-
 export default {
   name: "SelectionCreator",
   data() {
