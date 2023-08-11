@@ -79,7 +79,6 @@ export default {
 #column {
   display: flex;
   background-color: rgb(228, 222, 222);
-  border-radius: 10px;
   margin: 5px;
   transition: all 0.3s;
 }
@@ -97,7 +96,6 @@ export default {
   background-color: var(--dark);
   border-color: var(--darkDark);
   color: white;
-  border-radius: 10px 0px 0px 10px;
   font-weight: bold;
   text-align: center;
   white-space: nowrap;
@@ -128,7 +126,6 @@ export default {
 
   background-color: var(--undefined);
   color: rgb(27, 27, 27);
-  border-radius: 10px 0px 0px 10px;
   font-weight: bold;
   padding: 10px;
 }
@@ -207,7 +204,6 @@ export default {
   padding-left: 7px;
   padding-right: 7px;
 
-  border-radius: 10px;
   color: black;
 }
 #column .type.Num {

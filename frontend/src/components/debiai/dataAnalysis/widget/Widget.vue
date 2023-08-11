@@ -630,6 +630,11 @@ export default {
   transition: background-color 0.2s;
 }
 
+#widgetHeader {
+  color:rgb(105, 105, 105);
+  background: rgb(230, 230, 230);
+}
+
 .card .title:active {
   cursor: grabbing;
 }
