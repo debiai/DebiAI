@@ -139,6 +139,9 @@ button.simple {
   color: black;
   font-weight: normal;
 }
+button.simple:hover {
+  background-color: #fcfcfc;
+}
 
 button.highlighted {
   transform: scale(1.1);
@@ -161,17 +164,20 @@ button.highlighted {
 }
 
 button .badge {
-  min-width: 10px;
+  min-width: 13px;
+  height: 16px;
   position: absolute;
   background: var(--danger);
   display: flex;
   align-items: center;
   justify-content: center;
-  top: -7px;
-  right: -5px;
+  top: -9px;
+  right: -8px;
   padding: 1px 3px 1px 3px;
   font-size: 0.8em;
   color: white;
+  border-radius: 100%;
+  font-weight: bold;
 }
 
 /* === RADIO BUTTON === */

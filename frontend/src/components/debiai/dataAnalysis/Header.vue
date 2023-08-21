@@ -26,7 +26,6 @@
     </modal>
 
     <!-- DebiAI Logo and project name -->
-
     <div id="logoAndName">
       <!-- DebiAI Logo -->
       <router-link
@@ -58,80 +57,101 @@
           "
           >{{ $store.state.ProjectPage.projectId }}</router-link
         >
-        / analysis
+        / Analysis
       </div>
     </div>
 
-    <!-- Filters panel button and selected data info -->
-    <div id="filtersAndSelectedData">
-      <!-- Filters panel button -->
-      <button
-        @click="filtersMenu = true"
-        id="filtersMenu"
-        class="simple"
-      >
-        <span
-          class="badge"
-          v-if="$store.state.StatisticalAnalysis.filters.length"
-          >{{ $store.state.StatisticalAnalysis.filters.length }}</span
-        >
-        <inline-svg
-          :src="require('@/assets/svg/filter.svg')"
-          width="10"
-          height="10"
-          fill="black"
-          style="margin-right: 3px"
-        />
-        <u>Global filters</u>
-      </button>
-
-      <!-- Selected data info -->
-      <SelectedDataInfo
-        :data="data"
-        :selectedData="selectedData"
-        v-on:dataSelection="dataSelection"
+    <!-- Add widget button -->
+    <button
+      id="addWidgetButton"
+      class="simple"
+      @click="$emit('addWidget')"
+    >
+      <inline-svg
+        :src="require('@/assets/svg/close.svg')"
+        width="13"
+        height="13"
       />
-    </div>
+      Add a widget
+
+      <!-- <inline-svg
+        :src="require('@/assets/svg/bar_plot.svg')"
+        width="15"
+        height="15"
+      /> -->
+    </button>
 
     <!-- Colored column info -->
     <div
       id="coloredColumn"
       v-if="coloredColumnIndex !== null"
     >
-      Colored column :
-      <Column
+      Color
+      <button
+        @click="selectColoredCol = true"
+        class="simple filled"
+        title="Change the analysis colored column"
+      >
+        {{ data.columns.find((c) => c.index == coloredColumnIndex).label }}
+      </button>
+      <!-- <Column
         :column="data.columns.find((c) => c.index == coloredColumnIndex)"
         :colorSelection="false"
         v-on:selected="selectColoredCol = true"
-      />
-      <!-- <u>{{ data.columns[coloredColumnIndex].label }}</u> -->
+      /> -->
     </div>
     <div
       id="coloredColumn"
       v-else
     >
+      Color
       <button
         @click="selectColoredCol = true"
-        class="simple"
+        class="simple empty"
+        title="Select the analysis colored column"
       >
-        Select a colored column
+        <inline-svg
+          :src="require('@/assets/svg/close.svg')"
+          width="8"
+          height="8"
+        />
       </button>
     </div>
 
-    <!-- Add widget button -->
-    <button
-      id="addWidgetButton"
-      @click="$emit('addWidget')"
+    <!-- Filters panel button and selected data info -->
+    <div
+      id="filtersAndSelectedData"
+      :class="$store.state.StatisticalAnalysis.filters.length ? 'filters' : ''"
     >
-      <inline-svg
-        :src="require('@/assets/svg/bar_plot.svg')"
-        width="15"
-        height="15"
-        fill="white"
-        style="margin-right: 3px"
+      <!-- Filters panel button -->
+      <!-- Selected data info -->
+      <SelectedDataInfo
+        :data="data"
+        :selectedData="selectedData"
+        v-on:dataSelection="dataSelection"
       />
-      <u>+ Add a widget</u>
-    </button>
+
+      <!-- Global filters -->
+      <button
+        @click="filtersMenu = true"
+        id="filtersMenu"
+        class="simple"
+        title="Global filters"
+      >
+        <inline-svg
+          :src="require('@/assets/svg/filter.svg')"
+          width="20"
+          height="20"
+          :fill="$store.state.StatisticalAnalysis.filters.length ? 'var(--primary)' : 'black'"
+          style="margin-right: 3px"
+        />
+        <span
+          class="badge"
+          v-if="$store.state.StatisticalAnalysis.filters.length"
+          >{{ $store.state.StatisticalAnalysis.filters.length }}</span
+        >
+      </button>
+    </div>
   </div>
 </template>
 
@@ -191,9 +211,9 @@ export default {
   z-index: 1;
 
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 30px;
+  justify-content: space-between;
+  gap: 50px;
 
   background-color: #f6f6f6;
   border-bottom: solid #a8a8a8 2px;
@@ -210,7 +230,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex: 1;
+    // flex: 1;
 
     #debiaiMenuLogo {
       margin-right: 10px;
@@ -233,16 +253,50 @@ export default {
   }
 
   #filtersAndSelectedData {
+    padding: 0px 20px;
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
+
+    &.filters {
+      #filtersMenu {
+        border-color: var(--primary);
+      }
+    }
   }
 
   #addWidgetButton {
+    // flex: 1;
     margin-right: 10px;
     display: flex;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-weight: bold;
+    border: solid var(--primary) 2px;
+    border: none;
+
+    text-decoration: none;
+    font-size: 1.2em;
+
+    svg {
+      padding-bottom: 2px;
+      fill: var(--primary);
+      margin-left: 3px;
+      transform: rotate(45deg);
+    }
+  }
+
+  #filtersMenu {
+    // border: none;
+    // border: solid black 1px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    svg {
+      padding: 0px 5px 0px 8px;
+    }
   }
 }
 
@@ -250,11 +304,27 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-#coloredColumn u {
-  margin-left: 3px;
-  border: solid white 1px;
-  border-radius: 5px;
-  padding: 2px;
+  // flex-direction: column-reverse;
+  gap: 15px;
+  font-size: 1em;
+  padding: 0px 10px;
+  color:grey;
+
+  button {
+    padding-left: 15px;
+    padding-right: 15px;
+    &.filled {
+      color: var(--primary);
+      border-color: var(--primary);
+      font-weight: bold;
+    }
+    &.empty {
+      width: 50px;
+      svg {
+        // Rotate
+        transform: rotate(45deg);
+      }
+    }
+  }
 }
 </style>
