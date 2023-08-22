@@ -229,14 +229,14 @@ export default {
     canApply() {
       if (!this.XAuto) {
         if (isNaN(this.XMin) || this.XMin === "") return "The X axis minimum value is not a number";
-        if (isNaN(this.XMax) || this.XMin === "") return "The X axis maximum value is not a number";
-        if (this.XMin >= this.XMax)
+        if (isNaN(this.XMax) || this.XMax === "") return "The X axis maximum value is not a number";
+        if (Number(this.XMin) >= Number(this.XMax))
           return "The X axis minimum value must be less than the maximum value";
       }
       if (!this.YAuto) {
         if (isNaN(this.YMin) || this.XMin === "") return "The Y axis minimum value is not a number";
-        if (isNaN(this.YMax) || this.XMin === "") return "The Y axis maximum value is not a number";
-        if (this.YMin >= this.YMax)
+        if (isNaN(this.YMax) || this.XMax === "") return "The Y axis maximum value is not a number";
+        if (Number(this.YMin) >= Number(this.YMax))
           return "The Y axis minimum value must be less than the maximum value";
       }
       return true;
