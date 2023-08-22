@@ -41,7 +41,7 @@
             >
             <div
               class="value"
-              style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+              style="margin-right: 15px; padding-right: 10px"
             >
               <input
                 type="checkbox"
@@ -69,7 +69,7 @@
               >
               <div
                 class="value"
-                style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+                style="margin-right: 15px; padding-right: 10px"
               >
                 <input
                   type="number"
@@ -86,7 +86,7 @@
               >
               <div
                 class="value"
-                style="background: var(--blankDark); padding-right: 10px"
+                style="padding-right: 10px"
               >
                 <input
                   type="number"
@@ -116,7 +116,7 @@
             >
             <div
               class="value"
-              style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+              style="margin-right: 15px; padding-right: 10px"
             >
               <input
                 type="checkbox"
@@ -144,7 +144,7 @@
               >
               <div
                 class="value"
-                style="background: var(--blankDark); margin-right: 15px; padding-right: 10px"
+                style="margin-right: 15px; padding-right: 10px"
               >
                 <input
                   type="number"
@@ -162,7 +162,7 @@
               >
               <div
                 class="value"
-                style="background: var(--blankDark); padding-right: 10px"
+                style="padding-right: 10px"
               >
                 <input
                   type="number"

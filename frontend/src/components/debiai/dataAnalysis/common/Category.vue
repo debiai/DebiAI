@@ -14,18 +14,8 @@
         id="controls"
         v-if="multipleSelection"
       >
-        <button
-          class="warning"
-          @click="none"
-        >
-          None
-        </button>
-        <button
-          class="info"
-          @click="all"
-        >
-          All
-        </button>
+        <button @click="none">None</button>
+        <button @click="all">All</button>
       </div>
     </div>
     <div class="content">
@@ -140,33 +130,4 @@ export default {
 </script>
 
 <style scoped>
-#Others {
-  background: var(--other);
-}
-#Contexts {
-  background: var(--context);
-}
-#Inputs {
-  background: var(--input);
-}
-#GroundTruth {
-  background: var(--groundthruth);
-}
-#Results {
-  background: var(--results);
-}
-#Virtual {
-  background: var(--virtual);
-}
-#Tag {
-  background: var(--tag);
-}
-
-/* Controls  */
-button {
-  padding: 3px;
-}
-button + button {
-  margin-left: 5px;
-}
 </style>

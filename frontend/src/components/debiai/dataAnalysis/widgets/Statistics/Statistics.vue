@@ -432,14 +432,14 @@ export default {
 }
 #columns thead th {
   padding: 10px 0 10px 10px;
-  background-color: var(--primary);
-  color: white;
+  background-color: var(--grey);
 }
 #columns .colName {
-  background-color: var(--primaryDark);
+  background-color: var(--greyDark);
   display: flex;
   justify-content: space-between;
   color: white;
+  font-weight: bold;
 }
 #columns td {
   border-bottom: 1px solid #d8d8d8;

@@ -196,8 +196,8 @@
       <button
         id="drawBtn"
         type="submit"
+        class="blue"
         @click="checkPlot"
-        :disabled="plotDrawn"
       >
         Draw
       </button>
@@ -298,6 +298,8 @@ export default {
       if ("displayLegends" in conf) this.displayLegends = conf.displayLegends;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
       if ("bins" in conf) this.bins = conf.bins;
+
+      this.checkPlot(false);
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -320,42 +322,62 @@ export default {
     },
 
     // Plot
-    checkPlot() {
+    async checkPlot(askConfirmation = true) {
       let colX = this.data.columns[this.columnXindex];
 
+      // // Check synchronously if the selected column type is string and if their is more than 100 uniques values
+      // if (colX.type == String && colX.uniques.length > 100) {
+      //   if (!askConfirmation) return;
+
+      //   const answer = await swal({
+      //     title: "Warning",
+      //     text:
+      //       "You are about to display a plot with more than 100 bins.\n" +
+      //       "This may take a while. Do you want to proceed?",
+      //     icon: "warning",
+      //     buttons: true,
+      //   });
+      //   console.log(answer);
+      // }
+
       // Alert the user if he decided to divide by more than 100 uniq values
-      if (this.coloredColumnIndex == null) {
-        if (this.bins > 100 && colX.type == String) {
-          swal({
-            title: "Warning",
-            text:
-              "You are about to display a plot with more than 100 bins.\n" +
-              "This may take a while. Do you want to proceed?",
-            icon: "warning",
-            buttons: true,
-          }).then((validate) => {
-            if (validate) this.drawPlot();
-          });
-        } else this.drawPlot();
+      if (this.bins > 100 && colX.type == String) {
+        if (!askConfirmation) return;
 
-        return;
-      }
-
-      let colColor = this.data.columns[this.coloredColumnIndex];
-
-      if (this.dividePerColor && colColor.uniques.length > 100) {
-        swal({
-          title: "Long calculation: do you want to proceed ?",
-          text: "Repartition plot: You appear to have selected more than 100 uniques color values. This may take a while !",
+        const answer = await swal({
+          title: "Warning",
+          text:
+            "You are about to display a plot with more than 100 bins.\n" +
+            "This may take a while, do you want to proceed?",
           icon: "warning",
           buttons: true,
           dangerMode: true,
-        }).then((validate) => {
-          if (validate) this.drawPlot();
         });
-      } else {
-        this.drawPlot();
+
+        if (answer !== true) return;
       }
+
+      if (this.coloredColumnIndex !== null) {
+        const colColor = this.data.columns[this.coloredColumnIndex];
+
+        if (this.dividePerColor && colColor.uniques.length > 100) {
+          if (!askConfirmation) return;
+
+          const answer2 = await swal({
+            title: "Long calculation: do you want to proceed ?",
+            text:
+              "Repartition plot: You appear to have selected more than 100 uniques color values.\n" +
+              "This may take a while, do you want to proceed?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          });
+
+          if (answer2 !== true) return;
+        }
+      }
+
+      this.drawPlot();
     },
 
     drawPlot() {
@@ -622,14 +644,14 @@ export default {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.setBins();
-      if (this.bins < 100) this.checkPlot();
+      if (this.bins < 100) this.checkPlot(false);
       else this.clearPlot();
     },
     secondAxisSelect(index) {
       this.secondColumnIndex = index;
       this.secondAxisSelection = false;
       this.dividePerColor = false;
-      this.checkPlot();
+      this.checkPlot(false);
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
@@ -640,7 +662,7 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -660,7 +682,7 @@ export default {
     coloredColumnIndex: function () {
       this.plotDrawn = false;
     },
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
   },

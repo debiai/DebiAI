@@ -55,7 +55,7 @@
               </div>
             </div>
             <button
-              class="orange"
+              style="margin: 3px;"
               @click="swap"
             >
               &#8593; Swap &#8595;
@@ -100,6 +100,7 @@
           id="drawBtn"
           @click="checkMatrix"
           :disabled="plotDrawn"
+          class="blue"
         >
           Draw
         </button>
@@ -560,7 +561,7 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -571,7 +572,7 @@ export default {
     selectedData() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
   },
@@ -607,12 +608,6 @@ export default {
 #groupByColor {
   flex-direction: column;
   margin: 10px;
-}
-#groupByColor .name {
-  border-radius: 10px 10px 0 0;
-}
-#groupByColor .value {
-  border-radius: 0 0 10px 10px;
 }
 #drawBtn {
   margin: 10px;

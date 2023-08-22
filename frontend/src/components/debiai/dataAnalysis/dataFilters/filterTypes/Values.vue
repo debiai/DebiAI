@@ -76,7 +76,7 @@
     </modal>
 
     <!-- Display values -->
-    <div
+    <button
       class="value"
       :class="!readOnly ? 'removable' : ''"
       v-for="(value, j) in filter.values"
@@ -85,7 +85,7 @@
       title="Remove the value form the filter"
     >
       {{ value }}
-    </div>
+    </button>
     <button
       @click="addValuePanel = true"
       v-if="!readOnly"
@@ -146,16 +146,11 @@ export default {
 
 .value {
   display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  padding: 5px 10px 5px 10px;
-  margin: 0 5px 0 5px;
-  border-radius: 5px;
-  transition: all 0.1s;
 }
 
 .removable:hover {
   cursor: pointer;
-  background: var(--danger);
-  color: white;
+  border-color: var(--danger);
+  color: var(--danger);
 }
 </style>

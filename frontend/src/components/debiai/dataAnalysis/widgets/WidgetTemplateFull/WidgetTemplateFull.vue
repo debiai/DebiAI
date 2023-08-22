@@ -407,7 +407,7 @@ export default {
       // Return the index of the column that is colored
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -419,7 +419,7 @@ export default {
       // A redraw btn will be displayed, pressing it will send redraw
       // that can watched and used to redraw a plot (see created())
     },
-    coloredColumnIndex: function () {
+    redrawRequired: function () {
       // The colored colum has changed
       // We cat tell the parent widget that an update is required
       this.$parent.colorWarning = true;

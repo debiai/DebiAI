@@ -62,15 +62,17 @@
     <!-- Widget Header -->
     <div
       id="widgetHeader"
-      :class="'title grid-stack-item-content ' + (startFiltering ? 'purple' : '')"
+      :class="widgetHeaderClass"
+      @mousedown="grabbing = true"
+      @mouseup="grabbing = false"
     >
       <!-- Name -->
       <h2 id="name">
         <!-- Widget filter position -->
         <span
           v-if="widgetFilterOrder >= 0"
-          title="Witget filtering order"
-          id="witgetFilteringOrder"
+          title="widget filtering order"
+          id="widgetFilteringOrder"
         >
           {{ widgetFilterOrder + 1 }}
         </span>
@@ -138,8 +140,8 @@
         <button
           v-if="localFilters.length > 0"
           id="filtersApplied"
-          class="warning"
           @click="showLocalFilters = true"
+          title="Filters applied to this widget on creation"
         >
           <span class="badge">{{ localFilters.length }}</span>
           <inline-svg
@@ -148,7 +150,7 @@
             height="12"
             fill="black"
           />
-          applied
+          Applied
         </button>
       </div>
 
@@ -156,7 +158,7 @@
       <div class="options">
         <!-- Comment btn -->
         <button
-          :class="'white ' + (commentModal ? 'highlighted' : '')"
+          :class="commentModal ? 'highlighted' : ''"
           title="Comment this widget"
           @click="commentModal = !commentModal"
         >
@@ -170,9 +172,9 @@
         <!-- export btn -->
         <button
           v-if="exportData !== null"
-          class="white aligned"
+          class="aligned"
           title="Export widget data"
-          style="width: 60px"
+          style="width: 75px"
           @click="startExport"
         >
           Export
@@ -185,7 +187,6 @@
         <!-- export image btn -->
         <button
           v-if="canExportImage"
-          class="white"
           title="Download an image of the plot"
           @click="downloadImage"
           :disabled="loading"
@@ -199,23 +200,21 @@
         <!-- filtering ongoing btn -->
         <button
           v-if="canFilterSamples && startFiltering"
-          class="purple highlighted"
+          class="highlighted"
           style="width: 85px"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
         >
+          Filtering
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
-            fill="white"
           />
-          Filtering
         </button>
         <!-- start filtering btn -->
         <button
           v-if="canFilterSamples && !startFiltering"
-          class="purple"
           :title="'Start filtering samples with the ' + title + ' widget'"
           @click="startFiltering = !startFiltering"
         >
@@ -223,13 +222,13 @@
             :src="require('@/assets/svg/filter.svg')"
             width="14"
             height="14"
-            fill="white"
+            fill="black"
           />
         </button>
         <!-- save configuration btn -->
         <button
           v-if="canSaveConfiguration"
-          :class="'info ' + (confAsChanged ? 'highlighted' : '')"
+          :class="confAsChanged ? 'highlighted' : ''"
           :title="'Save ' + title + ' widget configuration'"
           @click="saveConfiguration"
         >
@@ -237,12 +236,10 @@
             :src="require('@/assets/svg/save.svg')"
             width="14"
             height="14"
-            style="filter: invert(95%)"
           />
         </button>
         <!-- Copy btn -->
         <button
-          class="green"
           :title="'Duplicate the ' + title + ' widget'"
           @click="copy"
         >
@@ -250,12 +247,12 @@
             :src="require('@/assets/svg/copy.svg')"
             width="14"
             height="14"
-            fill="white"
+            fill="black"
           />
         </button>
         <!-- Settings btn -->
         <button
-          class="warning"
+          class="settings blue"
           :title="title + ' settings'"
           @click="settings"
         >
@@ -320,6 +317,7 @@ export default {
       selectedDataWarning: false,
       loading: false,
       error_msg: null,
+      grabbing: false,
 
       // Configurations
       canSaveConfiguration: false,
@@ -580,6 +578,14 @@ export default {
     },
   },
   computed: {
+    // Css
+    widgetHeaderClass() {
+      let baseClass = "title grid-stack-item-content";
+      if (this.startFiltering) baseClass += " filtering";
+      if (this.grabbing) baseClass += " grabbing";
+      return baseClass;
+    },
+
     // Filters
     widgetFilters() {
       return this.$store.state.StatisticalAnalysis.filters.filter(
@@ -622,25 +628,24 @@ export default {
 <style lang="scss" scoped>
 .card {
   height: 98%;
-}
 
-.card .title {
-  display: flex;
-  cursor: grab;
-  transition: background-color 0.2s;
-}
+  &:hover {
+    .options {
+      opacity: 1;
+      transition: opacity 0.1s;
+    }
+  }
 
-#widgetHeader {
-  color:rgb(105, 105, 105);
-  background: rgb(230, 230, 230);
-}
+  .title {
+    display: flex;
+    cursor: grab;
+    transition: background-color 0.2s;
+    padding: 3px 10px;
 
-.card .title:active {
-  cursor: grabbing;
-}
-
-.card .title.purple {
-  background-color: var(--virtual);
+    &.grabbing {
+      cursor: grabbing;
+    }
+  }
 }
 
 #name {
@@ -655,12 +660,13 @@ export default {
   text-decoration: underline;
 }
 
-#name #witgetFilteringOrder {
-  border: white 1px solid;
+#name #widgetFilteringOrder {
+  border: grey 2px solid;
   border-radius: 20px;
   padding: 2px 1px 0px 4px;
-  margin-right: 5px;
+  margin-right: 10px;
   font-size: 0.8em;
+  font-weight: bold;
 }
 
 /* Options */
@@ -672,21 +678,18 @@ export default {
 
   button {
     width: 35px;
-    padding: 2px 0px 2px 0px;
+    height: 25px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  button.warning {
+  button.settings {
     width: 70px;
   }
 
   button + button {
     margin-left: 5px;
-  }
-}
-
-.card:hover {
-  .options {
-    opacity: 1;
-    transition: opacity 0.1s;
   }
 }
 
@@ -703,7 +706,6 @@ export default {
   .updateWarning {
     display: flex;
     align-items: center;
-    color: var(--warning);
     padding: 0px 8px 0px 8px;
   }
 

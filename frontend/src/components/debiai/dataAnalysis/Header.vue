@@ -64,7 +64,6 @@
     <!-- Add widget button -->
     <button
       id="addWidgetButton"
-      class="simple"
       @click="$emit('addWidget')"
     >
       <inline-svg
@@ -89,7 +88,7 @@
       Color
       <button
         @click="selectColoredCol = true"
-        class="simple filled"
+        class="blue"
         title="Change the analysis colored column"
       >
         {{ data.columns.find((c) => c.index == coloredColumnIndex).label }}
@@ -107,7 +106,6 @@
       Color
       <button
         @click="selectColoredCol = true"
-        class="simple empty"
         title="Select the analysis colored column"
       >
         <inline-svg
@@ -135,14 +133,13 @@
       <button
         @click="filtersMenu = true"
         id="filtersMenu"
-        class="simple"
         title="Global filters"
+        :class="$store.state.StatisticalAnalysis.filters.length > 0 ? 'blue' : ''"
       >
         <inline-svg
           :src="require('@/assets/svg/filter.svg')"
           width="20"
           height="20"
-          :fill="$store.state.StatisticalAnalysis.filters.length ? 'var(--primary)' : 'black'"
           style="margin-right: 3px"
         />
         <span
@@ -215,7 +212,7 @@ export default {
   justify-content: space-between;
   gap: 50px;
 
-  background-color: #f6f6f6;
+  background-color: var(--greyLight);
   border-bottom: solid #a8a8a8 2px;
 
   button {
@@ -223,7 +220,8 @@ export default {
   }
 
   img {
-    margin-left: 10px;
+    margin-left: 15px;
+    padding-top: 5px;
   }
 
   #logoAndName {
@@ -257,12 +255,6 @@ export default {
     display: flex;
     align-items: center;
     gap: 20px;
-
-    &.filters {
-      #filtersMenu {
-        border-color: var(--primary);
-      }
-    }
   }
 
   #addWidgetButton {
@@ -289,11 +281,6 @@ export default {
   }
 
   #filtersMenu {
-    // border: none;
-    // border: solid black 1px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
     svg {
       padding: 0px 5px 0px 8px;
     }
@@ -308,22 +295,15 @@ export default {
   gap: 15px;
   font-size: 1em;
   padding: 0px 10px;
-  color:grey;
+  color: var(--fontColorLight);
 
   button {
     padding-left: 15px;
     padding-right: 15px;
-    &.filled {
-      color: var(--primary);
-      border-color: var(--primary);
-      font-weight: bold;
-    }
-    &.empty {
-      width: 50px;
-      svg {
-        // Rotate
-        transform: rotate(45deg);
-      }
+    min-width: 50px;
+    svg {
+      // Rotate
+      transform: rotate(45deg);
     }
   }
 }

@@ -125,7 +125,6 @@ export default {
   color: white;
   font-weight: bold;
   text-align: center;
-  border-radius: 5px;
   padding: 5px;
 }
 #columnLabel.valueCol {

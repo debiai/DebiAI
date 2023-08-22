@@ -12,7 +12,7 @@
       <ColumnSelection
         title="Select the X axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
@@ -27,7 +27,7 @@
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
@@ -42,7 +42,7 @@
       <ColumnSelection
         title="Select the point size axis"
         :data="data"
-        :validateRequiered="false"
+        :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
         v-on:cancel="sizeAxisSelection = false"
@@ -118,7 +118,7 @@
         >
           <!-- Draw -->
           <button
-            class="drawBtn"
+            class="drawBtn blue"
             @click="pointPlot"
             v-if="!pointPlotDrawn"
           >
@@ -158,7 +158,6 @@
               v-else
             >
               <button
-                class="blue"
                 @click="sizeAxisSelection = true"
               >
                 Select an axis
@@ -185,25 +184,24 @@
           <div class="data">
             <span class="name">Point opacity</span>
             <div class="value">
-              <div style="flex: 1">
-                Auto :
-                <input
-                  type="checkbox"
-                  v-model="autoPointOpacity"
-                />
-              </div>
-
-              <span class="name">Opacity</span>
-              <div class="value">
-                <input
-                  type="number"
-                  v-if="!autoPointOpacity"
-                  v-model="pointOpacity"
-                  :step="0.05"
-                  :min="0.01"
-                  :max="1"
-                />
-                <div v-else>{{ Math.round(pointOpacity * 1000) / 1000 }}</div>
+              Auto:
+              <input
+                type="checkbox"
+                v-model="autoPointOpacity"
+              />
+              <input
+                type="number"
+                v-if="!autoPointOpacity"
+                v-model="pointOpacity"
+                :step="0.05"
+                :min="0.01"
+                :max="1"
+              />
+              <div
+                v-else
+                style="padding-left: 10px"
+              >
+                {{ Math.round(pointOpacity * 1000) / 1000 }}
               </div>
             </div>
           </div>
@@ -216,7 +214,7 @@
         >
           <!-- Draw -->
           <button
-            class="drawBtn orange"
+            class="drawBtn blue"
             @click="checkLinePlot"
             v-if="!linePlotDrawn"
           >
@@ -1224,7 +1222,7 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -1251,7 +1249,7 @@ export default {
       if (!this.$parent.startFiltering && (this.pointPlotDrawn || this.linePlotDrawn))
         this.$parent.selectedDataWarning = true;
     },
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
   },

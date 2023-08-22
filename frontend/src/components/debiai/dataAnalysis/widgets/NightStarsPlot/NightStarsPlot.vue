@@ -9,7 +9,15 @@
       @close="settings = false"
     >
       <div id="settings">
-        <h3>Night stars plot settings</h3>
+        <h3 class="aligned spaced">
+          Night stars plot settings
+          <button
+            class="red"
+            @click="settings = false"
+          >
+            Close
+          </button>
+        </h3>
         <div id="axisControls">
           <!-- Axis buttons -->
           <div class="dataGroup axis">
@@ -94,6 +102,7 @@
           <button
             id="drawBtn"
             @click="checkPlot"
+            class="blue"
           >
             Draw
           </button>
@@ -460,47 +469,28 @@ export default {
 };
 </script>
 
-<style scoped>
-#pointPlot {
+<style lang="scss" scoped>
+#settings {
   display: flex;
   flex-direction: column;
-}
-
-.title h2 {
-  margin-left: 10px;
-}
-
-#settings {
-  text-align: left;
+  gap: 10px;
 }
 
 /* Controls */
 #axisControls {
   display: flex;
-}
-#statisticalControls {
-  display: flex;
-}
-#statisticalControls #inputs {
-  flex: 1;
-  display: flex;
-  justify-content: space-evenly;
-}
-.dataGroup {
-  margin: 10px;
-  margin-bottom: 0px;
-}
-#dividePerColor {
-  margin-top: 10px;
+  gap: 10px;
+
+  #inputs {
+    flex: 1;
+    display: flex;
+    justify-content: space-evenly;
+  }
 }
 
-.otherControls {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
 .axis {
   flex: 1;
+  gap: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -511,9 +501,6 @@ export default {
 }
 
 #drawBtn {
-  margin: 10px;
   width: 80px;
-  margin-left: 0px;
-  margin-bottom: 0px;
 }
 </style>

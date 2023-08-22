@@ -30,15 +30,11 @@ export default {
   padding: 0.2rem 0.5rem;
   font-size: 0.9em;
   font-weight: bold;
-  border-radius: 0.5rem;
-  border: 2px solid;
 }
 .status.available {
   color: var(--success);
-  border-color: var(--success);
 }
 .status.notavailable {
   color: var(--danger);
-  border-color: var(--danger);
 }
 </style>

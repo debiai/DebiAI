@@ -170,7 +170,6 @@
               v-else
             >
               <button
-                class="blue"
                 @click="tagAxisSelection = true"
               >
                 Select a column
@@ -202,8 +201,8 @@
       <!-- Draw -->
       <button
         id="drawBtn"
+        class="blue"
         @click="drawPlot"
-        :disabled="plotDrawn"
       >
         Draw
       </button>
@@ -807,7 +806,7 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -818,7 +817,7 @@ export default {
     selectedData() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
     multipleYAxis() {

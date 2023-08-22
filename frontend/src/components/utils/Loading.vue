@@ -54,6 +54,7 @@
         <button
           v-if="req.cancellable"
           @click="cancelRequest(req)"
+          class="blue"
         >
           Cancel
         </button>
@@ -127,7 +128,7 @@ export default {
   margin-bottom: 4px;
   padding: 4px;
   color: #fff;
-  background-color: var(--info);
+  background-color: var(--blue);
   border-radius: 5px;
   transition: all 0.1s;
 

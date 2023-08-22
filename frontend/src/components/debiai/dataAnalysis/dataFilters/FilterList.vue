@@ -122,8 +122,6 @@ export default {
 #filterList .widget {
   flex-direction: row;
   align-items: center;
-  /* box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); */
-  /* margin-bottom: 10px; */
 }
 #filterList .widget .widgetName {
   writing-mode: vertical-rl;

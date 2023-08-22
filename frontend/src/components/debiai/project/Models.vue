@@ -12,7 +12,7 @@
         </h2>
         <span style="display: flex; align-items: center">
           <button
-            class="info"
+            class="blue"
             @click="selectAll"
           >
             All
@@ -20,7 +20,7 @@
           <button
             class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
@@ -193,7 +193,7 @@ export default {
       this.selectedModelIds = this.project.models.map((m) => m.id);
       this.$emit("modelSelected", this.selectedModelIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedModelIds = [];
       this.$emit("modelSelected", this.selectedModelIds);
     },
@@ -252,7 +252,6 @@ export default {
   flex-direction: column;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   transition: height 0.2s;
   height: 0%;

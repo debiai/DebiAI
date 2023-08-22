@@ -95,13 +95,16 @@
           height="20"
           style="margin: 0 5px 0 15px"
         />
-        <span id="algoName">
+        <span
+          id="algoName"
+          class="tag"
+        >
           {{
             algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
           }}
         </span>
         <span style="padding: 0 10px"> from </span>
-        <span>{{ algoProvider.name }}</span>
+        <span class="tag">{{ algoProvider.name }}</span>
       </div>
 
       <button
@@ -115,6 +118,7 @@
       {{ algorithm.description }}
     </div>
 
+    <!-- Experiments -->
     <div id="content">
       <transition-group name="fade">
         <div
@@ -339,7 +343,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #experiments {
   width: 75vw;
   height: 75vh;
@@ -349,101 +353,89 @@ export default {
 
 #info {
   font-size: 1.3em;
+
+  #title {
+    display: flex;
+    align-items: center;
+  }
 }
-#info #title {
-  display: flex;
-  align-items: center;
-}
-#info #algoName {
-  font-weight: bold;
-  color: #636363;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 2px 5px;
-}
+
 #description {
   margin: 10px 0 10px 0;
   text-align: left;
-  color: #898989;
+  color: var(--fontColorLight);
 }
 
 #content {
   display: flex;
-  justify-content: space-between;
   gap: 10px;
   padding-top: 20px;
-}
-#content {
-  display: flex;
   flex-direction: column;
   justify-content: flex-start;
   overflow: auto;
   flex: 1;
-}
 
-#content .experiment {
-  display: flex;
-  flex-direction: column;
+  .experiment {
+    display: flex;
+    flex-direction: column;
 
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 3px;
-  margin-bottom: 10px;
-}
-#content .experiment .experiment-title {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 5px;
-  font-size: 0.9em;
-  color: #909090;
-}
+    border: solid 1px var(--fontColorLight);
+    border-radius: 4px;
+    padding: 13px;
+    margin-bottom: 10px;
 
-.experiment .top {
-  padding-bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.experiment button {
-  padding: 0 5px 0 5px;
-  font-size: 0.8em;
-}
-.experiment .results,
-.experiment .inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
+    .experiment-title {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+      color: var(--fontColorLight);
+    }
 
-.experiment .results .result,
-.experiment .inputs .input {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 3px 7px 3px 7px;
-  gap: 15px;
-}
-.experiment .results .result .name,
-.experiment .inputs .input .name {
-  white-space: nowrap;
-}
+    .top {
+      padding-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-.experiment .results .result .value,
-.experiment .inputs .input .value {
-  border: 1px solid #ccc;
-  padding: 2px 7px 2px 7px;
-  border-radius: 4px;
-  max-width: 250px;
-  max-height: 50px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.experiment .results .result button {
-  margin-left: auto;
+    .results,
+    .inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .results .result,
+    .inputs .input {
+      display: flex;
+      align-items: center;
+      border: solid 1px var(--fontColorLight);
+      border-radius: 4px;
+      padding: 3px 7px 3px 7px;
+      gap: 15px;
+    }
+    .results .result .name,
+    .inputs .input .name {
+      white-space: nowrap;
+    }
+
+    .results .result .value,
+    .inputs .input .value {
+      border: solid 1px var(--fontColorLight);
+      padding: 2px 7px 2px 7px;
+      border-radius: 4px;
+      max-width: 250px;
+      max-height: 50px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .results .result button {
+      margin-left: auto;
+    }
+  }
 }
 
 #columnCreationModal {

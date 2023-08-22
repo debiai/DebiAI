@@ -20,7 +20,7 @@
 
       <div class="controls">
         <button
-          class="info"
+          class="blue"
           @click="$emit('viewExperiments')"
           v-if="nbExperiments > 0"
         >
@@ -28,7 +28,6 @@
           Experiments
         </button>
         <button
-          class="green"
           @click="$emit('useAlgo')"
         >
           Use algorithm
@@ -52,7 +51,7 @@
         }}
       </h4>
       <p
-        class="version"
+        class="version tag"
         v-if="algorithm.version !== null && algorithm.version !== undefined"
       >
         {{ algorithm.version }}
@@ -87,12 +86,12 @@
             <div class="name">
               {{ input.name }}
               <span
-                class="parameterType"
+                class="parameterType tag"
                 v-if="input.type == 'array'"
                 >Array of {{ input.arrayType }}s</span
               >
               <span
-                class="parameterType"
+                class="parameterType tag"
                 v-else
                 >{{ input.type }}</span
               >
@@ -121,12 +120,12 @@
             <p>
               {{ output.name }}
               <span
-                class="parameterType"
+                class="parameterType tag"
                 v-if="output.type == 'array'"
                 >Array of {{ output.arrayType }}s</span
               >
               <span
-                class="parameterType"
+                class="parameterType tag"
                 v-else
                 >{{ output.type }}</span
               >
@@ -189,7 +188,7 @@ export default {
 
 <style scoped>
 .algorithm {
-  border: 1px solid #ccc;
+  border: 1px solid var(--greyDark);
   border-radius: 4px;
   padding: 20px;
   margin-bottom: 20px;
@@ -211,13 +210,7 @@ export default {
   gap: 5px;
   margin-bottom: 10px;
 }
-.top .tags .tag {
-  border: solid 1px var(--white);
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.9em;
-  color: var(--white);
-}
+
 /* Header */
 .header {
   margin: 0;
@@ -232,22 +225,17 @@ export default {
   font-size: 1.1em;
 }
 .header .version {
-  font-size: 0.8em;
-  color: #999;
-  border: 1px solid #999;
-  border-radius: 4px;
-  padding: 2px 4px;
   margin: 0;
 }
 .header .description {
   flex: 5;
-  color: #909090;
+  color: var(--fontColorLight);
   min-width: 200px;
   margin: 0;
 }
 .header .author {
-  font-size: 0.8em;
-  color: #999;
+  color: var(--fontColorLight);
+  padding: 5px;
 }
 
 /* Content */
@@ -267,7 +255,7 @@ export default {
   width: 50px;
 }
 .content .section .description {
-  color: #909090;
+  color: var(--fontColorLight);
   font-size: 0.8em;
 }
 
@@ -278,7 +266,7 @@ export default {
   padding-bottom: 10px;
 }
 .parameter {
-  border: 1px solid #ccc;
+  border: 1px solid var(--greyDark);
   border-radius: 4px;
   padding: 6px;
   min-width: 150px;
@@ -297,12 +285,5 @@ export default {
 }
 .parameter p {
   margin: 4px;
-}
-.parameterType {
-  color: #909090;
-  border: 1px solid #ccc;
-  padding: 0 2px 0 2px;
-  border-radius: 4px;
-  font-size: 0.8em;
 }
 </style>

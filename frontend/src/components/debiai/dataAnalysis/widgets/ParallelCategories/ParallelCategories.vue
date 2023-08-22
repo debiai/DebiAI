@@ -220,7 +220,7 @@ export default {
     },
   },
   computed: {
-    redrawRequiered() {
+    redrawRequired() {
       return !(
         this.currentDrawnColorIndex !== this.$store.state.StatisticalAnalysis.coloredColumnIndex &&
         !this.settings &&
@@ -229,7 +229,7 @@ export default {
     },
   },
   watch: {
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
     selectedData() {

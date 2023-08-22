@@ -117,6 +117,7 @@
           </div>
         </div>
       </div>
+
       <!-- Smooth option -->
       <div class="data">
         <span class="name">Smooth</span>
@@ -137,9 +138,12 @@
           </label>
         </div>
       </div>
+
+      <!-- Draw button -->
       <button
         :disabled="intervalPlotDrawn"
         @click="updateTraces"
+        class="blue"
       >
         Draw
       </button>
@@ -453,10 +457,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #intervalPlot {
   display: flex;
   flex-direction: column;
+
+  #settings {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+  }
 }
 
 /* axisSelection */

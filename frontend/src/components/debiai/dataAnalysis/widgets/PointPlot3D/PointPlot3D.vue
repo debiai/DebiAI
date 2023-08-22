@@ -90,26 +90,20 @@
             <div class="data">
               <div class="name">Scatter point opacity</div>
               <div class="value">
-                <div style="flex: 1">
-                  Auto :
-                  <input
-                    type="checkbox"
-                    v-model="autoPointOpacity"
-                  />
-                </div>
-
-                <div class="name">opacity :</div>
-                <div class="value">
-                  <input
-                    type="number"
-                    v-if="!autoPointOpacity"
-                    v-model="pointOpacity"
-                    :step="0.05"
-                    :min="0.01"
-                    :max="1"
-                  />
-                  <div v-else>{{ Math.round(pointOpacity * 1000) / 1000 }}</div>
-                </div>
+                Auto:
+                <input
+                  type="checkbox"
+                  v-model="autoPointOpacity"
+                />
+                <input
+                  type="number"
+                  v-if="!autoPointOpacity"
+                  v-model="pointOpacity"
+                  :step="0.05"
+                  :min="0.01"
+                  :max="1"
+                />
+                <div v-else>{{ Math.round(pointOpacity * 1000) / 1000 }}</div>
               </div>
             </div>
             <div class="data">
@@ -129,8 +123,8 @@
         <!-- Draw -->
         <button
           id="drawBtn"
+          class="blue"
           @click="drawPlot"
-          :disabled="plotDrawn"
         >
           Draw
         </button>
@@ -387,7 +381,7 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
-    redrawRequiered() {
+    redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
   },
@@ -409,7 +403,7 @@ export default {
     coloredColumnIndex: function () {
       this.plotDrawn = false;
     },
-    redrawRequiered(o, n) {
+    redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
   },
@@ -430,14 +424,7 @@ export default {
 #axisControls {
   display: flex;
 }
-#statisticalControls {
-  display: flex;
-}
-#statisticalControls #inputs {
-  flex: 1;
-  display: flex;
-  justify-content: space-evenly;
-}
+
 .dataGroup {
   margin: 10px;
   margin-bottom: 0px;
@@ -448,6 +435,10 @@ export default {
   justify-content: space-around;
   flex-wrap: wrap;
 }
+.otherControls input {
+  width: 70px;
+}
+
 .axis {
   flex: 1;
   display: flex;

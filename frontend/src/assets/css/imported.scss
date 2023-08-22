@@ -45,15 +45,11 @@
   margin: -18px;
   width: 56px;
   height: 56px;
-  background: var(--secondary);
+  background: white;
   border-radius: 50%;
   transform: scale(0);
   opacity: 1;
   pointer-events: none;
-}
-
-.customCbx:checked + .toggle::before {
-  background: #ec9464;
 }
 
 .customCbx:checked + .toggle span {
@@ -70,20 +66,28 @@
 }
 
 /* Swal */
+.swal-button {
+  background-color: var(--greyLight);
+  border: 2px solid var(--greyDark);
+  color: var(--fontColor);
 
-.swal-title {
-  /* margin: 0px;
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.21);
-  margin-bottom: 28px; */
-  font-family: sans-serif;
-}
+  &.red,
+  &.swal-button--no {
+    border-color: var(--danger);
+    color: var(--danger);
 
-.swal-text {
-  font-family: sans-serif;
-}
+    &:hover {
+      background-color: var(--greyLight);
+    }
+  }
+  
+  &.swal-button--yes,
+  &.swal-button--confirm {
+    border-color: var(--success);
+    color: var(--success);
 
-/* Floating menu */
-
-.fab-tooltip.tooltip .tooltip-inner {
-  border-radius: 4px !important;
+    &:hover {
+      background-color: var(--greyLight);
+    }
+  }
 }

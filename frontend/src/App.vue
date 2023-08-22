@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import "./assets/css/main.css";
-import "./assets/css/imported.css";
+import "./assets/css/main.scss";
+import "./assets/css/imported.scss";
 import Messenger from "./components/utils/Messenger.vue";
 import Loading from "./components/utils/Loading";
 
@@ -29,7 +29,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: var(--fontColor);
 }
 #content {
   height: 100%;

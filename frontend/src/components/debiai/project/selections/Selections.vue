@@ -62,7 +62,7 @@
             Requests
           </button> -->
           <button
-            class="info"
+            class="blue"
             @click="selectAll"
           >
             All
@@ -294,7 +294,6 @@ export default {
   flex-direction: column;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   transition: height 0.2s;
   height: 0%; /* Do not remove, very important for some reason */
