@@ -154,7 +154,6 @@
 <script>
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.css";
-import fab from "vue-fab"; // For the bubble floating menu
 
 // Widget
 import Widget from "./widget/Widget";
@@ -193,9 +192,6 @@ export default {
     Algorithms,
     Layouts,
     WidgetCatalog,
-
-    // Other
-    fab, // (Floating Action Button)
   },
   data() {
     return {
@@ -741,10 +737,6 @@ export default {
 .grid-stack-item {
   overflow: hidden;
 }
-
-.ui-resizable-handle {
-  z-index: 2 !important;
-}
 </style>
 
 <style>
@@ -760,7 +752,7 @@ export default {
 
 .grid-stack {
   margin-left: 80px; /* Width of Sidebar */
-  background-color: lightgray;
+  background-color: var(--greyLight);
 }
 
 .grid-stack-placeholder {
@@ -770,6 +762,6 @@ export default {
 }
 
 .ui-resizable-handle {
-  z-index: 2;
+  z-index: 0 !important;
 }
 </style>
