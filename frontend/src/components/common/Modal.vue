@@ -54,7 +54,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 #modal {
   z-index: 5;
   position: fixed;
@@ -62,7 +62,7 @@ export default {
   width: 100vw;
   left: 0%;
   top: 0%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
 
   overflow: auto;
   display: flex;
@@ -72,22 +72,23 @@ export default {
   backdrop-filter: blur(1px);
 
   animation: fadeIn 0.1s;
-}
-#modal:hover {
-  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 #Panel {
   max-height: 90vh;
   max-width: 90vw;
-  padding: 3vh;
-  background-color: rgb(250, 250, 250);
-  border-radius: 1vh;
+  padding: 30px;
+  background-color: var(--greyLight);
+  border-radius: 4px;
   overflow: auto;
-}
 
-#Panel:hover {
-  cursor: default;
+  &:hover {
+    cursor: default;
+  }
 }
 
 #errors {
@@ -96,11 +97,12 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-#errors .error {
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 10px;
+
+  .error {
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 10px;
+  }
 }
 </style>

@@ -99,17 +99,15 @@ export default {
 <style lang="scss" scoped>
 .collapsible {
   border: 1px solid #00000027;
-  border-radius: 4px;
 
   .header {
     padding: 9px 12px;
-
     min-height: 20px;
     border-bottom: 1px solid #00000027;
 
     cursor: pointer;
-    background-color: #0000000d;
-    color: #0000008a;
+    background-color: var(--greyLight);
+    color: var(--fontColorLight);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -123,6 +121,7 @@ export default {
 
     #arrow {
       transform: rotate(0deg);
+      transform: translateY(-2px);
       transition: transform 0.2s ease-out;
     }
 
@@ -153,10 +152,6 @@ export default {
         background-color: var(--danger);
       }
     }
-  }
-  .body {
-    border-bottom: 1px solid #00000027;
-    border-radius: 0 0 4px 4px;
   }
 }
 </style>
