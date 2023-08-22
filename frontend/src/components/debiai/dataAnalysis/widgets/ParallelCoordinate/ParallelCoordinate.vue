@@ -3,16 +3,21 @@
     id="parCoord"
     class="dataVisualizationWidget"
   >
-    <ColumnSelection
-      v-show="settings"
-      title="Select the columns to display in the parallel coordinates plot"
-      :data="data"
-      :cancelAvailable="selectedColumnsIds.length > 0"
-      :colorSelection="true"
-      :defaultSelected="selectedColumnsIds"
-      v-on:cancel="settings = false"
-      v-on:validate="validateSettings"
-    />
+    <!-- Settings -->
+    <modal
+      v-if="settings"
+      @close="settings = false"
+    >
+      <ColumnSelection
+        title="Select the columns to display in the parallel coordinates plot"
+        :data="data"
+        :cancelAvailable="selectedColumnsIds.length > 0"
+        :colorSelection="true"
+        :defaultSelected="selectedColumnsIds"
+        v-on:cancel="settings = false"
+        v-on:validate="validateSettings"
+      />
+    </modal>
     <div
       class="plot"
       :id="'PCDiv' + index"
@@ -38,7 +43,7 @@ export default {
   },
   data() {
     return {
-      settings: true,
+      settings: false,
       selectedColumnsIds: [],
       currentDrawnColorIndex: null,
     };

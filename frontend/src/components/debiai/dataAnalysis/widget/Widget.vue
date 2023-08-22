@@ -13,7 +13,7 @@
         :widgetKey="widgetKey"
         @cancel="confSettings = false"
         @saved="confSaved"
-        @confSelected="setConf"
+        @confSelected="(conf) => setConf(conf, false)"
         @setWidgetName="setName"
       />
     </modal>
@@ -372,7 +372,7 @@ export default {
         if ("getImage" in slotCom.componentInstance) this.canExportImage = true;
 
         // Apply given configuration
-        if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration);
+        if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
         this.loading = false;
       } else {
         // No component instance
@@ -439,9 +439,9 @@ export default {
     },
 
     // configuration
-    setConf(configuration) {
+    setConf(configuration, onStartup = false) {
       let slotCom = this.$slots.default[0];
-      slotCom.componentInstance.setConf(configuration.configuration);
+      slotCom.componentInstance.setConf(configuration.configuration, { onStartup: onStartup });
       if (configuration.name) this.name = configuration.name;
       else this.name = this.title;
       this.confSettings = false;

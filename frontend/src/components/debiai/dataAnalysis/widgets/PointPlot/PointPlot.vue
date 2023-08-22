@@ -3,6 +3,296 @@
     id="pointPlot"
     class="dataVisualizationWidget"
   >
+    <!-- Settings -->
+    <modal
+      v-if="settings"
+      @close="settings = false"
+    >
+      <div id="settings">
+        <h3 class="aligned spaced">
+          Point plot settings
+          <button
+            class="red"
+            @click="settings = false"
+          >
+            Close
+          </button>
+        </h3>
+
+        <!-- Axis selections -->
+        <div
+          id="axisSelection"
+          class="dataGroup"
+        >
+          <!-- X axis -->
+          <div class="data">
+            <span class="name">X axis</span>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnXindex)"
+                :colorSelection="true"
+                v-on:selected="xAxisSelection = true"
+              />
+            </div>
+          </div>
+          <!-- Swap axis -->
+          <button
+            class="warning"
+            id="swapBtn"
+            @click="swap"
+          >
+            Swap
+          </button>
+          <!-- Y axis -->
+          <div class="data">
+            <span class="name">Y axis</span>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnYindex)"
+                :colorSelection="true"
+                v-on:selected="yAxisSelection = true"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2D points & lite plot specific controls -->
+        <div id="plotControls">
+          <!-- 2d Point Plot Controls -->
+          <div
+            id="2dPointPlotControls"
+            class="dataGroup"
+          >
+            <!-- Draw -->
+            <button
+              class="drawBtn blue"
+              @click="pointPlot"
+              v-if="!pointPlotDrawn"
+            >
+              Draw 2D points
+            </button>
+            <button
+              class="drawBtn warning"
+              @click="clearPointPlot"
+              v-else
+            >
+              Erase 2D points
+            </button>
+            <!-- Point size axis -->
+            <div class="data">
+              <span class="name">Point size axis</span>
+              <div
+                class="value"
+                v-if="columnSizeIndex !== null"
+              >
+                <Column
+                  :column="data.columns.find((c) => c.index == columnSizeIndex)"
+                  :colorSelection="true"
+                  v-on:selected="sizeAxisSelection = true"
+                />
+                <button
+                  class="red"
+                  @click="
+                    columnSizeIndex = null;
+                    pointPlotDrawn = false;
+                  "
+                >
+                  Remove
+                </button>
+              </div>
+              <div
+                class="value"
+                v-else
+              >
+                <button @click="sizeAxisSelection = true">Select an axis</button>
+              </div>
+            </div>
+            <!-- Max point Size -->
+            <div
+              class="data"
+              v-if="columnSizeIndex !== null"
+            >
+              <span class="name">Max point Size</span>
+              <div class="value">
+                <input
+                  type="number"
+                  v-model="maxPointSize"
+                  :min="1"
+                  :step="5"
+                  @change="pointPlotDrawn = false"
+                />
+              </div>
+            </div>
+            <!-- Point opacity -->
+            <div class="data">
+              <span class="name">Point opacity</span>
+              <div class="value">
+                Auto:
+                <input
+                  type="checkbox"
+                  v-model="autoPointOpacity"
+                />
+                <input
+                  type="number"
+                  v-if="!autoPointOpacity"
+                  v-model="pointOpacity"
+                  :step="0.05"
+                  :min="0.01"
+                  :max="1"
+                />
+                <div
+                  v-else
+                  style="padding-left: 10px"
+                >
+                  {{ Math.round(pointOpacity * 1000) / 1000 }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- line Plot Controls -->
+          <div
+            id="linePlotControls"
+            class="dataGroup"
+          >
+            <!-- Draw -->
+            <button
+              class="drawBtn blue"
+              @click="checkLinePlot"
+              v-if="!linePlotDrawn"
+            >
+              Draw statistics
+            </button>
+            <button
+              v-else
+              class="drawBtn warning"
+              @click="clearLinePlot"
+            >
+              Clear statistics
+            </button>
+            <!-- Bins -->
+            <div class="data">
+              <span class="name">Bins</span>
+              <div class="value">
+                <input
+                  type="number"
+                  v-model="bins"
+                  :min="1"
+                  @change="linePlotDrawn = false"
+                />
+              </div>
+            </div>
+            <!-- Display average as bar -->
+            <div class="data">
+              <span class="name">Display as bar</span>
+              <div class="value">
+                <input
+                  type="checkbox"
+                  :id="'averageAsBar' + index"
+                  class="customCbx"
+                  style="display: none"
+                  v-model="averageAsBar"
+                />
+                <label
+                  :for="'averageAsBar' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
+              </div>
+            </div>
+            <!-- Display null values -->
+            <div
+              class="data"
+              v-if="!averageAsBar"
+            >
+              <span class="name">Display null values</span>
+              <div class="value">
+                <input
+                  type="checkbox"
+                  :id="'displayNull' + index"
+                  class="customCbx"
+                  style="display: none"
+                  v-model="displayNull"
+                  @change="updateTraces()"
+                />
+                <label
+                  :for="'displayNull' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2D points & lite plot common controls -->
+        <div
+          id="commonControls"
+          class="dataGroup"
+        >
+          <!-- Groub by color -->
+          <div
+            class="data"
+            v-if="coloredColumnIndex != null"
+          >
+            <span class="name">Groub by color</span>
+            <div class="value">
+              <input
+                type="checkbox"
+                :id="'dividePerColorCbxPointPlot' + index"
+                class="customCbx"
+                v-model="dividePerColor"
+                style="display: none"
+              />
+              <label
+                :for="'dividePerColorCbxPointPlot' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+            </div>
+          </div>
+          <!-- Absolute value -->
+          <div class="data">
+            <span class="name">Absolute value</span>
+            <div class="value">
+              <input
+                type="checkbox"
+                :id="'absolute' + index"
+                class="customCbx"
+                v-model="absolute"
+                style="display: none"
+              />
+              <label
+                :for="'absolute' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+            </div>
+          </div>
+          <!-- Fixe ranges -->
+          <button
+            style="margin: 2px"
+            class="warning"
+            @click="axisRangeModal = !axisRangeModal"
+            v-if="!axisXAuto || !axisYAuto"
+          >
+            Edit the axis ranges
+          </button>
+          <button
+            style="margin: 2px"
+            @click="axisRangeModal = !axisRangeModal"
+            v-else
+          >
+            Set the axis ranges
+          </button>
+        </div>
+      </div>
+    </modal>
+
     <!-- Modals -->
     <!-- Xcol selection -->
     <modal
@@ -67,288 +357,6 @@
       />
     </modal>
 
-    <!-- Settings -->
-    <div
-      id="settings"
-      v-if="settings"
-    >
-      <!-- Axis selections -->
-      <div
-        id="axisSelection"
-        class="dataGroup"
-      >
-        <!-- X axis -->
-        <div class="data">
-          <span class="name">X axis</span>
-          <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="xAxisSelection = true"
-            />
-          </div>
-        </div>
-        <!-- Swap axis -->
-        <button
-          class="warning"
-          id="swapBtn"
-          @click="swap"
-        >
-          Swap
-        </button>
-        <!-- Y axis -->
-        <div class="data">
-          <span class="name">Y axis</span>
-          <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnYindex)"
-              :colorSelection="true"
-              v-on:selected="yAxisSelection = true"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 2D points & lite plot specific controls -->
-      <div id="plotControls">
-        <!-- 2d Point Plot Controls -->
-        <div
-          id="2dPointPlotControls"
-          class="dataGroup"
-        >
-          <!-- Draw -->
-          <button
-            class="drawBtn blue"
-            @click="pointPlot"
-            v-if="!pointPlotDrawn"
-          >
-            Draw 2D points
-          </button>
-          <button
-            class="drawBtn warning"
-            @click="clearPointPlot"
-            v-else
-          >
-            Erase 2D points
-          </button>
-          <!-- Point size axis -->
-          <div class="data">
-            <span class="name">Point size axis</span>
-            <div
-              class="value"
-              v-if="columnSizeIndex !== null"
-            >
-              <Column
-                :column="data.columns.find((c) => c.index == columnSizeIndex)"
-                :colorSelection="true"
-                v-on:selected="sizeAxisSelection = true"
-              />
-              <button
-                class="red"
-                @click="
-                  columnSizeIndex = null;
-                  pointPlotDrawn = false;
-                "
-              >
-                Remove
-              </button>
-            </div>
-            <div
-              class="value"
-              v-else
-            >
-              <button
-                @click="sizeAxisSelection = true"
-              >
-                Select an axis
-              </button>
-            </div>
-          </div>
-          <!-- Max point Size -->
-          <div
-            class="data"
-            v-if="columnSizeIndex !== null"
-          >
-            <span class="name">Max point Size</span>
-            <div class="value">
-              <input
-                type="number"
-                v-model="maxPointSize"
-                :min="1"
-                :step="5"
-                @change="pointPlotDrawn = false"
-              />
-            </div>
-          </div>
-          <!-- Point opacity -->
-          <div class="data">
-            <span class="name">Point opacity</span>
-            <div class="value">
-              Auto:
-              <input
-                type="checkbox"
-                v-model="autoPointOpacity"
-              />
-              <input
-                type="number"
-                v-if="!autoPointOpacity"
-                v-model="pointOpacity"
-                :step="0.05"
-                :min="0.01"
-                :max="1"
-              />
-              <div
-                v-else
-                style="padding-left: 10px"
-              >
-                {{ Math.round(pointOpacity * 1000) / 1000 }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- line Plot Controls -->
-        <div
-          id="linePlotControls"
-          class="dataGroup"
-        >
-          <!-- Draw -->
-          <button
-            class="drawBtn blue"
-            @click="checkLinePlot"
-            v-if="!linePlotDrawn"
-          >
-            Draw statistics
-          </button>
-          <button
-            v-else
-            class="drawBtn warning"
-            @click="clearLinePlot"
-          >
-            Clear statistics
-          </button>
-          <!-- Bins -->
-          <div class="data">
-            <span class="name">Bins</span>
-            <div class="value">
-              <input
-                type="number"
-                v-model="bins"
-                :min="1"
-                @change="linePlotDrawn = false"
-              />
-            </div>
-          </div>
-          <!-- Display average as bar -->
-          <div class="data">
-            <span class="name">Display as bar</span>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'averageAsBar' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="averageAsBar"
-              />
-              <label
-                :for="'averageAsBar' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </div>
-          </div>
-          <!-- Display null values -->
-          <div
-            class="data"
-            v-if="!averageAsBar"
-          >
-            <span class="name">Display null</span>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'displayNull' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="displayNull"
-                @change="updateTraces()"
-              />
-              <label
-                :for="'displayNull' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2D points & lite plot common controls -->
-      <div
-        id="commonControls"
-        class="dataGroup"
-      >
-        <!-- Groub by color -->
-        <div
-          class="data"
-          v-if="coloredColumnIndex != null"
-        >
-          <span class="name">Groub by color</span>
-          <div class="value">
-            <input
-              type="checkbox"
-              :id="'dividePerColorCbxPointPlot' + index"
-              class="customCbx"
-              v-model="dividePerColor"
-              style="display: none"
-            />
-            <label
-              :for="'dividePerColorCbxPointPlot' + index"
-              class="toggle"
-            >
-              <span></span>
-            </label>
-          </div>
-        </div>
-        <!-- Absolute value -->
-        <div class="data">
-          <span class="name">Absolute value</span>
-          <div class="value">
-            <input
-              type="checkbox"
-              :id="'absolute' + index"
-              class="customCbx"
-              v-model="absolute"
-              style="display: none"
-            />
-            <label
-              :for="'absolute' + index"
-              class="toggle"
-            >
-              <span></span>
-            </label>
-          </div>
-        </div>
-        <!-- Fixe ranges -->
-        <button
-          style="margin: 2px"
-          class="warning"
-          @click="axisRangeModal = !axisRangeModal"
-          v-if="!axisXAuto || !axisYAuto"
-        >
-          Edit the axis ranges
-        </button>
-        <button
-          style="margin: 2px"
-          @click="axisRangeModal = !axisRangeModal"
-          v-else
-        >
-          Set the axis ranges
-        </button>
-      </div>
-    </div>
-
     <!-- The plotly plot -->
     <div
       class="plot"
@@ -379,7 +387,7 @@ export default {
   data() {
     return {
       // === Setting ===
-      settings: true,
+      settings: false,
       xAxisSelection: false,
       yAxisSelection: false,
       sizeAxisSelection: false,
@@ -480,7 +488,7 @@ export default {
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options = {}) {
       if (!conf) return;
 
       if ("columnX" in conf) {
@@ -535,6 +543,8 @@ export default {
         this.axisYAuto = false;
         this.axisYMax = conf.axisYMax;
       }
+
+      if (options.onStartup !== true) this.settings = true;
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -1260,6 +1270,9 @@ export default {
 #pointPlot {
   display: flex;
   flex-direction: column;
+}
+#settings {
+  min-width: 1100px;
 }
 
 /* axisSelection */
