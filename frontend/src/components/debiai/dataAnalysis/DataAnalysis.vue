@@ -216,68 +216,64 @@ export default {
       // Menu
       menuList: [
         {
-          name: "Selections",
-          icon: "loop",
+          name: "Generate report",
+          icon: "downloadImage",
           menuList: [
             {
-              name: "Open a selection",
-              description: "Open a new analysis with another selection",
-              callback: this.selectionSelectionBtn,
-            },
-            {
-              name: "Create a new selection",
-              description: "Create a new selection from the currently selected samples",
-              callback: this.saveSelection,
-            },
-          ],
-        },
-        {
-          name: "Virtual columns",
-          icon: "addColumn",
-          menuList: [
-            {
-              name: "Add a virtual column",
-              description: "Create a new virtual column based on the other columns and a formula",
-              callback: this.customColumn,
-            },
-          ],
-        },
-        {
-          name: "Tags",
-          icon: "tag",
-          menuList: [
-            {
-              name: "Tag the selected samples",
-              description: "Create a new column with a tag for the selected samples",
-              callback: this.tagCreation,
-            },
-          ],
-        },
-        {
-          name: "Export",
-          icon: "send",
-          menuList: [
-            {
-              name: "Export the selected samples",
-              description: "Export the selected samples according to different export methods",
-              callback: this.exportSelection,
-            },
-            {
-              name: "Export the analysis page",
+              name: "Markdown",
               description:
-                "Generate a markdown file with the analysis images, comments and configuration",
+                "Generate a zip file with a markdown containing the widget images, comments and configurations",
               callback: this.exportAnalysisPage,
             },
           ],
         },
         {
-          name: "Custom algorithms",
+          name: "Selections",
+          icon: "loop",
+          menuList: [
+            {
+              name: "Create a new selection",
+              description: "Create a new selection from the samples that are currently selected",
+              callback: this.saveSelection,
+            },
+            {
+              name: "Open a selection",
+              description: "Start a new analysis with another selection",
+              callback: this.selectionSelectionBtn,
+            },
+          ],
+        },
+        {
+          name: "Compute new data",
           icon: "algorithm",
           menuList: [
             {
-              name: "Use a custom algorithm",
-              description: "Use a custom algorithm from the configured algo-providers",
+              name: "Create a virtual column",
+              description:
+                "Create a virtual column locally based on other columns and a formula",
+              callback: this.customColumn,
+            },
+            {
+              name: "Use an external algorithm",
+              description: "Use an algorithm from DebiAI or from an external algo-provider",
               callback: this.useAlgorithm,
+            },
+          ],
+        },
+        {
+          name: "Annotate the selected data",
+          icon: "tag",
+          menuList: [
+            {
+              name: "Tag",
+              description: "Create locally a new column with a value matching the selected samples",
+              callback: this.tagCreation,
+            },
+            {
+              name: "Export with an annotation",
+              description:
+                "Export to another application the selected samples ID with an annotation",
+              callback: this.exportSelection,
             },
           ],
         },
@@ -286,18 +282,18 @@ export default {
           icon: "layout",
           menuList: [
             {
-              name: "Save or load layout",
+              name: "Save or load",
               description:
                 "Save the current layout to load it later, or load a previously saved layout",
               callback: this.layout,
             },
             {
-              name: "Restore default layout",
+              name: "Restore default",
               description: "Clear the current layout and restore the default one",
               callback: this.restoreDefaultLayout,
             },
             {
-              name: "Clear layout",
+              name: "Clear",
               description: "Clear the current layout and enjoy a blank page",
               callback: this.clearLayout,
             },
@@ -751,7 +747,7 @@ export default {
 }
 
 .grid-stack {
-  margin-left: 80px; /* Width of Sidebar */
+  margin-left: 60px; /* Width of Sidebar */
   background-color: var(--greyLight);
 }
 
