@@ -52,33 +52,39 @@
               :colorSelection="true"
               v-on:selected="selectXaxis"
             />
-            <Column
-              v-if="secondColumnIndex !== null"
-              :column="data.columns.find((c) => c.index == secondColumnIndex)"
-              :colorSelection="true"
-              v-on:selected="secondAxisSelection = true"
-            />
             <button
               id="addColumnBtn"
               v-if="secondColumnIndex === null"
-              class="green"
               title="Share the distribution with another column"
               @click="secondAxisSelection = true"
+              class="blue"
             >
               +
             </button>
-            <button
-              id="addColumnBtn"
-              v-else
-              class="red"
-              title="Remove the second axis"
-              @click="
-                secondColumnIndex = null;
-                checkPlot();
-              "
+            <div
+              style="background: white; padding-right: 4px"
+              class="aligned rounded"
             >
-              x
-            </button>
+              <Column
+                v-if="secondColumnIndex !== null"
+                :column="data.columns.find((c) => c.index == secondColumnIndex)"
+                :colorSelection="true"
+                v-on:selected="secondAxisSelection = true"
+              />
+
+              <button
+                id="addColumnBtn"
+                v-if="secondColumnIndex !== null"
+                class="red"
+                title="Remove the second axis"
+                @click="
+                  secondColumnIndex = null;
+                  checkPlot();
+                "
+              >
+                x
+              </button>
+            </div>
           </div>
         </div>
         <!-- Options -->
@@ -703,8 +709,7 @@ export default {
   position: relative;
 }
 #axisControls #addColumnBtn {
-  position: absolute;
-  right: 10px;
+  width: 40px;
 }
 #statisticalControls {
   display: flex;
