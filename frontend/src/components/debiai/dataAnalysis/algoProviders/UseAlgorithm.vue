@@ -9,20 +9,19 @@
         id="title"
         :title="'Id: ' + algorithm.id"
       >
-        <span> Using the algorithm: </span>
+        <span>{{ algoProvider.name }}</span>
+        <span style="padding: 0 5px 0 10px"> / </span>
         <inline-svg
           :src="require('@/assets/svg/algorithm.svg')"
           width="20"
           height="20"
-          style="margin: 0 5px 0 15px"
+          style="margin: 0 5px 1px 5px"
         />
         <span id="algoName">
           {{
             algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
           }}
         </span>
-        <span style="padding: 0 10px"> from </span>
-        <span>{{ algoProvider.name }}</span>
       </div>
 
       <button
@@ -131,15 +130,11 @@ export default {
 }
 #info #algoName {
   font-weight: bold;
-  color: #636363;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 2px 5px;
 }
 #description {
   margin: 10px 0 10px 0;
   text-align: left;
-  color: #898989;
+  color: var(--fontColorLight);
 }
 
 /* Content */
@@ -166,18 +161,21 @@ export default {
 }
 #bottom #requestBody {
   flex: 1;
-  height: 50px;
+  height: 70px;
   overflow: auto;
 }
 #bottom fieldset {
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  color: var(--fontColorLight);
+
+  border: 1px solid var(--greyDark);
+  border-radius: 2px;
   padding-left: 20px;
+  
   white-space: pre-line;
   text-align: start;
 }
 #bottom legend {
-  color: #636363;
+  color: var(--fontColor);
 }
 #bottom button {
   margin: 10px 0 5px 0;

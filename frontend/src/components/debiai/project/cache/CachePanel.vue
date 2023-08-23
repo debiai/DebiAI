@@ -156,7 +156,7 @@ export default {
 <style scoped lang="scss">
 #CachePanel {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--greyDark);
   border-radius: 5px;
 
   display: flex;

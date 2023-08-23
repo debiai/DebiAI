@@ -61,9 +61,8 @@ export default {
   /* text-align: left; */
   padding: 5px;
   margin: 5px;
-  border: 1px solid black;
-  background-color: rgb(240, 240, 240);
-  border-radius: 5px;
+  border: 1px solid var(--greyDarker);
+  background-color: var(--grey);
   width: 150px;
   height: 150px;
   position: relative;
@@ -78,15 +77,13 @@ export default {
 .component {
   cursor: pointer;
   background-color: white;
-  border: 1px solid rgb(155, 155, 155);
-  border-radius: 3px;
   position: absolute;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  border-top: 3px solid rgb(121, 121, 121);
+  border-top: 3px solid var(--greyDark);
   background-size: contain;
   background-position: center;
 
@@ -97,7 +94,7 @@ export default {
 .component .content {
   display: none;
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid var(--grey);
   border-radius: 3px;
   padding: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);

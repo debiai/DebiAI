@@ -628,6 +628,7 @@ export default {
 <style lang="scss" scoped>
 .card {
   height: 98%;
+  margin: 5px;
 
   &:hover {
     .options {
@@ -721,7 +722,7 @@ export default {
 
   /* Error */
   .dataError {
-    color: #ea5050;
+    color: var(--danger);
     margin: 0px 10px 0px 10px;
     padding: 0px 8px 0px 8px;
 

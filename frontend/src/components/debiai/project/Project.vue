@@ -449,7 +449,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgb(240, 240, 240);
+  background-color: var(--greyLight);
 }
 
 #selectionAndModels {

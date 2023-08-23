@@ -176,7 +176,6 @@
               :src="require('@/assets/svg/data.svg')"
               width="20"
               height="20"
-              fill="white"
             />
             <span
               v-if="project.nbSamples"
@@ -339,7 +338,7 @@ export default {
   align-items: center;
   justify-content: space-evenly;
   font-weight: bold;
-  background: #707070;
+  color: var(--fontColor);
 }
 
 #analysisControls #nbSelectedSamples {

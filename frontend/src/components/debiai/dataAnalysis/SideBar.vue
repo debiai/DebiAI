@@ -159,7 +159,7 @@ export default {
 
 <style lang="scss" scoped>
 #SideBar {
-  width: 80px;
+  width: 60px;
   height: calc(100vh - 80px);
   position: fixed;
   top: 60px;
@@ -169,18 +169,18 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
 
-  background: #e8e8e8;
-  border-right: #bab9bf 2px solid;
+  background: var(--grey);
+  border-right: var(--greyDark) 2px solid;
   padding-top: 20px;
 
   transition: all 0.3s;
-  overflow: hidden;
+  overflow-x: hidden;
 
   .section {
     font-size: 14px;
 
     .head {
-      padding: 10px 10px 10px 30px;
+      padding: 10px 10px 10px 20px;
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
@@ -188,13 +188,12 @@ export default {
       gap: 10px;
       height: 40px;
 
-      padding-right: 20px;
-      color: #494949;
-      transition: padding 0.3s ease-out;
+      color: var(--fontColor);
+      transition: all 0.1s ease-out;
       cursor: pointer;
 
       &:hover {
-        background: #d8d8d8;
+        background: var(--grey);
       }
 
       .side {
@@ -238,11 +237,7 @@ export default {
         cursor: pointer;
 
         &:hover {
-          background: #d8d8d8;
-          .name {
-            color: black;
-            text-decoration: underline;
-          }
+          background: var(--grey);
         }
 
         .name {
@@ -251,9 +246,8 @@ export default {
 
         .description {
           text-align: left;
-          font-size: 12px;
-          color: #494949;
-          opacity: 0.8;
+          font-size: 0.9em;
+          color: var(--fontColorLight);
           width: 200px;
         }
       }
@@ -264,7 +258,7 @@ export default {
     margin-top: auto;
 
     .head {
-      padding-left: 23px;
+      padding-left: 14px;
     }
   }
 
@@ -272,13 +266,7 @@ export default {
     // Open the sidebar
     width: 300px;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
-    background: #f8f8f8;
-
-    .section {
-      .head {
-        padding-left: 20px;
-      }
-    }
+    background: var(--greyLight);
   }
 }
 </style>

@@ -20,7 +20,7 @@
   width: 34px;
   height: 14px;
   display: block;
-  background: gray;
+  background: var(--greyDarker);
   border-radius: 8px;
   transition: background 0.2s ease;
 }
@@ -34,7 +34,7 @@
   display: block;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(gray, 0.5);
+  box-shadow: 0 3px 8px var(--greyDarker);
   transition: all 0.2s ease;
 }
 
@@ -80,7 +80,7 @@
       background-color: var(--greyLight);
     }
   }
-  
+
   &.swal-button--yes,
   &.swal-button--confirm {
     border-color: var(--success);

@@ -7,12 +7,12 @@
 
       <!-- Input type -->
       <span
-        class="inputType"
+        class="inputType tag"
         v-if="input.type == 'array'"
         >Array of {{ input.arrayType }}s</span
       >
       <span
-        class="inputType"
+        class="inputType tag"
         v-else
         >{{ input.type }}</span
       >
@@ -49,18 +49,16 @@
 
       <!-- Min and max -->
       <div
-        class="min"
         v-if="input.type === 'number' && input.min !== null && input.min !== undefined"
         title="Minimum value accepted by the Algo Provider"
-        :class="value < input.min ? 'error' : 'success'"
+        :class="'tag ' + (value < input.min ? 'error' : 'success')"
       >
         {{ ">=" }} {{ input.min }}
       </div>
       <div
-        class="max"
         v-if="input.type === 'number' && input.max !== null && input.max !== undefined"
         title="Maximum value accepted by the Algo Provider"
-        :class="value > input.max ? 'error' : 'success'"
+        :class="'tag ' + (value > input.max ? 'error' : 'success')"
       >
         {{ "<=" }} {{ input.max }}
       </div>
@@ -71,14 +69,14 @@
         class="arrayInputType"
       >
         <!-- input options -->
-        <div
-          :class="'option ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
+        <button
+          :class="'radioBtn ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
           @click="selectedArrayInputOption = 'manual'"
         >
           Manual
-        </div>
-        <div
-          :class="'option ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
+        </button>
+        <button
+          :class="'radioBtn ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
           @click="
             selectedArrayInputOption = 'column';
             columnSelected(columnIndex);
@@ -86,9 +84,11 @@
           "
         >
           Complete Column data
-        </div>
-        <div
-          :class="'option ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')"
+        </button>
+        <button
+          :class="
+            'radioBtn ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')
+          "
           @click="
             selectedArrayInputOption = 'columnSelectedData';
             columnSelected(columnIndex);
@@ -96,7 +96,7 @@
           "
         >
           Selected Column data
-        </div>
+        </button>
       </div>
     </div>
     <div class="bot">
@@ -240,7 +240,7 @@ export default {
 
 <style scoped>
 .input {
-  border: 1px solid #ccc;
+  border: 1px solid var(--greyDark);
   border-radius: 4px;
   padding: 0px 20px;
   font-size: 1.2em;
@@ -255,68 +255,21 @@ export default {
   justify-content: flex-start;
   gap: 5px;
 }
-.inputType {
-  color: #909090;
-  border: 1px solid #ccc;
-  padding: 0 2px 0 2px;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
 .description {
   font-size: 0.9em;
-  color: #909090;
+  color: var(--fontColorLight);
   padding-right: 30px;
 }
 
 input,
 select {
-  border: 1px solid #ccc;
+  border: 1px solid var(--greyDark);
   border-radius: 4px;
   padding: 2px 4px;
   font-size: 1em;
   width: 100px;
 }
 
-.min,
-.max {
-  font-size: 0.9em;
-  padding: 2px 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.success {
-  color: green;
-  border-color: green;
-}
-.error {
-  color: var(--danger);
-  border-color: var(--danger);
-  background-color: transparent;
-}
-
-/* arrayInputType */
-.arrayInputType {
-  display: flex;
-  gap: 5px;
-}
-.arrayInputType .option {
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.9em;
-  background-color: #eee;
-}
-
-.arrayInputType .option:hover {
-  background-color: #ddd;
-}
-.arrayInputType .option.selected {
-  color: white;
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
 
 .bot {
   display: flex;

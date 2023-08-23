@@ -184,7 +184,7 @@ export default {
 
 <style lang="scss" scoped>
 #Comments {
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--greyDark);
   margin: 20px;
   padding-top: 10px;
 
@@ -238,7 +238,7 @@ export default {
       margin: 10px;
       padding: 10px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--greyDark);
       transition: border-color 0.2s;
       width: 350px;
     }

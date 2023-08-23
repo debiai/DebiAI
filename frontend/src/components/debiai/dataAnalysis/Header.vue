@@ -213,7 +213,7 @@ export default {
   gap: 50px;
 
   background-color: var(--greyLight);
-  border-bottom: solid #a8a8a8 2px;
+  border-bottom: var(--greyDark) 2px solid;
 
   button {
     height: 60%;
@@ -237,10 +237,10 @@ export default {
     #projectName {
       font-size: 18px;
       font-weight: bold;
-      color: #a8a8a8;
+      color: var(--fontColorLight);
 
       a {
-        color: rgb(53, 53, 53);
+        color: var(--fontColor);
         text-decoration: none;
 
         &:hover {

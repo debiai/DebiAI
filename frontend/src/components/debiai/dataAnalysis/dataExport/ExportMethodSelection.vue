@@ -56,7 +56,7 @@
             </h3>
 
             <div class="details">
-              <div class="type">{{ exportMethod.type }}</div>
+              <div class="type tag">{{ exportMethod.type }}</div>
               <div class="parameters">
                 <div
                   class="parameter"
@@ -199,12 +199,6 @@ export default {
   gap: 10px;
 }
 
-.exportMethod .details .parameters {
-  border-left: 1px solid rgb(75, 75, 75);
-  text-align: left;
-  padding-left: 15px;
-  opacity: 80%;
-}
 
 .exportMethod .details .parameter {
   padding-bottom: 8px;

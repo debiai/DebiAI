@@ -325,7 +325,7 @@ h3 {
       margin: 10px;
       padding: 10px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--greyDark);
       transition: border-color 0.2s;
       width: 350px;
     }

@@ -145,7 +145,6 @@
               :src="require('../../../assets/svg/data.svg')"
               width="20"
               height="20"
-              fill="white"
             />
             <span
               v-if="nbSelectedSamples"
@@ -293,13 +292,11 @@ export default {
   display: flex;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9em;
 }
 
 #modelsControls .dataGroup {
@@ -308,7 +305,7 @@ export default {
   align-items: center;
   justify-content: space-evenly;
   font-weight: bold;
-  background: #707070;
+  color: var(--fontColor);
 }
 
 #modelsControls #commonModelResults {

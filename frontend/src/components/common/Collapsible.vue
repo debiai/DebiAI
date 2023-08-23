@@ -98,12 +98,12 @@ export default {
 
 <style lang="scss" scoped>
 .collapsible {
-  border: 1px solid #00000027;
+  border: 1px solid var(--greyDark);
 
   .header {
     padding: 9px 12px;
     min-height: 20px;
-    border-bottom: 1px solid #00000027;
+    border-bottom: 1px solid var(--greyDark);
 
     cursor: pointer;
     background-color: var(--greyLight);

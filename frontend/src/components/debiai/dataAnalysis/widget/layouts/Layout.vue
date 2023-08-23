@@ -106,13 +106,8 @@ export default {
   text-align: left;
 }
 .layout .left .tag {
-  border: 2px solid rgb(70, 70, 70);
-  padding: 3px;
-  border-radius: 5px;
-  font-size: 0.8em;
   margin-bottom: 5px;
-  opacity: 0.3;
-  font-weight: bold;
+  font-size: 0.8em;
 }
 .layout .center {
   flex: 1;
@@ -139,7 +134,7 @@ export default {
   overflow-wrap: anywhere;
   max-width: 300px;
   font-size: 0.8em;
-  color: #666;
+  color: var(--fontColorLight);
 }
 .layout .description .coloredColumn {
   font-weight: bold;
