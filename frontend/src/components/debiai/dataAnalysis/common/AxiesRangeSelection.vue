@@ -30,19 +30,12 @@
 
         <div
           class="value"
-          style="flex: 1; gap: 10px"
+          style="flex: 1"
         >
           <!-- Auto checkbox -->
-          <div class="data">
-            <span
-              class="name"
-              style="margin-left: 20px"
-              >Auto</span
-            >
-            <div
-              class="value"
-              style="margin-right: 15px; padding-right: 10px"
-            >
+          <div>
+            <span>Auto</span>
+            <div>
               <input
                 type="checkbox"
                 :id="'axisXAutoCbxPointPlot' + index"
@@ -59,41 +52,27 @@
             </div>
           </div>
 
-          <div style="display: flex">
-            <!-- Values -->
-            <div class="data">
-              <span
-                class="name"
-                style="width: 30px"
-                >Min</span
-              >
-              <div
-                class="value"
-                style="margin-right: 15px; padding-right: 10px"
-              >
-                <input
-                  type="number"
-                  v-model="XMin"
-                  :disabled="XAuto"
-                />
-              </div>
+          <!-- Value Min -->
+          <div>
+            <span>Min</span>
+            <div>
+              <input
+                type="number"
+                v-model="XMin"
+                :disabled="XAuto"
+              />
             </div>
-            <div class="data">
-              <span
-                class="name"
-                style="width: 30px"
-                >Max</span
-              >
-              <div
-                class="value"
-                style="padding-right: 10px"
-              >
-                <input
-                  type="number"
-                  v-model="XMax"
-                  :disabled="XAuto"
-                />
-              </div>
+          </div>
+
+          <!-- Value Max -->
+          <div>
+            <span>Max</span>
+            <div style="padding-right: 10px">
+              <input
+                type="number"
+                v-model="XMax"
+                :disabled="XAuto"
+              />
             </div>
           </div>
         </div>
@@ -105,19 +84,12 @@
 
         <div
           class="value"
-          style="flex: 1; gap: 10px"
+          style="flex: 1"
         >
           <!-- Auto checkbox -->
-          <div class="data">
-            <span
-              class="name"
-              style="margin-left: 20px"
-              >Auto</span
-            >
-            <div
-              class="value"
-              style="margin-right: 15px; padding-right: 10px"
-            >
+          <div>
+            <span>Auto</span>
+            <div>
               <input
                 type="checkbox"
                 :id="'axisYAutoCbxPointPlot' + index"
@@ -134,42 +106,25 @@
             </div>
           </div>
 
-          <div style="display: flex">
-            <!-- Values -->
-            <div class="data">
-              <span
-                class="name"
-                style="width: 30px"
-                >Min</span
-              >
-              <div
-                class="value"
-                style="margin-right: 15px; padding-right: 10px"
-              >
-                <input
-                  type="number"
-                  v-model="YMin"
-                  :disabled="YAuto"
-                />
-              </div>
+          <!-- Values -->
+          <div>
+            <span>Min</span>
+            <div>
+              <input
+                type="number"
+                v-model="YMin"
+                :disabled="YAuto"
+              />
             </div>
-            <div class="data">
-              <span
-                class="name"
-                style="width: 30px"
-              >
-                Max</span
-              >
-              <div
-                class="value"
-                style="padding-right: 10px"
-              >
-                <input
-                  type="number"
-                  v-model="YMax"
-                  :disabled="YAuto"
-                />
-              </div>
+          </div>
+          <div>
+            <span> Max</span>
+            <div style="padding-right: 10px">
+              <input
+                type="number"
+                v-model="YMax"
+                :disabled="YAuto"
+              />
             </div>
           </div>
         </div>
@@ -245,11 +200,23 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 input {
   width: 90px;
 }
 .error {
   position: absolute;
+}
+
+.value {
+  display: flex;
+  justify-content: space-around !important;
+  gap: 10px;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 }
 </style>

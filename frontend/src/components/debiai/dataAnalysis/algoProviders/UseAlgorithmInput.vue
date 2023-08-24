@@ -269,7 +269,6 @@ select {
   width: 100px;
 }
 
-
 .bot {
   display: flex;
   align-items: center;

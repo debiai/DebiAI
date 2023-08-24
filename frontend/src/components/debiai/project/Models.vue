@@ -245,7 +245,8 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: white;
-  margin: 5px;  background-color: white;
+  margin: 5px;
+  background-color: white;
   border: solid 1px var(--greyDark);
   transition: height 0.2s;
   height: 0%;

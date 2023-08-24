@@ -55,7 +55,7 @@
               </div>
             </div>
             <button
-              style="margin: 3px;"
+              style="margin: 3px"
               @click="swap"
             >
               &#8593; Swap &#8595;

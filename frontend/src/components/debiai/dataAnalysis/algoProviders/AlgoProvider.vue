@@ -108,7 +108,7 @@ export default {
   width: 100%;
   align-items: center;
   gap: 0.5rem;
-  color: var(--fontColorLight)
+  color: var(--fontColorLight);
 }
 
 .algoProvider .controls {

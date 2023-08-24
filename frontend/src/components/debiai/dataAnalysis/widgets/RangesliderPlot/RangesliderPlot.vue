@@ -169,11 +169,7 @@
               class="value"
               v-else
             >
-              <button
-                @click="tagAxisSelection = true"
-              >
-                Select a column
-              </button>
+              <button @click="tagAxisSelection = true">Select a column</button>
             </div>
           </div>
           <!-- Multiple Y axis -->

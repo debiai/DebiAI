@@ -199,7 +199,6 @@ export default {
   gap: 10px;
 }
 
-
 .exportMethod .details .parameter {
   padding-bottom: 8px;
 }

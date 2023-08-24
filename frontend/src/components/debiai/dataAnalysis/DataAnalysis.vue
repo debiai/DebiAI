@@ -249,8 +249,7 @@ export default {
           menuList: [
             {
               name: "Create a virtual column",
-              description:
-                "Create a virtual column locally based on other columns and a formula",
+              description: "Create a virtual column locally based on other columns and a formula",
               callback: this.customColumn,
             },
             {

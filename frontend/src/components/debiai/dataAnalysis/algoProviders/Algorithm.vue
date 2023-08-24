@@ -27,11 +27,7 @@
           <span class="badge">{{ nbExperiments }}</span>
           Experiments
         </button>
-        <button
-          @click="$emit('useAlgo')"
-        >
-          Use algorithm
-        </button>
+        <button @click="$emit('useAlgo')">Use algorithm</button>
       </div>
     </div>
 

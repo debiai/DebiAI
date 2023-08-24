@@ -170,7 +170,7 @@ export default {
   border: 1px solid var(--greyDark);
   border-radius: 2px;
   padding-left: 20px;
-  
+
   white-space: pre-line;
   text-align: start;
 }
