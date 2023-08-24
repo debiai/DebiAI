@@ -221,7 +221,7 @@ export default {
       dividePerColor: true,
       absX: false,
       absY: false,
-      colorScale: "YlOrRd",
+      colorScale: "Blues",
       reverseColorScale: true,
       contourNumber: 15,
 
@@ -386,11 +386,11 @@ export default {
         return;
       }
 
-      const minX = colX.type == Number ? colX.min : 0;
-      const maxX = colX.type == Number ? colX.max : colX.uniques.length - 1;
+      // const minX = colX.type == Number ? colX.min : 0;
+      // const maxX = colX.type == Number ? colX.max : colX.uniques.length - 1;
 
-      const minY = colY.type == Number ? colY.min : 0;
-      const maxY = colY.type == Number ? colY.max : colY.uniques.length - 1;
+      // const minY = colY.type == Number ? colY.min : 0;
+      // const maxY = colY.type == Number ? colY.max : colY.uniques.length - 1;
 
       // Apply selection
       let valuesX = this.selectedData.map((i) => colX.values[i]);
@@ -484,16 +484,16 @@ export default {
 
       var xDensityTrace = {
         x: valuesX,
-        name: "x density",
-        marker: { color: "rgb(102,0,0)" },
+        name: colX.label + " density",
+        marker: { color: "#009ddf" },
         yaxis: "y2",
         type: "histogram",
       };
 
       var yDensityTrace = {
         y: valuesY,
-        name: "y density",
-        marker: { color: "rgb(102,0,0)" },
+        name: colY.label + " density",
+        marker: { color: "#009ddf" },
         xaxis: "x2",
         type: "histogram",
       };
@@ -521,19 +521,19 @@ export default {
         },
         xaxis2: {
           domain: [0.85, 1],
+          showticklabels: false,
         },
         yaxis2: {
           domain: [0.85, 1],
+          showticklabels: false,
         },
       };
 
       if (this.absX) {
         layout.xaxis.title.text += "(absolute value)";
-        if (layout.xaxis.range[0] < 0) layout.xaxis.range[0] = 0;
       }
       if (this.absY) {
         layout.yaxis.title.text += "(absolute value)";
-        if (layout.yaxis.range[0] < 0) layout.yaxis.range[0] = 0;
       }
 
       Plotly.react(this.divPointPlot, data, layout, {
@@ -585,7 +585,7 @@ export default {
     },
     coloredColumnIndex: function () {},
     redrawRequired(o, n) {
-      this.$parent.colorWarning = n;
+      // this.$parent.colorWarning = n;
     },
   },
 };
