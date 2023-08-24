@@ -222,7 +222,6 @@ export default {
 }
 .header .title {
   margin-top: 1px;
-  font-size: 1.1em;
 }
 .header .version {
   margin: 0;
@@ -256,7 +255,6 @@ export default {
 }
 .content .section .description {
   color: var(--fontColorLight);
-  font-size: 0.8em;
 }
 
 .parameter-list {

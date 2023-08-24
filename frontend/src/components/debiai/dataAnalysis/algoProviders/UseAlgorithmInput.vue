@@ -256,7 +256,6 @@ export default {
   gap: 5px;
 }
 .description {
-  font-size: 0.9em;
   color: var(--fontColorLight);
   padding-right: 30px;
 }

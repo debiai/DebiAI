@@ -390,7 +390,6 @@ export default {
       margin: 0;
       padding: 0;
       margin-bottom: 5px;
-      font-size: 0.9em;
       color: var(--fontColorLight);
     }
 

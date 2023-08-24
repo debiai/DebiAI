@@ -29,7 +29,7 @@
     <div id="logoAndName">
       <!-- DebiAI Logo -->
       <router-link
-        id="debiaiMenuLogo"
+        id="debiaiLogo"
         :to="
           '/dataprovider/' +
           $store.state.ProjectPage.dataProviderId +
@@ -215,23 +215,14 @@ export default {
   background-color: var(--greyLight);
   border-bottom: var(--greyDark) 2px solid;
 
-  button {
-    height: 60%;
-  }
-
-  img {
-    margin-left: 15px;
-    padding-top: 5px;
-  }
-
   #logoAndName {
     display: flex;
     align-items: center;
     gap: 10px;
     // flex: 1;
 
-    #debiaiMenuLogo {
-      margin-right: 10px;
+    #debiaiLogo {
+      margin: 5px 10px 0px 15px;
     }
 
     #projectName {
@@ -293,7 +284,6 @@ export default {
   align-items: center;
   // flex-direction: column-reverse;
   gap: 15px;
-  font-size: 1em;
   padding: 0px 10px;
   color: var(--fontColorLight);
 

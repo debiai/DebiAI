@@ -8,7 +8,7 @@
           <img
             src="@/assets/images/DebiAI_black.png"
             alt="DebiAI"
-            id="debiaiMenuLogo"
+            id="debiaiLogo"
             height="48"
           />
         </a>
@@ -129,7 +129,6 @@ export default {
 #Header {
   height: 60px;
   width: 100%;
-  top: 0px;
 
   display: flex;
   align-items: center;
@@ -139,28 +138,18 @@ export default {
   background-color: var(--greyLight);
   border-bottom: var(--greyDark) 2px solid;
 
-  button {
-    height: 60%;
-  }
-
-  img {
-    margin-left: 15px;
-    padding-top: 5px;
-  }
-
   #left {
     display: flex;
     align-items: center;
     gap: 20px;
-    flex: 1;
 
     #logoAndName {
       display: flex;
       align-items: center;
       gap: 10px;
 
-      #debiaiMenuLogo {
-        margin-right: 10px;
+      #debiaiLogo {
+        margin: 5px 10px 0px 15px;
         cursor: pointer;
       }
 
