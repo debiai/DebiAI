@@ -1,56 +1,55 @@
 <template>
   <div id="frontPage">
     <!-- header -->
-    <div id="head">
-      <!-- DebiAI Logo -->
-      <img
-        src="@/assets/images/DebiAI.png"
-        alt="DebiAI"
-        height="48"
-      />
-      <!-- DebiAI version -->
-      <a
-        id="version"
-        href="https://github.com/debiai/debiai/"
-        target="_blank"
-      >
-        {{ appVersion }}
-      </a>
-      <!-- Doc link -->
-      <a
-        id="version"
-        href="https://debiai.irt-systemx.fr/introduction/"
-        target="_blank"
-      >
-        Online documentation
-      </a>
-
-      <!-- IRT Logo -->
-      <p id="irtLogo">
+    <div id="header">
+      <!-- Logo, version, doc link -->
+      <div id="left">
+        <!-- DebiAI Logo -->
         <img
-          src="@/assets/images/SystemX.png"
-          alt="SystemX"
-          height="38"
+          src="@/assets/images/DebiAI_black.png"
+          alt="DebiAI"
+          id="debiaiLogo"
+          height="48"
         />
-      </p>
+        <!-- DebiAI version -->
+        <a
+          id="version"
+          href="https://github.com/debiai/debiai/"
+          target="_blank"
+        >
+          {{ appVersion }}
+        </a>
+        <!-- Doc link -->
+        <a
+          id="docLink"
+          href="https://debiai.irt-systemx.fr/"
+          target="_blank"
+        >
+          Online documentation
+        </a>
+      </div>
 
-      <!-- Data provider manager -->
-      <button
-        id="dataProviders"
-        title="List the data providers"
-        @click="displayDataProviders = !displayDataProviders"
-      >
-        Manage data providers
-      </button>
-      <input
-        placeholder="Search project"
-        v-model="searchBar"
-      />
+      <!-- Data-providers, searchbar -->
+      <div id="right">
+        <!-- Data provider manager -->
+        <button
+          id="dataProviders"
+          title="List the data providers"
+          @click="displayDataProviders = !displayDataProviders"
+        >
+          Manage data providers
+        </button>
+        <input
+          class="search"
+          placeholder="Search project"
+          v-model="searchBar"
+        />
+      </div>
     </div>
 
     <!-- Title, name of the columns -->
     <div id="projectTitle">
-      <h2>Projects</h2>
+      <h3>Projects</h3>
 
       <!-- Items details -->
       <div id="itemDetails">
@@ -73,7 +72,7 @@
           title="Project selections"
         >
           <inline-svg
-            :src="require('@/assets/svg/loupe.svg')"
+            :src="require('@/assets/svg/loop.svg')"
             width="14"
             height="14"
           />
@@ -143,7 +142,7 @@
               title="Number of selections"
             >
               <inline-svg
-                :src="require('@/assets/svg/loupe.svg')"
+                :src="require('@/assets/svg/loop.svg')"
                 width="14"
                 height="14"
               />
@@ -275,51 +274,47 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #frontPage {
   height: 100vh;
   display: flex;
   flex-direction: column;
-}
 
-/* Head  */
-#head {
-  display: flex;
-  padding: 5px;
-  background-color: var(--primary);
-  border-bottom: solid 5px var(--primaryDark);
-  color: white;
-  align-items: center;
-}
+  #header {
+    height: 60px;
+    width: 100%;
 
-#head #version {
-  padding-left: 15px;
-  font-size: 1.4em;
-  font-family: system-ui;
-  color: white;
-}
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-#head #version:visited {
-  color: white;
-}
+    background-color: var(--greyLight);
+    border-bottom: var(--greyDark) 2px solid;
 
-#head #irtLogo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  padding: 0;
-  margin: 0;
-}
+    #left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
-#head #debiaiLogo {
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-}
+      a {
+        text-decoration: none;
+        color: var(--fontColorLight);
+      }
 
-#head #dataProviders {
-  margin-right: 20px;
+      #debiaiLogo {
+        margin: 0px 0px 0px 15px;
+      }
+    }
+
+    #right {
+      display: flex;
+      align-items: center;
+
+      #dataProviders {
+        margin-right: 20px;
+      }
+    }
+  }
 }
 
 #projectTitle {
@@ -328,108 +323,107 @@ export default {
   margin: 0 15px 0 15px;
   display: flex;
   justify-content: space-between;
-}
 
-#projectTitle h2 {
-  flex: 3;
-}
+  h3 {
+    flex: 3;
+  }
 
-#projectTitle #itemDetails {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8em;
-  opacity: 0.7;
-}
+  #itemDetails {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--fontColorLight);
+  }
 
-#projectTitle #itemDetails > * {
-  flex: 1;
-  text-align: left;
-}
+  #itemDetails > * {
+    flex: 1;
+    text-align: left;
+  }
 
-#projectTitle #controls {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  #controls {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
 }
 
 /* Projects */
 #projects {
   flex: 1;
   overflow-y: auto;
-}
 
-.project {
-  cursor: pointer;
-  display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: "name items dates";
+  .project {
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "name items dates";
 
-  padding: 15px;
-  margin: 0 20px 0 20px;
-  border-bottom: solid rgba(0, 0, 0, 0.172) 2px;
-  transition: background-color ease-out 0.1s;
-  min-height: 40px;
-}
+    padding: 15px;
+    margin: 0 20px 0 20px;
+    border-bottom: solid rgba(0, 0, 0, 0.172) 2px;
+    transition: background-color ease-out 0.1s;
+    min-height: 40px;
 
-.project:first-child {
-  border-top: solid rgba(0, 0, 0, 0.172) 2px;
-}
+    &:first-child {
+      border-top: solid rgba(0, 0, 0, 0.172) 2px;
+    }
 
-.project:hover {
-  background-color: rgba(0, 0, 0, 0.076);
-}
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.076);
+    }
 
-.project > * {
-  display: flex;
-  align-items: center;
-}
+    & > * {
+      display: flex;
+      align-items: center;
+    }
 
-/* Name & desc  */
-.name {
-  grid-area: name;
-  display: flex;
-  align-items: flex-start;
-  font-weight: bold;
-}
+    /* Name & desc  */
+    .name {
+      grid-area: name;
+      display: flex;
+      align-items: flex-start;
+      font-weight: bold;
+    }
 
-/* Items */
-.items .nb {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-  gap: 4px;
-}
+    /* Items */
+    .items .nb {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      gap: 4px;
+    }
 
-.nbSamples {
-  grid-area: nbSamples;
-}
+    .nbSamples {
+      grid-area: nbSamples;
+    }
 
-.nbSelections {
-  grid-area: nbSelections;
-}
+    .nbSelections {
+      grid-area: nbSelections;
+    }
 
-.nbModel {
-  grid-area: nbModel;
-}
+    .nbModel {
+      grid-area: nbModel;
+    }
 
-/* Dates */
-.dates {
-  opacity: 0.8;
-  grid-area: dates;
-  display: flex;
-  flex-direction: column;
-}
+    /* Dates */
+    .dates {
+      opacity: 0.8;
+      grid-area: dates;
+      display: flex;
+      flex-direction: column;
+    }
 
-.createdDate {
-  grid-area: createdDate;
-}
+    .createdDate {
+      grid-area: createdDate;
+    }
 
-.updatedDate {
-  grid-area: updatedDate;
+    .updatedDate {
+      grid-area: updatedDate;
+    }
+  }
 }
 
 /* No projects */

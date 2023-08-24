@@ -49,7 +49,7 @@
               <b>{{ dataProvider.name }}</b>
             </div>
             <div class="data">
-              <div class="type">{{ dataProvider.type }}</div>
+              <div class="type tag">{{ dataProvider.type }}</div>
               <div>{{ dataProvider.url }}</div>
             </div>
           </div>
@@ -176,14 +176,6 @@ export default {
   width: 100%;
   align-items: center;
   gap: 0.5rem;
-}
-.dataProvider .data .type {
-  text-align: left;
-  font-size: 0.9em;
-  color: #666;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  padding: 3px;
 }
 
 .dataProvider .controls {

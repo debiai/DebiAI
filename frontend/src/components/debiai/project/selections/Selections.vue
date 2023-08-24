@@ -28,7 +28,7 @@
         <span class="aligned">
           <h2>
             <inline-svg
-              :src="require('../../../../assets/svg/loupe.svg')"
+              :src="require('@/assets/svg/loop.svg')"
               width="20"
               height="20"
             />
@@ -54,27 +54,22 @@
             @click="selectionCreation = !selectionCreation"
           >
             <inline-svg
-              :src="require('../../../../assets/svg/request.svg')"
+              :src="require('@/assets/svg/request.svg')"
               width="12"
               height="12"
               fill="white"
             />
             Requests
           </button> -->
+          <button @click="selectAll">All</button>
           <button
-            class="info"
-            @click="selectAll"
-          >
-            All
-          </button>
-          <button
-            class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
           <input
+            class="search"
             type="text"
             placeholder="Search a selection"
             v-model="searchBar"
@@ -102,7 +97,7 @@
             title="Selection sample number"
           >
             <inline-svg
-              :src="require('../../../../assets/svg/data.svg')"
+              :src="require('@/assets/svg/data.svg')"
               height="15"
             />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
           </div>
@@ -173,10 +168,9 @@
               {{ nbSelectedSamples }}
             </span>
             <inline-svg
-              :src="require('../../../../assets/svg/data.svg')"
+              :src="require('@/assets/svg/data.svg')"
               width="20"
               height="20"
-              fill="white"
             />
             <span
               v-if="project.nbSamples"
@@ -233,7 +227,7 @@ export default {
       this.selectedSelectionIds = this.project.selections.map((s) => s.id);
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedSelectionIds = [];
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
@@ -292,9 +286,8 @@ export default {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
+  border: solid 1px var(--greyDark);
   margin: 5px;
   transition: height 0.2s;
   height: 0%; /* Do not remove, very important for some reason */
@@ -326,7 +319,6 @@ export default {
   display: flex;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;
@@ -340,7 +332,7 @@ export default {
   align-items: center;
   justify-content: space-evenly;
   font-weight: bold;
-  background: #707070;
+  color: var(--fontColor);
 }
 
 #analysisControls #nbSelectedSamples {

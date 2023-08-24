@@ -18,17 +18,11 @@ let router = new Router({
       component: () => import("../components/debiai/project/Project"),
     },
 
-    // === Statistics
+    // === Data analysis
     {
-      path: "/statistics",
-      component: () => import("../components/debiai/statistics/Statistics"),
-      children: [
-        {
-          name: "dataAnalysis",
-          path: "/dataAnalysis",
-          component: () => import("../components/debiai/statistics/dataAnalysis/DataAnalysis"),
-        },
-      ],
+      name: "dataAnalysis",
+      path: "/dataAnalysis",
+      component: () => import("../components/debiai/dataAnalysis/DataAnalysis"),
     },
   ],
 });

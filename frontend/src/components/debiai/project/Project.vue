@@ -18,8 +18,8 @@
       <ProjectColumnsVisu />
     </Modal>
 
-    <!-- ProjectInfo -->
-    <ProjectInfo
+    <!-- Header -->
+    <Header
       :project="project"
       v-on:settings="settings = !settings"
       v-on:refresh="loadProject"
@@ -79,20 +79,20 @@
 
 <script>
 // Components
-import ProjectInfo from "./ProjectInfo";
+import Header from "./Header";
 import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
 
 // Services
-import dataLoader from "../../../services/dataLoader";
+import dataLoader from "@/services/dataLoader";
 import swal from "sweetalert";
 
 export default {
   name: "Project",
   components: {
-    ProjectInfo,
+    Header,
     ProjectColumnsVisu,
     Models,
     Selections,
@@ -449,7 +449,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgb(240, 240, 240);
+  background-color: var(--greyLight);
 }
 
 #selectionAndModels {
@@ -467,7 +467,7 @@ export default {
 
   #startAnalysisBtn {
     height: 100%;
-    font-size: 1.2em;
+    font-size: 1.5em;
     width: 400px;
   }
 }

@@ -54,6 +54,7 @@
         <button
           v-if="req.cancellable"
           @click="cancelRequest(req)"
+          class="blue"
         >
           Cancel
         </button>
@@ -127,8 +128,8 @@ export default {
   margin-bottom: 4px;
   padding: 4px;
   color: #fff;
-  background-color: var(--info);
-  border-radius: 5px;
+  background-color: var(--blue);
+  border-radius: 3px;
   transition: all 0.1s;
 
   overflow: hidden;
@@ -145,9 +146,9 @@ export default {
 }
 
 .request .top .loader {
-  border: 2px solid #f3f3f3; /* Light grey */
-  border-top: 3px solid #3498db; /* Blue */
-  border-right: 3px solid #3498db; /* Blue */
+  border: 2px solid var(--greyLight);
+  border-top: 3px solid var(--blue);
+  border-right: 3px solid var(--blue);
   border-radius: 100%;
   width: 10px;
   height: 10px;
@@ -167,13 +168,13 @@ export default {
   height: 4px;
   min-width: 200px;
   margin-top: 3px;
-  border: 2px solid #f3f3f3; /* Light grey */
+  border: 2px solid var(--greyLight);
   border-radius: 5px;
 }
 .request .progress .bar {
   /* width: 30%; */
   height: 100%;
-  background-color: #cfecff;
+  background-color: var(--greyLight);
   transition: width 0.5s ease-in-out;
 }
 

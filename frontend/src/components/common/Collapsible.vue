@@ -1,11 +1,30 @@
 <template>
   <div :class="collapsibleClass">
+    <!-- Header -->
     <div
       :class="headerClass"
       @click="isOpen = !isOpen"
+      :title="headerTitle"
     >
+      <inline-svg
+        id="arrow"
+        :src="require('@/assets/svg/arrowRight.svg')"
+        width="10"
+        height="10"
+      />
+
+      <div
+        :class="colorTagClass"
+        v-if="headerColor"
+      >
+        <span v-if="headerColor === 'green'">✔</span>
+        <span v-if="headerColor === 'blue'">i</span>
+        <span v-if="headerColor === 'red'">✖</span>
+      </div>
       <slot name="header"></slot>
     </div>
+
+    <!-- Content -->
     <transition name="fade">
       <div
         class="body"
@@ -21,12 +40,28 @@
 export default {
   name: "Collapsible",
   components: {},
+  props: {
+    open: {
+      type: Boolean,
+      default: false,
+    },
+    headerColor: {
+      type: String,
+      default: null,
+    },
+    headerTitle: {
+      type: String,
+      default: "",
+    },
+  },
   data: () => {
     return {
       isOpen: false,
     };
   },
-  created() {},
+  created() {
+    this.isOpen = this.open;
+  },
   methods: {},
   computed: {
     collapsibleClass() {
@@ -41,11 +76,17 @@ export default {
         open: this.isOpen,
       };
     },
+    colorTagClass() {
+      return {
+        colorTag: true,
+        [this.headerColor]: true,
+      };
+    },
   },
   watch: {
     isOpen() {
       // Scroll to the bottom of the collapsible when it is opened
-      if (this.isOpen) {
+      if (this.isOpen && !this.open) {
         this.$nextTick(() => {
           this.$el.scrollIntoView({ behavior: "smooth", block: "center" });
         });
@@ -57,17 +98,19 @@ export default {
 
 <style lang="scss" scoped>
 .collapsible {
-  border: 1px solid #00000027;
-  border-radius: 4px;
+  border: 1px solid var(--greyDark);
 
   .header {
-    padding: 7px 12px;
-    border-bottom: 1px solid #00000027;
+    padding: 9px 12px;
+    min-height: 20px;
+    border-bottom: 1px solid var(--greyDark);
+
     cursor: pointer;
-    background-color: #0000000d;
-    color: #0000008a;
+    background-color: var(--greyLight);
+    color: var(--fontColorLight);
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 
     * {
       display: flex;
@@ -76,33 +119,39 @@ export default {
       gap: 10px;
     }
 
-    // Harrow at the right of the header
-    &:after {
-      content: "▼";
-    }
-    &.open:after {
-      content: "▲";
+    #arrow {
+      transform: rotate(0deg);
+      transform: translateY(-2px);
+      transition: transform 0.2s ease-out;
     }
 
-    // Number of items in the collapsible
-    .nbItem {
-      background-color: #eee;
-      border-radius: 6px;
-      padding: 2px 4px;
-      border: 2px solid #ccc;
-      font-size: 0.9em;
-      color: #888;
-
-      &.blue {
-        background-color: #cfe2ff;
-        border-color: #4f89ca;
-        color: #3b6595;
+    &.open {
+      #arrow {
+        transform: rotate(90deg);
       }
     }
-  }
-  .body {
-    border-bottom: 1px solid #00000027;
-    border-radius: 0 0 4px 4px;
+
+    // Header color
+    .colorTag {
+      width: 20px;
+      height: 19px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50px;
+      color: white;
+      font-size: 0.8em;
+      transition: background-color 0.2s;
+      &.green {
+        background-color: var(--success);
+      }
+      &.blue {
+        background-color: var(--success);
+      }
+      &.red {
+        background-color: var(--danger);
+      }
+    }
   }
 }
 </style>

@@ -42,7 +42,7 @@ const BASE_LAYOUT = {
 const availableWidgetsConfiguration = {};
 // Load every json configuration extension in the widgets folder
 const availableWidgets = require.context(
-  "../../components/debiai/statistics/dataAnalysis/widgets",
+  "../../components/debiai/dataAnalysis/widgets",
   true,
   /configuration\.json$/i
 );
@@ -51,7 +51,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
   // Get the component id from the file name
   const componentKey = componentFilePath.split("/")[1];
   try {
-    const configuration = require("../../components/debiai/statistics/dataAnalysis/widgets/" +
+    const configuration = require("../../components/debiai/dataAnalysis/widgets/" +
       componentKey +
       "/configuration.json");
 

@@ -68,7 +68,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 #modal {
   z-index: 5;
   position: fixed;
@@ -76,7 +76,7 @@ export default {
   width: 100vw;
   left: 0%;
   top: 0%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
 
   overflow: auto;
   display: flex;
@@ -95,9 +95,9 @@ export default {
 #Panel {
   max-height: 90vh;
   max-width: 90vw;
-  padding: 3vh;
-  background-color: rgb(250, 250, 250);
-  border-radius: 1vh;
+  padding: 30px;
+  background-color: var(--greyLight);
+  border-radius: 4px;
   overflow: auto;
 
   &:hover {
@@ -120,8 +120,8 @@ export default {
   }
 
   .warning {
-    background-color: #ffc108;
-    color: #181616;
+    background-color: var(--warning);
+    color: var(--fontColor);
   }
 }
 </style>
