@@ -297,6 +297,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 10px 20px 10px;
 }
 
 #selectionList {
@@ -304,13 +305,16 @@ export default {
   overflow-y: auto;
 }
 
+#allData {
+  padding: 23px;
+}
 #allData .title {
-  min-width: 64%;
+  min-width: 78%;
+  color: var(--primary);
 }
 
 #allData .sampleNumber {
   display: flex;
-  align-items: center;
   gap: 3px;
 }
 
