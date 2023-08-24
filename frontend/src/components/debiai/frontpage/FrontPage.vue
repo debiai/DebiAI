@@ -49,7 +49,7 @@
 
     <!-- Title, name of the columns -->
     <div id="projectTitle">
-      <h3>Projects</h3>
+      <h2>Projects</h2>
 
       <!-- Items details -->
       <div id="itemDetails">
@@ -324,7 +324,7 @@ export default {
   display: flex;
   justify-content: space-between;
 
-  h3 {
+  h2 {
     flex: 3;
   }
 
