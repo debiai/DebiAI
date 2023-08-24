@@ -435,7 +435,7 @@ export default {
   justify-content: space-around;
   flex-wrap: wrap;
 }
-.otherControls input {
+.otherControls input[type="number"] {
   width: 70px;
 }
 
