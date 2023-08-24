@@ -8,6 +8,7 @@
     </div>
 
     <div id="errors">
+      <!-- Errors -->
       <div
         v-for="(error, index) in errorMessages"
         :key="index"
@@ -21,6 +22,8 @@
           </div>
         </transition>
       </div>
+
+      <!-- Warnings -->
       <div
         v-for="(warning, index) in warningMessages"
         :key="index + warningMessages.length"
@@ -121,7 +124,7 @@ export default {
 
   .warning {
     background-color: var(--warning);
-    color: var(--fontColor);
+    color: black;
   }
 }
 </style>
