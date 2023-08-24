@@ -11,14 +11,8 @@
           Models
         </h2>
         <span style="display: flex; align-items: center">
+          <button @click="selectAll">All</button>
           <button
-            class="blue"
-            @click="selectAll"
-          >
-            All
-          </button>
-          <button
-            class="warning"
             style="margin-right: 5px"
             @click="selectNone"
           >
@@ -27,6 +21,7 @@
           <input
             type="text"
             placeholder="Search a model"
+            class="search"
             v-model="searchBar"
           />
         </span>
@@ -249,9 +244,9 @@ export default {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  margin: 5px;
+  margin: 5px;  background-color: white;
+  border: solid 1px var(--greyDark);
   transition: height 0.2s;
   height: 0%;
   /* Do not remove, very important for some reason */

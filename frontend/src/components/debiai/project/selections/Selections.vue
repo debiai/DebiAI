@@ -61,20 +61,15 @@
             />
             Requests
           </button> -->
+          <button @click="selectAll">All</button>
           <button
-            class="blue"
-            @click="selectAll"
-          >
-            All
-          </button>
-          <button
-            class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
           <input
+            class="search"
             type="text"
             placeholder="Search a selection"
             v-model="searchBar"
@@ -232,7 +227,7 @@ export default {
       this.selectedSelectionIds = this.project.selections.map((s) => s.id);
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedSelectionIds = [];
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
@@ -291,8 +286,8 @@ export default {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
+  border: solid 1px var(--greyDark);
   margin: 5px;
   transition: height 0.2s;
   height: 0%; /* Do not remove, very important for some reason */
@@ -324,7 +319,6 @@ export default {
   display: flex;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;

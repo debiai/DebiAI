@@ -157,7 +157,7 @@ export default {
 #CachePanel {
   padding: 10px;
   border: 1px solid var(--greyDark);
-  border-radius: 5px;
+  border-radius: 3px;
 
   display: flex;
   flex-direction: column;

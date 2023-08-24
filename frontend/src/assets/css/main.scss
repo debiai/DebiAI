@@ -183,7 +183,7 @@ button + button {
 /* Card */
 .card {
   background-color: white;
-  border: solid 1px rgba(0, 0, 0, 0.2);
+  border: solid 1px var(--greyDark);
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -357,8 +357,18 @@ button + button {
     background-color: transparent;
   }
 }
-/* Animations */
 
+input {
+  &.search {
+    height: 26px;
+    border-radius: 5px;
+    border: 1px solid var(--greyDarker);
+    margin: 2px;
+    padding-left: 7px;
+  }
+}
+
+/* Animations */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.1s;
