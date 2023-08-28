@@ -422,11 +422,29 @@ input {
 .scale-leave-active {
   overflow: hidden;
   height: 20px;
-  transition: height 2s ease-out;
+  transition: height 10ms ease-out;
 }
 
 .scale-enter,
 .scale-leave-to {
   height: 0px;
   opacity: 0;
+}
+
+@keyframes hithere {
+  30% {
+    transform: scale(1.02);
+  }
+  40% {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+  }
+  70% {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
 }
