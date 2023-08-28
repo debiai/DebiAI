@@ -422,10 +422,11 @@ input {
 .scale-leave-active {
   overflow: hidden;
   height: 20px;
-  transition: height 60ms ease-out;
+  transition: height 2s ease-out;
 }
 
 .scale-enter,
 .scale-leave-to {
   height: 0px;
+  opacity: 0;
 }

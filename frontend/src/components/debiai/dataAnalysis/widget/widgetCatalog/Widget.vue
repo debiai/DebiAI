@@ -27,6 +27,7 @@
           :configurations="configurations"
           v-on:selected="
             (configuration) => {
+              displayConfigurations = false;
               $emit('addWithConf', { widget, configuration });
             }
           "

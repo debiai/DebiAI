@@ -75,8 +75,8 @@
           style="width: 100%"
         >
           <Widget
-            v-for="(widget, i) in selectedWidgets"
-            :key="i"
+            v-for="widget in selectedWidgets"
+            :key="widget.componentKey"
             :widget="widget"
             :nbConfigurations="widgetConfigurationsOverview[widget.componentKey]"
             v-on:add="addWidget"
