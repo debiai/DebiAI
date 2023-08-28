@@ -1,5 +1,32 @@
 <template>
   <div id="WidgetCatalog">
+    <h2 id="title">
+      <span class="aligned">
+        Select a widget
+
+        <documentation-block>
+          DebiAI provide a large set of widgets that can be used to display data in the dashboard.
+          <br />
+          <br />
+          Find, according to your needs, the widgets that suits your activity the best.
+          <br />
+          <br />
+          Full documentation
+          <a
+            href="https://debiai.irt-systemx.fr/dashboard/widgets/"
+            target="_blank"
+            >here</a
+          >.
+        </documentation-block>
+      </span>
+
+      <button
+        class="red"
+        @click="$emit('cancel')"
+      >
+        Close
+      </button>
+    </h2>
     <!-- Widget list  -->
     <div id="widgetList">
       <Widget
@@ -12,24 +39,6 @@
         v-on:selected="selectedWidgetNumber = i"
         v-on:confDeleted="loadWidgetConfigurationsOverview"
       />
-    </div>
-
-    <!-- Widget details -->
-    <div id="widgetDetails">
-      <div id="controls">
-        <button
-          class="red"
-          @click="$emit('cancel')"
-        >
-          Cancel
-        </button>
-      </div>
-      <div id="content">
-        <div
-          class="well well-sm pre-scrollable"
-          v-html="previewText"
-        ></div>
-      </div>
     </div>
   </div>
 </template>
@@ -111,70 +120,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #WidgetCatalog {
-  display: grid;
-  grid-template-columns: 1fr 1.7fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas: "widgetList widgetDetails";
-
-  height: 80vh;
-  width: 80vw;
-}
-#widgetList {
-  grid-area: widgetList;
-  border-radius: 10px;
-  overflow-y: auto;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-}
-#widgetDetails {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: min-content min-content 1.9fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "controls controls"
-    "title title"
-    "content content";
-  grid-area: widgetDetails;
-  max-height: 100%;
-  max-height: 100%;
-  overflow: auto;
-}
-#controls {
-  grid-area: controls;
-  text-align: right;
-  padding-right: 10px;
-}
-#content {
-  grid-area: content;
-  max-height: 100%;
-  padding: 10px;
-}
-#title {
-  display: grid;
-  grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas: "icon name";
-  grid-area: title;
-}
-#icon {
-  grid-area: icon;
-  padding-left: 20px;
-}
-#icon {
-  max-height: 150px;
-  max-width: 150px;
-}
-#name {
-  grid-area: name;
-}
-
-#btn {
+  width: 800px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+
+  #title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
 }
 </style>
