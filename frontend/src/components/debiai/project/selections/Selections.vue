@@ -98,7 +98,7 @@
           >
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
-              height="15"
+              height="25"
             />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
           </div>
         </div>
@@ -306,16 +306,15 @@ export default {
 }
 
 #allData {
-  padding: 23px;
+  padding: 24px 33px;
 }
 #allData .title {
   min-width: 78%;
-  color: var(--primary);
 }
 
 #allData .sampleNumber {
   display: flex;
-  gap: 3px;
+  align-items: center;
 }
 
 /* analysisControls */
