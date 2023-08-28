@@ -1,4 +1,13 @@
 {
-    "name": "Point plot",
-    "description": "Display a scatter point and its average from two columns"
+  "name": "Point plot",
+  "description": "Display a scatter point and its average from two columns",
+  "categories": [
+    "Data overview",
+    "Sample analysis",
+    "Bias detection",
+    "Outlier detection",
+    "Model evaluation",
+    "Data selection",
+    "Data annotation"
+  ]
 }

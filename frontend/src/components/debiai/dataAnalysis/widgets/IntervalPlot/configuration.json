@@ -1,4 +1,6 @@
 {
-    "name": "Interval plot",
-    "description": "Used to display confidence intervals"
+  "name": "Interval plot",
+  "description": "Used to display confidence intervals",
+  "categories": ["Sample analysis", "Model evaluation"],
+  "projectTypes": ["Time series"]
 }

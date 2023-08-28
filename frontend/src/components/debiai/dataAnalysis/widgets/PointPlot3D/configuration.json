@@ -1,7 +1,14 @@
 {
-    "name": "3D Point plot",
-    "description": "3d colored visualisation of 3 selected columns",
-    "layout": {
-        "height": 6
-    }
+  "name": "3D Point plot",
+  "description": "3d colored visualisation of 3 selected columns",
+  "layout": {
+    "height": 6
+  },
+  "categories": [
+    "Data overview",
+    "Sample analysis",
+    "Bias detection",
+    "Outlier detection",
+    "Model evaluation"
+  ]
 }

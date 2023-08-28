@@ -1,4 +1,5 @@
 {
-    "name": "Correlation matrix",
-    "description": "Show the data correlation between columns"
+  "name": "Correlation matrix",
+  "description": "Show the data correlation between columns",
+  "categories": ["Data overview", "Bias detection", "Model evaluation"]
 }

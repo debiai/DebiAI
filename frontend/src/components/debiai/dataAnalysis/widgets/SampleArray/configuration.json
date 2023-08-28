@@ -1,4 +1,5 @@
 {
     "name": "Sample array",
-    "description": "Display, sort and filter the project samples in an array"
+    "description": "Display, sort and filter the project samples in an array",
+    "categories": ["Sample analysis"]
 }

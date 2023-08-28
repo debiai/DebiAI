@@ -1,5 +1,6 @@
 <template>
   <div id="WidgetCatalog">
+    <!-- Title and close button -->
     <h2 id="title">
       <span class="aligned">
         Select a widget
@@ -27,18 +28,59 @@
         Close
       </button>
     </h2>
-    <!-- Widget list  -->
-    <div id="widgetList">
-      <Widget
-        v-for="(widget, i) in widgets"
-        :key="i"
-        :widget="widget"
-        :nbConfigurations="widgetConfigurationsOverview[widget.componentKey]"
-        v-on:add="addWidget"
-        v-on:addWithConf="addWidgetWithConf"
-        v-on:selected="selectedWidgetNumber = i"
-        v-on:confDeleted="loadWidgetConfigurationsOverview"
-      />
+
+    <div id="content">
+      <!-- Category selection -->
+      <div id="categorySelection">
+        <!-- Categories -->
+        <u>Widget categories:</u>
+        <div id="buttonList">
+          <button
+            v-for="category in widgetCategoriesSorted"
+            :key="category"
+            @click="
+              selectedCategory === category
+                ? (selectedCategory = '')
+                : (selectedCategory = category)
+            "
+            :class="{ radioBtn: true, selected: selectedCategory == category }"
+          >
+            {{ category }}
+          </button>
+        </div>
+
+        <!-- Project Types -->
+        <u>Project types:</u>
+        <div id="buttonList">
+          <button
+            v-for="projectType in widgetProjectTypesSorted"
+            :key="projectType"
+            @click="
+              selectedCategory === projectType
+                ? (selectedCategory = '')
+                : (selectedCategory = projectType)
+            "
+            :class="{ radioBtn: true, selected: selectedCategory == projectType }"
+          >
+            {{ projectType }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Widget list  -->
+      <div id="widgetList">
+        <transition-group name="scale">
+          <Widget
+            v-for="(widget, i) in selectedWidgets"
+            :key="i"
+            :widget="widget"
+            :nbConfigurations="widgetConfigurationsOverview[widget.componentKey]"
+            v-on:add="addWidget"
+            v-on:addWithConf="addWidgetWithConf"
+            v-on:confDeleted="loadWidgetConfigurationsOverview"
+          />
+        </transition-group>
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +88,6 @@
 <script>
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
 import Widget from "./Widget";
-import { marked } from "marked";
 
 export default {
   name: "widgetCatalog",
@@ -54,26 +95,29 @@ export default {
   data() {
     return {
       widgets: [],
-      selectedWidgetNumber: 0,
-      widgetDescriptions: {},
-      widgetConfigurationsOverview: {}, // { <widgetTitle>: <nbOfConfigurations> }
+      widgetCategories: [],
+      widgetProjectTypes: [],
+      selectedCategory: "",
     };
   },
   mounted() {
-    // Loading the available widgets names
+    // Get the available widgets names
     this.widgets = componentsGridStackData.getAvailableWidgets();
 
-    // Load md widgets descriptions
-    this.widgets.forEach((widget) => {
-      try {
-        const widgetGuide = require("raw-loader!../../widgets/" +
-          widget.componentKey +
-          "/guide.md").default;
-        this.widgetDescriptions[widget.componentKey] = widgetGuide;
-      } catch (error) {
-        console.warn("No guide for " + widget.componentKey);
+    // Get the available widgets categories and project types
+    for (let widget of this.widgets) {
+      if (widget.configuration?.categories) {
+        for (let category of widget.configuration.categories)
+          if (!this.widgetCategories.includes(category)) this.widgetCategories.push(category);
       }
-    });
+      if (widget.configuration?.projectTypes) {
+        for (let projectType of widget.configuration.projectTypes)
+          if (!this.widgetProjectTypes.includes(projectType))
+            this.widgetProjectTypes.push(projectType);
+      }
+    }
+
+    console.log(this.widgetCategories);
 
     // Load widget configurations
     this.loadWidgetConfigurationsOverview();
@@ -97,24 +141,26 @@ export default {
     },
   },
   computed: {
-    widgetDescription() {
-      if (this.widgets.length == 0) return "";
-      return this.widgetDescriptions[this.widgets[this.selectedWidgetNumber].componentKey];
+    widgetCategoriesSorted() {
+      return this.widgetCategories.sort();
     },
-    previewText() {
-      if (this.widgetDescription === undefined) return "No documentation";
-      try {
-        return marked.parse(this.widgetDescription);
-      } catch (error) {
-        console.log("Error while parsing markdown");
-        console.log(this.widgetDescription);
-        console.log(error);
-        return "Error while parsing the documentation";
-      }
+    widgetProjectTypesSorted() {
+      return this.widgetProjectTypes.sort();
     },
-    iconPath() {
-      if (this.widgets.length == 0) return null;
-      return "documentation/images/" + this.widgets[this.selectedWidgetNumber].name + "/icon.png";
+    selectedWidgets() {
+      if (this.selectedCategory === "") return this.widgets;
+
+      return this.widgets.filter((widget) => {
+        if (widget.configuration?.categories) {
+          for (let category of widget.configuration.categories)
+            if (category === this.selectedCategory) return true;
+        }
+        if (widget.configuration?.projectTypes) {
+          for (let projectType of widget.configuration.projectTypes)
+            if (projectType === this.selectedCategory) return true;
+        }
+        return false;
+      });
     },
   },
 };
@@ -122,7 +168,8 @@ export default {
 
 <style lang="scss" scoped>
 #WidgetCatalog {
-  width: 800px;
+  width: 900px;
+  height: 85vh;
   display: flex;
   flex-direction: column;
 
@@ -130,7 +177,35 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--greyDark);
+  }
+
+  #content {
+    display: flex;
+
+    #categorySelection {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      u {
+        margin: 15px 0 5px 0;
+        font-size: 1.1em;
+      }
+
+      #buttonList {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        button {
+          border: none;
+        }
+      }
+    }
   }
 }
 </style>

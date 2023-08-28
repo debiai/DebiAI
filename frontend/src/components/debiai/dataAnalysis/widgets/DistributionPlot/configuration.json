@@ -1,7 +1,8 @@
 {
-    "name": "Data distribution",
-    "description": "Bar plot with the distribution of a column",
-    "layout": {
-        "width": 6
-    }
+  "name": "Data distribution",
+  "description": "Bar plot with the distribution of a column",
+  "layout": {
+    "width": 6
+  },
+  "categories": ["Data overview", "Bias detection"]
 }

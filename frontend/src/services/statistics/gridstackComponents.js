@@ -93,13 +93,28 @@ function createWidget(widgetKey) {
 }
 
 function getAvailableWidgets() {
+  // Return the list of available widgets with their configuration
+
   let widgetList = Object.keys(availableWidgetsConfiguration).map((widgetKey) => {
+    // Import the configuration file
+    let widgetConfiguration = {};
+    try {
+      widgetConfiguration = require("@/components/debiai/dataAnalysis/widgets/" +
+        widgetKey +
+        "/configuration.json");
+    } catch (error) {
+      console.log(error);
+      console.warn("Error loading widget : " + widgetKey + " configuration");
+    }
+
     return {
       componentKey: availableWidgetsConfiguration[widgetKey].widgetKey,
       name: availableWidgetsConfiguration[widgetKey].name,
       description: availableWidgetsConfiguration[widgetKey].description,
+      configuration: widgetConfiguration,
     };
   });
+
   return widgetList;
 }
 

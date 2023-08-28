@@ -1,7 +1,8 @@
 {
-    "name": "Parallel categories",
-    "description": "Efficient way of displaying a fast overview of all of the samples. Make selection on each one of the columns",
-    "layout": {
-        "width": 12
-    }
+  "name": "Parallel categories",
+  "description": "Efficient way of displaying a fast overview of all of the samples. Make selection on each one of the columns",
+  "layout": {
+    "width": 12
+  },
+  "categories": ["Data overview", "Outlier detection", "Bias detection", "Data selection"]
 }

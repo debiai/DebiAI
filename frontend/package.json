@@ -16,7 +16,6 @@
     "file-saver": "^2.0.5",
     "gridstack": "^2.0.0",
     "jszip": "^3.10.1",
-    "marked": "^4.2.12",
     "mathjs": "^7.6.0",
     "plotly.js": "^2.18.1",
     "sweetalert": "^2.1.2",

@@ -8,5 +8,7 @@
         "minHeight": 2,
         "maxHeight": 15
     },
+    "categories": ["Template"],
     "display": false
+
 }

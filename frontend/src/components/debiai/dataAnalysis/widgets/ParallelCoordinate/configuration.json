@@ -1,7 +1,8 @@
 {
-    "name": "Parallel coordinate",
-    "description": "Display a fast overview of all of the samples. Make selection on each one of the columns",
-    "layout": {
-        "width": 12
-    }
+  "name": "Parallel coordinate",
+  "description": "Display a fast overview of all of the samples. Make selection on each one of the columns",
+  "layout": {
+    "width": 12
+  },
+  "categories": ["Data overview", "Outlier detection", "Bias detection", "Data selection"]
 }
