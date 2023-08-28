@@ -67,7 +67,49 @@
       @mouseup="grabbing = false"
     >
       <!-- Name -->
-      <h2 id="name">
+      <div id="name">
+        <h2>
+          {{ name }}
+        </h2>
+        <!-- start filtering btn -->
+        <button
+          v-if="canFilterSamples && !startFiltering"
+          :title="'Start filtering samples with the ' + title + ' widget'"
+          @click="startFiltering = !startFiltering"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+            fill="black"
+          />
+          Filter
+        </button>
+        <!-- filtering ongoing btn -->
+        <button
+          v-if="canFilterSamples && startFiltering"
+          class="highlighted"
+          title="Stop filtering"
+          @click="startFiltering = !startFiltering"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+          />
+          Filtering
+        </button>
+
+        <!-- Clear filters -->
+        <button
+          v-if="clearFiltersAvailable"
+          id="clearFiltersBtn"
+          @click="clearFilters"
+        >
+          <span class="badge">{{ widgetFilters.length }}</span>
+          Clear filters
+        </button>
+
         <!-- Widget filter position -->
         <span
           v-if="widgetFilterOrder >= 0"
@@ -76,10 +118,9 @@
         >
           {{ widgetFilterOrder + 1 }}
         </span>
-        {{ name }}
-      </h2>
+      </div>
 
-      <!-- Loading anim, messages, warning & filters applied -->
+      <!-- Loading anim, messages, warning -->
       <div class="center">
         <!-- Loading animation -->
         <div
@@ -106,7 +147,7 @@
           <b>&#x26A0;</b>
           <div v-if="colorWarning && selectedDataWarning">Selected color and data have changed</div>
           <!-- Color Warning -->
-          <div v-else-if="colorWarning">The selected color have changed</div>
+          <div v-else-if="colorWarning">The color has changed</div>
           <!-- selectedData Warning -->
           <div v-else-if="selectedDataWarning">The selected data have changed</div>
 
@@ -125,17 +166,10 @@
             Hide
           </button>
         </div>
+      </div>
 
-        <!-- Clear filters -->
-        <button
-          v-if="clearFiltersAvailable"
-          id="clearFiltersBtn"
-          @click="clearFilters"
-        >
-          <span class="badge">{{ widgetFilters.length }}</span>
-          Clear filters
-        </button>
-
+      <!-- On right: filters applied, configuration, copy, settings, close btn, ... -->
+      <div class="options">
         <!-- Filters applied -->
         <button
           v-if="localFilters.length > 0"
@@ -143,7 +177,6 @@
           @click="showLocalFilters = true"
           title="Filters applied to this widget on creation"
         >
-          <span class="badge">{{ localFilters.length }}</span>
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
             width="12"
@@ -151,11 +184,9 @@
             fill="black"
           />
           Applied
+          <span class="badge">{{ localFilters.length }}</span>
         </button>
-      </div>
 
-      <!-- Options : configuration, copy, settings, close btn, ... -->
-      <div class="options">
         <!-- Comment btn -->
         <button
           :class="commentModal ? 'highlighted' : ''"
@@ -195,34 +226,6 @@
             :src="require('@/assets/svg/downloadImage.svg')"
             height="14"
             width="18"
-          />
-        </button>
-        <!-- filtering ongoing btn -->
-        <button
-          v-if="canFilterSamples && startFiltering"
-          class="highlighted"
-          style="width: 85px"
-          title="Stop filtering"
-          @click="startFiltering = !startFiltering"
-        >
-          Filtering
-          <inline-svg
-            :src="require('@/assets/svg/filter.svg')"
-            width="14"
-            height="14"
-          />
-        </button>
-        <!-- start filtering btn -->
-        <button
-          v-if="canFilterSamples && !startFiltering"
-          :title="'Start filtering samples with the ' + title + ' widget'"
-          @click="startFiltering = !startFiltering"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/filter.svg')"
-            width="14"
-            height="14"
-            fill="black"
           />
         </button>
         <!-- save configuration btn -->
@@ -649,44 +652,50 @@ export default {
   }
 }
 
+#widgetHeader {
+  display: flex;
+  flex-wrap: wrap;
+}
 #name {
-  overflow: hidden;
-}
+  display: flex;
+  align-items: center;
 
-#name.clickable {
-  cursor: pointer;
-}
+  button {
+    margin-left: 5px;
+  }
 
-#name.clickable:hover {
-  text-decoration: underline;
-}
-
-#name #widgetFilteringOrder {
-  border: grey 2px solid;
-  border-radius: 20px;
-  padding: 2px 1px 0px 4px;
-  margin-right: 10px;
-  font-size: 0.8em;
-  font-weight: bold;
+  #widgetFilteringOrder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+    border: var(--primary) 2px solid;
+    border-radius: 20px;
+    margin-left: 10px;
+    font-weight: bold;
+  }
 }
 
 /* Options */
 .options {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   opacity: 0;
   transition: opacity 0.5s;
 
   button {
-    width: 35px;
-    height: 25px;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  button.settings {
-    width: 70px;
+    min-width: 33px;
+    min-height: 28px;
+
+    &.settings {
+      width: 70px;
+    }
   }
 
   button + button {
