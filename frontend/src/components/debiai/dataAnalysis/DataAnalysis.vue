@@ -357,6 +357,24 @@ export default {
       this.$emit("GridStack_resizestop");
       window.dispatchEvent(new Event("resize"));
     });
+
+    // Animate the widget when added
+    this.grid.on("added", (event, items) => {
+      // Get the component from the components list
+      const component = this.components.find((c) => items[0].id == c.id);
+      if (!component) return;
+
+      // Animate the component
+      const componentElement = document.getElementById(component.id);
+      componentElement.style.opacity = 0.5;
+      componentElement.style.transform = "scale(1.05)";
+      setTimeout(() => {
+        componentElement.style.transition = "transform 100ms ease-in-out 0s";
+        componentElement.style.transform = "scale(1)";
+        componentElement.style.opacity = 1;
+      }, 10);
+    });
+
     // this.grid.on("added removed change", () => {
     //   // Save layout in local cache
     //   this.saveLayout();
