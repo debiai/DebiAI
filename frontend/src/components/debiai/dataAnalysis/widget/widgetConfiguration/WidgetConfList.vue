@@ -1,7 +1,7 @@
 <template>
   <div id="configurations">
     <div>
-      <h4 class="configurationType">Project configurations:</h4>
+      <h4 class="configurationType">Project:</h4>
       <div class="itemList">
         <WidgetConf
           v-for="configuration in sameProjectConfigurations"
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div>
-      <h4 class="configurationType">Other configurations:</h4>
+      <h4 class="configurationType">Other:</h4>
       <div class="itemList">
         <WidgetConf
           v-for="configuration in otherConfigurations"
@@ -76,8 +76,7 @@ export default {
 
 <style scoped>
 .configurationType {
-  padding: 5px 0 5px 20px;
-  opacity: 0.7;
+  padding: 20px;
   text-align: left;
 }
 </style>

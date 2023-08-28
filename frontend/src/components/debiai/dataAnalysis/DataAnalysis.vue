@@ -80,7 +80,7 @@
     </modal>
     <!-- WidgetCatalog -->
     <modal
-      v-if="widgetCatalog"
+      v-show="widgetCatalog"
       @close="widgetCatalog = false"
     >
       <WidgetCatalog

@@ -69,7 +69,11 @@
 
       <!-- Widget list  -->
       <div id="widgetList">
-        <transition-group name="scale">
+        <transition-group
+          name="scale"
+          class="itemList"
+          style="width: 100%"
+        >
           <Widget
             v-for="(widget, i) in selectedWidgets"
             :key="i"
@@ -101,28 +105,39 @@ export default {
     };
   },
   mounted() {
-    // Get the available widgets names
-    this.widgets = componentsGridStackData.getAvailableWidgets();
-
-    // Get the available widgets categories and project types
-    for (let widget of this.widgets) {
-      if (widget.configuration?.categories) {
-        for (let category of widget.configuration.categories)
-          if (!this.widgetCategories.includes(category)) this.widgetCategories.push(category);
-      }
-      if (widget.configuration?.projectTypes) {
-        for (let projectType of widget.configuration.projectTypes)
-          if (!this.widgetProjectTypes.includes(projectType))
-            this.widgetProjectTypes.push(projectType);
-      }
-    }
-
-    console.log(this.widgetCategories);
-
-    // Load widget configurations
+    // Load widget configurations then setup widgets
     this.loadWidgetConfigurationsOverview();
   },
   methods: {
+    loadWidgetConfigurationsOverview() {
+      this.widgetConfigurationsOverview = {};
+
+      this.$backendDialog
+        .getWidgetConfigurationsOverview()
+        .then((configuration) => {
+          this.widgetConfigurationsOverview = configuration;
+        })
+        .finally(() => {
+          this.setupWidgets();
+        });
+    },
+    setupWidgets() {
+      // Get the available widgets names
+      this.widgets = componentsGridStackData.getAvailableWidgets();
+
+      // Get the available widgets categories and project types
+      for (let widget of this.widgets) {
+        if (widget.configuration?.categories) {
+          for (let category of widget.configuration.categories)
+            if (!this.widgetCategories.includes(category)) this.widgetCategories.push(category);
+        }
+        if (widget.configuration?.projectTypes) {
+          for (let projectType of widget.configuration.projectTypes)
+            if (!this.widgetProjectTypes.includes(projectType))
+              this.widgetProjectTypes.push(projectType);
+        }
+      }
+    },
     addWidget(widget) {
       this.$emit("add", widget.componentKey);
     },
@@ -130,13 +145,6 @@ export default {
       this.$emit("addWithConf", {
         componentKey: widget.componentKey,
         configuration,
-      });
-    },
-    loadWidgetConfigurationsOverview() {
-      this.widgetConfigurationsOverview = {};
-
-      this.$backendDialog.getWidgetConfigurationsOverview().then((configuration) => {
-        this.widgetConfigurationsOverview = configuration;
       });
     },
   },
@@ -169,7 +177,6 @@ export default {
 <style lang="scss" scoped>
 #WidgetCatalog {
   width: 900px;
-  height: 85vh;
   display: flex;
   flex-direction: column;
 
@@ -186,7 +193,7 @@ export default {
     display: flex;
 
     #categorySelection {
-      width: 200px;
+      width: 150px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -205,6 +212,15 @@ export default {
           border: none;
         }
       }
+    }
+    #widgetList {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      overflow-y: auto;
+      height: 80vh;
     }
   }
 }

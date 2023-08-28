@@ -4,9 +4,13 @@
     @click="$emit('selected')"
   >
     <div class="header">
+      <!-- Configuration name -->
       <h4 style="display: flex; align-items: center">
         {{ configuration.name }}
-        <!-- Display conf details and project: -->
+      </h4>
+
+      <div class="right">
+        <!-- Configuration details -->
         <DocumentationBlock :followCursor="true">
           <h4>Configuration details</h4>
           <table class="confDetails">
@@ -27,14 +31,15 @@
             {{ configuration.dataProviderId }}
           </span>
         </DocumentationBlock>
-      </h4>
 
-      <button
-        class="red"
-        @click="deleteConf"
-      >
-        Delete
-      </button>
+        <!-- Delete btn -->
+        <button
+          class="red"
+          @click="deleteConf"
+        >
+          Delete
+        </button>
+      </div>
     </div>
     <div class="body">
       <span
@@ -79,56 +84,60 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .configuration {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-}
 
-.configuration .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.configuration .body {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-.configuration .creationDate {
-  text-align: right;
-  font-size: 0.7em;
-  opacity: 0.7;
-}
-.configuration .description {
-  flex: 1;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-width: 300px;
-  opacity: 0.7;
-  font-size: 0.8em;
-}
-.configuration .confDetails {
-  border-spacing: 0px;
-  align-self: flex-start;
-  padding: 10px;
-}
-.configuration .confProject {
-  font-weight: lighter;
-  font-size: 0.8em;
-}
-.configuration .confDetails th {
-  opacity: 0.8;
-  font-weight: lighter;
-  padding-right: 10px;
-}
-.configuration .key {
-  text-align: right;
-}
-.configuration .value {
-  text-align: left;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    .creationDate {
+      text-align: right;
+      font-size: 0.7em;
+      opacity: 0.7;
+    }
+    .description {
+      flex: 1;
+      text-align: left;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-width: 300px;
+      color: var(--fontColorLight);
+    }
+    .confDetails {
+      border-spacing: 0px;
+      align-self: flex-start;
+      padding: 10px;
+      .confProject {
+        font-weight: lighter;
+        font-size: 0.8em;
+      }
+      .confDetails th {
+        opacity: 0.8;
+        font-weight: lighter;
+        padding-right: 10px;
+      }
+      .key {
+        text-align: right;
+      }
+      .value {
+        text-align: left;
+      }
+    }
+  }
 }
 </style>

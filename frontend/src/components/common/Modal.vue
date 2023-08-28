@@ -99,7 +99,7 @@ export default {
   max-height: 90vh;
   max-width: 90vw;
   padding: 30px;
-  background-color: var(--greyLight);
+  background-color: white;
   border-radius: 4px;
   overflow: auto;
 
