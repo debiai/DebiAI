@@ -662,16 +662,19 @@ export default {
 
 #widgetHeader {
   display: flex;
-  flex-wrap: wrap;
 }
 #name {
   display: flex;
   align-items: center;
+  h2 {
+    white-space: nowrap;
+  }
 
   button {
     opacity: 0;
     transition: opacity 0.5s;
     margin-left: 5px;
+    white-space: nowrap;
   }
 
   #widgetFilteringOrder {

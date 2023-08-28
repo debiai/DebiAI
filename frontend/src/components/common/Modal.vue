@@ -47,11 +47,12 @@ export default {
   props: {
     errorMessages: { type: Array, default: () => [] },
     warningMessages: { type: Array, default: () => [] },
+    preventBodyScroll: { type: Boolean, default: true },
   },
   mounted() {
     // When the modal is opened, we want to disable scrolling on the body
     const bodyOverflowStyle = document.body.style.overflow;
-    if (bodyOverflowStyle !== "hidden") {
+    if (bodyOverflowStyle !== "hidden" && this.preventBodyScroll) {
       document.body.style.overflow = "hidden";
       this.preventBodyScroll = true;
       // The preventBodyScroll variable is used in the beforeDestroy hook

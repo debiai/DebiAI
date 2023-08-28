@@ -82,6 +82,7 @@
     <modal
       v-show="widgetCatalog"
       @close="widgetCatalog = false"
+      :preventBodyScroll="false"
     >
       <WidgetCatalog
         @cancel="widgetCatalog = false"
