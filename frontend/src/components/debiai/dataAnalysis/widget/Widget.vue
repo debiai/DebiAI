@@ -634,6 +634,14 @@ export default {
   margin: 5px;
 
   &:hover {
+    #name {
+      button,
+      #widgetFilteringOrder {
+        opacity: 1;
+        transition: opacity 0.1s;
+      }
+    }
+
     .options {
       opacity: 1;
       transition: opacity 0.1s;
@@ -661,10 +669,14 @@ export default {
   align-items: center;
 
   button {
+    opacity: 0;
+    transition: opacity 0.5s;
     margin-left: 5px;
   }
 
   #widgetFilteringOrder {
+    opacity: 0;
+    transition: opacity 0.5s;
     display: flex;
     align-items: center;
     justify-content: center;
