@@ -45,14 +45,15 @@
       <h3 class="name">{{ widget.name }}</h3>
       <div class="description">{{ widget.description }}</div>
     </div>
-    <!-- configurations -->
+
+    <!-- Configurations -->
     <button
       class="confBtn"
       v-if="nbConfigurations && nbConfigurations > 0"
       style="display: flex; align-items: center; padding: 5px"
       title="Add this widget with a previously saved configuration"
       @click.stop
-      @click="clicked"
+      @click="openConfigurations"
     >
       <inline-svg
         :src="require('@/assets/svg/save.svg')"
@@ -61,6 +62,22 @@
         style="margin-right: 5px"
       />
       {{ nbConfigurations }}
+    </button>
+
+    <!-- Documentation -->
+    <button
+      v-if="widget.documentationLink"
+      class="docBtn"
+      title="Widget online documentation"
+      style="margin-right: 5px"
+      @click.stop
+      @click="openDocumentation"
+    >
+      <inline-svg
+        :src="require('@/assets/svg/question.svg')"
+        width="25"
+        height="25"
+      />
     </button>
   </div>
 </template>
@@ -86,7 +103,7 @@ export default {
     };
   },
   methods: {
-    clicked() {
+    openConfigurations() {
       this.$emit("selected");
       this.getConfigurations().then(() => {
         if (this.configurations.length > 0)
@@ -100,6 +117,9 @@ export default {
       this.configurations = await this.$backendDialog.getWidgetConfigurations(
         this.widget.componentKey
       );
+    },
+    openDocumentation() {
+      window.open(this.widget.documentationLink, "_blank");
     },
     confDeleted() {
       this.getConfigurations();
@@ -133,7 +153,7 @@ export default {
   }
   .description {
     text-align: left;
-    color: var(--fontColorLight)
+    color: var(--fontColorLight);
   }
 }
 
@@ -153,5 +173,17 @@ export default {
 
 .confBtn {
   background-color: white;
+  &:hover {
+    background-color: var(--greyLight);
+  }
+}
+.docBtn {
+  background-color: transparent;
+  border-radius: 100px;
+  padding: 0px;
+  border: none;
+  &:hover {
+    background-color: var(--greyLight);
+  }
 }
 </style>

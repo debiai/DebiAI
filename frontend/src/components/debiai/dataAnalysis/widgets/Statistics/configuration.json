@@ -5,5 +5,6 @@
     "width": 4,
     "height": 2
   },
-  "categories": ["Data overview", "Bias detection", "Model evaluation"]
+  "categories": ["Data overview", "Bias detection", "Model evaluation"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/statistics/"
 }

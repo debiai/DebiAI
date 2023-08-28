@@ -10,5 +10,6 @@
     "Bias detection",
     "Outlier detection",
     "Model evaluation"
-  ]
+  ],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/3D_point_plot/"
 }

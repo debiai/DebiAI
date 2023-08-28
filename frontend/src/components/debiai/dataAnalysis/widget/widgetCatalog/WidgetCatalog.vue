@@ -127,12 +127,12 @@ export default {
 
       // Get the available widgets categories and project types
       for (let widget of this.widgets) {
-        if (widget.configuration?.categories) {
-          for (let category of widget.configuration.categories)
+        if (widget.categories) {
+          for (let category of widget.categories)
             if (!this.widgetCategories.includes(category)) this.widgetCategories.push(category);
         }
-        if (widget.configuration?.projectTypes) {
-          for (let projectType of widget.configuration.projectTypes)
+        if (widget.projectTypes) {
+          for (let projectType of widget.projectTypes)
             if (!this.widgetProjectTypes.includes(projectType))
               this.widgetProjectTypes.push(projectType);
         }
@@ -156,15 +156,27 @@ export default {
       return this.widgetProjectTypes.sort();
     },
     selectedWidgets() {
-      if (this.selectedCategory === "") return this.widgets;
+      // Sort the widget by number of categories so that
+      // the most important ones are displayed first
+      const sortedWidgets = this.widgets.sort((a, b) => {
+        if (a.categories && b.categories) {
+          if (a.categories.length > b.categories.length) return -1;
+          if (a.categories.length < b.categories.length) return 1;
+        }
+        if (a.categories && !b.categories) return -1;
+        if (!a.categories && b.categories) return 1;
+        return 0;
+      });
 
-      return this.widgets.filter((widget) => {
-        if (widget.configuration?.categories) {
-          for (let category of widget.configuration.categories)
+      if (this.selectedCategory === "") return sortedWidgets;
+
+      return sortedWidgets.filter((widget) => {
+        if (widget.categories) {
+          for (let category of widget.categories)
             if (category === this.selectedCategory) return true;
         }
-        if (widget.configuration?.projectTypes) {
-          for (let projectType of widget.configuration.projectTypes)
+        if (widget.projectTypes) {
+          for (let projectType of widget.projectTypes)
             if (projectType === this.selectedCategory) return true;
         }
         return false;

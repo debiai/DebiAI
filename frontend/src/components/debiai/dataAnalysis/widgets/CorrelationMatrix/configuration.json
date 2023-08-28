@@ -1,5 +1,6 @@
 {
   "name": "Correlation matrix",
   "description": "Show the data correlation between columns",
-  "categories": ["Data overview", "Bias detection", "Model evaluation"]
+  "categories": ["Data overview", "Bias detection"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/correlation_matrix/"
 }

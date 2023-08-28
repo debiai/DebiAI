@@ -1,5 +1,6 @@
 {
   "name": "2D density plot",
   "description": "Visualize the distribution and intensity of data in a 2D space",
-  "categories": ["Data overview"]
+  "categories": ["Data overview"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/density_plot/"
 }

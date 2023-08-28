@@ -4,5 +4,6 @@
   "layout": {
     "width": 6
   },
-  "categories": ["Data overview", "Bias detection"]
+  "categories": ["Data overview", "Bias detection", "Data selection"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/2_data_distribution/"
 }

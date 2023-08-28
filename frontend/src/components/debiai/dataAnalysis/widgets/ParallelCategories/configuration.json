@@ -4,5 +4,6 @@
   "layout": {
     "width": 12
   },
-  "categories": ["Data overview", "Outlier detection", "Bias detection", "Data selection"]
+  "categories": ["Data overview", "Outlier detection", "Bias detection", "Data selection"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/parallel_categories/"
 }

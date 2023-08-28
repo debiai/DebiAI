@@ -6,5 +6,6 @@
   "layout": {
     "width": 12,
     "height": 6
-  }
+  },
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/confusion_matrix/"
 }

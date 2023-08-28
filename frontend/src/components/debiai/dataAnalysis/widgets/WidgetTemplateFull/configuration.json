@@ -9,5 +9,6 @@
     "maxHeight": 15
   },
   "categories": ["Template"],
+  "documentationLink": "https://url.to.documentation",
   "display": false
 }
