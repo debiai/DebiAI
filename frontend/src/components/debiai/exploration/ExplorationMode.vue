@@ -9,9 +9,12 @@
     />
 
     <!-- Content -->
-    <div id="content">
-      <ColumnSelectionVue />
-      <!-- <AggregationVue /> -->
+    <div
+      id="content"
+      v-if="!loading"
+    >
+      <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+      <AggregationVue :selectedColumnsIndex="selectedColumnsIndex" />
     </div>
   </div>
 </template>
@@ -40,6 +43,9 @@ export default {
       projectId: null,
       project: null,
       loading: false,
+
+      // Exploration
+      selectedColumnsIndex: [1,2,3], // The selected columns index
     };
   },
   created() {
@@ -73,6 +79,7 @@ export default {
   methods: {
     async loadProject() {
       this.project = null;
+      this.loading = true;
       return this.$backendDialog
         .getProject()
         .then((project) => {
@@ -126,6 +133,9 @@ export default {
           }
           console.log(e);
           this.$router.push("/");
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     deleteProject() {

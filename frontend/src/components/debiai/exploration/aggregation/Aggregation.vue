@@ -2,15 +2,14 @@
   <div id="Aggregation">
     <!-- Back, title, proceed buttons -->
     <div id="top">
-      <button @click="back">&lt; Column selection</button>
       <h3 id="title">
         Select the metrics used for the exploration and aggregate the columns if needed:
       </h3>
       <button
         :disabled="!canProceed"
-        @click="proceed"
+        @click="save"
       >
-        Proceed >
+        Save
       </button>
     </div>
 
@@ -19,21 +18,30 @@
       id="metricSelection"
       class="card"
     >
-      <h3>Available metrics:</h3>
+      <div class="title">Available metrics</div>
       <div id="metrics">
-        <div
-          :class="'metric ' + (selectedMetrics.includes(metric) ? 'selected' : '')"
+        <button
+          :class="'radioBtn ' + (selectedMetrics.includes(metric) ? 'selected' : '')"
           v-for="metric in metrics"
           :key="metric"
           @click="selectMetric(metric)"
         >
           {{ metric }}
-        </div>
+        </button>
       </div>
     </div>
 
     <!-- Loading animation -->
     <LoadingAnimation v-if="loading"> Gathering the selected columns metrics... </LoadingAnimation>
+
+    <!-- No selected columns message -->
+    <div
+      v-if="!loading && selectedColumnsIndex.length === 0"
+      class="tip"
+    >
+      <h3 class="title">No columns selected</h3>
+      <p class="body">You need to select at least one column to proceed.</p>
+    </div>
 
     <!-- Columns metrics -->
     <transition name="fade">
@@ -42,7 +50,7 @@
         id="columnsMetrics"
         class="card"
       >
-        <h3>Selected columns:</h3>
+        <div class="title">Selected columns:</div>
         <transition name="fade">
           <div
             id="warningMessage"
@@ -104,7 +112,7 @@
                     <button
                       v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
                       :key="i"
-                      :class="'chunk ' + (i === columnMetrics.nbChunks ? '' : 'white')"
+                      :class="'radioBtn chunk ' + (i === columnMetrics.nbChunks ? 'selected' : '')"
                       @click="
                         columnMetrics.nbChunks = i === columnMetrics.nbChunks ? null : i;
                         calculateNbColumnsToAggregate();
@@ -131,44 +139,24 @@
 const maximumUniqueValues = 20;
 
 export default {
+  props: {
+    selectedColumnsIndex: { type: Array, default: () => [] }, // The selected columns index
+  },
   data() {
     return {
       maximumUniqueValues: maximumUniqueValues,
       metrics: ["Samples number"],
       selectedMetrics: ["Samples number"],
       projectColumns: [],
-      selectedColumnsIndex: [],
 
       selectedColumnsMetrics: null,
       nbColumnsToAggregate: 0,
-      loading: true,
+      loading: false,
     };
   },
   created() {
-    // Checking url references
-    let dataProviderId = this.$route.query.dataProviderId;
-    let projectId = this.$route.query.projectId;
-
-    if (!dataProviderId || !projectId) this.$router.push("/");
-
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
-    this.selectedColumnsIndex = this.$route.query.selectedColumnsIndex;
-
-    if (this.projectColumns?.length === 0 || this.selectedColumnsIndex?.length === 0) {
-      // Go back to project page and start the exploration immediately
-      this.$router.push({
-        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-        query: {
-          projectId: projectId,
-          dataProviderId: dataProviderId,
-          startExploration: true,
-        },
-      });
-    }
-
-    // Load the metrics
-    this.loadColumnsMetrics();
   },
   methods: {
     selectMetric(metric) {
@@ -180,6 +168,7 @@ export default {
     },
 
     loadColumnsMetrics() {
+      this.loading = true;
       const columnLabels = this.selectedColumnsIndex.map(
         (index) => this.projectColumns[index].name
       );
@@ -237,27 +226,10 @@ export default {
       this.nbColumnsToAggregate = nbColumns;
     },
 
-    // Router
-    back() {
-      this.$router.push({
-        name: "columnSelection",
-        query: {
-          projectId: this.$route.query.projectId,
-          dataProviderId: this.$route.query.dataProviderId,
-          selectedColumnsIndex: this.selectedColumnsIndex,
-        },
-      });
-    },
-    proceed() {
-      this.$router.push({
-        name: "filtering",
-        query: {
-          projectId: this.$route.query.projectId,
-          dataProviderId: this.$route.query.dataProviderId,
-          selectedColumnsIndex: this.selectedColumnsIndex,
-          selectedMetrics: this.selectedMetrics,
-          selectedColumnsMetrics: this.selectedColumnsMetrics,
-        },
+    save() {
+      this.$emit("save", {
+        selectedMetrics: this.selectedMetrics,
+        selectedColumnsMetrics: this.selectedColumnsMetrics,
       });
     },
   },
@@ -265,6 +237,11 @@ export default {
     canProceed() {
       // We need at least one metric
       return this.selectedColumnsIndex.length - this.nbColumnsToAggregate > 0;
+    },
+  },
+  watch: {
+    selectedColumnsIndex() {
+      this.loadColumnsMetrics();
     },
   },
 };
@@ -293,53 +270,18 @@ export default {
   #metricSelection {
     max-width: 900px;
     width: 80%;
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    h3 {
-      margin: 10px;
-    }
 
     #metrics {
+      padding: 10px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-
-      .metric {
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #f0f0f0;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #e0e0e0;
-        }
-
-        &:active {
-          background-color: #d0d0d0;
-        }
-
-        &.selected {
-          background-color: var(--primary);
-          color: white;
-          font-weight: bold;
-        }
-      }
     }
   }
 
   #columnsMetrics {
     max-width: 900px;
     width: 80%;
-    margin: 10px;
-    padding: 10px;
-
-    h3 {
-      margin: 10px;
-    }
 
     .column {
       margin: 5px;

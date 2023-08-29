@@ -40,8 +40,6 @@ export default {
   },
   created() {
     // Get the project info
-    this.projectId = this.$store.state.ProjectPage.projectId;
-    this.dataProviderId = this.$store.state.ProjectPage.dataProviderId;
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
 
     // Expected project columns example :
