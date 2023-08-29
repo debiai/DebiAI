@@ -4,9 +4,9 @@
       <h3 id="title">Select the columns you want to use for the exploration:</h3>
       <button
         :disabled="selectedColumnsIndex.length === 0"
-        @click="proceed"
+        @click="save"
       >
-        Proceed >
+        Save
       </button>
     </div>
     <div
@@ -29,6 +29,9 @@ import ProjectColumns from "../../project/projectColumns/ProjectColumns.vue";
 
 export default {
   components: { ProjectColumns },
+  props: {
+    selectColumnsIndex: { type: Array, default: () => [] }, // The selected columns index
+  },
   data() {
     return {
       projectColumns: [],
@@ -36,13 +39,9 @@ export default {
     };
   },
   created() {
-    // Checking url references
-    let dataProviderId = this.$route.query.dataProviderId;
-    let projectId = this.$route.query.projectId;
-
-    if (!dataProviderId || !projectId) this.$router.push("/");
-
-    // Get the project columns
+    // Get the project info
+    this.projectId = this.$store.state.ProjectPage.projectId;
+    this.dataProviderId = this.$store.state.ProjectPage.dataProviderId;
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
 
     // Expected project columns example :
@@ -54,42 +53,16 @@ export default {
     //      { "name": "type" }, # category is not specified, it will be "other"
     //  ]
 
-    if (this.projectColumns.length === 0) {
-      // Go back to project page and start the exploration immediately
-      this.$router.push({
-        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-        query: {
-          projectId: projectId,
-          dataProviderId: dataProviderId,
-          startExploration: true,
-        },
-      });
-    }
-
-    const providedSelectedColumnsIndex = this.$route.query.selectedColumnsIndex;
-    if (providedSelectedColumnsIndex) {
-      // If the selected columns index is provided, we use it
-      this.selectedColumnsIndex = providedSelectedColumnsIndex;
-    }
+    // Set the selected columns index
+    this.selectedColumnsIndex = [...this.selectColumnsIndex];
   },
   methods: {
-    proceed() {
+    save() {
       // Go to the aggregation page
-      this.$router.push({
-        name: "aggregation",
-        query: {
-          projectId: this.$route.query.projectId,
-          dataProviderId: this.$route.query.dataProviderId,
-          selectedColumnsIndex: this.selectedColumnsIndex,
-        },
-      });
+      this.$emit("save", this.selectedColumnsIndex);
     },
   },
-  computed: {
-    // selectedColumns() {
-    //   return this.selectedColumnsIndex.map((index) => this.projectColumns[index]);
-    // },
-  },
+  computed: {},
 };
 </script>
 

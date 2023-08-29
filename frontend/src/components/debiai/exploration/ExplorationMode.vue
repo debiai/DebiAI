@@ -1,44 +1,165 @@
 <template>
   <div id="ExplorationMode">
-    <div id="header">
-      <!-- DebiAI title to go to the main menu -->
-      <h1>
-        <router-link
-          id="debiaiMenuLogo"
-          :to="
-            '/dataprovider/' +
-            $store.state.ProjectPage.dataProviderId +
-            '/project/' +
-            $store.state.ProjectPage.projectId
-          "
-          >&#8592;
-          <img
-            src="../../../../src/assets/images/DebiAI.png"
-            alt="DebiAI"
-            height="48"
-          />
-        </router-link>
-      </h1>
-      <div style="flex: 1"></div>
-      <h1 id="title2">Exploration</h1>
-      <div style="flex: 1"></div>
+    <!-- Header -->
+    <Header
+      :project="project"
+      v-on:refresh="loadProject"
+      v-on:deleteProject="deleteProject"
+      v-on:backToProjects="backToProjects"
+    />
 
-      <!-- IRT Logo -->
-      <img
-        id="title3"
-        src="../../../../src/assets/images/SystemX.png"
-        alt="SystemX"
-        height="38"
-      />
-    </div>
+    <!-- Content -->
     <div id="content">
-      <router-view />
+      <ColumnSelectionVue />
+      <!-- <AggregationVue /> -->
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import Header from "./Header.vue";
+import swal from "sweetalert";
+
+// Widgets
+import AggregationVue from "./aggregation/Aggregation.vue";
+import FilteringVue from "./filtering/Filtering.vue";
+import ColumnSelectionVue from "./columnSelection/ColumnSelection.vue";
+
+export default {
+  name: "ExplorationMode",
+  components: {
+    Header,
+    AggregationVue,
+    FilteringVue,
+    ColumnSelectionVue,
+  },
+  data: () => {
+    return {
+      // Project
+      dataProviderId: null,
+      projectId: null,
+      project: null,
+      loading: false,
+    };
+  },
+  created() {
+    // get data-provider ID and project ID from url path or router params
+    const dataProviderId = this.$route.params.dataProviderId
+      ? this.$route.params.dataProviderId
+      : this.$route.query.dataProviderId;
+    const projectId = this.$route.params.projectId
+      ? this.$route.params.projectId
+      : this.$route.query.projectId;
+
+    // Check if we need to start analysis right away
+    if (dataProviderId && projectId) {
+      this.dataProviderId = dataProviderId;
+      this.projectId = projectId;
+      this.$store.commit("setDataProviderId", dataProviderId);
+      this.$store.commit("setProjectId", projectId);
+
+      // Load data-provider info
+      this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
+        this.$store.commit("setDataProviderInfo", dataInfo);
+      });
+
+      // Load the project data
+      this.loadProject();
+    } else {
+      console.log("No project ID or no data provider ID");
+      this.$router.push("/");
+    }
+  },
+  methods: {
+    async loadProject() {
+      this.project = null;
+      return this.$backendDialog
+        .getProject()
+        .then((project) => {
+          this.project = project;
+          this.nbSelectedSamples = this.project.nbSamples;
+
+          // Sort models and selections by update date
+          this.project.selections = this.project.selections.sort(
+            (a, b) => b.updateDate - a.updateDate
+          );
+          this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
+
+          // Get the project columns
+          // Expected project columns example :
+          //  [
+          //      { "name": "storage", "category": "other" },
+          //      { "name": "age", "category": "context" },
+          //      { "name": "path", "category": "input" },
+          //      { "name": "label", "category": "groundtruth" },
+          //      { "name": "type" }, # category is not specified, it will be "other"
+          //  ]
+          if (!this.project.columns) this.project.columns = [];
+
+          // Expected project results columns example :
+          // [
+          //   { name: "Model prediction", type: "number" },
+          //   { name: "Model error", type: "number" },
+          // ];
+          if (!this.project.resultStructure) this.project.resultStructure = [];
+
+          // Store some info
+          this.$store.commit("setProjectColumns", this.project.columns);
+          this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
+        })
+        .catch((e) => {
+          if (e.response && e.response.status === 500) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Internal server error while loading project",
+            });
+          } else if (e.response && e.response.status === 404) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Project not found",
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Error while loading project",
+            });
+          }
+          console.log(e);
+          this.$router.push("/");
+        });
+    },
+    deleteProject() {
+      swal({
+        title: "Delete the project ?",
+        text: "Do you really want to delete the project ? There is no way back.",
+        buttons: true,
+        icon: "warning",
+        dangerMode: true,
+      }).then((validate) => {
+        if (validate)
+          this.$backendDialog
+            .deleteProject()
+            .then(() => {
+              this.$store.commit("sendMessage", {
+                title: "success",
+                msg: "Project deleted",
+              });
+              this.$router.push("/");
+            })
+            .catch((e) => {
+              console.log(e);
+              this.$store.commit("sendMessage", {
+                title: "error",
+                msg: "Could not delete the project",
+              });
+            });
+      });
+    },
+    backToProjects() {
+      this.$router.push("/");
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

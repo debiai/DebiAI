@@ -407,7 +407,7 @@ export default {
     deleteProject() {
       swal({
         title: "Delete the project ?",
-        text: "Do you realy want to delete the project ? There is no way back.",
+        text: "Do you really want to delete the project ? There is no way back.",
         buttons: true,
         icon: "warning",
         dangerMode: true,

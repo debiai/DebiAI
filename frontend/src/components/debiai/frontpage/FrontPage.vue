@@ -181,6 +181,16 @@
               Updated {{ $services.prettyTimeStamp(project.updateDate) }}
             </span>
           </div>
+
+          <!-- Exploration button -->
+          <div class="exploration aligned right">
+            <button
+              @click.stop
+              @click="selectProjectExploration(project.dataProviderId, project.id)"
+            >
+              Exploration
+            </button>
+          </div>
         </div>
       </div>
     </transition>
@@ -208,7 +218,7 @@
       </span>
     </div>
 
-    <!-- Data provider modals -->
+    <!-- Data provider modal -->
     <modal
       v-if="displayDataProviders"
       @close="displayDataProviders = false"
@@ -259,6 +269,12 @@ export default {
     selectProject(dataProviderId, projectId) {
       this.$router.push({
         path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+        params: { projectId, dataProviderId },
+      });
+    },
+    selectProjectExploration(dataProviderId, projectId) {
+      this.$router.push({
+        path: "/dataprovider/" + dataProviderId + "/project/" + projectId + "/exploration",
         params: { projectId, dataProviderId },
       });
     },
@@ -359,7 +375,7 @@ export default {
   .project {
     cursor: pointer;
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr;
+    grid-template-columns: 3fr 1fr 1fr 100px;
     grid-template-rows: 1fr;
     grid-template-areas: "name items dates";
 

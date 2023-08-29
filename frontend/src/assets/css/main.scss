@@ -312,14 +312,12 @@ button + button {
 .spaced {
   justify-content: space-between;
 }
-
 .centered {
   justify-content: center;
 }
 .gapped {
   gap: 10px;
 }
-
 .marged {
   margin: 10px;
 }
@@ -336,9 +334,13 @@ button + button {
 .rounded {
   border-radius: 4px;
 }
+.right {
+  justify-content: flex-end;
+}
+
 
 .date {
-  opacity: 0.6;
+  color: var(--fontColorLight);
 }
 .tag {
   border: solid 1px var(--fontColorLight);

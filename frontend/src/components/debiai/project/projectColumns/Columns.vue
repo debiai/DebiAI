@@ -58,6 +58,15 @@ export default {
     margin: 3px;
     border: 1px solid var(--greyDark);
     border-radius: 4px;
+
+    &.selectable {
+      cursor: pointer;
+    }
+    &.selected {
+      background-color: var(--secondary);
+      font-weight: bold;
+      color: white;
+    }
   }
 
   .columnType {
