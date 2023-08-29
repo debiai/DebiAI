@@ -366,7 +366,7 @@ export default {
       if (!component) return;
 
       const componentElement = document.getElementById(component.id);
-      componentElement.style.animation = "hithere 500ms ease";
+      componentElement.style.animation = "hiThere 500ms ease";
     });
 
     // this.grid.on("added removed change", () => {
