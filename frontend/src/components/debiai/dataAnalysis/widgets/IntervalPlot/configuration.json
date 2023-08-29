@@ -1,0 +1,7 @@
+{
+  "name": "Interval plot",
+  "description": "Used to display confidence intervals",
+  "categories": ["Sample analysis", "Model evaluation"],
+  "projectTypes": ["Time series"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/interval_plot/"
+}

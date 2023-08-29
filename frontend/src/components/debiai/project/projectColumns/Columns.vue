@@ -54,39 +54,10 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 13px;
-    margin: 0 3px;
-    border: 1px solid #00000027;
-
-    &:first-child {
-      margin-top: 0;
-      border-radius: 10px 10px 0 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-      border-radius: 0 0 10px 10px;
-    }
-
-    &.selectable {
-      cursor: pointer;
-      transition: all 0.1s ease-in-out;
-
-      // Add a 3D effect
-      &:hover {
-        box-shadow: 0 0 3px #00000027;
-        background-color: #0000000d;
-      }
-
-      &:active {
-        box-shadow: 0 0 3px #00000027 inset;
-      }
-      &.selected {
-        background-color: var(--primary);
-        color: white;
-        font-weight: bold;
-      }
-    }
+    padding: 10px;
+    margin: 3px;
+    border: 1px solid var(--greyDark);
+    border-radius: 4px;
   }
 
   .columnType {

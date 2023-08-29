@@ -55,8 +55,8 @@ export default {
 #questionMark #i {
   margin: 0 7px 0 7px;
   cursor: pointer;
-  border: solid 1px var(--infoDark);
-  color: var(--infoDark);
+  border: solid 1px var(--blueDark);
+  color: var(--blueDark);
   background-color: rgb(245, 254, 255);
   border-radius: 100%;
   width: 18px;
@@ -80,9 +80,9 @@ export default {
   position: absolute;
   padding: 20px;
   margin: 0px;
-  border: dashed 1px var(--infoDark);
-  border-radius: 10px;
-  color: var(--infoDark);
+  border: solid 1px var(--blueDark);
+  border-radius: 3px;
+  color: var(--blueDark);
   background-color: rgb(213, 251, 255);
   text-align: left;
   z-index: 1000;
@@ -103,6 +103,6 @@ export default {
 <style>
 /* Style for the slot */
 #docBlock * {
-  border-color: var(--infoDark);
+  border-color: var(--blueDark);
 }
 </style>

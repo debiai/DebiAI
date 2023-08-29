@@ -1,8 +1,0 @@
-{
-    "name": "Confusion matrix",
-    "description": "Calulate the confusion between a groundtruth and a result column",
-    "layout": {
-        "width": 12,
-        "height": 6
-    }
-}

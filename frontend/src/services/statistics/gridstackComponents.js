@@ -42,7 +42,7 @@ const BASE_LAYOUT = {
 const availableWidgetsConfiguration = {};
 // Load every json configuration extension in the widgets folder
 const availableWidgets = require.context(
-  "../../components/debiai/statistics/dataAnalysis/widgets",
+  "../../components/debiai/dataAnalysis/widgets",
   true,
   /configuration\.json$/i
 );
@@ -51,7 +51,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
   // Get the component id from the file name
   const componentKey = componentFilePath.split("/")[1];
   try {
-    const configuration = require("../../components/debiai/statistics/dataAnalysis/widgets/" +
+    const configuration = require("../../components/debiai/dataAnalysis/widgets/" +
       componentKey +
       "/configuration.json");
 
@@ -61,6 +61,7 @@ availableWidgets.keys().forEach((componentFilePath) => {
     let widgetName = configuration.name || componentKey;
     let widgetDescription = configuration.description || "";
 
+    // Check if the widget has a layout configuration
     let widgetLayout;
     if ("layout" in configuration) {
       widgetLayout = { ...BASE_LAYOUT, ...configuration.layout };
@@ -68,12 +69,28 @@ availableWidgets.keys().forEach((componentFilePath) => {
       widgetLayout = { ...BASE_LAYOUT };
     }
 
+    // Check for categories
+    let widgetCategories = [];
+    if ("categories" in configuration) widgetCategories = configuration.categories;
+
+    // Check for project types
+    let widgetProjectTypes = [];
+    if ("projectTypes" in configuration) widgetProjectTypes = configuration.projectTypes;
+
+    // Check if the widget has a documentation link
+    let widgetDocumentationLink = null;
+    if ("documentationLink" in configuration)
+      widgetDocumentationLink = configuration.documentationLink;
+
     // Save the component configuration
     availableWidgetsConfiguration[componentKey] = {
       name: widgetName,
       description: widgetDescription,
       widgetKey: componentKey,
       layout: widgetLayout,
+      categories: widgetCategories,
+      projectTypes: widgetProjectTypes,
+      documentationLink: widgetDocumentationLink,
     };
   } catch (e) {
     console.log(e);
@@ -93,13 +110,19 @@ function createWidget(widgetKey) {
 }
 
 function getAvailableWidgets() {
+  // Return the list of available widgets with their configuration
+
   let widgetList = Object.keys(availableWidgetsConfiguration).map((widgetKey) => {
     return {
       componentKey: availableWidgetsConfiguration[widgetKey].widgetKey,
       name: availableWidgetsConfiguration[widgetKey].name,
       description: availableWidgetsConfiguration[widgetKey].description,
+      categories: availableWidgetsConfiguration[widgetKey].categories,
+      projectTypes: availableWidgetsConfiguration[widgetKey].projectTypes,
+      documentationLink: availableWidgetsConfiguration[widgetKey].documentationLink,
     };
   });
+
   return widgetList;
 }
 

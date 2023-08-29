@@ -90,12 +90,12 @@ export default {
 
 .Selection .left a {
   padding-left: 10px;
-  color: #1068bf;
+  color: var(--primary);
 }
 
 .Selection .left a:hover {
-  color: #0056b3;
   text-decoration: underline;
+  color: var(--primary);
 }
 
 .Selection .sampleNumber {

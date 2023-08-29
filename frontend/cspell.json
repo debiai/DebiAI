@@ -1,0 +1,29 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "cmax",
+    "cmin",
+    "colorscale",
+    "confianceai",
+    "Debi",
+    "DebiAI",
+    "groundtruth",
+    "irtsysx",
+    "rgba",
+    "showscale",
+    "systemx",
+    "websrv",
+    "xaxis",
+    "yaxis"
+  ],
+  "flagWords": [],
+  "ignorePaths": [
+    "*.svg",
+    "*.xml",
+    "*.bat",
+    "node_modules/",
+    "build/",
+    ".vscode/"
+  ]
+}

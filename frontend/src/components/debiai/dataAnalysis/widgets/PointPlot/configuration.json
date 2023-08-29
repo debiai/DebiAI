@@ -1,0 +1,14 @@
+{
+  "name": "Point plot",
+  "description": "Display a scatter point and its average from two columns",
+  "categories": [
+    "Data overview",
+    "Sample analysis",
+    "Bias detection",
+    "Outlier detection",
+    "Model evaluation",
+    "Data selection",
+    "Data annotation"
+  ],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/3_point_plot/"
+}

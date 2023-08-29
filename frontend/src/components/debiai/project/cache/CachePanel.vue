@@ -48,11 +48,12 @@
         <button
           @click="getNbCacheItems"
           class="warning"
+          title="Refresh cache info"
         >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
-            width="10"
-            height="10"
+            width="15"
+            height="15"
           />
         </button>
       </div>
@@ -155,8 +156,8 @@ export default {
 <style scoped lang="scss">
 #CachePanel {
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid var(--greyDark);
+  border-radius: 3px;
 
   display: flex;
   flex-direction: column;
@@ -189,13 +190,7 @@ export default {
   .warning {
     display: flex;
     align-items: center;
-    gap: 10px;
     padding: 10px;
-    margin: 3px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #ffc108;
-    color: #181616;
   }
 }
 </style>

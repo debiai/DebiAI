@@ -11,22 +11,17 @@
           Models
         </h2>
         <span style="display: flex; align-items: center">
+          <button @click="selectAll">All</button>
           <button
-            class="info"
-            @click="selectAll"
-          >
-            All
-          </button>
-          <button
-            class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
           <input
             type="text"
             placeholder="Search a model"
+            class="search"
             v-model="searchBar"
           />
         </span>
@@ -145,7 +140,6 @@
               :src="require('../../../assets/svg/data.svg')"
               width="20"
               height="20"
-              fill="white"
             />
             <span
               v-if="nbSelectedSamples"
@@ -193,7 +187,7 @@ export default {
       this.selectedModelIds = this.project.models.map((m) => m.id);
       this.$emit("modelSelected", this.selectedModelIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedModelIds = [];
       this.$emit("modelSelected", this.selectedModelIds);
     },
@@ -250,10 +244,10 @@ export default {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
+  background-color: white;
+  border: solid 1px var(--greyDark);
   transition: height 0.2s;
   height: 0%;
   /* Do not remove, very important for some reason */
@@ -263,6 +257,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 10px 20px 10px;
 }
 
 #modelList {
@@ -294,13 +289,11 @@ export default {
   display: flex;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9em;
 }
 
 #modelsControls .dataGroup {
@@ -309,7 +302,7 @@ export default {
   align-items: center;
   justify-content: space-evenly;
   font-weight: bold;
-  background: #707070;
+  color: var(--fontColor);
 }
 
 #modelsControls #commonModelResults {

@@ -1,0 +1,11 @@
+{
+  "name": "Confusion matrix",
+  "description": "Calulate the confusion between a groundtruth and a result column",
+  "categories": ["Model evaluation"],
+  "projectTypes": ["Classification"],
+  "layout": {
+    "width": 12,
+    "height": 6
+  },
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/confusion_matrix/"
+}

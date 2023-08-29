@@ -1,0 +1,6 @@
+{
+  "name": "Night stars plot",
+  "description": "Standard deviation of categorical in a 2D plot",
+  "categories": ["Model evaluation"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/night_stars_plot/"
+}
