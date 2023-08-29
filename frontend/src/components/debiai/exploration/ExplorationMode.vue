@@ -10,27 +10,65 @@
 
     <!-- Content -->
     <div
-      id="content"
+      class="grid-stack"
       v-if="!loading"
     >
-      <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
-      <AggregationVue
-        :selectedColumnsIndex="selectedColumnsIndex"
-        @save="
-          selectedMetrics = $event['selectedMetrics'];
-          selectedColumnsMetrics = $event['selectedColumnsMetrics'];
-        "
-      />
-      <FilteringVue
-        :selectedColumnsIndex="selectedColumnsIndex"
-        :selectedColumnsMetrics="selectedColumnsMetrics"
-        :selectedMetrics="selectedMetrics"
-      />
+      <!-- Column selection -->
+      <div
+        class="card"
+        id="colSelection"
+        data-gs-width="10"
+        data-gs-height="5"
+      >
+        <div class="title grid-stack-item-content">Column selection</div>
+        <div class="body">
+          <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+        </div>
+      </div>
+
+      <!-- Aggregation -->
+      <div
+        class="card"
+        id="aggregation"
+        data-gs-width="10"
+        data-gs-height="5"
+      >
+        <div class="title grid-stack-item-content">Aggregation</div>
+        <div class="body">
+          <AggregationVue
+            :selectedColumnsIndex="selectedColumnsIndex"
+            @save="
+              selectedMetrics = $event['selectedMetrics'];
+              selectedColumnsMetrics = $event['selectedColumnsMetrics'];
+            "
+          />
+        </div>
+      </div>
+
+      <!-- Filtering -->
+      <div
+        class="card"
+        id="filtering"
+        data-gs-width="10"
+        data-gs-height="5"
+      >
+        <div class="title grid-stack-item-content">Filtering</div>
+        <div class="body">
+          <FilteringVue
+            :selectedColumnsIndex="selectedColumnsIndex"
+            :selectedColumnsMetrics="selectedColumnsMetrics"
+            :selectedMetrics="selectedMetrics"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { GridStack } from "gridstack";
+import "gridstack/dist/gridstack.css";
+
 import Header from "./Header.vue";
 import swal from "sweetalert";
 
@@ -70,7 +108,7 @@ export default {
       ? this.$route.params.projectId
       : this.$route.query.projectId;
 
-    // Check if we need to start analysis right away
+    // Check if the data-provider ID and the project ID are defined
     if (dataProviderId && projectId) {
       this.dataProviderId = dataProviderId;
       this.projectId = projectId;
@@ -89,6 +127,7 @@ export default {
       this.$router.push("/");
     }
   },
+  mounted() {},
   methods: {
     async loadProject() {
       this.project = null;
@@ -149,6 +188,10 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          // Setup widgets at next tick
+          this.$nextTick(() => {
+            this.setupWidgets();
+          });
         });
     },
     deleteProject() {
@@ -180,6 +223,58 @@ export default {
     },
     backToProjects() {
       this.$router.push("/");
+    },
+
+    // Grid
+    setupWidgets() {
+      // Init gridStack
+      let gridStackOptions = {
+        minRow: 25, // don't collapse when empty
+        cellHeight: 100,
+        disableOneColumnMode: true,
+        float: false,
+        margin: 0,
+        resizable: {
+          autoHide: true,
+          handles: "e, se, s, sw, w",
+        },
+      };
+
+      // Init gridStack
+      if (!document.querySelector(".grid-stack")) throw "No grid-stack selector found in the DOM";
+      this.grid = GridStack.init(gridStackOptions);
+
+      // Event listeners
+      this.grid.on("resizestop", () => {
+        // Create move event to update the plotly plots
+        this.$emit("GridStack_resizestop");
+        window.dispatchEvent(new Event("resize"));
+      });
+
+      // Animate the component when added
+      this.grid.on("added", (event, items) => {
+        // Get the component from the components list
+        const component = items[0].el;
+        if (!component) return;
+
+        const componentElement = document.getElementById(component.id);
+        componentElement.style.animation = "hiThere 500ms ease";
+      });
+
+      // this.grid.on("added removed change", () => {
+      //   // Save layout in local cache
+      //   this.saveLayout();
+      // });
+
+      // Set space between widgets
+      this.grid.cellHeight(100, true);
+
+
+      // Setup widgets
+      this.grid.removeAll();
+      this.grid.makeWidget(document.getElementById("colSelection"));
+      this.grid.makeWidget(document.getElementById("aggregation"));
+      this.grid.makeWidget(document.getElementById("filtering"));
     },
   },
 };
@@ -219,8 +314,38 @@ export default {
   padding-top: 9px;
 }
 
-#content {
-  flex: 1;
-  height: 100%;
+.grid-stack {
+  background-color: var(--greyLight);
+
+  .card {
+
+    .title {
+      font-size: 1.2em;
+      height: 30px;
+      box-shadow: none;
+    }
+
+    .body {
+      height: 100%;
+      overflow: auto;
+    }
+  }
+}
+</style>
+
+<style>
+/* Grid stack */
+.grid-stack-item {
+  overflow: hidden;
+}
+
+.grid-stack-placeholder {
+  border: 1px dashed black;
+  transform-origin: center;
+  transform: scale(0.95);
+}
+
+.ui-resizable-handle {
+  z-index: 0 !important;
 }
 </style>
