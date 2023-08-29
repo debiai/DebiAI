@@ -37,8 +37,23 @@
           title="List the data providers"
           @click="displayDataProviders = !displayDataProviders"
         >
-          Manage data providers
+          Data providers
         </button>
+
+        <!-- Refresh button -->
+        <button
+          class="warning"
+          @click="loadProjects"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/update.svg')"
+            width="10"
+            height="10"
+          />
+          Refresh
+        </button>
+
+        <!-- Search bar -->
         <input
           class="search"
           placeholder="Search project"
@@ -91,19 +106,6 @@
           />
           Models
         </div>
-      </div>
-      <div id="controls">
-        <button
-          class="warning"
-          @click="loadProjects"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/update.svg')"
-            width="10"
-            height="10"
-          />
-          Refresh
-        </button>
       </div>
     </div>
     <!-- Project list -->
@@ -279,6 +281,8 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 
   #header {
     height: 60px;
@@ -309,48 +313,46 @@ export default {
     #right {
       display: flex;
       align-items: center;
-
-      #dataProviders {
-        margin-right: 20px;
-      }
+      gap: 10px;
     }
   }
 }
 
 #projectTitle {
+  width: 100%;
+  max-width: 1300px;
   text-align: left;
-  padding: 15px;
-  margin: 0 15px 0 15px;
+  margin: 30px 30px 20px 15px;
   display: flex;
   justify-content: space-between;
 
   h2 {
     flex: 3;
+    margin-left: 30px;
   }
 
   #itemDetails {
     flex: 1;
     display: flex;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
     color: var(--fontColorLight);
+    padding-right: 270px;
   }
 
   #itemDetails > * {
     flex: 1;
-    text-align: left;
-  }
-
-  #controls {
-    flex: 1;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
+    gap: 5px;
   }
 }
 
 /* Projects */
 #projects {
+  width: 100%;
+  max-width: 1350px;
   flex: 1;
   overflow-y: auto;
 
@@ -389,23 +391,29 @@ export default {
     }
 
     /* Items */
-    .items .nb {
+    .items {
       flex: 1;
       display: flex;
-      justify-content: flex-start;
-      gap: 4px;
-    }
 
-    .nbSamples {
-      grid-area: nbSamples;
-    }
+      .nb {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 5px 0 5px;
 
-    .nbSelections {
-      grid-area: nbSelections;
-    }
+        .nbSamples {
+          grid-area: nbSamples;
+        }
 
-    .nbModel {
-      grid-area: nbModel;
+        .nbSelections {
+          grid-area: nbSelections;
+        }
+
+        .nbModel {
+          grid-area: nbModel;
+        }
+      }
     }
 
     /* Dates */
@@ -414,6 +422,10 @@ export default {
       grid-area: dates;
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
+      span {
+        white-space: nowrap;
+      }
     }
 
     .createdDate {
