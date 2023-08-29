@@ -354,7 +354,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     color: var(--fontColorLight);
-    padding-right: 270px;
+    padding-right: 330px;
   }
 
   #itemDetails > * {

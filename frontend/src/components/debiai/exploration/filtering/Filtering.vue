@@ -85,7 +85,6 @@
 
     <!-- Back btn and title -->
     <div id="top">
-      <button @click="back">&lt; Aggregation panel</button>
       <h3 id="title">Filter the data that you want to explore:</h3>
     </div>
 
@@ -251,12 +250,16 @@
 import Plotly from "plotly.js/dist/plotly";
 
 export default {
+  props: {
+    selectedColumnsIndex: { type: Array, default: () => [] },
+    selectedMetrics: { type: Array, default: () => [] },
+    selectedColumnsMetrics: { type: Array, default: () => [] },
+  },
   data() {
     return {
-      loading: true,
+      loading: false,
       tooManyCombinationsWarning: false,
       showCombinationsList: false,
-      selectedColumnsIndex: [],
       projectColumns: [],
 
       combinationsMetrics: [],
@@ -270,54 +273,18 @@ export default {
     };
   },
   mounted() {
-    // Checking url references
-    let dataProviderId = this.$route.query.dataProviderId;
-    let projectId = this.$route.query.projectId;
-
-    if (!dataProviderId || !projectId) {
-      this.$router.push("/");
-      return;
-    }
-    this.$store.commit("setDataProviderId", dataProviderId);
-    this.$store.commit("setProjectId", projectId);
-
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
-    this.selectedColumnsIndex = this.$route.query.selectedColumnsIndex;
-    this.selectedMetrics = this.$route.query.selectedMetrics;
-    this.selectedColumnsMetrics = this.$route.query.selectedColumnsMetrics;
-
-    if (this.projectColumns?.length === 0 || this.selectedColumnsIndex?.length === 0) {
-      // Go back to project page and start the exploration immediately
-      this.$router.push({
-        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-        query: {
-          projectId: projectId,
-          dataProviderId: dataProviderId,
-          startExploration: true,
-        },
-      });
-    }
-
-    if (this.selectedMetrics?.length === 0 || this.selectedColumnsMetrics?.length === 0) {
-      // Go back to the aggregation page
-      this.$router.push({
-        name: "Aggregation",
-        query: {
-          projectId: projectId,
-          dataProviderId: dataProviderId,
-          selectedColumnsIndex: this.selectedColumnsIndex,
-        },
-      });
-    }
-
-    // Load the combinations metrics
-    this.combinationsMetrics = [];
-    this.combinationsMetricsSorted = [];
-    this.loadCombinations();
   },
   methods: {
     loadCombinations() {
+      console.log("Load combinations");
+      console.log(this.selectedColumnsMetrics);
+      if (!this.selectedColumnsMetrics?.length) return;
+
+      this.combinationsMetrics = [];
+      this.loading = true;
+
       // Build request parameters
       const parameters = [];
 
@@ -332,9 +299,6 @@ export default {
         .getColumnsCombinatorialMetrics(parameters)
         .then((metrics) => {
           this.combinationsMetrics = [...metrics.combinations];
-          this.combinationsMetricsSorted = metrics.combinations.sort(
-            (a, b) => b.metrics.nbValues - a.metrics.nbValues
-          );
 
           if (metrics.totalCombinations > metrics.combinations.length)
             this.tooManyCombinationsWarning = true;
@@ -505,9 +469,20 @@ export default {
     totalSelectedSamples() {
       return this.selectedCombinations.reduce((acc, comb) => acc + comb.metrics.nbValues, 0);
     },
+    combinationsMetricsSorted() {
+      return [...this.combinationsMetrics].sort((a, b) => b.metrics.nbValues - a.metrics.nbValues);
+    },
     combinationsMetricsDisplay() {
       if (this.sortCombinationsByValues) return this.combinationsMetricsSorted;
       return this.combinationsMetrics;
+    },
+  },
+  watch: {
+    selectedColumnsIndex() {
+      this.loadCombinations();
+    },
+    selectedColumnsMetrics() {
+      this.loadCombinations();
     },
   },
 };

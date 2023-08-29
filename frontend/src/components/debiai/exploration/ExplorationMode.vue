@@ -14,7 +14,18 @@
       v-if="!loading"
     >
       <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
-      <AggregationVue :selectedColumnsIndex="selectedColumnsIndex" />
+      <AggregationVue
+        :selectedColumnsIndex="selectedColumnsIndex"
+        @save="
+          selectedMetrics = $event['selectedMetrics'];
+          selectedColumnsMetrics = $event['selectedColumnsMetrics'];
+        "
+      />
+      <FilteringVue
+        :selectedColumnsIndex="selectedColumnsIndex"
+        :selectedColumnsMetrics="selectedColumnsMetrics"
+        :selectedMetrics="selectedMetrics"
+      />
     </div>
   </div>
 </template>
@@ -45,7 +56,9 @@ export default {
       loading: false,
 
       // Exploration
-      selectedColumnsIndex: [1,2,3], // The selected columns index
+      selectedColumnsIndex: [1, 2, 3], // The selected columns index
+      selectedMetrics: ["Samples number"],
+      selectedColumnsMetrics: null,
     };
   },
   created() {
