@@ -98,7 +98,7 @@
 <script>
 // Components
 import Header from "./Header";
-import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
+import ProjectColumns from "./projectColumns/ProjectColumns.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
@@ -111,7 +111,7 @@ export default {
   name: "Project",
   components: {
     Header,
-    ProjectColumnsVisu,
+    ProjectColumns,
     Models,
     Selections,
     CachePanel,
