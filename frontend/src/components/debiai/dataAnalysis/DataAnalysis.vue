@@ -740,6 +740,11 @@ export default {
 .grid-stack-item {
   overflow: hidden;
 }
+
+.grid-stack {
+  margin-left: 60px; /* Width of Sidebar */
+  background-color: var(--greyLight);
+}
 </style>
 
 <style>
@@ -751,11 +756,6 @@ export default {
 
 .plot {
   height: 100%;
-}
-
-.grid-stack {
-  margin-left: 60px; /* Width of Sidebar */
-  background-color: var(--greyLight);
 }
 
 .grid-stack-placeholder {

@@ -15,50 +15,53 @@
     >
       <!-- Column selection -->
       <div
-        class="card"
         id="colSelection"
         data-gs-width="10"
         data-gs-height="5"
       >
-        <div class="title grid-stack-item-content">Column selection</div>
-        <div class="body">
-          <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+        <div class="card">
+          <div class="title grid-stack-item-content">Column selection</div>
+          <div class="body">
+            <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+          </div>
         </div>
       </div>
 
       <!-- Aggregation -->
       <div
-        class="card"
         id="aggregation"
         data-gs-width="10"
         data-gs-height="5"
       >
-        <div class="title grid-stack-item-content">Aggregation</div>
-        <div class="body">
-          <AggregationVue
-            :selectedColumnsIndex="selectedColumnsIndex"
-            @save="
-              selectedMetrics = $event['selectedMetrics'];
-              selectedColumnsMetrics = $event['selectedColumnsMetrics'];
-            "
-          />
+        <div class="card">
+          <div class="title grid-stack-item-content">Aggregation</div>
+          <div class="body">
+            <AggregationVue
+              :selectedColumnsIndex="selectedColumnsIndex"
+              @save="
+                selectedMetrics = $event['selectedMetrics'];
+                selectedColumnsMetrics = $event['selectedColumnsMetrics'];
+              "
+            />
+          </div>
         </div>
       </div>
 
       <!-- Filtering -->
       <div
-        class="card"
         id="filtering"
         data-gs-width="10"
         data-gs-height="5"
       >
-        <div class="title grid-stack-item-content">Filtering</div>
-        <div class="body">
-          <FilteringVue
-            :selectedColumnsIndex="selectedColumnsIndex"
-            :selectedColumnsMetrics="selectedColumnsMetrics"
-            :selectedMetrics="selectedMetrics"
-          />
+        <div class="card">
+          <div class="title grid-stack-item-content">Filtering</div>
+          <div class="body">
+            <FilteringVue
+              :selectedColumnsIndex="selectedColumnsIndex"
+              :selectedColumnsMetrics="selectedColumnsMetrics"
+              :selectedMetrics="selectedMetrics"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -230,14 +233,13 @@ export default {
       // Init gridStack
       let gridStackOptions = {
         minRow: 25, // don't collapse when empty
-        cellHeight: 100,
-        disableOneColumnMode: true,
         float: false,
-        margin: 0,
+        disableOneColumnMode: true,
         resizable: {
           autoHide: true,
           handles: "e, se, s, sw, w",
         },
+        animate: true,
       };
 
       // Init gridStack
@@ -265,10 +267,6 @@ export default {
       //   // Save layout in local cache
       //   this.saveLayout();
       // });
-
-      // Set space between widgets
-      this.grid.cellHeight(100, true);
-
 
       // Setup widgets
       this.grid.removeAll();
@@ -305,24 +303,19 @@ export default {
   background: none;
 }
 
-#title2 {
-  align-self: center;
-}
-
-#title3 {
-  align-self: center;
-  padding-top: 9px;
-}
-
 .grid-stack {
   background-color: var(--greyLight);
 
   .card {
+    height: 99%;
+    width: 99%;
 
     .title {
       font-size: 1.2em;
-      height: 30px;
+      height: 20px;
+      position: static;
       box-shadow: none;
+      overflow: hidden;
     }
 
     .body {
