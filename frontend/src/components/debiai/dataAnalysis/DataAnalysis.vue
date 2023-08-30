@@ -768,6 +768,5 @@ export default {
 
 .ui-resizable-handle {
   z-index: 0 !important;
-  opacity: 0; 
 }
 </style>
