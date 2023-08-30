@@ -1,6 +1,6 @@
 <template>
   <div id="ColumnSelection">
-    <div id="top">
+    <!-- <div id="top">
       <h3 id="title">Select the columns you want to use for the exploration:</h3>
       <button
         :disabled="selectedColumnsIndex.length === 0"
@@ -8,19 +8,16 @@
       >
         Save
       </button>
-    </div>
-    <div
-      id="columns"
-      class="card"
-    >
-      <ProjectColumns
-        :columns="projectColumns"
-        :selectedColumnsIndex="selectedColumnsIndex"
-        title=""
-        selectable
-        @selectedColumnsIndexUpdate="selectedColumnsIndex = $event"
-      />
-    </div>
+    </div> -->
+    <ProjectColumns
+      :columns="projectColumns"
+      :selectedColumnsIndex="selectedColumnsIndex"
+      :saveButtonCallback="save"
+      :saveButtonDisabled="selectedColumnsIndex.length === 0"
+      title=""
+      selectable
+      @selectedColumnsIndexUpdate="selectedColumnsIndex = $event"
+    />
   </div>
 </template>
 
@@ -70,21 +67,15 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 10px;
 
-  #top {
-    max-width: 800px;
-    width: 90%;
-    margin: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  #columns {
-    max-width: 800px;
-    width: 90%;
-    margin: 20px;
-    padding: 10px;
-  }
+  // #top {
+  //   max-width: 800px;
+  //   width: 90%;
+  //   margin: 20px;
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
+  // }
 }
 </style>

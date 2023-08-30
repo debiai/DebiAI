@@ -2,9 +2,9 @@
   <div id="Aggregation">
     <!-- Back, title, proceed buttons -->
     <div id="top">
-      <h3 id="title">
+      <div id="title">
         Select the metrics used for the exploration and aggregate the columns if needed:
-      </h3>
+      </div>
       <button
         :disabled="!canProceed"
         @click="save"
@@ -255,8 +255,7 @@ export default {
   align-items: center;
 
   #top {
-    width: 90%;
-    margin: 20px;
+    padding: 10px;
     gap: 20px;
     display: flex;
     justify-content: space-between;

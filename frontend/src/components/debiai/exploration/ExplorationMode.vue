@@ -20,7 +20,9 @@
         data-gs-height="5"
       >
         <div class="card">
-          <div class="title grid-stack-item-content">Column selection</div>
+          <div class="title grid-stack-item-content">
+            Select the columns you want to use for the exploration
+          </div>
           <div class="body">
             <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
           </div>
@@ -311,11 +313,11 @@ export default {
     width: 99%;
 
     .title {
-      font-size: 1.2em;
       height: 20px;
       position: static;
       box-shadow: none;
       overflow: hidden;
+      white-space: nowrap;
     }
 
     .body {
@@ -327,9 +329,11 @@ export default {
 </style>
 
 <style>
+body {
+  /* background: var(--greyLight); */
+}
 /* Grid stack */
 .grid-stack-item {
-  overflow: hidden;
 }
 
 .grid-stack-placeholder {
