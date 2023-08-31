@@ -1,9 +1,12 @@
 <template>
   <div id="Aggregation">
     <!-- Back, title, proceed buttons -->
-    <div id="top">
+    <div
+      id="top"
+      v-if="selectedColumnsIndex.length > 0 && !loading"
+    >
       <div id="title">
-        Select the metrics used for the exploration and aggregate the columns if needed:
+        <!-- Select the metrics used for the exploration and aggregate the columns if needed -->
       </div>
       <button
         :disabled="!canProceed"
@@ -31,17 +34,22 @@
       </div>
     </div> -->
 
-    <!-- Loading animation -->
-    <LoadingAnimation v-if="loading"> Gathering the selected columns metrics... </LoadingAnimation>
-
     <!-- No selected columns message -->
-    <div
-      v-if="!loading && selectedColumnsIndex.length === 0"
+    <!-- <div
+      v-else
       class="tip"
     >
-      <h3 class="title">No columns selected</h3>
+      <h3>No columns selected</h3>
       <p class="body">You need to select at least one column to proceed.</p>
-    </div>
+    </div> -->
+
+    <!-- Loading animation -->
+    <LoadingAnimation
+      v-if="loading"
+      style="padding: 30px"
+    >
+      Gathering the selected columns metrics...
+    </LoadingAnimation>
 
     <!-- Columns metrics -->
     <transition name="fade">
@@ -90,6 +98,7 @@
                 <!-- Title -->
                 <h4 class="label">
                   {{ columnMetrics.label }}
+                  {{ columnMetrics.type }}
                 </h4>
                 <!-- Unique values -->
                 <div class="nbUniqueValues">
@@ -103,11 +112,25 @@
             <template v-slot:body>
               <div class="aggregationParameters">
                 <div class="parameter">
-                  <h4>Aggregate the column by chunks</h4>
                   <div class="chunks">
-                    Number of chunks:
-                    <br />
-                    <button
+                    Aggregate by chunks
+
+                    <!-- Selection list -->
+
+                    <select
+                      v-model="columnMetrics.nbChunks"
+                      @change="calculateNbColumnsToAggregate()"
+                    >
+                      <option
+                        v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
+                        :key="i"
+                        :value="i"
+                      >
+                        {{ i }}
+                      </option>
+                    </select>
+
+                    <!-- <button
                       v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
                       :key="i"
                       :class="'radioBtn chunk ' + (i === columnMetrics.nbChunks ? 'selected' : '')"
@@ -117,7 +140,7 @@
                       "
                     >
                       {{ i }}
-                    </button>
+                    </button> -->
                   </div>
                 </div>
                 <!-- <div class="parameter">
@@ -179,6 +202,18 @@ export default {
           // Add a nbChunks property to each column
           this.selectedColumnsMetrics.forEach((column) => {
             column.nbChunks = null;
+
+            // Find the column in the project columns
+            const projectColumn = this.projectColumns.find((c) => c.name === column.label);
+            // {
+            //   category: "other",
+            //   index: 1,
+            //   name: "col",
+            //   type: "auto"
+            // }
+
+            // Add the column type
+            column.type = projectColumn.type;
           });
 
           // Calculate the number of columns to aggregate
@@ -251,6 +286,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 
   #top {
     padding: 10px;
@@ -273,7 +309,7 @@ export default {
   }
 
   #columnsMetrics {
-
+    width: 100%;
     .column {
       margin: 5px;
 
@@ -304,8 +340,10 @@ export default {
         .parameter {
           padding: 10px;
         }
-        .chunk {
-          padding: 5px 12px;
+        .chunks {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
       }
     }

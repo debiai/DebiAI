@@ -17,7 +17,7 @@
       <div
         id="colSelection"
         data-gs-width="6"
-        data-gs-height="3"
+        data-gs-height="4"
       >
         <div class="card">
           <div class="title grid-stack-item-content">
@@ -33,7 +33,7 @@
       <div
         id="aggregation"
         data-gs-width="6"
-        data-gs-height="3"
+        data-gs-height="4"
       >
         <div class="card">
           <div class="title grid-stack-item-content">Aggregation</div>
@@ -99,7 +99,7 @@ export default {
       loading: false,
 
       // Exploration
-      selectedColumnsIndex: [1, 2, 3], // The selected columns index
+      selectedColumnsIndex: [], // The selected columns index
       selectedMetrics: ["Samples number"],
       selectedColumnsMetrics: null,
     };
