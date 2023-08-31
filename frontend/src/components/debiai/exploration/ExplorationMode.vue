@@ -16,8 +16,8 @@
       <!-- Column selection -->
       <div
         id="colSelection"
-        data-gs-width="10"
-        data-gs-height="5"
+        data-gs-width="6"
+        data-gs-height="3"
       >
         <div class="card">
           <div class="title grid-stack-item-content">
@@ -32,8 +32,8 @@
       <!-- Aggregation -->
       <div
         id="aggregation"
-        data-gs-width="10"
-        data-gs-height="5"
+        data-gs-width="6"
+        data-gs-height="3"
       >
         <div class="card">
           <div class="title grid-stack-item-content">Aggregation</div>
@@ -52,11 +52,11 @@
       <!-- Filtering -->
       <div
         id="filtering"
-        data-gs-width="10"
+        data-gs-width="12"
         data-gs-height="5"
       >
         <div class="card">
-          <div class="title grid-stack-item-content">Filtering</div>
+          <div class="title grid-stack-item-content">Filter the data that you want to explore</div>
           <div class="body">
             <FilteringVue
               :selectedColumnsIndex="selectedColumnsIndex"
@@ -337,9 +337,11 @@ body {
 }
 
 .grid-stack-placeholder {
-  border: 1px dashed black;
-  transform-origin: center;
+  border: none;
+  background-color: var(--greyDark);
+  border-radius: 5px;
   transform: scale(0.95);
+  transform-origin: center;
 }
 
 .ui-resizable-handle {

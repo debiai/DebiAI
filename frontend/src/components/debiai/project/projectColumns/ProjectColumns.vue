@@ -35,6 +35,14 @@
         >
           Select all
         </button>
+        <button
+          v-if="saveButtonCallback"
+          class="blue"
+          @click="saveButtonCallback"
+          :disabled="saveButtonDisabled"
+        >
+          Save
+        </button>
       </div>
     </div>
 
@@ -126,6 +134,14 @@ export default {
       default: () => [],
       // The columns already selected
     },
+    saveButtonCallback: {
+      type: Function,
+      default: null,
+    },
+    saveButtonDisabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => {
     return {
@@ -209,7 +225,7 @@ export default {
 
 <style scoped lang="scss">
 #ProjectColumns {
-  min-width: 600px;
+  width: 100%;
   min-height: 300px;
 
   #title {

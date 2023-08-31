@@ -83,11 +83,6 @@
       </div>
     </Modal>
 
-    <!-- Back btn and title -->
-    <div id="top">
-      <h3 id="title">Filter the data that you want to explore:</h3>
-    </div>
-
     <!-- Loading animation -->
     <LoadingAnimation
       v-if="loading"
@@ -99,7 +94,6 @@
     <!-- Plot and warning message-->
     <div
       id="content"
-      class="card"
     >
       <!-- Parallel categories plot -->
       <div id="parallelCategories" />

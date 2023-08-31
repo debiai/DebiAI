@@ -14,7 +14,7 @@
     </div>
 
     <!-- Metric selections -->
-    <div
+    <!-- <div
       id="metricSelection"
       class="card"
     >
@@ -29,7 +29,7 @@
           {{ metric }}
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Loading animation -->
     <LoadingAnimation v-if="loading"> Gathering the selected columns metrics... </LoadingAnimation>
@@ -48,9 +48,7 @@
       <div
         v-if="!loading"
         id="columnsMetrics"
-        class="card"
       >
-        <div class="title">Selected columns:</div>
         <transition name="fade">
           <div
             id="warningMessage"
@@ -262,14 +260,10 @@ export default {
     align-items: center;
 
     button {
-      min-width: 120px;
     }
   }
 
   #metricSelection {
-    max-width: 900px;
-    width: 80%;
-
     #metrics {
       padding: 10px;
       display: flex;
@@ -279,8 +273,6 @@ export default {
   }
 
   #columnsMetrics {
-    max-width: 900px;
-    width: 80%;
 
     .column {
       margin: 5px;

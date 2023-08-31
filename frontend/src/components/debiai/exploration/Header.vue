@@ -19,7 +19,7 @@
           v-if="project"
         >
           <a @click="$emit('backToProjects')"> Projects </a>
-          / {{ project.id }}
+          / <span style="color: var(--fontColorLight)"> {{ project.id }} / Exploration</span>
         </div>
       </div>
 
@@ -146,7 +146,6 @@ export default {
 
         a {
           cursor: pointer;
-          color: var(--fontColorLight);
           text-decoration: none;
 
           &:hover {

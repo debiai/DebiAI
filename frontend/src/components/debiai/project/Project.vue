@@ -5,24 +5,26 @@
       v-if="settings && project"
       @close="settings = false"
     >
-      <!-- block structure creation or display -->
-      <h2 class="aligned spaced">
-        Project columns
-        <button
-          class="red"
-          @click="settings = false"
-        >
-          Close
-        </button>
-      </h2>
-      <ProjectColumns
-        :columns="project.columns"
-        title="Data columns"
-      />
-      <ProjectColumns
-        :columns="project.resultStructure"
-        title="Result columns"
-      />
+      <!-- Project columns -->
+      <div id="ProjectColumns">
+        <h2 class="aligned spaced">
+          Project columns
+          <button
+            class="red"
+            @click="settings = false"
+          >
+            Close
+          </button>
+        </h2>
+        <ProjectColumns
+          :columns="project.columns"
+          title="Data columns"
+        />
+        <ProjectColumns
+          :columns="project.resultStructure"
+          title="Result columns"
+        />
+      </div>
     </Modal>
 
     <!-- Header -->
@@ -79,15 +81,6 @@
             :disabled="!readyToAnalyze"
           >
             Start analysis
-          </button>
-
-          <!-- Explorer mod -->
-          <button
-            id="startExplorationBtn"
-            @click="startExploration(false)"
-            @mousedown.middle="startExploration(true)"
-          >
-            Exploration mode
           </button>
         </div>
       </div>
@@ -147,7 +140,6 @@ export default {
 
     // Check if we need to start analysis right away
     const startAns = this.$route.query.startAnalysis;
-    const startExploration = this.$route.query.startExploration;
 
     if (dataProviderId && projectId) {
       this.dataProviderId = dataProviderId;
@@ -186,8 +178,6 @@ export default {
             modelIds,
             commonModelResults,
           });
-        } else if (startExploration) {
-          this.startExploration(false);
         }
       });
     } else {
@@ -313,25 +303,6 @@ export default {
           selectionIntersection: this.selectionIntersection,
           modelIds: this.selectedModelIds,
           commonModelResults: this.commonModelResults,
-        });
-      }
-    },
-    startExploration({ newTab }) {
-      if (newTab) {
-        let routeData = this.$router.resolve({
-          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
-          query: {
-            startExploration: true,
-          },
-        });
-        window.open(routeData.href, "_blank");
-      } else {
-        this.$router.push({
-          name: "columnSelection",
-          query: {
-            dataProviderId: this.dataProviderId,
-            projectId: this.projectId,
-          },
         });
       }
     },
@@ -529,11 +500,8 @@ export default {
     font-size: 1.5em;
     width: 400px;
   }
-
-  #startExplorationBtn {
-    font-size: 1.2em;
-    margin: 10px;
-    width: 200px;
-  }
+}
+#ProjectColumns {
+  width: 600px;
 }
 </style>
