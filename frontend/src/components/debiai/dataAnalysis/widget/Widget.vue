@@ -419,8 +419,12 @@ export default {
         else if (rep === null) return;
       }
 
-      // Finally remove the widget
-      this.$emit("remove");
+      // Finally remove the widget with an animation
+      // Apply animation to the widget
+      this.$el.style.animation = "removeWidget 300ms";
+      setTimeout(() => {
+        this.$emit("remove");
+      }, 300);
     },
     getComponentConf() {
       if (this.canSaveConfiguration) {
