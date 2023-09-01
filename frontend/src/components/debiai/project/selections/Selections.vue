@@ -25,12 +25,13 @@
     <div id="selectionsPanel">
       <!-- Panel header -->
       <div id="title">
-        <span class="aligned">
+        <span class="aligned gapped">
           <h2>
             <inline-svg
               :src="require('@/assets/svg/loop.svg')"
-              width="20"
-              height="20"
+              width="25"
+              height="25"
+              style="margin-right: 10px"
             />
             Selections
           </h2>
@@ -128,6 +129,7 @@
     <!-- setSelection Intersection and nb selected-->
     <transition name="fade">
       <div
+        class="card"
         id="analysisControls"
         v-if="selectedSelectionIds.length > 0"
       >
@@ -297,7 +299,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 20px 10px;
+  padding: 25px;
+  font-size: 1.4em;
 }
 
 #selectionList {
@@ -315,18 +318,14 @@ export default {
 #allData .sampleNumber {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 /* analysisControls */
 #analysisControls {
-  display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  background-color: white;
   margin: 5px;
   padding: 0 5px 0 5px;
-  display: flex;
-  justify-content: center;
-  font-size: 0.9em;
+  flex-direction: row;
 }
 
 #analysisControls .dataGroup {

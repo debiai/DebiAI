@@ -5,8 +5,9 @@
         <h2>
           <inline-svg
             :src="require('../../../assets/svg/gear.svg')"
-            width="20"
-            height="20"
+            width="25"
+            height="25"
+            style="margin-right: 10px"
           />
           Models
         </h2>
@@ -95,6 +96,7 @@
     <!-- Controls -->
     <transition name="fade">
       <div
+        class="card"
         id="modelsControls"
         v-if="selectedModelIds.length > 0"
       >
@@ -257,7 +259,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 20px 10px;
+  padding: 25px;
+  font-size: 1.4em;
 }
 
 #modelList {
@@ -282,18 +285,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 
 /* modelsControls */
 #modelsControls {
-  display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  background-color: white;
   margin: 5px;
   padding: 0 5px 0 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
 }
 
 #modelsControls .dataGroup {

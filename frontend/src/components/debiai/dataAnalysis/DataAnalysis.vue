@@ -355,8 +355,10 @@ export default {
     this.grid = GridStack.init(gridStackOptions);
     this.grid.on("resizestop", () => {
       // Create move event to update the plotly plots
-      this.$emit("GridStack_resizestop");
-      window.dispatchEvent(new Event("resize"));
+      setTimeout(() => {
+        this.$emit("GridStack_resizestop");
+        window.dispatchEvent(new Event("resize"));
+      }, 200);
     });
 
     // Animate the component when added
@@ -739,6 +741,7 @@ export default {
 /* Grid stack */
 .grid-stack-item {
   overflow: hidden;
+  top: 0px;
 }
 
 .grid-stack {
@@ -758,15 +761,46 @@ export default {
   height: 100%;
 }
 
+.grid-stack {
+  margin-left: 60px; /* Width of Sidebar */
+  background-color: var(--greyLight);
+}
+
+/* Grid stack background item placeholder */
 .grid-stack-placeholder {
   border: none;
+  transition: all 0.2s !important;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+
   background-color: var(--greyDark);
-  border-radius: 5px;
+  opacity: 0.5;
+  border-radius: 3px;
+  /* Artificial padding: */
   transform: scale(0.95);
   transform-origin: center;
 }
 
+/* Grid stack handles */
 .ui-resizable-handle {
   z-index: 0 !important;
+}
+.ui-resizable-sw {
+  background: transparent !important;
+  border-left: solid 4px var(--greyDark) !important;
+  border-bottom: solid 4px var(--greyDark) !important;
+  transform: none !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+.ui-resizable-se {
+  background: transparent !important;
+  border-right: solid 4px var(--greyDark) !important;
+  border-bottom: solid 4px var(--greyDark) !important;
+  transform: none !important;
+  width: 12px !important;
+  height: 12px !important;
 }
 </style>

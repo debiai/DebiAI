@@ -2,7 +2,7 @@
   <div id="WidgetCatalog">
     <!-- Title and close button -->
     <h2 id="title">
-      <span class="aligned">
+      <span class="aligned gapped">
         Select a widget
 
         <documentation-block>
@@ -196,9 +196,11 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--greyDark);
+
+    font-size: 1.8em;
   }
 
   #content {

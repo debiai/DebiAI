@@ -58,19 +58,17 @@ transition-group {
 /* === BUTTON === */
 button {
   position: relative;
+  color: var(--fontColor);
   cursor: pointer;
+  margin: 0;
+  padding: 5px 8px;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
 
-  border: solid var(--greyDarker) 2px;
-
+  border: solid var(--fontColor) 1px;
   border-radius: 4px;
-  padding: 5px;
-  margin: 0;
-
   background-color: var(--greyLight);
   transition: background 0.2s ease;
 

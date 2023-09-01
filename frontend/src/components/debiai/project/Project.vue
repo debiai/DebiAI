@@ -492,7 +492,6 @@ export default {
   flex-direction: row;
   align-content: center;
   padding: 10px;
-  height: 11vh;
   gap: 30px;
 
   #startAnalysisBtn {
