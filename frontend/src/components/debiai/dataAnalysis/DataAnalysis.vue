@@ -739,6 +739,7 @@ export default {
 /* Grid stack */
 .grid-stack-item {
   overflow: hidden;
+  top: 0px;
 }
 </style>
 
@@ -760,8 +761,16 @@ export default {
 
 .grid-stack-placeholder {
   border: none;
+  transition: all 0.3s !important;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+
   background-color: var(--greyDark);
-  border-radius: 5px;
+  opacity: 0.5;
+  border-radius: 3px;
+  /* Artificial padding: */
   transform: scale(0.95);
   transform-origin: center;
 }

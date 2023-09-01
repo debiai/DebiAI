@@ -70,7 +70,7 @@
       <div id="itemDetails">
         <!-- Nb samples -->
         <div
-          class="nbSamples"
+          class="nb nbSamples"
           title="Number of samples"
         >
           <inline-svg
@@ -83,7 +83,7 @@
 
         <!-- Nb selections -->
         <div
-          class="nbSelections"
+          class="nb nbSelections"
           title="Project selections"
         >
           <inline-svg
@@ -96,7 +96,7 @@
 
         <!-- Nb model results -->
         <div
-          class="nbModel"
+          class="nb nbModel"
           title="Model added to the project"
         >
           <inline-svg
@@ -334,18 +334,21 @@ export default {
   #itemDetails {
     flex: 1;
     display: flex;
-    gap: 10px;
     justify-content: space-between;
     align-items: center;
-    color: var(--fontColorLight);
-    padding-right: 270px;
-  }
+    padding-right: 210px; // Width of the dates
 
-  #itemDetails > * {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    .nb {
+      display: flex;
+      color: var(--fontColorLight);
+      justify-content: flex-start;
+      width: 150px;
+      gap: 5px;
+
+      svg {
+        fill: var(--fontColorLight);
+      }
+    }
   }
 }
 
@@ -392,34 +395,25 @@ export default {
 
     /* Items */
     .items {
-      flex: 1;
       display: flex;
 
       .nb {
-        width: 100%;
         display: flex;
-        align-items: center;
+        color: var(--fontColorLight);
+        justify-content: flex-start;
+        width: 150px;
         gap: 5px;
-        padding: 0 5px 0 5px;
 
-        .nbSamples {
-          grid-area: nbSamples;
-        }
-
-        .nbSelections {
-          grid-area: nbSelections;
-        }
-
-        .nbModel {
-          grid-area: nbModel;
+        svg {
+          fill: var(--fontColorLight);
         }
       }
     }
 
     /* Dates */
     .dates {
-      opacity: 0.8;
-      grid-area: dates;
+      color: var(--fontColorLight);
+      width: 200px;
       display: flex;
       flex-direction: column;
       align-items: flex-end;

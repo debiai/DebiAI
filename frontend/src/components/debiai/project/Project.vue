@@ -462,7 +462,6 @@ export default {
   justify-content: center;
   flex-direction: row;
   padding: 10px;
-  height: 11vh;
   gap: 30px;
 
   #startAnalysisBtn {

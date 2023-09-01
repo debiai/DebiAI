@@ -128,6 +128,7 @@
     <!-- setSelection Intersection and nb selected-->
     <transition name="fade">
       <div
+        class="card"
         id="analysisControls"
         v-if="selectedSelectionIds.length > 0"
       >
@@ -319,14 +320,9 @@ export default {
 
 /* analysisControls */
 #analysisControls {
-  display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  background-color: white;
   margin: 5px;
   padding: 0 5px 0 5px;
-  display: flex;
-  justify-content: center;
-  font-size: 0.9em;
+  flex-direction: row;
 }
 
 #analysisControls .dataGroup {

@@ -95,6 +95,7 @@
     <!-- Controls -->
     <transition name="fade">
       <div
+        class="card"
         id="modelsControls"
         v-if="selectedModelIds.length > 0"
       >
@@ -286,14 +287,9 @@ export default {
 
 /* modelsControls */
 #modelsControls {
-  display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  background-color: white;
   margin: 5px;
   padding: 0 5px 0 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
 }
 
 #modelsControls .dataGroup {
