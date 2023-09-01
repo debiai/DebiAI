@@ -187,19 +187,6 @@
           <span class="badge">{{ localFilters.length }}</span>
         </button>
 
-        <!-- Comment btn -->
-        <button
-          :class="commentModal ? 'highlighted' : ''"
-          title="Comment this widget"
-          @click="commentModal = !commentModal"
-        >
-          <span v-if="comments.length">{{ comments.length }}</span>
-          <inline-svg
-            :src="require('@/assets/svg/comment.svg')"
-            height="14"
-            width="18"
-          />
-        </button>
         <!-- export btn -->
         <button
           v-if="exportData !== null"
@@ -215,47 +202,10 @@
             width="18"
           />
         </button>
-        <!-- export image btn -->
-        <button
-          v-if="canExportImage"
-          title="Download an image of the plot"
-          @click="downloadImage"
-          :disabled="loading"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/downloadImage.svg')"
-            height="14"
-            width="18"
-          />
-        </button>
-        <!-- save configuration btn -->
-        <button
-          v-if="canSaveConfiguration"
-          :class="confAsChanged ? 'highlighted' : ''"
-          :title="'Save ' + title + ' widget configuration'"
-          @click="saveConfiguration"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/save.svg')"
-            width="14"
-            height="14"
-          />
-        </button>
-        <!-- Copy btn -->
-        <button
-          :title="'Duplicate the ' + title + ' widget'"
-          @click="copy"
-        >
-          <inline-svg
-            :src="require('@/assets/svg/copy.svg')"
-            width="14"
-            height="14"
-            fill="black"
-          />
-        </button>
+
         <!-- Settings btn -->
         <button
-          class="settings blue"
+          class="settings"
           :title="title + ' settings'"
           @click="settings"
         >
@@ -265,21 +215,52 @@
             height="14"
           />
         </button>
-        <!-- Close btn -->
+
+        <!-- Menu btn -->
         <button
-          class="red"
-          :title="'Close ' + title + ' widget'"
-          @click="remove"
+          @click="showMenu = !showMenu"
+          :title="'Open the ' + title + ' widget menu'"
         >
           <inline-svg
-            :src="require('@/assets/svg/close.svg')"
-            width="11"
-            height="11"
-            fill="white"
+            :src="require('@/assets/svg/menu.svg')"
+            width="15"
+            height="15"
           />
         </button>
       </div>
     </div>
+
+    <!-- Menu -->
+    <transition name="fade">
+      <dropdown-menu
+        v-if="showMenu"
+        :menu="[
+          { name: 'Duplicate', action: copy, icon: 'copy' },
+          {
+            name: 'Save image',
+            action: downloadImage,
+            icon: 'downloadImage',
+            disabled: loading,
+            available: canExportImage,
+          },
+
+          {
+            name: 'Comment' + (comments.length ? ' (' + comments.length + ')' : ''),
+            action: () => (commentModal = !commentModal),
+            icon: 'comment',
+          },
+          {
+            name: 'Save / load',
+            action: saveConfiguration,
+            icon: 'save',
+            available: canSaveConfiguration,
+          },
+          { name: 'separator' },
+          { name: 'Close', action: remove, icon: 'close' },
+        ]"
+        @close="showMenu = false"
+      />
+    </transition>
 
     <!-- Display the Widget content -->
     <slot />
@@ -300,12 +281,13 @@ import WidgetConfPanel from "./widgetConfigurationCreation/WidgetConfPanel";
 import DataExportMenu from "../dataExport/DataExportMenu";
 import FilterList from "../dataFilters/FilterList";
 import Comments from "./comments/Comments";
+import DropdownMenu from "@/components/common/DropdownMenu";
 
 import swal from "sweetalert";
 
 export default {
   name: "Widget",
-  components: { WidgetConfPanel, DataExportMenu, FilterList, Comments },
+  components: { WidgetConfPanel, DataExportMenu, FilterList, Comments, DropdownMenu },
   props: {
     data: { type: Object, required: true },
     widgetKey: { type: String, required: true },
@@ -316,6 +298,7 @@ export default {
   data() {
     return {
       name: null,
+      showMenu: false,
       colorWarning: false,
       selectedDataWarning: false,
       loading: false,
@@ -637,169 +620,168 @@ export default {
   height: 98%;
   margin: 5px;
 
-  &:hover {
-    #name {
-      button,
-      #widgetFilteringOrder {
-        opacity: 1;
-        transition: opacity 0.1s;
-      }
-    }
-
-    .options {
-      opacity: 1;
-      transition: opacity 0.1s;
-    }
-  }
-
-  .title {
+  #widgetHeader {
     display: flex;
     cursor: grab;
     transition: background-color 0.2s;
-    padding: 3px 10px;
+    padding: 3px 3px 3px 8px;
 
     &.grabbing {
       cursor: grabbing;
     }
-  }
-}
 
-#widgetHeader {
-  display: flex;
-}
-#name {
-  display: flex;
-  align-items: center;
-  h2 {
-    white-space: nowrap;
-  }
+    #name {
+      display: flex;
+      align-items: center;
+      h2 {
+        white-space: nowrap;
+      }
 
-  button {
-    opacity: 0;
-    transition: opacity 0.5s;
-    margin-left: 5px;
-    white-space: nowrap;
-  }
+      button {
+        opacity: 0;
+        transition: opacity 0.5s;
+        margin-left: 5px;
+        white-space: nowrap;
+      }
 
-  #widgetFilteringOrder {
-    opacity: 0;
-    transition: opacity 0.5s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    color: var(--primary);
-    border: var(--primary) 2px solid;
-    border-radius: 20px;
-    margin-left: 10px;
-    font-weight: bold;
-  }
-}
+      #widgetFilteringOrder {
+        opacity: 0;
+        transition: opacity 0.5s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        color: var(--primary);
+        border: var(--primary) 2px solid;
+        border-radius: 20px;
+        margin-left: 10px;
+        font-weight: bold;
+      }
+    }
 
-/* Options */
-.options {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.5s;
+    /* Options */
+    .options {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.5s;
 
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 33px;
-    min-height: 28px;
+      button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 33px;
+        min-height: 28px;
 
-    &.settings {
-      width: 70px;
+        &.settings {
+          width: 70px;
+        }
+      }
+
+      button + button {
+        margin-left: 5px;
+      }
+    }
+
+    .center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+
+      padding-left: 4px;
+      padding-right: 4px;
+
+      /* Warning */
+      .updateWarning {
+        display: flex;
+        align-items: center;
+        padding: 0px 8px 0px 8px;
+      }
+
+      /* Set all the text to no wram and overflow hidden */
+      .updateWarning * {
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .updateWarning button {
+        padding: 1px 5px 1px 5px;
+        margin-left: 10px;
+      }
+
+      /* Error */
+      .dataError {
+        color: var(--danger);
+        margin: 0px 10px 0px 10px;
+        padding: 0px 8px 0px 8px;
+
+        cursor: pointer;
+      }
+
+      .dataError:hover {
+        filter: brightness(80%);
+      }
+
+      /* Loading Anim */
+      @keyframes blink {
+        0% {
+          opacity: 0.2;
+        }
+
+        20% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0.2;
+        }
+      }
+
+      .saving {
+        margin-left: 5px;
+      }
+
+      .saving span {
+        animation-name: blink;
+        animation-duration: 1.4s;
+        animation-iteration-count: infinite;
+        animation-fill-mode: both;
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        background-color: cadetblue;
+        display: inline-block;
+        margin-right: 2.5px;
+        margin-left: 2.5px;
+      }
+
+      .saving span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .saving span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
     }
   }
 
-  button + button {
-    margin-left: 5px;
-  }
-}
+  &:hover {
+    #widgetHeader {
+      #name {
+        button,
+        #widgetFilteringOrder {
+          opacity: 1;
+          transition: opacity 0.1s;
+        }
+      }
 
-.center {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-
-  padding-left: 4px;
-  padding-right: 4px;
-
-  /* Warning */
-  .updateWarning {
-    display: flex;
-    align-items: center;
-    padding: 0px 8px 0px 8px;
-  }
-
-  /* Set all the text to no wram and overflow hidden */
-  .updateWarning * {
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .updateWarning button {
-    padding: 1px 5px 1px 5px;
-    margin-left: 10px;
-  }
-
-  /* Error */
-  .dataError {
-    color: var(--danger);
-    margin: 0px 10px 0px 10px;
-    padding: 0px 8px 0px 8px;
-
-    cursor: pointer;
-  }
-
-  .dataError:hover {
-    filter: brightness(80%);
-  }
-
-  /* Loading Anim */
-  @keyframes blink {
-    0% {
-      opacity: 0.2;
+      .options {
+        opacity: 1;
+        transition: opacity 0.1s;
+      }
     }
-
-    20% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0.2;
-    }
-  }
-
-  .saving {
-    margin-left: 5px;
-  }
-
-  .saving span {
-    animation-name: blink;
-    animation-duration: 1.4s;
-    animation-iteration-count: infinite;
-    animation-fill-mode: both;
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    background-color: cadetblue;
-    display: inline-block;
-    margin-right: 2.5px;
-    margin-left: 2.5px;
-  }
-
-  .saving span:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  .saving span:nth-child(3) {
-    animation-delay: 0.4s;
   }
 }
 </style>
