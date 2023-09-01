@@ -79,6 +79,7 @@ export default {
   inset: 40px 6px auto auto;
 
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
 
   .menu-item {
     padding: 10px 18px;
@@ -112,7 +113,8 @@ export default {
 
   .separator {
     height: 1px;
-    background-color: var(--grey);
+    background: var(--grey);
+    margin: 5px 0;
   }
 }
 </style>

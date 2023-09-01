@@ -71,6 +71,16 @@
         <h2>
           {{ name }}
         </h2>
+
+        <!-- Widget filter position 2 -->
+        <span
+          v-if="widgetFilterOrder >= 0"
+          title="widget filtering order"
+          id="widgetFilteringOrder"
+        >
+          {{ widgetFilterOrder + 1 }}
+        </span>
+
         <!-- start filtering btn -->
         <button
           v-if="canFilterSamples && !startFiltering"
@@ -237,7 +247,7 @@
         :menu="[
           { name: 'Duplicate', action: copy, icon: 'copy' },
           {
-            name: 'Save image',
+            name: 'Download image',
             action: downloadImage,
             icon: 'downloadImage',
             disabled: loading,
@@ -250,7 +260,7 @@
             icon: 'comment',
           },
           {
-            name: 'Save / load',
+            name: 'Save / load settings',
             action: saveConfiguration,
             icon: 'save',
             available: canSaveConfiguration,

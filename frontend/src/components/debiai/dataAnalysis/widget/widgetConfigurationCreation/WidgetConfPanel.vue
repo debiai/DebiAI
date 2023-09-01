@@ -6,7 +6,7 @@
       class="aligned spaced"
     >
       <h3 id="title">Widget Configuration</h3>
-      <span>
+      <span class="aligned">
         <button
           class="warning"
           @click="loadWidgetConfigurations"
