@@ -25,12 +25,13 @@
     <div id="selectionsPanel">
       <!-- Panel header -->
       <div id="title">
-        <span class="aligned">
+        <span class="aligned gapped">
           <h2>
             <inline-svg
               :src="require('@/assets/svg/loop.svg')"
-              width="20"
-              height="20"
+              width="25"
+              height="25"
+              style="margin-right: 10px"
             />
             Selections
           </h2>
@@ -298,7 +299,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 20px 10px;
+  padding: 25px;
+  font-size: 1.4em;
 }
 
 #selectionList {
@@ -316,6 +318,7 @@ export default {
 #allData .sampleNumber {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 /* analysisControls */

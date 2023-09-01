@@ -51,15 +51,15 @@
     <button
       class="confBtn"
       v-if="nbConfigurations && nbConfigurations > 0"
-      style="display: flex; align-items: center; padding: 5px"
+      style="display: flex; align-items: center"
       title="Add this widget with a previously saved configuration"
       @click.stop
       @click="openConfigurations"
     >
       <inline-svg
         :src="require('@/assets/svg/save.svg')"
-        width="14"
-        height="14"
+        width="16"
+        height="16"
         style="margin-right: 5px"
       />
       {{ nbConfigurations }}
@@ -76,8 +76,8 @@
     >
       <inline-svg
         :src="require('@/assets/svg/question.svg')"
-        width="25"
-        height="25"
+        width="20"
+        height="20"
       />
     </button>
   </div>
@@ -134,11 +134,12 @@ export default {
 #Widget {
   display: flex;
   flex-direction: row;
+  gap: 5px;
 }
 
 .icon {
-  margin: 5px 10px 5px 5px;
   width: 50px;
+  margin-right: 10px;
 }
 
 #title {
@@ -173,18 +174,28 @@ export default {
 }
 
 .confBtn {
-  background-color: white;
+  background: transparent;
+  border: none;
   &:hover {
-    background-color: var(--greyLight);
+    background-color: var(--greyDark);
   }
+  opacity: 0.6;
+  padding: 10px;
+  border-radius: 5px;
 }
+
 .docBtn {
   background-color: transparent;
   border-radius: 100px;
-  padding: 0px;
+  padding: 10px;
   border: none;
+  opacity: 0;
   &:hover {
-    background-color: var(--greyLight);
+    background-color: var(--greyDark);
   }
+}
+
+#Widget:hover .docBtn {
+  opacity: 0.6;
 }
 </style>

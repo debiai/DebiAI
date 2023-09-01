@@ -328,7 +328,7 @@ export default {
 
   h2 {
     flex: 3;
-    margin-left: 30px;
+    font-size: 2.2em;
   }
 
   #itemDetails {
@@ -344,6 +344,7 @@ export default {
       justify-content: flex-start;
       width: 150px;
       gap: 5px;
+      font-size: 1.3em;
 
       svg {
         fill: var(--fontColorLight);
