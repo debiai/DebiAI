@@ -766,6 +766,20 @@ export default {
   background-color: var(--greyLight);
 }
 
+.filterOrder {
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+  border: var(--primary) 2px solid;
+  border-radius: 20px;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
 /* Grid stack background item placeholder */
 .grid-stack-placeholder {
   border: none;

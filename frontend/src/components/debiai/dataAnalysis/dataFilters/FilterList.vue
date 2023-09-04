@@ -9,14 +9,13 @@
       class="item spaced card"
     >
       <h3>All data</h3>
-      <div class="aligned">
-        {{ data.nbLines }}
+      <div class="aligned gapped">
         <inline-svg
           :src="require('@/assets/svg/data.svg')"
           width="20"
           height="20"
-          style="margin-left: 5px"
         />
+        {{ data.nbLines }}
       </div>
     </div>
 
@@ -34,7 +33,15 @@
         v-for="(widget, i) in Object.keys(groupedFilters)"
         :key="widget"
       >
-        <h4 class="widgetName">{{ i + 1 }} - {{ groupedFilters[widget][0].from.widgetName }}</h4>
+        <!-- Widget name and filter order -->
+        <h4 class="widgetName aligned centered gapped">
+          {{ groupedFilters[widget][0].from.widgetName }}
+          
+          <!-- Filter order -->
+          <span class="filterOrder" style="margin:0; align-items: flex-end;">
+            {{ i + 1 }}
+          </span>
+        </h4>
         <div class="widgetFilters">
           <transition-group name="fade">
             <div

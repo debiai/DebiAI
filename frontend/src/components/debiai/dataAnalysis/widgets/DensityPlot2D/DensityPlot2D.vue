@@ -66,7 +66,7 @@
               </div>
             </div>
             <!-- Divided per color -->
-            <div
+            <!-- <div
               class="data"
               id="dividePerColor"
               v-if="coloredColumnIndex !== null"
@@ -87,7 +87,7 @@
                   <span></span>
                 </label>
               </div>
-            </div>
+            </div> -->
           </div>
 
           <!-- Draw -->

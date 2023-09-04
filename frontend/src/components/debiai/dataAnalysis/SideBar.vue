@@ -77,14 +77,12 @@
       >
         <!-- The visible part when the mouse is not hovering the sidebar -->
         <div class="icon">
-          <inline-svg
-            :src="require('@/assets/svg/question.svg')"
-            width="35"
-            height="35"
-            style="margin-right: 3px"
+          <img
+            src="@/assets/images/Question.png"
+            alt="Documentation"
+            height="30"
           />
         </div>
-
         <!-- The opening part when the mouse is hovering the sidebar -->
         <transition name="fade">
           <div

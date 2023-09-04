@@ -66,11 +66,22 @@
       @mousedown="grabbing = true"
       @mouseup="grabbing = false"
     >
-      <!-- Name -->
+      <!-- Name, filtering btn, filtering order, ... -->
       <div id="name">
-        <h2>
-          {{ name }}
-        </h2>
+        <h2>{{ name }}</h2>
+
+        <!-- Widget filter position 2 -->
+        <span style="width: 35px">
+          <span
+            v-if="widgetFilterOrder >= 0"
+            title="widget filtering order"
+            id="widgetFilteringOrder2"
+            class="filterOrder"
+          >
+            {{ widgetFilterOrder + 1 }}
+          </span>
+        </span>
+
         <!-- start filtering btn -->
         <button
           v-if="canFilterSamples && !startFiltering"
@@ -86,6 +97,7 @@
           />
           Start filtering
         </button>
+
         <!-- filtering ongoing btn -->
         <button
           v-if="canFilterSamples && startFiltering"
@@ -124,6 +136,7 @@
           v-if="widgetFilterOrder >= 0"
           title="widget filtering order"
           id="widgetFilteringOrder"
+          class="filterOrder"
         >
           {{ widgetFilterOrder + 1 }}
         </span>
@@ -144,32 +157,36 @@
         </div>
 
         <!-- Color and selectedDataWarning -->
-        <div
-          v-if="colorWarning || selectedDataWarning"
-          class="updateWarning"
-        >
-          <b>&#x26A0;</b>
-          <div v-if="colorWarning && selectedDataWarning">Selected color and data have changed</div>
-          <!-- Color Warning -->
-          <div v-else-if="colorWarning">The color has changed</div>
-          <!-- selectedData Warning -->
-          <div v-else-if="selectedDataWarning">The selected data have changed</div>
+        <transition name="fade">
+          <div
+            v-if="colorWarning || selectedDataWarning"
+            class="updateWarning"
+          >
+            <b>&#x26A0;</b>
+            <div v-if="colorWarning && selectedDataWarning">
+              Selected color and data have changed
+            </div>
+            <!-- Color Warning -->
+            <div v-else-if="colorWarning">The color has changed</div>
+            <!-- selectedData Warning -->
+            <div v-else-if="selectedDataWarning">The selected data have changed</div>
 
-          <button
-            class="warning"
-            @click="drawPlot"
-          >
-            Redraw
-          </button>
-          <button
-            @click="
-              colorWarning = false;
-              selectedDataWarning = false;
-            "
-          >
-            Hide
-          </button>
-        </div>
+            <button
+              class="warning"
+              @click="drawPlot"
+            >
+              Redraw
+            </button>
+            <button
+              @click="
+                colorWarning = false;
+                selectedDataWarning = false;
+              "
+            >
+              Hide
+            </button>
+          </div>
+        </transition>
       </div>
 
       <!-- On right: filters applied, configuration, copy, settings, close btn, ... -->
@@ -242,7 +259,7 @@
         :menu="[
           { name: 'Duplicate', action: copy, icon: 'copy' },
           {
-            name: 'Save image',
+            name: 'Download image',
             action: downloadImage,
             icon: 'downloadImage',
             disabled: loading,
@@ -255,7 +272,7 @@
             icon: 'comment',
           },
           {
-            name: 'Save / load',
+            name: 'Save / load settings',
             action: saveConfiguration,
             icon: 'save',
             available: canSaveConfiguration,
@@ -628,7 +645,6 @@ export default {
   #widgetHeader {
     display: flex;
     cursor: grab;
-    transition: background-color 0.2s;
     padding: 3px 3px 3px 8px;
 
     &.grabbing {
@@ -644,24 +660,13 @@ export default {
 
       button {
         opacity: 0;
-        transition: opacity 0.5s;
+        transition: opacity 0.3s;
         margin-left: 5px;
         white-space: nowrap;
       }
 
       #widgetFilteringOrder {
         opacity: 0;
-        transition: opacity 0.5s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        color: var(--primary);
-        border: var(--primary) 2px solid;
-        border-radius: 20px;
-        margin-left: 10px;
-        font-weight: bold;
       }
     }
 
@@ -671,7 +676,7 @@ export default {
       justify-content: flex-end;
       align-items: center;
       opacity: 0;
-      transition: opacity 0.5s;
+      transition: opacity 0.3s;
 
       button {
         display: flex;
@@ -778,13 +783,14 @@ export default {
         button,
         #widgetFilteringOrder {
           opacity: 1;
-          transition: opacity 0.1s;
+        }
+        #widgetFilteringOrder2 {
+          opacity: 0;
         }
       }
 
       .options {
         opacity: 1;
-        transition: opacity 0.1s;
       }
     }
   }

@@ -30,19 +30,17 @@
     <!-- Filter effect -->
     <div
       id="fitlerEffect"
-      class="aligned centered margedSide"
+      class="aligned centered margedSide gapped"
       v-if="filtersEffects && filtersEffects[filter.id] !== undefined"
     >
-      <span>
-        {{ filtersEffects[filter.id] }}
-      </span>
       <inline-svg
-        class="margedSide"
         :src="require('@/assets/svg/data.svg')"
         width="20"
         height="20"
       />
+      {{ filtersEffects[filter.id] }}
     </div>
+
     <!-- Filter invert -->
     <button
       id="invert"
@@ -67,7 +65,11 @@
       title="Remove the filter"
       v-if="!readOnly"
     >
-      x
+      <inline-svg
+        :src="require('@/assets/svg/close.svg')"
+        width="15"
+        height="15"
+      />
     </button>
   </div>
 </template>

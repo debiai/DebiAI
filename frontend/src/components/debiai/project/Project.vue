@@ -70,6 +70,7 @@
         <div
           id="bot"
           class="card"
+          style="margin:5px"
         >
           <!-- Cache   -->
           <CachePanel :project="project" />
