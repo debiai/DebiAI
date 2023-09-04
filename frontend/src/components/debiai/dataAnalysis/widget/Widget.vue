@@ -87,7 +87,7 @@
           v-if="canFilterSamples && !startFiltering"
           :title="'Start filtering samples with the ' + title + ' widget'"
           @click="startFiltering = !startFiltering"
-          style="margin-left: 20px; height: 28px"
+          style="height: 28px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -104,7 +104,7 @@
           class="highlighted"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
-          style="margin-left: 20px; height: 28px"
+          style="height: 28px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
