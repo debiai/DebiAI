@@ -34,18 +34,11 @@
               <h4>
                 {{ group }}
                 <!-- Nb selected columns in group: -->
-                <span
-                  class="nbItem blue"
-                  v-if="getNbSelectedColumns(cols)"
-                >
-                  {{ getNbSelectedColumns(cols) }}
-                </span>
-
-                <span v-if="getNbSelectedColumns(cols)"> / </span>
-                <!-- Nb columns in group: -->
-                <span class="nbItem">
-                  {{ cols.length }}
-                </span>
+                <NbItem
+                  v-if="multipleSelection && cols.length > 1"
+                  :nbSelected="getNbSelectedColumns(cols)"
+                  :nbTotal="cols.length"
+                />
               </h4>
             </template>
             <template v-slot:body>

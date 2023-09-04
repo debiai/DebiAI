@@ -87,6 +87,7 @@
           v-if="canFilterSamples && !startFiltering"
           :title="'Start filtering samples with the ' + title + ' widget'"
           @click="startFiltering = !startFiltering"
+          style="height: 28px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -94,7 +95,7 @@
             height="12"
             fill="black"
           />
-          Filter
+          Start filtering
         </button>
 
         <!-- filtering ongoing btn -->
@@ -103,6 +104,7 @@
           class="highlighted"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
+          style="height: 28px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -113,10 +115,17 @@
         </button>
 
         <!-- Clear filters -->
+        <div
+          v-if="canFilterSamples && startFiltering && !clearFiltersAvailable"
+          style="margin-left: 10px"
+        >
+          No filters
+        </div>
         <button
           v-if="clearFiltersAvailable"
           id="clearFiltersBtn"
           @click="clearFilters"
+          style="height: 28px"
         >
           <span class="badge">{{ widgetFilters.length }}</span>
           Clear filters
@@ -136,12 +145,7 @@
       <!-- Loading anim, messages, warning -->
       <div class="center">
         <!-- Loading animation -->
-        <div
-          v-if="loading"
-          class="saving"
-        >
-          <span></span><span></span><span></span>
-        </div>
+        <LoadingAnimation v-if="loading" />
 
         <!-- Error icon -->
         <div
@@ -193,6 +197,7 @@
           id="filtersApplied"
           @click="showLocalFilters = true"
           title="Filters applied to this widget on creation"
+          style="height: 28px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -200,7 +205,7 @@
             height="12"
             fill="black"
           />
-          Applied
+          On creation
           <span class="badge">{{ localFilters.length }}</span>
         </button>
 

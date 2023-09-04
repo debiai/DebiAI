@@ -138,7 +138,7 @@ export default {
           } else {
             this.$store.commit("sendMessage", {
               title: "error",
-              msg: "An error occured",
+              msg: "An error occurred",
             });
           }
         });
