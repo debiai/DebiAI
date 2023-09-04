@@ -74,11 +74,7 @@
       @click.stop
       @click="openDocumentation"
     >
-      <inline-svg
-        :src="require('@/assets/svg/question.svg')"
-        width="20"
-        height="20"
-      />
+      ?
     </button>
   </div>
 </template>
@@ -187,8 +183,9 @@ export default {
 .docBtn {
   background-color: transparent;
   border-radius: 100px;
-  padding: 10px;
-  border: none;
+  border: solid 1px var(--fontColorLight);
+  width: 30px;
+  height: 30px;
   opacity: 0;
   &:hover {
     background-color: var(--greyDark);
