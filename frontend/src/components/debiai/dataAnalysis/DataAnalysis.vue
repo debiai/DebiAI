@@ -761,11 +761,6 @@ export default {
   height: 100%;
 }
 
-.grid-stack {
-  margin-left: 60px; /* Width of Sidebar */
-  background-color: var(--greyLight);
-}
-
 .filterOrder {
   transition: opacity 0.3s;
   display: flex;

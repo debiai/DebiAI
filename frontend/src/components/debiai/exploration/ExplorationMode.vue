@@ -36,7 +36,20 @@
         data-gs-height="4"
       >
         <div class="card">
-          <div class="title grid-stack-item-content">Aggregation</div>
+          <div class="title grid-stack-item-content">
+            Aggregation
+
+            <documentation-block>
+              The exploration mode only support columns <br />
+              with <b> 20 unique values at most</b>. If a <br>
+              column has too many unique values, <br />
+              it will be ignored. <br />
+              <br />
+              If you want to use a column with many unique<br />
+              values, you can aggregate it using different<br />
+              aggregation methods. <br />
+            </documentation-block>
+          </div>
           <div class="body">
             <AggregationVue
               :selectedColumnsIndex="selectedColumnsIndex"
@@ -328,12 +341,16 @@ export default {
 }
 </style>
 
-<style>
-body {
-  /* background: var(--greyLight); */
+<style lang="scss" scoped>
+#ExplorationMode {
+  background-color: var(--greyLight);
 }
 /* Grid stack */
+.grid-stack {
+  width: 99%;
+}
 .grid-stack-item {
+  top: 0px;
 }
 
 .grid-stack-placeholder {

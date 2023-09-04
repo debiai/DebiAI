@@ -6,7 +6,11 @@
       v-if="selectedColumnsIndex.length > 0 && !loading"
     >
       <div id="title">
-        <!-- Select the metrics used for the exploration and aggregate the columns if needed -->
+        <ColorTag
+          color="yellow"
+          v-if="nbColumnsToAggregate > 0"
+          title="Some columns need to be aggregated before proceeding."
+        />
       </div>
       <button
         :disabled="!canProceed"
@@ -57,99 +61,120 @@
         v-if="!loading"
         id="columnsMetrics"
       >
-        <transition name="fade">
-          <div
-            id="warningMessage"
-            class="tip warning"
-            v-show="nbColumnsToAggregate > 0"
-          >
-            The exploration mode only support columns with a certain number of unique values,
-            <b> {{ maximumUniqueValues }} unique values at most</b>. If a column has too many unique
-            values, it will be ignored.
-            <br />
-            If you want to use a column with many unique values, you can aggregate it by chunks.
-          </div>
-        </transition>
-
         <!-- Columns -->
         <div
           v-for="columnMetrics in selectedColumnsMetrics"
           :key="columnMetrics.label"
           class="column"
         >
-          <Collapsible
-            :headerColor="columnAggregationValid(columnMetrics) ? 'green' : 'red'"
-            :headerTitle="
-              columnAggregationValid(columnMetrics)
-                ? ''
-                : 'The number of unique values is too high to be used in the exploration mode.'
+          <!-- Title -->
+          <h4 class="label aligned gapped">
+            {{ columnMetrics.label }}
+            <div class="tag">
+              {{ columnMetrics.type }}
+            </div>
+          </h4>
+
+          <!-- Unique values -->
+          <div class="nbUniqueValues">
+            <!-- Warning if the number of unique values is too high -->
+            <ColorTag
+              color="yellow"
+              v-if="!columnAggregationValid(columnMetrics)"
+              title="The number of unique values is too high to be used in the exploration mode."
+            />
+
+            <!-- Chunk size -->
+            <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+            <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
+
+            <!-- Aggregate button -->
+            <button
+              @click="
+                columnMetrics.openAggregationModal = true;
+                $forceUpdate();
+              "
+            >
+              Aggregate
+            </button>
+          </div>
+
+          <!-- Aggregation parameters modal -->
+          <Modal
+            v-if="columnMetrics.openAggregationModal"
+            @close="
+              columnMetrics.openAggregationModal = false;
+              $forceUpdate();
             "
           >
-            <!-- Column header -->
-            <template v-slot:header>
+            <div class="aggregationParameters">
+              <h3>Aggregate the column to reduce the number of unique values</h3>
+
               <div
-                class="columnTitle"
-                :title="
-                  columnAggregationValid(columnMetrics)
-                    ? ''
-                    : 'The number of unique values is too high to be used in the exploration mode.'
-                "
+                class="aggregationMethod chunks"
+                v-if="columnMetrics.type === 'number'"
               >
-                <!-- Title -->
-                <h4 class="label">
-                  {{ columnMetrics.label }}
-                  {{ columnMetrics.type }}
-                </h4>
-                <!-- Unique values -->
-                <div class="nbUniqueValues">
-                  <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
+                Aggregate by chunks
 
-                  <!-- Chunk size -->
-                  <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
-                </div>
+                <select
+                  v-model="columnMetrics.nbChunks"
+                  @change="calculateNbColumnsToAggregate()"
+                >
+                  <option
+                    v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
+                    :key="i"
+                    :value="i"
+                  >
+                    {{ i }}
+                  </option>
+                </select>
               </div>
-            </template>
-            <template v-slot:body>
-              <div class="aggregationParameters">
-                <div class="parameter">
-                  <div class="chunks">
-                    Aggregate by chunks
 
-                    <!-- Selection list -->
+              <div
+                class="aggregationMethod letters"
+                v-if="columnMetrics.type === 'text'"
+              >
+                Aggregate using the first letters of the column values. <br />
 
-                    <select
-                      v-model="columnMetrics.nbChunks"
-                      @change="calculateNbColumnsToAggregate()"
-                    >
-                      <option
-                        v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
-                        :key="i"
-                        :value="i"
-                      >
-                        {{ i }}
-                      </option>
-                    </select>
-
-                    <!-- <button
-                      v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
-                      :key="i"
-                      :class="'radioBtn chunk ' + (i === columnMetrics.nbChunks ? 'selected' : '')"
-                      @click="
-                        columnMetrics.nbChunks = i === columnMetrics.nbChunks ? null : i;
-                        calculateNbColumnsToAggregate();
-                      "
-                    >
-                      {{ i }}
-                    </button> -->
-                  </div>
-                </div>
-                <!-- <div class="parameter">
-                  <h4>Aggregate the column using timestamp</h4>
-                  <div>WIP</div>
-                </div> -->
+                Number of letters to use:
+                <select
+                  v-model="columnMetrics.nbChunks"
+                  @change="calculateNbColumnsToAggregate()"
+                >
+                  <option
+                    v-for="i in 2"
+                    :key="i"
+                    :value="Math.pow(15, i)"
+                  >
+                    {{ i }}
+                  </option>
+                </select>
               </div>
-            </template>
-          </Collapsible>
+
+              <div class="controls">
+                <span>
+                  <button
+                    class="green"
+                    @click="
+                      columnMetrics.openAggregationModal = false;
+                      $forceUpdate();
+                    "
+                  >
+                    Done
+                  </button>
+                  <button
+                    class="red"
+                    @click="
+                      columnMetrics.openAggregationModal = false;
+                      $forceUpdate();
+                    "
+                  >
+                    Close
+                  </button>
+                </span>
+              </div>
+            </div>
+          </Modal>
         </div>
       </div>
     </transition>
@@ -214,6 +239,9 @@ export default {
 
             // Add the column type
             column.type = projectColumn.type;
+
+            // Add aggregation modal parameters
+            column.openAggregationModal = false;
           });
 
           // Calculate the number of columns to aggregate
@@ -289,6 +317,7 @@ export default {
   width: 100%;
 
   #top {
+    width: 95%;
     padding: 10px;
     gap: 20px;
     display: flex;
@@ -312,39 +341,40 @@ export default {
     width: 100%;
     .column {
       margin: 5px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-      .columnTitle {
-        width: 100%;
+      border: 1px solid var(--greyDark);
+      border-radius: 5px;
+
+      .label {
+        font-weight: bold;
+      }
+
+      .nbUniqueValues {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
         gap: 10px;
-
-        .label {
-          font-weight: bold;
-        }
-
-        .nbUniqueValues {
-          border-radius: 5px;
-          border: 1px solid;
-          padding: 5px;
-        }
       }
 
       .aggregationParameters {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 20px;
 
-        .parameter {
-          padding: 10px;
-        }
         .chunks {
           display: flex;
           align-items: center;
           gap: 10px;
         }
+      }
+
+      .controls {
+        display: flex;
+        justify-content: flex-end;
       }
     }
   }

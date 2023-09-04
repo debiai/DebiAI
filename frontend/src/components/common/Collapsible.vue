@@ -13,14 +13,11 @@
         height="10"
       />
 
-      <div
-        :class="colorTagClass"
+      <ColorTag
         v-if="headerColor"
-      >
-        <span v-if="headerColor === 'green'">✔</span>
-        <span v-if="headerColor === 'blue'">i</span>
-        <span v-if="headerColor === 'red'">✖</span>
-      </div>
+        :color="headerColor"
+        :title="headerTitle"
+      />
       <slot name="header"></slot>
     </div>
 
@@ -76,12 +73,6 @@ export default {
         open: this.isOpen,
       };
     },
-    colorTagClass() {
-      return {
-        colorTag: true,
-        [this.headerColor]: true,
-      };
-    },
   },
   watch: {
     isOpen() {
@@ -128,28 +119,6 @@ export default {
     &.open {
       #arrow {
         transform: rotate(90deg);
-      }
-    }
-
-    // Header color
-    .colorTag {
-      width: 20px;
-      height: 19px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 50px;
-      color: white;
-      font-size: 0.8em;
-      transition: background-color 0.2s;
-      &.green {
-        background-color: var(--success);
-      }
-      &.blue {
-        background-color: var(--success);
-      }
-      &.red {
-        background-color: var(--danger);
       }
     }
   }
