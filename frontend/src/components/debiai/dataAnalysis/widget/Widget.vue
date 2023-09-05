@@ -70,24 +70,12 @@
       <div id="name">
         <h2>{{ name }}</h2>
 
-        <!-- Widget filter position 2 -->
-        <span style="width: 35px">
-          <span
-            v-if="widgetFilterOrder >= 0"
-            title="widget filtering order"
-            id="widgetFilteringOrder2"
-            class="filterOrder"
-          >
-            {{ widgetFilterOrder + 1 }}
-          </span>
-        </span>
-
         <!-- start filtering btn -->
         <button
           v-if="canFilterSamples && !startFiltering"
           :title="'Start filtering samples with the ' + title + ' widget'"
           @click="startFiltering = !startFiltering"
-          style="height: 28px"
+          style="height: 28px; margin-left: 15px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -104,7 +92,7 @@
           class="highlighted"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
-          style="height: 28px"
+          style="height: 28px; margin-left: 15px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -176,14 +164,6 @@
               @click="drawPlot"
             >
               Redraw
-            </button>
-            <button
-              @click="
-                colorWarning = false;
-                selectedDataWarning = false;
-              "
-            >
-              Hide
             </button>
           </div>
         </transition>
@@ -646,9 +626,15 @@ export default {
     display: flex;
     cursor: grab;
     padding: 3px 3px 3px 8px;
+    transition: background-color 0.2s;
 
     &.grabbing {
       cursor: grabbing;
+    }
+
+    &.filtering {
+      background-color: var(--primaryLight);
+      border-color: var(--primaryDark);
     }
 
     #name {
@@ -659,14 +645,8 @@ export default {
       }
 
       button {
-        opacity: 0;
-        transition: opacity 0.3s;
         margin-left: 5px;
         white-space: nowrap;
-      }
-
-      #widgetFilteringOrder {
-        opacity: 0;
       }
     }
 
@@ -675,8 +655,6 @@ export default {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s;
 
       button {
         display: flex;
@@ -732,65 +710,6 @@ export default {
 
       .dataError:hover {
         filter: brightness(80%);
-      }
-
-      /* Loading Anim */
-      @keyframes blink {
-        0% {
-          opacity: 0.2;
-        }
-
-        20% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0.2;
-        }
-      }
-
-      .saving {
-        margin-left: 5px;
-      }
-
-      .saving span {
-        animation-name: blink;
-        animation-duration: 1.4s;
-        animation-iteration-count: infinite;
-        animation-fill-mode: both;
-        height: 10px;
-        width: 10px;
-        border-radius: 50%;
-        background-color: cadetblue;
-        display: inline-block;
-        margin-right: 2.5px;
-        margin-left: 2.5px;
-      }
-
-      .saving span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-
-      .saving span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-    }
-  }
-
-  &:hover {
-    #widgetHeader {
-      #name {
-        button,
-        #widgetFilteringOrder {
-          opacity: 1;
-        }
-        #widgetFilteringOrder2 {
-          opacity: 0;
-        }
-      }
-
-      .options {
-        opacity: 1;
       }
     }
   }
