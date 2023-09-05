@@ -4,111 +4,100 @@
     class="dataVisualizationWidget"
   >
     <!-- Settings -->
-    <modal
+    <div
+      id="settings"
       v-if="settings"
-      @close="settings = false"
     >
-      <div id="settings">
-        <h3 class="aligned spaced">
-          Night stars plot settings
-          <button
-            class="red"
-            @click="settings = false"
-          >
-            Close
-          </button>
-        </h3>
-        <div id="axisControls">
-          <!-- Axis buttons -->
-          <div class="dataGroup axis">
-            <!-- X axis -->
-            <div class="data">
-              <div class="name">X axis</div>
-              <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnXIndex)"
-                  :colorSelection="true"
-                  v-on:selected="xAxisSelection = true"
-                />
-                <!-- AbsX -->
-                Absolute value :
-                <input
-                  type="checkbox"
-                  :id="'absX' + index"
-                  class="customCbx"
-                  v-model="absX"
-                  style="display: none"
-                />
-                <label
-                  :for="'absX' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
-            </div>
-            <!-- Y axis -->
-            <div class="data">
-              <div class="name">Y axis</div>
-              <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnYIndex)"
-                  :colorSelection="true"
-                  v-on:selected="yAxisSelection = true"
-                />
-                <!-- AbsY -->
-                Absolute value :
-                <input
-                  type="checkbox"
-                  :id="'absY' + index"
-                  class="customCbx"
-                  v-model="absY"
-                  style="display: none"
-                />
-                <label
-                  :for="'absY' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
-            </div>
-            <!-- Divided per color -->
-            <div
-              class="data"
-              id="dividePerColor"
-              v-if="coloredColumnIndex !== null"
-            >
-              <div class="name">Divided per color</div>
-              <div class="value">
-                <input
-                  type="checkbox"
-                  :id="'dividePerColor' + index"
-                  class="customCbx"
-                  v-model="dividePerColor"
-                  style="display: none"
-                />
-                <label
-                  :for="'dividePerColor' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
+      <div id="axisControls">
+        <!-- Axis buttons -->
+        <div class="dataGroup axis">
+          <!-- X axis -->
+          <div class="data">
+            <div class="name">X axis</div>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnXIndex)"
+                :colorSelection="true"
+                v-on:selected="xAxisSelection = true"
+              />
+              <!-- AbsX -->
+              Absolute value :
+              <input
+                type="checkbox"
+                :id="'absX' + index"
+                class="customCbx"
+                v-model="absX"
+                style="display: none"
+              />
+              <label
+                :for="'absX' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
             </div>
           </div>
-
-          <!-- Draw -->
-          <button
-            id="drawBtn"
-            @click="checkPlot"
-            class="blue"
+          <!-- Y axis -->
+          <div class="data">
+            <div class="name">Y axis</div>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnYIndex)"
+                :colorSelection="true"
+                v-on:selected="yAxisSelection = true"
+              />
+              <!-- AbsY -->
+              Absolute value :
+              <input
+                type="checkbox"
+                :id="'absY' + index"
+                class="customCbx"
+                v-model="absY"
+                style="display: none"
+              />
+              <label
+                :for="'absY' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+            </div>
+          </div>
+          <!-- Divided per color -->
+          <div
+            class="data"
+            id="dividePerColor"
+            v-if="coloredColumnIndex !== null"
           >
-            Draw
-          </button>
+            <div class="name">Divided per color</div>
+            <div class="value">
+              <input
+                type="checkbox"
+                :id="'dividePerColor' + index"
+                class="customCbx"
+                v-model="dividePerColor"
+                style="display: none"
+              />
+              <label
+                :for="'dividePerColor' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+            </div>
+          </div>
         </div>
+
+        <!-- Draw -->
+        <button
+          id="drawBtn"
+          @click="checkPlot"
+          class="blue"
+        >
+          Draw
+        </button>
       </div>
-    </modal>
+    </div>
 
     <!-- Axis selection Modals -->
     <modal
@@ -166,7 +155,7 @@ export default {
   data() {
     return {
       // Settings
-      settings: false,
+      settings: true,
       xAxisSelection: false,
       yAxisSelection: false,
 
@@ -422,7 +411,6 @@ export default {
 
       this.$parent.$emit("drawn");
       this.currentDrawnColorIndex = this.coloredColumnIndex;
-      this.settings = false;
     },
 
     // Axis selection
@@ -479,7 +467,6 @@ export default {
 /* Controls */
 #axisControls {
   display: flex;
-  gap: 10px;
 
   #inputs {
     flex: 1;
@@ -502,5 +489,6 @@ export default {
 
 #drawBtn {
   width: 80px;
+  margin: 3px;
 }
 </style>

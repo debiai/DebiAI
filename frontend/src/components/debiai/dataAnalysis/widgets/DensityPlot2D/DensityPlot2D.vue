@@ -4,69 +4,67 @@
     class="dataVisualizationWidget"
   >
     <!-- Settings -->
-    <modal
+    <div
+      id="settings"
       v-if="settings"
-      @close="settings = false"
     >
-      <div id="settings">
-        <h3>2D Density Plot settings</h3>
-        <div id="axisControls">
-          <!-- Axis buttons -->
-          <div class="dataGroup axis">
-            <!-- X axis -->
-            <div class="data">
-              <div class="name">X axis</div>
-              <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnXIndex)"
-                  :colorSelection="true"
-                  v-on:selected="xAxisSelection = true"
-                />
-                <!-- AbsX -->
-                Absolute value :
-                <input
-                  type="checkbox"
-                  :id="'absX' + index"
-                  class="customCbx"
-                  v-model="absX"
-                  style="display: none"
-                />
-                <label
-                  :for="'absX' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
+      <div id="axisControls">
+        <!-- Axis buttons -->
+        <div class="dataGroup axis">
+          <!-- X axis -->
+          <div class="data">
+            <div class="name">X axis</div>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnXIndex)"
+                :colorSelection="true"
+                v-on:selected="xAxisSelection = true"
+              />
+              <!-- AbsX -->
+              Absolute value :
+              <input
+                type="checkbox"
+                :id="'absX' + index"
+                class="customCbx"
+                v-model="absX"
+                style="display: none"
+              />
+              <label
+                :for="'absX' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
             </div>
-            <!-- Y axis -->
-            <div class="data">
-              <div class="name">Y axis</div>
-              <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnYIndex)"
-                  :colorSelection="true"
-                  v-on:selected="yAxisSelection = true"
-                />
-                <!-- AbsY -->
-                Absolute value :
-                <input
-                  type="checkbox"
-                  :id="'absY' + index"
-                  class="customCbx"
-                  v-model="absY"
-                  style="display: none"
-                />
-                <label
-                  :for="'absY' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
+          </div>
+          <!-- Y axis -->
+          <div class="data">
+            <div class="name">Y axis</div>
+            <div class="value">
+              <Column
+                :column="data.columns.find((c) => c.index == columnYIndex)"
+                :colorSelection="true"
+                v-on:selected="yAxisSelection = true"
+              />
+              <!-- AbsY -->
+              Absolute value :
+              <input
+                type="checkbox"
+                :id="'absY' + index"
+                class="customCbx"
+                v-model="absY"
+                style="display: none"
+              />
+              <label
+                :for="'absY' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
             </div>
-            <!-- Divided per color -->
-            <!-- <div
+          </div>
+          <!-- Divided per color -->
+          <!-- <div
               class="data"
               id="dividePerColor"
               v-if="coloredColumnIndex !== null"
@@ -88,72 +86,71 @@
                 </label>
               </div>
             </div> -->
-          </div>
-
-          <!-- Draw -->
-          <button
-            id="drawBtn"
-            @click="checkPlot"
-          >
-            Draw
-          </button>
         </div>
-        <div
-          id="colorScaleControl"
-          class="dataGroup"
-          style="justify-content: space-evenly"
+
+        <!-- Draw -->
+        <button
+          id="drawBtn"
+          @click="checkPlot"
         >
-          <!-- Contour number -->
-          <div class="data">
-            <div class="name">Contour number</div>
-            <div class="value">
-              <input
-                type="number"
-                min="1"
-                v-model="contourNumber"
-                style="width: 70px"
-              />
-            </div>
+          Draw
+        </button>
+      </div>
+      <div
+        id="colorScaleControl"
+        class="dataGroup"
+        style="justify-content: space-evenly"
+      >
+        <!-- Contour number -->
+        <div class="data">
+          <div class="name">Contour number</div>
+          <div class="value">
+            <input
+              type="number"
+              min="1"
+              v-model="contourNumber"
+              style="width: 70px"
+            />
           </div>
+        </div>
 
-          <!-- Color scale -->
-          <div class="data">
-            <div class="name">Color scale</div>
-            <div class="value">
-              <select v-model="colorScale">
-                <option
-                  v-for="cs in colorScales"
-                  :key="cs"
-                  :value="cs"
-                >
-                  {{ cs }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Reverse color scale -->
-          <div class="data">
-            <div class="name">Reverse color scale</div>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'reverseColorScale' + index"
-                class="customCbx"
-                v-model="reverseColorScale"
-                style="display: none"
-              />
-              <label
-                :for="'reverseColorScale' + index"
-                class="toggle"
+        <!-- Color scale -->
+        <div class="data">
+          <div class="name">Color scale</div>
+          <div class="value">
+            <select v-model="colorScale">
+              <option
+                v-for="cs in colorScales"
+                :key="cs"
+                :value="cs"
               >
-                <span></span>
-              </label>
-            </div>
+                {{ cs }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Reverse color scale -->
+        <div class="data">
+          <div class="name">Reverse color scale</div>
+          <div class="value">
+            <input
+              type="checkbox"
+              :id="'reverseColorScale' + index"
+              class="customCbx"
+              v-model="reverseColorScale"
+              style="display: none"
+            />
+            <label
+              :for="'reverseColorScale' + index"
+              class="toggle"
+            >
+              <span></span>
+            </label>
           </div>
         </div>
       </div>
-    </modal>
+    </div>
 
     <!-- Axis selection Modals -->
     <modal
@@ -211,14 +208,13 @@ export default {
   data() {
     return {
       // Settings
-      settings: false,
+      settings: true,
       xAxisSelection: false,
       yAxisSelection: false,
 
       // Conf
       columnXIndex: 0,
       columnYIndex: 0,
-      dividePerColor: true,
       absX: false,
       absY: false,
       colorScale: "Blues",
@@ -275,7 +271,6 @@ export default {
         // Axis
         columnX: this.data.columns[this.columnXIndex].label,
         columnY: this.data.columns[this.columnYIndex].label,
-        dividePerColor: this.dividePerColor,
         absX: this.absX,
         absY: this.absY,
         colorScale: this.colorScale,
@@ -305,7 +300,6 @@ export default {
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
-      if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
       if ("absX" in conf) this.absX = conf.absX;
       if ("absY" in conf) this.absY = conf.absY;
       if ("colorScale" in conf) this.colorScale = conf.colorScale;
@@ -320,7 +314,6 @@ export default {
         (vm) => (
           vm.columnXIndex,
           vm.columnYIndex,
-          vm.dividePerColor,
           vm.absX,
           vm.absY,
           vm.colorScale,
@@ -344,27 +337,7 @@ export default {
     },
     // Plot
     checkPlot(failFast = false) {
-      const colColor = this.data.columns[this.coloredColumnIndex];
-
-      if (
-        this.coloredColumnIndex !== null &&
-        this.dividePerColor &&
-        colColor.uniques.length > 100
-      ) {
-        if (failFast) return false;
-
-        swal({
-          title: "Long calculation: do you want to proceed ?",
-          text: "Night star plot: You have selected more than 100 uniques color values. This may take a while !",
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-        }).then((validate) => {
-          if (validate) this.drawPlot();
-        });
-      } else {
-        this.drawPlot();
-      }
+      this.drawPlot();
     },
 
     drawPlot() {
@@ -401,7 +374,7 @@ export default {
       if (this.absY) valuesY = valuesY.map((v) => Math.abs(v));
 
       // Color
-      let colColor;
+      // let colColor;
       let extraPlotName = "";
       // if (this.coloredColumnIndex !== null && this.dividePerColor) {
       //   colColor = this.data.columns[this.coloredColumnIndex];
@@ -541,8 +514,6 @@ export default {
         responsive: true,
       });
 
-      this.settings = false;
-
       // Update the plot color scale
       Plotly.restyle(this.divPointPlot, { colorscale: [this.colorScale] }, [0]);
     },
@@ -597,10 +568,6 @@ export default {
   flex-direction: column;
 }
 
-.title h2 {
-  margin-left: 10px;
-}
-
 #settings {
   text-align: left;
 }
@@ -618,11 +585,7 @@ export default {
   justify-content: space-evenly;
 }
 .dataGroup {
-  margin: 10px;
   margin-bottom: 0px;
-}
-#dividePerColor {
-  margin-top: 10px;
 }
 
 .otherControls {
@@ -642,9 +605,7 @@ export default {
 }
 
 #drawBtn {
-  margin: 10px;
+  margin: 3px;
   width: 80px;
-  margin-left: 0px;
-  margin-bottom: 0px;
 }
 </style>
