@@ -1,5 +1,40 @@
 <template>
   <div class="card">
+    <!-- Widget rename modal -->
+    <modal
+      v-if="renameModal"
+      @close="renameModal = false"
+    >
+      <div id="renameModal">
+        <h3 class="aligned spaced gapped">
+          <span>Rename the widget</span>
+          <button
+            class="red"
+            @click="renameModal = false"
+          >
+            Close
+          </button>
+        </h3>
+        <br>
+        <div class="center">
+          <input
+            v-model="newName"
+            type="text"
+            placeholder="Widget name"
+            style="width: 250px; margin-right: 10px"
+            ref="renameInput"
+            @keyup.enter="setName(newName)"
+          />
+          <button
+            class="highlighted"
+            @click="setName(newName)"
+          >
+            Rename
+          </button>
+        </div>
+      </div>
+    </modal>
+
     <!-- Widget configuration modal -->
     <modal
       v-if="confSettings"
@@ -14,7 +49,6 @@
         @cancel="confSettings = false"
         @saved="confSaved"
         @confSelected="(conf) => setConf(conf, false)"
-        @setWidgetName="setName"
       />
     </modal>
 
@@ -68,7 +102,12 @@
     >
       <!-- Name, filtering btn, filtering order, ... -->
       <div id="name">
-        <h2>{{ name }}</h2>
+        <h2
+          style="cursor: pointer"
+          @dblclick="openRenameModal"
+        >
+          {{ name }}
+        </h2>
 
         <!-- start filtering btn -->
         <button
@@ -257,6 +296,11 @@
             icon: 'save',
             available: canSaveConfiguration,
           },
+          {
+            name: 'Rename',
+            action: openRenameModal,
+            icon: 'rename',
+          },
           { name: 'separator' },
           { name: 'Close', action: remove, icon: 'close' },
         ]"
@@ -306,6 +350,10 @@ export default {
       loading: false,
       error_msg: null,
       grabbing: false,
+
+      // Widget rename
+      renameModal: false,
+      newName: null,
 
       // Configurations
       canSaveConfiguration: false,
@@ -430,6 +478,21 @@ export default {
       } else this.$emit("copy");
     },
 
+    // Rename
+    openRenameModal() {
+      this.renameModal = true;
+      this.newName = this.name;
+
+      // Select the text in the input
+      this.$nextTick(() => {
+        this.$refs.renameInput.select();
+      });
+    },
+    setName(name) {
+      this.name = name;
+      this.renameModal = false;
+    },
+
     // configuration
     setConf(configuration, onStartup = false) {
       let slotCom = this.$slots.default[0];
@@ -440,10 +503,6 @@ export default {
       setTimeout(() => {
         this.confAsChanged = false;
       }, 500);
-    },
-    setName(name) {
-      this.name = name;
-      this.confSettings = false;
     },
     saveConfiguration() {
       // Load configuration to save
