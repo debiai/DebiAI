@@ -1316,4 +1316,8 @@ export default {
 #commonControls .data {
   min-height: 35px;
 }
+
+input[type="number"] {
+  width: 70px;
+}
 </style>
