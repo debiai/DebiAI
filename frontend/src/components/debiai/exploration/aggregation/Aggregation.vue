@@ -87,6 +87,11 @@
             <!-- Chunk size -->
             <b> {{ columnMetrics.nbUniqueValues }} </b>unique values
             <span v-if="columnMetrics.nbChunks">/ {{ columnMetrics.nbChunks }} chunk </span>
+            <span v-if="columnMetrics.nbLetters"
+              >/ first {{ columnMetrics.nbLetters }} letter{{
+                columnMetrics.nbLetters > 1 ? "s" : ""
+              }}
+            </span>
 
             <!-- Aggregate button -->
             <button
@@ -108,47 +113,75 @@
             "
           >
             <div class="aggregationParameters">
-              <h3>Aggregate the column to reduce the number of unique values</h3>
+              <h3 class="aligned spaced gapped">
+                Aggregate the column to reduce the number of unique values
+                <button
+                  class="red"
+                  @click="
+                    columnMetrics.openAggregationModal = false;
+                    $forceUpdate();
+                  "
+                >
+                  Close
+                </button>
+              </h3>
 
+              <!-- Number column aggregation methods -->
               <div
-                class="aggregationMethod chunks"
+                class="aggregationMethod"
                 v-if="columnMetrics.type === 'number'"
               >
-                Aggregate by chunks
+                <!-- Chunk number -->
+                <div class="chunks">
+                  Aggregate by
 
-                <select
-                  v-model="columnMetrics.nbChunks"
-                  @change="calculateNbColumnsToAggregate()"
-                >
-                  <option
-                    v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
-                    :key="i"
-                    :value="i"
+                  <select
+                    v-model="columnMetrics.nbChunks"
+                    @change="calculateNbColumnsToAggregate()"
                   >
-                    {{ i }}
-                  </option>
-                </select>
+                    <option
+                      v-for="i in Math.min(maximumUniqueValues, columnMetrics.nbUniqueValues)"
+                      :key="i"
+                      :value="i"
+                    >
+                      {{ i }}
+                    </option>
+                  </select>
+
+                  chunks
+                </div>
+
+                <!-- Aggregate from -->
+                <div class="chunks">
+                  Aggregate from
+                  <input
+                    type="number"
+                    v-model="columnMetrics.from"
+                    @change="calculateNbColumnsToAggregate()"
+                  />
+
+                  to
+                  <input
+                    type="number"
+                    v-model="columnMetrics.to"
+                    @change="calculateNbColumnsToAggregate()"
+                  />
+                </div>
               </div>
 
+              <!-- Text column aggregation methods -->
               <div
-                class="aggregationMethod letters"
+                class="aggregationMethod letters chunks"
                 v-if="columnMetrics.type === 'text'"
               >
-                Aggregate using the first letters of the column values. <br />
+                Aggregate using the first
 
-                Number of letters to use:
-                <select
-                  v-model="columnMetrics.nbChunks"
-                  @change="calculateNbColumnsToAggregate()"
-                >
-                  <option
-                    v-for="i in 2"
-                    :key="i"
-                    :value="Math.pow(15, i)"
-                  >
-                    {{ i }}
-                  </option>
-                </select>
+                <input
+                  type="number"
+                  v-model="columnMetrics.nbLetters"
+                />
+
+                letters of the column values.
               </div>
 
               <div class="controls">
@@ -161,15 +194,6 @@
                     "
                   >
                     Done
-                  </button>
-                  <button
-                    class="red"
-                    @click="
-                      columnMetrics.openAggregationModal = false;
-                      $forceUpdate();
-                    "
-                  >
-                    Close
                   </button>
                 </span>
               </div>
@@ -203,6 +227,8 @@ export default {
   created() {
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
+
+    if (this.selectedColumnsIndex.length > 0) this.loadColumnsMetrics(); // Manly for development purposes
   },
   methods: {
     selectMetric(metric) {
@@ -224,10 +250,8 @@ export default {
         .then((metrics) => {
           this.selectedColumnsMetrics = metrics;
 
-          // Add a nbChunks property to each column
+          // Add the column type and some other parameters
           this.selectedColumnsMetrics.forEach((column) => {
-            column.nbChunks = null;
-
             // Find the column in the project columns
             const projectColumn = this.projectColumns.find((c) => c.name === column.label);
             // {
@@ -262,11 +286,11 @@ export default {
     columnAggregationValid(column) {
       if (!"nbUniqueValues" in column) return false;
 
-      if (column.nbUniqueValues > maximumUniqueValues) {
-        if (!column.nbChunks) return false;
-      }
+      if (column.nbUniqueValues <= maximumUniqueValues) return true;
 
-      return true;
+      if (column.nbChunks) return true;
+      if (column.nbLetters) return true;
+      return false;
     },
 
     calculateNbColumnsToAggregate() {
@@ -290,8 +314,15 @@ export default {
     save() {
       this.$emit("save", {
         selectedMetrics: this.selectedMetrics,
-        selectedColumnsMetrics: this.selectedColumnsMetrics,
+        selectedColumnsMetrics: null,
       });
+
+      setTimeout(() => {
+        this.$emit("save", {
+          selectedMetrics: this.selectedMetrics,
+          selectedColumnsMetrics: JSON.parse(JSON.stringify( this.selectedColumnsMetrics)), // Deep copy
+        });
+      }, 300);
     },
   },
   computed: {
@@ -369,6 +400,11 @@ export default {
           display: flex;
           align-items: center;
           gap: 10px;
+          padding: 10px;
+
+          input {
+            width: 50px;
+          }
         }
       }
 

@@ -66,7 +66,7 @@
       <div
         id="filtering"
         data-gs-width="12"
-        data-gs-height="5"
+        data-gs-height="8"
       >
         <div class="card">
           <div class="title grid-stack-item-content">Filter the data that you want to explore</div>
