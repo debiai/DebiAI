@@ -1,5 +1,40 @@
 <template>
   <div class="card">
+    <!-- Widget rename modal -->
+    <modal
+      v-if="renameModal"
+      @close="renameModal = false"
+    >
+      <div id="renameModal">
+        <h3 class="aligned spaced gapped">
+          <span>Rename the widget</span>
+          <button
+            class="red"
+            @click="renameModal = false"
+          >
+            Close
+          </button>
+        </h3>
+        <br>
+        <div class="center">
+          <input
+            v-model="newName"
+            type="text"
+            placeholder="Widget name"
+            style="width: 250px; margin-right: 10px"
+            ref="renameInput"
+            @keyup.enter="setName(newName)"
+          />
+          <button
+            class="highlighted"
+            @click="setName(newName)"
+          >
+            Rename
+          </button>
+        </div>
+      </div>
+    </modal>
+
     <!-- Widget configuration modal -->
     <modal
       v-if="confSettings"
@@ -14,7 +49,6 @@
         @cancel="confSettings = false"
         @saved="confSaved"
         @confSelected="(conf) => setConf(conf, false)"
-        @setWidgetName="setName"
       />
     </modal>
 
@@ -68,26 +102,19 @@
     >
       <!-- Name, filtering btn, filtering order, ... -->
       <div id="name">
-        <h2>{{ name }}</h2>
-
-        <!-- Widget filter position 2 -->
-        <span style="width: 35px">
-          <span
-            v-if="widgetFilterOrder >= 0"
-            title="widget filtering order"
-            id="widgetFilteringOrder2"
-            class="filterOrder"
-          >
-            {{ widgetFilterOrder + 1 }}
-          </span>
-        </span>
+        <h2
+          style="cursor: pointer"
+          @dblclick="openRenameModal"
+        >
+          {{ name }}
+        </h2>
 
         <!-- start filtering btn -->
         <button
           v-if="canFilterSamples && !startFiltering"
           :title="'Start filtering samples with the ' + title + ' widget'"
           @click="startFiltering = !startFiltering"
-          style="height: 28px"
+          style="height: 28px; margin-left: 15px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -104,7 +131,7 @@
           class="highlighted"
           title="Stop filtering"
           @click="startFiltering = !startFiltering"
-          style="height: 28px"
+          style="height: 28px; margin-left: 15px"
         >
           <inline-svg
             :src="require('@/assets/svg/filter.svg')"
@@ -176,14 +203,6 @@
               @click="drawPlot"
             >
               Redraw
-            </button>
-            <button
-              @click="
-                colorWarning = false;
-                selectedDataWarning = false;
-              "
-            >
-              Hide
             </button>
           </div>
         </transition>
@@ -277,6 +296,11 @@
             icon: 'save',
             available: canSaveConfiguration,
           },
+          {
+            name: 'Rename',
+            action: openRenameModal,
+            icon: 'rename',
+          },
           { name: 'separator' },
           { name: 'Close', action: remove, icon: 'close' },
         ]"
@@ -326,6 +350,10 @@ export default {
       loading: false,
       error_msg: null,
       grabbing: false,
+
+      // Widget rename
+      renameModal: false,
+      newName: null,
 
       // Configurations
       canSaveConfiguration: false,
@@ -450,6 +478,21 @@ export default {
       } else this.$emit("copy");
     },
 
+    // Rename
+    openRenameModal() {
+      this.renameModal = true;
+      this.newName = this.name;
+
+      // Select the text in the input
+      this.$nextTick(() => {
+        this.$refs.renameInput.select();
+      });
+    },
+    setName(name) {
+      this.name = name;
+      this.renameModal = false;
+    },
+
     // configuration
     setConf(configuration, onStartup = false) {
       let slotCom = this.$slots.default[0];
@@ -460,10 +503,6 @@ export default {
       setTimeout(() => {
         this.confAsChanged = false;
       }, 500);
-    },
-    setName(name) {
-      this.name = name;
-      this.confSettings = false;
     },
     saveConfiguration() {
       // Load configuration to save
@@ -646,9 +685,15 @@ export default {
     display: flex;
     cursor: grab;
     padding: 3px 3px 3px 8px;
+    transition: background-color 0.2s;
 
     &.grabbing {
       cursor: grabbing;
+    }
+
+    &.filtering {
+      background-color: var(--primaryLight);
+      border-color: var(--primaryDark);
     }
 
     #name {
@@ -659,14 +704,8 @@ export default {
       }
 
       button {
-        opacity: 0;
-        transition: opacity 0.3s;
         margin-left: 5px;
         white-space: nowrap;
-      }
-
-      #widgetFilteringOrder {
-        opacity: 0;
       }
     }
 
@@ -675,8 +714,6 @@ export default {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s;
 
       button {
         display: flex;
@@ -732,65 +769,6 @@ export default {
 
       .dataError:hover {
         filter: brightness(80%);
-      }
-
-      /* Loading Anim */
-      @keyframes blink {
-        0% {
-          opacity: 0.2;
-        }
-
-        20% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0.2;
-        }
-      }
-
-      .saving {
-        margin-left: 5px;
-      }
-
-      .saving span {
-        animation-name: blink;
-        animation-duration: 1.4s;
-        animation-iteration-count: infinite;
-        animation-fill-mode: both;
-        height: 10px;
-        width: 10px;
-        border-radius: 50%;
-        background-color: cadetblue;
-        display: inline-block;
-        margin-right: 2.5px;
-        margin-left: 2.5px;
-      }
-
-      .saving span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-
-      .saving span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-    }
-  }
-
-  &:hover {
-    #widgetHeader {
-      #name {
-        button,
-        #widgetFilteringOrder {
-          opacity: 1;
-        }
-        #widgetFilteringOrder2 {
-          opacity: 0;
-        }
-      }
-
-      .options {
-        opacity: 1;
       }
     }
   }

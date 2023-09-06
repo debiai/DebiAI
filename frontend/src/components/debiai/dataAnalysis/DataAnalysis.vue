@@ -497,6 +497,17 @@ export default {
       this.components = this.components.filter((c) => c.id !== component.id);
     },
     copyWidget({ component, configuration }) {
+      // Add something to the name
+      // Check if their is a (x) at the end of the name
+      const widgetCopyText = configuration.name.match(/\(\d+\)$/);
+      if (widgetCopyText) {
+        // Get the number
+        let number = parseInt(widgetCopyText[0].replace(/\(|\)/g, ""));
+
+        // Increment the number
+        configuration.name = configuration.name.replace(/\(\d+\)$/, "(" + (number + 1) + ")");
+      } else configuration.name += " (2)";
+
       // Find the layout of the component
       let gsComp = this.grid.save().find((c) => c.id == component.id);
 

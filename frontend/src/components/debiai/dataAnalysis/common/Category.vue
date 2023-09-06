@@ -35,6 +35,7 @@
                 {{ group }}
                 <!-- Nb selected columns in group: -->
                 <NbItem
+                  v-if="multipleSelection && cols.length > 1"
                   :nbSelected="getNbSelectedColumns(cols)"
                   :nbTotal="cols.length"
                 />

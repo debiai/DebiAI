@@ -715,7 +715,6 @@ export default {
   display: flex;
 }
 .dataGroup {
-  margin: 10px;
   flex-wrap: wrap;
 }
 #columnAxisSelection.data + .data {
@@ -737,11 +736,10 @@ export default {
 }
 
 #drawBtn {
-  margin: 10px;
+  margin: 3px;
   width: 80px;
-  margin-left: 0px;
 }
 input {
-  width: 100px;
+  width: 70px;
 }
 </style>

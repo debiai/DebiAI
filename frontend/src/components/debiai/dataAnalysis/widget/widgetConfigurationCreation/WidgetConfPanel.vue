@@ -29,26 +29,6 @@
     <div id="content">
       <!-- Widget name form & configuration creator -->
       <div id="left">
-        <!-- Change widget name form -->
-        <form
-          id="widgetNameForm"
-          class="card"
-        >
-          <span class="aligned spaced">
-            <h4>Change the widget name</h4>
-            <input
-              type="text"
-              v-model="newWidgetName"
-              placeholder="New widget name"
-            />
-            <button
-              @click="$emit('setWidgetName', newWidgetName)"
-              :disabled="newWidgetName.length < 1"
-            >
-              Change
-            </button>
-          </span>
-        </form>
         <!-- Widget configuration creator -->
         <WidgetConfCreator
           :widgetConf="confToSave"
@@ -128,10 +108,6 @@ export default {
   display: flex;
   flex-direction: column;
   text-align: left;
-}
-#widgetNameForm {
-  display: flex;
-  padding: 10px;
 }
 #content {
   flex: 1;
