@@ -83,6 +83,39 @@
       </div>
     </Modal>
 
+    <!-- New selection modal -->
+    <Modal
+      v-if="newSelectionModal"
+      @close="newSelectionModal = false"
+    >
+      <h3 class="aligned spaced gapped padded">
+        Create a new selection
+        <button
+          @click="newSelectionModal = false"
+          class="red"
+        >
+          Cancel
+        </button>
+      </h3>
+      <div class="aligned spaced gapped padded">
+        <label for="selectionName">Name:</label>
+        <input
+          type="text"
+          id="selectionName"
+          v-model="newSelectionName"
+          @keyup.enter="createSelection"
+          ref="selectionNameInput"
+        />
+        <button
+          @click="createSelection"
+          :disabled="dataIdLoading"
+          class="green"
+        >
+          Create
+        </button>
+      </div>
+    </Modal>
+
     <!-- Loading animation -->
     <LoadingAnimation
       v-if="loading"
@@ -92,9 +125,7 @@
     </LoadingAnimation>
 
     <!-- Plot and warning message-->
-    <div
-      id="content"
-    >
+    <div id="content">
       <!-- Parallel categories plot -->
       <div id="parallelCategories" />
     </div>
@@ -231,7 +262,10 @@
     >
       <button
         :disabled="dataIdLoading"
-        @click="createSelection"
+        @click="
+          newSelectionModal = true;
+          $nextTick(() => $refs.selectionNameInput.focus());
+        "
       >
         Create a selection
       </button>
@@ -264,11 +298,15 @@ export default {
       selectedCombinations: [],
 
       dataIdLoading: false,
+      newSelectionModal: false,
+      newSelectionName: "Exploration selection",
     };
   },
   mounted() {
     // Get the project columns
     this.projectColumns = this.$store.state.ProjectPage.projectColumns;
+
+    if (this.selectedColumnsIndex.length > 0) this.loadCombinations(); // Development purpose
   },
   methods: {
     loadCombinations() {
@@ -426,7 +464,7 @@ export default {
         .then((dataIds) => {
           // Create the selection
           this.$backendDialog
-            .addSelection(dataIds, "Exploration selection")
+            .addSelection(dataIds, this.newSelectionName)
             .then(() => {
               console.log("3");
               this.$store.commit("sendMessage", {
@@ -443,6 +481,7 @@ export default {
             })
             .finally(() => {
               this.dataIdLoading = false;
+              this.newSelectionModal = false;
             });
         })
         .catch((error) => {
