@@ -17,13 +17,8 @@ from modules.dataProviders.webDataProvider.useCases.models import (
 import modules.dataProviders.webDataProvider.useCases.selections as useCaseSelections
 from modules.dataProviders.webDataProvider.http.api import get_info, get_status
 
-from modules.dataProviders.DataProviderException import DataProviderException
 
-
-#
-# Class role is supposed to expose methods for every data Providers
-#
-#
+# WebDataProvider class, allow to get data from a web data-provider
 class WebDataProvider(DataProvider):
     def __init__(self, url, name):
         self.url = url
@@ -38,7 +33,7 @@ class WebDataProvider(DataProvider):
     def type(self):
         return "Web"
 
-    ## Todo api call Info (new info)
+    # Todo api call Info (new info)
     def is_alive(self):
         self.alive = True if get_status(self.url) is True else False
         return self.alive
@@ -49,12 +44,14 @@ class WebDataProvider(DataProvider):
     # ==== Projects ====
     def get_projects(self):
         # Request method to get projects overview
-        # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}]
+        # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections,
+        # update_time, creation_time}]
         return get_all_projects_from_data_provider(self.url, self.name)
 
     def get_project(self, id_project):
         # Request method to get projects overview
-        # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
+        # Return object{ id, name, nb_samples, nb_models, nb_selections,
+        # update_time, creation_time}
         return get_single_project_from_data_provider(self.url, self.name, id_project)
 
     def delete_project(self, project_id):
