@@ -64,7 +64,9 @@ class WebDataProvider(DataProvider):
     def get_id_list(self, project_id, analysis, _from=None, _to=None):
         # http Request on dp to get id list
         # Return Arr[id]
-        return get_project_id_list(self.url, project_id, analysis, _from, _to)
+        return get_project_id_list(
+            self.url, self.cache, project_id, analysis, _from, _to
+        )
 
     def get_samples(self, project_id, analysis, id_list):
         # http Request get full sample
@@ -79,7 +81,7 @@ class WebDataProvider(DataProvider):
 
     def get_selection_id_list(self, project_id, selection_id):
         return useCaseSelections.get_id_list_from_selection(
-            self.url, project_id, selection_id
+            self.url, self.cache, project_id, selection_id
         )
 
     def create_selection(self, project_id, name, id_list, request_id=None):
@@ -95,7 +97,7 @@ class WebDataProvider(DataProvider):
         return get_models_info(self.url, project_id)
 
     def get_model_results_id_list(self, project_id, model_id):
-        return get_model_result_id(self.url, project_id, model_id)
+        return get_model_result_id(self.url, self.cache, project_id, model_id)
 
     def get_model_results(self, project_id, model_id, sample_list):
         return get_model_results(self.url, project_id, model_id, sample_list)

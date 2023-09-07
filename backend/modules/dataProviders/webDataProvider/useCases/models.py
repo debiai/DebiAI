@@ -29,11 +29,17 @@ def get_models_info(url, project_id):
         return []
 
 
-def get_model_result_id(url, project_id, model_id):
+def get_model_result_id(url, cache, project_id, model_id):
     # Todo : Add route to call Id results for a Model (DP)
-    # Todo : Add Some formating if data has to change
-    rsp = api.get_model_result_id_list(url, project_id, model_id)
-    return rsp
+    # Todo : Add Some formatting if data has to change
+
+    id_list = cache.get_model_result_id_list(project_id, model_id)
+
+    if id_list is None:
+        id_list = api.get_model_result_id_list(url, project_id, model_id)
+        cache.set_model_result_id_list(project_id, model_id, id_list)
+
+    return id_list
 
 
 def get_model_results(url, project_id, model_id, sample_list):
