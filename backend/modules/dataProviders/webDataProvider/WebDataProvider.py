@@ -16,6 +16,7 @@ from modules.dataProviders.webDataProvider.useCases.models import (
 )
 import modules.dataProviders.webDataProvider.useCases.selections as useCaseSelections
 from modules.dataProviders.webDataProvider.http.api import get_info, get_status
+from modules.dataProviders.webDataProvider.cache.cache import Cache
 
 
 # WebDataProvider class, allow to get data from a web data-provider
@@ -24,6 +25,9 @@ class WebDataProvider(DataProvider):
         self.url = url
         self._name = name
         self.alive = None
+
+        # Init cache
+        self.cache = Cache()
 
     @property
     def name(self):
