@@ -70,7 +70,7 @@
           <button
             class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
@@ -92,7 +92,7 @@
           :class="
             'selection item selectable ' + (selectedSelectionIds.length == 0 ? 'selected' : '')
           "
-          @click="selectedSelectionIds = []"
+          @click="selectNone"
         >
           <div class="title">
             <h3 class="name">All data</h3>
@@ -233,7 +233,7 @@ export default {
       this.selectedSelectionIds = this.project.selections.map((s) => s.id);
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedSelectionIds = [];
       this.$emit("selectionSelected", this.selectedSelectionIds);
     },
