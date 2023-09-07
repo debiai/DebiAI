@@ -3,30 +3,16 @@ def get_list(data_provider, project_id, data):
     # Option 1 : get samples id list
     # Option 2 : get samples id list from selections (intersection or union)
     # Option 3 : get samples id list from model results (common or not)
-    # Option 4 : mix of 2 and 3
+    # Option 4 : Option 2 + 3
     # Return option : from and to for streaming purpose
     id_list = []
     nb_from_selection = 0
     nb_from_models = 0
-    if "selectionIds" in data and len(data["selectionIds"]) > 0:
-        # Option 2 : get samples id list from selections (intersection or union)
-        selection_intersection = data["selectionIntersection"]
-        for selection_id in data["selectionIds"]:
-            selection_sample_ids = data_provider.get_selection_id_list(
-                project_id, selection_id
-            )
-            if len(id_list) == 0:
-                id_list = selection_sample_ids
-            else:
-                if selection_intersection:
-                    id_list = list(set(id_list) & set(selection_sample_ids))
-                    if len(id_list) == 0:
-                        break
-                else:
-                    id_list = list(set(id_list) | set(selection_sample_ids))
-        nb_from_selection = len(id_list)
-    else:
-        # Option 1 : get samples id list
+
+    # Option 1 : No selections or models, get samples id list
+    if ("selectionIds" not in data or len(data["selectionIds"]) == 0) and (
+        "modelIds" not in data or len(data["modelIds"]) == 0
+    ):
         if "from" in data and "to" in data:
             id_list = data_provider.get_id_list(
                 project_id, data["analysis"], data["from"], data["to"]
@@ -36,8 +22,31 @@ def get_list(data_provider, project_id, data):
 
         nb_from_selection = len(id_list)
 
-    if "modelIds" in data and len(data["modelIds"]) > 0 and len(id_list) > 0:
-        # Option 3 : get samples id list from model results (common or not)
+    # Option 2 : get samples id list from selections (intersection or union)
+    if "selectionIds" in data and len(data["selectionIds"]) > 0:
+        selection_intersection = data["selectionIntersection"]
+
+        for selection_id in data["selectionIds"]:
+            # Get the selection id list
+            selection_sample_ids = data_provider.get_selection_id_list(
+                project_id, selection_id
+            )
+            if len(id_list) == 0:
+                # Set the first selection id list
+                id_list = selection_sample_ids
+            else:
+                # Get the intersection or union between
+                # the current selection and the previous one
+                if selection_intersection:
+                    id_list = list(set(id_list) & set(selection_sample_ids))
+                    if len(id_list) == 0:
+                        break
+                else:
+                    id_list = list(set(id_list) | set(selection_sample_ids))
+        nb_from_selection = len(id_list)
+
+    # Option 3 : get id list from model results samples ID (common or not)
+    if "modelIds" in data and len(data["modelIds"]) > 0:
         common_results = data["commonResults"]
         model_result_ids = []
         for model_id in data["modelIds"]:
@@ -61,9 +70,16 @@ def get_list(data_provider, project_id, data):
                         set(model_result_ids) | set(model_sample_ids)
                     )
 
-        # Finally get the common ids between the selection and the model results
-        id_list = list(set(id_list) & set(model_result_ids))
         nb_from_models = len(model_result_ids)
+
+        if "selectionIds" in data and len(data["selectionIds"]) > 0:
+            # Option 4 : Option 2 + 3, merge the two lists
+            id_list = list(set(id_list) & set(model_result_ids))
+
+        else:
+            # Option 3 : only model results
+            id_list = model_result_ids
+            nb_from_selection = len(model_result_ids)
 
     return {
         "samples": id_list,
