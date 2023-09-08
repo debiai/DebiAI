@@ -380,6 +380,34 @@ paths:
           description: Project not found
 
   /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}:
+    get:
+      summary: Get a model results id list
+      tags: [Model]
+      operationId: controller.models.get_model_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: model or project doesn't exist
+    
+    
     delete:
       summary: remove a model
       tags: [Model]
@@ -484,76 +512,6 @@ paths:
               description: List of results ordered the same way as the project expected results
         404:
           description: model or project doesn't exist
-
-  # Samples
-  /data-providers/{dataProviderId}/projects/{projectId}/samples:
-    post:
-      summary: get the project sampleId list, can be filtered by selections, models, or both
-      tags: [Samples]
-      operationId: controller.samples.get_list
-      parameters:
-        - name: dataProviderId
-          in: path
-          type: string
-          required: true
-        - name: projectId
-          in: path
-          type: string
-          description: project ID
-          required: true
-
-        - name: data
-          in: body
-          schema:
-            type: object
-            properties:
-              selectionIds:
-                type: array
-                items:
-                  type: string
-                description: To get the samples that are parts of those given selection
-              selectionIntersection:
-                type: boolean
-                description: To get only the the samples that are in all of the selections
-
-              modelIds:
-                type: array
-                items:
-                  type: string
-                description: To get the samples that those models have been evaluated on
-              commonResults:
-                type: boolean
-                description: To get only the the samples that have been evaluated on a common sample
-
-              from:
-                type: integer
-                description: Where we start the selection in case of over 10 000 samples
-                minimum: 0
-              to:
-                type: integer
-                description: Where we stop the selection in case of over 10 000 samples
-                minimum: 0
-
-              analysis:
-                description: Informations about the analysis to help data-providers with data management
-                $ref: "#/definitions/analysis"
-
-      responses:
-        200:
-          description: List of the project sample id
-          schema:
-            type: object
-            properties:
-              samples:
-                type: array
-                items:
-                  type: string
-                description: List of samples
-              nbFromSelection:
-                type: integer
-                description: The number of samples that are from the selection (and not the models)
-        404:
-          description: project doesn't exist
 
   # Blocks
   /data-providers/{dataProviderId}/projects/{projectId}/blocks:
@@ -843,6 +801,33 @@ paths:
             type: object
 
   /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
+    get:
+      summary: Get a project selection id list
+      tags: [Selection]
+      operationId: controller.selection.get_selection_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selection id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: Selection, project or data provider not found
+
     delete:
       summary: delete a selection
       tags: [Selection]
@@ -1637,7 +1622,7 @@ definitions:
         type: string
         description: block level name
 
-  # Artefacts
+  # Artefact
   artefact:
     type: object
     required:

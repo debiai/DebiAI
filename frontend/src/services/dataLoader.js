@@ -18,9 +18,7 @@ function resetCurrentAnalysis() {
   };
 }
 
-//
 //  Need to take position on which columns stay available or not
-//
 const CATEGORIES = [
   { blName: "inputs", singleName: "input" },
   { blName: "groundTruth", singleName: "ground truth" },
@@ -30,26 +28,6 @@ const CATEGORIES = [
   { blName: "annotations", singleName: "annotations" },
 ];
 
-// Requests functions
-function startRequest(name, cancelCallback = null) {
-  let requestCode = services.uuid();
-  store.commit("startRequest", { name, code: requestCode, cancelCallback });
-  return requestCode;
-}
-function startProgressRequest(name) {
-  let requestCode = services.uuid();
-  store.commit("startRequest", { name, code: requestCode, progress: 0 });
-  return requestCode;
-}
-function updateRequestProgress(code, progress) {
-  store.commit("updateRequestProgress", { code, progress });
-}
-function updateRequestQuantity(code, quantity) {
-  store.commit("updateRequestQuantity", { code, quantity });
-}
-function endRequest(code) {
-  store.commit("endRequest", code);
-}
 async function getDataProviderLimit() {
   try {
     let dataProviderInfo = store.state.ProjectPage.dataProviderInfo;
@@ -119,7 +97,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
     let i = 0;
     console.warn("Project samples number is not known, loading samples ID list by chunks");
-    let requestCode = startRequest("Step 1/2: Loading the data ID list");
+    let requestCode = services.startRequest("Step 1/2: Loading the data ID list");
     currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
@@ -159,15 +137,15 @@ async function getProjectSamplesIdList(
         if (currentAnalysis.canceled) break;
 
         // Update a new progress bar counter
-        updateRequestQuantity(requestCode, samplesIdList.length);
+        services.updateRequestQuantity(requestCode, samplesIdList.length);
 
         i++;
       }
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
     } catch (error) {
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
       throw error;
     }
 
@@ -180,7 +158,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
 
     console.log("Splitting ID list request in ", nbRequest, " requests");
-    let requestCode = startProgressRequest("Step 1/2: Loading the data ID list");
+    let requestCode = services.startProgressRequest("Step 1/2: Loading the data ID list");
     currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
@@ -213,16 +191,16 @@ async function getProjectSamplesIdList(
 
         // Add the samples to the list
         samplesIdList = samplesIdList.concat(res.samples);
-        updateRequestProgress(requestCode, (i + 1) / nbRequest);
+        services.updateRequestProgress(requestCode, (i + 1) / nbRequest);
 
         // Check if the request has been canceled
         if (currentAnalysis.canceled) break;
       }
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
     } catch (error) {
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
       throw error;
     }
 
@@ -301,7 +279,7 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
   let nbSamples = sampleIds.length;
 
   // Create a request
-  let requestCode = startProgressRequest("Loading the project data");
+  let requestCode = services.startProgressRequest("Loading the project data");
   console.time("Loading the project data");
   // Pull the tree
   let retArray = [];
@@ -363,13 +341,13 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
       // Update the progress
       pulledData += CHUNK_SIZE;
-      updateRequestProgress(requestCode, pulledData / nbSamples);
+      services.updateRequestProgress(requestCode, pulledData / nbSamples);
 
       // Check if the request has been canceled
       if (currentAnalysis.canceled) break;
     }
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
     console.timeEnd("Loading the project data");
   }
   return { dataArray: retArray, sampleIdList: retDataIdList };
@@ -381,7 +359,7 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
   let pulledData = 0;
 
   // Create a request
-  let requestCode = startProgressRequest(modelId);
+  let requestCode = services.startProgressRequest(modelId);
   currentAnalysis.requestCodes.modelResults = requestCode;
 
   let modelResultsRet = {};
@@ -413,14 +391,14 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
       // cacheService.saveResults(timestamp, modelId, resultsToSave)
 
       pulledData += CHUNK_SIZE;
-      updateRequestProgress(requestCode, pulledData / nbSamples);
+      services.updateRequestProgress(requestCode, pulledData / nbSamples);
 
       // Check if the request has been canceled
       if (currentAnalysis.canceled) break;
     }
-    updateRequestProgress(requestCode, 1);
+    services.updateRequestProgress(requestCode, 1);
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
   }
 
   return modelResultsRet;
@@ -480,7 +458,7 @@ async function loadDataAndModelResults(
 
   // =========== Then add the model results
   // Create a request
-  let requestCode = startProgressRequest("Loading the model results");
+  let requestCode = services.startProgressRequest("Loading the model results");
 
   try {
     let dataArrayFull = [];
@@ -510,9 +488,9 @@ async function loadDataAndModelResults(
 
       dataArrayFull = [...dataArrayFull, ...dataAndResultsArray];
       samplesToPullFull = [...samplesToPullFull, ...modelsSamplesToPull];
-      updateRequestProgress(requestCode, (i + 1) / modelIds.length);
+      services.updateRequestProgress(requestCode, (i + 1) / modelIds.length);
     }
-    store.commit("endRequest", requestCode);
+    store.commit("services.endRequest", requestCode);
 
     return {
       metaData: projectMetadata,
@@ -520,7 +498,7 @@ async function loadDataAndModelResults(
       sampleIdList: samplesToPullFull,
     };
   } catch (error) {
-    store.commit("endRequest", requestCode);
+    store.commit("services.endRequest", requestCode);
     throw error;
   }
 }
@@ -595,7 +573,7 @@ function createColumn(label, values, category, type = null, group = null) {
 }
 
 async function arrayToJson(array, metaData) {
-  let requestCode = startProgressRequest("Preparing the analysis");
+  let requestCode = services.startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
 
   let ret = {
@@ -633,14 +611,14 @@ async function arrayToJson(array, metaData) {
     col.index = i;
     ret.columns[i] = col;
 
-    updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
+    services.updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
     console.timeLog(
       "Preparing the analysis",
       "Column " + label + " " + (i + 1) + " / " + ret.nbColumns
     );
   }
 
-  endRequest(requestCode);
+  services.endRequest(requestCode);
   console.timeEnd("Preparing the analysis");
 
   return ret;
@@ -657,7 +635,7 @@ async function loadProjectSamples({
 
   // Setups the analysis
   resetCurrentAnalysis();
-  let requestCode = startRequest("The analysis is starting", cancelCallback);
+  let requestCode = services.startRequest("The analysis is starting", cancelCallback);
   currentAnalysis.requestCodes.analysisStarting = requestCode;
   currentAnalysis.id = services.uuid();
 
@@ -689,7 +667,7 @@ async function loadProjectSamples({
     resetCurrentAnalysis();
     throw e;
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
   }
 
   if (currentAnalysis.canceled) {
@@ -708,9 +686,9 @@ function cancelCallback() {
   currentAnalysis.canceled = true;
 
   // Stop all the requests
-  endRequest(currentAnalysis.requestCodes.analysisStarting);
-  endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
-  endRequest(currentAnalysis.requestCodes.modelResults);
+  services.endRequest(currentAnalysis.requestCodes.analysisStarting);
+  services.endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
+  services.endRequest(currentAnalysis.requestCodes.modelResults);
 }
 function isAnalysisLoading() {
   if (currentAnalysis.id == null || currentAnalysis.canceled) return false;

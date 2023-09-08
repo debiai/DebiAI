@@ -101,36 +101,43 @@ export default {
     });
   },
 
-  // Samples
-  getProjectSamples({
-    analysis,
-    selectionIds = [],
-    selectionIntersection = false,
-    modelIds = [],
-    commonResults = false,
-    from = null,
-    to = null,
-  }) {
-    let code;
-    if (from === null) code = startRequest("Loading the project samples list");
+  // Samples ID
+  get_id_list(analysis, from = null, to = null) {
     let request =
-      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/samples";
+      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/samplesIdList";
 
-    const requestBody = {
-      analysis,
-      selectionIds,
-      selectionIntersection,
-      modelIds,
-      commonResults,
-    };
+    const requestBody = { analysis };
     if (from !== null && to !== null) {
       requestBody.from = from;
       requestBody.to = to;
     }
 
+    return axios.post(request, requestBody).then((response) => response.data);
+  },
+  get_selection_id_list(selection_id) {
     return axios
-      .post(request, requestBody)
-      .finally(() => endRequest(code))
+      .get(
+        apiURL +
+          "data-providers/" +
+          dataProviderId() +
+          "/projects/" +
+          projectId() +
+          "/selections/" +
+          selection_id
+      )
+      .then((response) => response.data);
+  },
+  get_model_results_id_list(model_id) {
+    return axios
+      .get(
+        apiURL +
+          "data-providers/" +
+          dataProviderId() +
+          "/projects/" +
+          projectId() +
+          "/models/" +
+          model_id
+      )
       .then((response) => response.data);
   },
 
@@ -165,7 +172,6 @@ export default {
       )
       .then((response) => response.data);
   },
-
   delModel(modelId) {
     let code = startRequest("Deleting selection");
     return axios

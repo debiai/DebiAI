@@ -2,6 +2,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
   navigator.userAgent
 );
 import { v4 as uuidv4 } from "uuid";
+import store from "../store";
 
 export default {
   isMobile,
@@ -140,5 +141,26 @@ export default {
 
   getDate() {
     return this.timeStampToDate(this.getTimestamp());
+  },
+
+  // Requests animations
+  startRequest(name, cancelCallback = null) {
+    let requestCode = uuidv4();
+    store.commit("startRequest", { name, code: requestCode, cancelCallback });
+    return requestCode;
+  },
+  startProgressRequest(name) {
+    let requestCode = uuidv4();
+    store.commit("startRequest", { name, code: requestCode, progress: 0 });
+    return requestCode;
+  },
+  updateRequestProgress(code, progress) {
+    store.commit("updateRequestProgress", { code, progress });
+  },
+  updateRequestQuantity(code, quantity) {
+    store.commit("updateRequestQuantity", { code, quantity });
+  },
+  endRequest(code) {
+    store.commit("endRequest", code);
   },
 };
