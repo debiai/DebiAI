@@ -55,27 +55,6 @@ def get_projects():
     return projectOverviews, 200
 
 
-def get_projects():
-    # return a list of project overviews
-    data_providers_list = data_provider_manager.get_data_provider_list()
-    projectOverviews = []
-    for data_provider in data_providers_list:
-        try:
-            projects = data_provider.get_projects()
-
-            if projects is not None:
-                # Adding data provider id to projects
-                for project in projects:
-                    project["dataProviderId"] = data_provider.name
-
-                projectOverviews.extend(projects)
-
-        except DataProviderException as e:
-            print("Warning get DP projects : " + e.message)
-
-    return projectOverviews, 200
-
-
 def get_project(dataProviderId, projectId):
     # return the info about datasets, models, selections & tags
     try:
