@@ -18,6 +18,14 @@ def get_selections(dataProviderId, projectId):
         return e.message, e.status_code
 
 
+def get_selection_id_list(dataProviderId, projectId, selectionId):
+    try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+        return data_provider.get_selection_id_list(projectId, selectionId), 200
+    except DataProviderException as e:
+        return e.message, e.status_code
+
+
 def post_selection(dataProviderId, projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)

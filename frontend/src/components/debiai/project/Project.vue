@@ -86,7 +86,8 @@ import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
 
 // Services
-import dataLoader from "../../../services/dataLoader";
+import dataLoader from "@/services/dataLoader";
+import samplesIdListRequester from "@/services/statistics/samplesIdListRequester";
 import swal from "sweetalert";
 
 export default {
@@ -225,28 +226,37 @@ export default {
       this.updateNbSamples();
     },
     updateNbSamples() {
-      // Let the backend told us the common or grouped selections and evaluations
+      // Get the number of samples that will be analyzed
+      // Don't send request if there is no selection and model
+      if (this.selectedSelections.length === 0 && this.selectedModels.length === 0) {
+        this.nbSelectedSamples = this.project.nbSamples;
+        this.nbEvaluatedSamples = 0;
+        this.nbResults = 0;
+        return;
+      }
+
+      // Send request
+      const parameters = {
+        analysis: { id: this.$services.uuid(), start: true, end: true },
+        selectionIds: this.selectedSelections.map((s) => s.id),
+        selectionIntersection: this.selectionIntersection,
+        modelIds: this.selectedModels.map((m) => m.id),
+        commonResults: this.commonModelResults,
+      };
       this.loading = true;
-      this.$backendDialog
-        .getProjectSamples({
-          analysis: { id: this.$services.uuid(), start: true, end: true },
-          selectionIds: this.selectedSelections.map((s) => s.id),
-          selectionIntersection: this.selectionIntersection,
-          modelIds: this.selectedModels.map((m) => m.id),
-          commonResults: this.commonModelResults,
-        })
+      samplesIdListRequester
+        .getIdList(parameters)
         .finally(() => (this.loading = false))
         .then((res) => {
           this.nbSelectedSamples = res.nbFromSelection;
           this.nbEvaluatedSamples = res.nbSamples;
-          if (this.commonModelResults) this.nbResults = res.nbSamples * this.selectedModels.length;
-          else this.nbResults = null; // Will draw a "?" on the dashboard
+          this.nbResults = res.nbFromModels;
         })
         .catch((e) => {
           console.log(e);
           this.$store.commit("sendMessage", {
             title: "error",
-            msg: "Something went wrong while counting ",
+            msg: "Something went wrong while getting the samples list",
           });
           this.loadProject();
         });
@@ -286,7 +296,7 @@ export default {
       modelIds = [],
       commonModelResults = false,
     }) {
-      console.time("LOAD TREE");
+      console.time("Loading data");
       this.loading = true;
 
       dataLoader
@@ -318,9 +328,9 @@ export default {
             modelIds = modelIds.reduce((mId, total) => total + "." + mId);
 
           // Perf Log
-          console.timeEnd("LOAD TREE");
+          console.timeEnd("Loading data");
 
-          // start analysis immediatly
+          // start analysis immediately
           this.$router.push({
             name: "dataAnalysis",
             query: {

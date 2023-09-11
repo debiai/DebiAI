@@ -72,7 +72,7 @@
               :src="require('../../../assets/svg/data.svg')"
               width="20"
               height="20"
-            />{{ "nbResults" in model ? (model.nbResults === null ? "?" : model.nbResults) : "?" }}
+            />{{ "nbResults" in model && model.nbResults !== null ? model.nbResults : "?" }}
           </div>
 
           <!-- options -->
@@ -132,29 +132,6 @@
 
         <!-- nb evaluated and results -->
         <div id="nbEvaluatedSamples">
-          Evaluated samples :
-          <div
-            class="dataGroup"
-            v-if="selectedModelIds.length"
-          >
-            <!-- Nb evaluated samples -->
-            <span style="padding-right: 5px">
-              {{ nbEvaluatedSamples }}
-            </span>
-            <inline-svg
-              :src="require('../../../assets/svg/data.svg')"
-              width="20"
-              height="20"
-              fill="white"
-            />
-            <span
-              v-if="nbSelectedSamples"
-              style="padding-left: 5px"
-              :title="(nbEvaluatedSamples * 100) / nbSelectedSamples + '%'"
-            >
-              ({{ Math.ceil((nbEvaluatedSamples * 100) / nbSelectedSamples) }}%)
-            </span>
-          </div>
           Number of results :
           <div class="dataGroup">
             {{ nbResults === null ? "?" : nbResults }}
@@ -299,7 +276,7 @@ export default {
   padding: 0 5px 0 5px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   font-size: 0.9em;
 }
 
@@ -315,7 +292,7 @@ export default {
 #modelsControls #commonModelResults {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   flex: 1;
 }
 
@@ -323,7 +300,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex: 1;
+  height: 40px;
+  padding-left: 20px;
 }
 
 #modelsControls #commonModelResults label {
