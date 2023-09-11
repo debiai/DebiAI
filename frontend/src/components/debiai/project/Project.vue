@@ -245,13 +245,12 @@ export default {
       };
       this.loading = true;
       samplesIdListRequester
-        .get_list(parameters)
+        .getIdList(parameters)
         .finally(() => (this.loading = false))
         .then((res) => {
           this.nbSelectedSamples = res.nbFromSelection;
           this.nbEvaluatedSamples = res.nbSamples;
-          if (this.commonModelResults) this.nbResults = res.nbSamples * this.selectedModels.length;
-          else this.nbResults = res.nbFromModels;
+          this.nbResults = res.nbFromModels;
         })
         .catch((e) => {
           console.log(e);

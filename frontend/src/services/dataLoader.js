@@ -3,6 +3,7 @@ import cacheService from "./cacheService";
 import services from "./services";
 
 const backendDialog = require("./backendDialog");
+const samplesIdListRequester = require("./statistics/samplesIdListRequester");
 
 let currentAnalysis = {};
 
@@ -83,7 +84,7 @@ async function getProjectSamplesIdList(
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
-    const res = await backendDialog.default.getProjectSamples({
+    const res = await samplesIdListRequester.getIdList({
       analysis: { id: currentAnalysis.id, start: true, end: true },
       selectionIds,
       selectionIntersection,

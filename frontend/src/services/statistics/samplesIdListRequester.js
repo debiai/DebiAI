@@ -1,7 +1,7 @@
 import backendDialog from "../backendDialog";
 import services from "../services";
 
-async function get_list(data) {
+async function getIdList(data) {
   // Get the list of samples ID of the project according to the chosen selection(s) and/or model(s)
   // Option 1 : get samples id list
   // Option 2 : get samples id list from selections (intersection or union)
@@ -12,6 +12,7 @@ async function get_list(data) {
   const code = services.startRequest("Getting samples ID list");
 
   let id_list = [];
+  let id_list_set = new Set();
   let nb_from_selection = 0;
   let nb_from_models = 0; // Number of samples from models, used to calculate
   // How many predictions will result from the models union
@@ -56,14 +57,15 @@ async function get_list(data) {
           }
         }
       }
-
-      nb_from_selection = id_list.length;
     } catch (e) {
       services.endRequest(code);
       throw e;
     } finally {
       services.endRequest(selectionsIdCode);
     }
+
+    id_list_set = new Set(id_list);
+    nb_from_selection = id_list.length;
   }
 
   // Option 3 : get id list from model results samples ID (common or not)
@@ -95,12 +97,20 @@ async function get_list(data) {
         services.updateRequestProgress(modelsIdCode, i / data.modelIds.length);
 
         // First get the model results id list
-        const model_sample_ids = await backendDialog.get_model_results_id_list(model_id);
+        let model_sample_ids = await backendDialog.get_model_results_id_list(model_id);
+
+        // Only select the samples that are in the selection (option 4)
+        if (data.selectionIds && data.selectionIds.length > 0) {
+          model_sample_ids = model_sample_ids.filter((sampleId) => id_list_set.has(sampleId));
+        } else {
+          nb_from_selection += model_sample_ids.length;
+        }
 
         // Then get the common or not common samples id list
         if (model_result_ids.length === 0) {
           model_result_ids = model_sample_ids;
-          nb_from_models += model_sample_ids.length;
+
+          if (!common_results) nb_from_models += model_sample_ids.length;
         } else {
           if (common_results) {
             // Get the intersection between the current model results and the previous one
@@ -109,23 +119,21 @@ async function get_list(data) {
               model_sample_ids_set.has(sampleId)
             );
 
-            if (model_result_ids.length === 0) break;
+            if (model_result_ids.length === 0) {
+              nb_from_models = 0;
+              break;
+            }
           } else {
             nb_from_models += model_sample_ids.length;
+            // console.log(model_sample_ids.length);
             model_result_ids = [...new Set([...model_result_ids, ...model_sample_ids])];
           }
         }
-      }
 
-      if (data.selectionIds && data.selectionIds.length > 0) {
-        // Option 4 : Option 2 + 3, intersection of selections and model results
-        const selection_sample_ids_set = new Set(id_list);
-        id_list = model_result_ids.filter((sampleId) => selection_sample_ids_set.has(sampleId));
-      } else {
-        // Option 3 : only model results
-        id_list = model_result_ids;
-        nb_from_selection = model_result_ids.length;
       }
+      
+      if (common_results) nb_from_models = model_result_ids.length * data.modelIds.length;
+      id_list = model_result_ids;
     } catch (e) {
       services.endRequest(code);
       throw e;
@@ -136,6 +144,12 @@ async function get_list(data) {
 
   services.endRequest(code);
 
+  console.log({
+    nbSamples: id_list.length,
+    nbFromSelection: nb_from_selection,
+    nbFromModels: nb_from_models,
+  });
+
   return {
     samples: id_list,
     nbSamples: id_list.length,
@@ -145,5 +159,5 @@ async function get_list(data) {
 }
 
 export default {
-  get_list,
+  getIdList,
 };

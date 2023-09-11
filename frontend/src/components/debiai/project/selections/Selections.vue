@@ -348,6 +348,7 @@ export default {
   flex: 1;
   align-items: center;
   justify-content: flex-end;
+  height: 40px;
 }
 #analysisControls #selectionIntersection {
   display: flex;
