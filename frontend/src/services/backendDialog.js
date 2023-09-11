@@ -102,19 +102,16 @@ export default {
   },
 
   // Samples ID
-  get_id_list(analysis, from = null, to = null) {
+  getProjectIdList(analysis, from = null, to = null) {
     let request =
-      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/samplesIdList";
+      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
 
-    const requestBody = { analysis };
-    if (from !== null && to !== null) {
-      requestBody.from = from;
-      requestBody.to = to;
-    }
+    const requestBody = { analysis, from, to };
+
 
     return axios.post(request, requestBody).then((response) => response.data);
   },
-  get_selection_id_list(selection_id) {
+  getSelectionIdList(selection_id) {
     return axios
       .get(
         apiURL +
@@ -127,7 +124,7 @@ export default {
       )
       .then((response) => response.data);
   },
-  get_model_results_id_list(model_id) {
+  getModelResultsIdList(model_id) {
     return axios
       .get(
         apiURL +

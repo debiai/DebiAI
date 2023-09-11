@@ -232,6 +232,59 @@ paths:
         404:
           description: project doesn't exist
 
+  /data-providers/{dataProviderId}/projects/{projectId}/dataIdList:
+    post:
+      summary: Get the project data id list
+      tags: [Project]
+      operationId: controller.projects.get_data_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestParameters
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - analysis
+              - from
+              - to
+            properties:
+              from:
+                type: integer
+                description: The index of the first data to return
+                x-nullable: true
+              to:
+                type: integer
+                description: The index of the last data to return
+                x-nullable: true
+              analysis:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    description: Id of the analysis
+                  start:
+                    type: boolean
+                    description: If true, this is the first request of the analysis
+                  end:
+                    type: boolean
+                    description: If true, this is the last request of the analysis
+
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
   # BlockLevels
   /data-providers/{dataProviderId}/projects/{projectId}/blocklevels:
     post:
@@ -406,8 +459,7 @@ paths:
               type: string
         404:
           description: model or project doesn't exist
-    
-    
+
     delete:
       summary: remove a model
       tags: [Model]

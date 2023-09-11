@@ -3,7 +3,7 @@ import cacheService from "./cacheService";
 import services from "./services";
 
 const backendDialog = require("./backendDialog");
-const samplesIdListRequester = require("./statistics/samplesIdListRequester");
+const samplesIdListRequester = require("./statistics/samplesIdListRequester").default;
 
 let currentAnalysis = {};
 
@@ -112,7 +112,7 @@ async function getProjectSamplesIdList(
         if (i === 0) analysis.start = true;
 
         // Send the request
-        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
+        const res = await samplesIdListRequester.getIdList({ analysis, from, to });
 
         if (res.samples.length === 0) {
           console.log("No samples found while loading project samples ID list");
@@ -174,24 +174,24 @@ async function getProjectSamplesIdList(
         if (i === nbRequest - 1) analysis.end = true;
 
         // Send the request
-        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
+        const idList = await backendDialog.default.getProjectIdList(analysis, from, to);
 
-        if (res.samples.length === 0)
+        if (idList.length === 0)
           throw "No samples found while loading project samples ID list from " + from + " to " + to;
-        if (res.samples.length !== to - from + 1)
+        if (idList.length !== to - from + 1)
           throw (
             "Wrong number of samples while loading project samples ID list from " +
             from +
             " to " +
             to +
             ", got " +
-            res.samples.length +
+            idList.length +
             " instead of " +
             (to - from + 1)
           );
 
         // Add the samples to the list
-        samplesIdList = samplesIdList.concat(res.samples);
+        samplesIdList = samplesIdList.concat(idList);
         services.updateRequestProgress(requestCode, (i + 1) / nbRequest);
 
         // Check if the request has been canceled
@@ -491,7 +491,6 @@ async function loadDataAndModelResults(
       samplesToPullFull = [...samplesToPullFull, ...modelsSamplesToPull];
       services.updateRequestProgress(requestCode, (i + 1) / modelIds.length);
     }
-    store.commit("services.endRequest", requestCode);
 
     return {
       metaData: projectMetadata,
@@ -499,8 +498,9 @@ async function loadDataAndModelResults(
       sampleIdList: samplesToPullFull,
     };
   } catch (error) {
-    store.commit("services.endRequest", requestCode);
     throw error;
+  } finally {
+    services.endRequest(requestCode);
   }
 }
 

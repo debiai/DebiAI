@@ -91,6 +91,23 @@ def get_project(dataProviderId, projectId):
         return e.message, e.status_code
 
 
+def get_data_id_list(dataProviderId, projectId, requestParameters):
+    # return the list of data ids
+    try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+
+        data_id_list = data_provider.get_id_list(
+            projectId,
+            requestParameters["analysis"],
+            requestParameters["from"],
+            requestParameters["to"],
+        )
+
+        return data_id_list, 200
+    except DataProviderException as e:
+        return e.message, e.status_code
+
+
 def delete_project(dataProviderId, projectId):
     # Delete a project
     try:

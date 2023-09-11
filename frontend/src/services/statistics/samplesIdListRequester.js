@@ -22,11 +22,16 @@ async function getIdList(data) {
     (!data.selectionIds || data.selectionIds.length === 0) &&
     (!data.modelIds || data.modelIds.length === 0)
   ) {
-    if (data.from && data.to)
-      id_list = await backendDialog.get_id_list(data.analysis, data.from, data.to);
-    else id_list = await backendDialog.get_id_list(data.analysis);
+    try {
+      if (data.from && data.to)
+        id_list = await backendDialog.getProjectIdList(data.analysis, data.from, data.to);
+      else id_list = await backendDialog.getProjectIdList(data.analysis);
 
-    nb_from_selection = id_list.length;
+      nb_from_selection = id_list.length;
+    } catch (error) {
+      services.endRequest(code);
+      throw error;
+    }
   }
 
   // Option 2 : get samples id list from selections (intersection or union)
@@ -41,7 +46,7 @@ async function getIdList(data) {
         services.updateRequestProgress(selectionsIdCode, i / data.selectionIds.length);
 
         // Get the selection id list
-        const selection_sample_ids = await backendDialog.get_selection_id_list(selection_id);
+        const selection_sample_ids = await backendDialog.getSelectionIdList(selection_id);
         if (id_list.length === 0) {
           // Set the first selection id list
           id_list = selection_sample_ids;
@@ -51,7 +56,10 @@ async function getIdList(data) {
           if (selection_intersection) {
             const selection_sample_ids_set = new Set(selection_sample_ids);
             id_list = id_list.filter((sampleId) => selection_sample_ids_set.has(sampleId));
-            if (id_list.length === 0) break;
+            if (id_list.length === 0) {
+              nb_from_selection = 0;
+              break;
+            }
           } else {
             id_list = [...new Set([...id_list, ...selection_sample_ids])];
           }
@@ -65,6 +73,7 @@ async function getIdList(data) {
     }
 
     id_list_set = new Set(id_list);
+    id_list = [...id_list_set];
     nb_from_selection = id_list.length;
   }
 
@@ -97,7 +106,7 @@ async function getIdList(data) {
         services.updateRequestProgress(modelsIdCode, i / data.modelIds.length);
 
         // First get the model results id list
-        let model_sample_ids = await backendDialog.get_model_results_id_list(model_id);
+        let model_sample_ids = await backendDialog.getModelResultsIdList(model_id);
 
         // Only select the samples that are in the selection (option 4)
         if (data.selectionIds && data.selectionIds.length > 0) {
@@ -125,13 +134,11 @@ async function getIdList(data) {
             }
           } else {
             nb_from_models += model_sample_ids.length;
-            // console.log(model_sample_ids.length);
             model_result_ids = [...new Set([...model_result_ids, ...model_sample_ids])];
           }
         }
-
       }
-      
+
       if (common_results) nb_from_models = model_result_ids.length * data.modelIds.length;
       id_list = model_result_ids;
     } catch (e) {
@@ -143,12 +150,6 @@ async function getIdList(data) {
   }
 
   services.endRequest(code);
-
-  console.log({
-    nbSamples: id_list.length,
-    nbFromSelection: nb_from_selection,
-    nbFromModels: nb_from_models,
-  });
 
   return {
     samples: id_list,

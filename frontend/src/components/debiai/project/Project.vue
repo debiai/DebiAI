@@ -296,7 +296,7 @@ export default {
       modelIds = [],
       commonModelResults = false,
     }) {
-      console.time("LOAD TREE");
+      console.time("Loading data");
       this.loading = true;
 
       dataLoader
@@ -328,9 +328,9 @@ export default {
             modelIds = modelIds.reduce((mId, total) => total + "." + mId);
 
           // Perf Log
-          console.timeEnd("LOAD TREE");
+          console.timeEnd("Loading data");
 
-          // start analysis immediatly
+          // start analysis immediately
           this.$router.push({
             name: "dataAnalysis",
             query: {
