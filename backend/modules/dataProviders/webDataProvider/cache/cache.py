@@ -32,24 +32,20 @@ class Cache:
 
     # Project id list
     def get_key(self, id_project, _from=None, _to=None):
-        print("get_key")
         if _from is None or _to is None:
             return "{}_total".format(id_project)
         else:
             return "{}_{}_{}".format(id_project, _from, _to)
 
     def get_id_list(self, id_project, _from=None, _to=None):
-        print("get_id_list")
         if not self.cache_enabled:
             return None
 
         key = self.get_key(id_project, _from, _to)
 
-        print(self.project_id_list_cache.get(key))
         return self.project_id_list_cache.get(key)
 
     def set_id_list(self, id_project, id_list, _from=None, _to=None):
-        print("set_id_list")
         if not self.cache_enabled:
             return
 
@@ -59,21 +55,17 @@ class Cache:
 
     # Selection id list
     def get_selection_key(self, id_project, id_selection):
-        print("get_selection_key")
         return "{}_{}".format(id_project, id_selection)
 
     def get_selection_id_list(self, id_project, id_selection):
-        print("get_selection_id_list")
         if not self.cache_enabled:
             return None
 
         key = self.get_selection_key(id_project, id_selection)
 
-        print(self.selection_id_list_cache.get(key))
         return self.selection_id_list_cache.get(key)
 
     def set_selection_id_list(self, id_project, id_selection, id_list):
-        print("set_selection_id_list")
         if not self.cache_enabled:
             return
 
@@ -83,21 +75,17 @@ class Cache:
 
     # Model result id list
     def get_model_result_key(self, id_project, id_model):
-        print("get_model_result_key")
         return "{}_{}".format(id_project, id_model)
 
     def get_model_result_id_list(self, id_project, id_model):
-        print("get_model_result_id_list")
         if not self.cache_enabled:
             return None
 
         key = self.get_model_result_key(id_project, id_model)
 
-        print(self.model_result_id_list_cache.get(key))
         return self.model_result_id_list_cache.get(key)
 
     def set_model_result_id_list(self, id_project, id_model, id_list):
-        print("set_model_result_id_list")
         if not self.cache_enabled:
             return
 
