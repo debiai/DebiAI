@@ -22,7 +22,12 @@ def init_config():
 
     # Default config
     config = {
-        "DATA_PROVIDERS_CONFIG": {"creation": True, "deletion": True},
+        "DATA_PROVIDERS_CONFIG": {
+            "creation": True,
+            "deletion": True,
+            "web_data_provider_cache": True,
+            "web_data_provider_cache_duration": 120,
+        },
         "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
         "WEB_DATA_PROVIDERS": {},
         "ALGO_PROVIDERS_CONFIG": {
@@ -39,7 +44,7 @@ def init_config():
     config_parser.read(config_path)
 
     for section in config_parser.sections():
-        # Data providers
+        # Data providers config
         if section == "DATA_PROVIDERS_CONFIG":
             if "creation" in config_parser[section]:
                 if str.lower(config_parser[section]["creation"]) == "false":
@@ -50,6 +55,26 @@ def init_config():
                 if str.lower(config_parser[section]["deletion"]) == "false":
                     print("Config file: Data Providers deletion disabled")
                     config["DATA_PROVIDERS_CONFIG"]["deletion"] = False
+
+            if "web_data_provider_cache" in config_parser[section]:
+                if (
+                    str.lower(config_parser[section]["web_data_provider_cache"])
+                    == "false"
+                ):
+                    print("Config file: Web Data Provider cache disabled")
+                    config["DATA_PROVIDERS_CONFIG"]["web_data_provider_cache"] = False
+
+            if "web_data_provider_cache_duration" in config_parser[section]:
+                try:
+                    config["DATA_PROVIDERS_CONFIG"][
+                        "web_data_provider_cache_duration"
+                    ] = int(config_parser[section]["web_data_provider_cache_duration"])
+                except ValueError:
+                    print(
+                        "Config file: Invalid Web Data Provider cache duration,",
+                        "defaulting to 120 seconds",
+                    )
+
             continue
 
         if section == "PYTHON_MODULE_DATA_PROVIDER":
@@ -160,6 +185,26 @@ def init_config():
             continue
 
         # Deal with Data Providers in env variables
+        if env_var == "DEBIAI_WEB_DATA_PROVIDERS_CACHE_ENABLED":
+            # Env var format: DEBIAI_WEB_DATA_PROVIDERS_CACHE_ENABLED=<True|False>
+            if str.lower(os.environ[env_var]) == "false":
+                print("Environment variables: Web Data Provider cache disabled")
+                config["DATA_PROVIDERS_CONFIG"]["web_data_provider_cache"] = False
+            continue
+
+        if env_var == "DEBIAI_WEB_DATA_PROVIDERS_CACHE_DURATION":
+            # Env var format: DEBIAI_WEB_DATA_PROVIDERS_CACHE_DURATION=<duration>
+            try:
+                config["DATA_PROVIDERS_CONFIG"][
+                    "web_data_provider_cache_duration"
+                ] = int(os.environ[env_var])
+            except ValueError:
+                print(
+                    "Environment variables: Invalid Web Data Provider cache duration,",
+                    "defaulting to 120 seconds",
+                )
+            continue
+
         if "DEBIAI_WEB_DATA_PROVIDER" in env_var:
             # Env var format: DEBIAI_WEB_DATA_PROVIDER_<name>=<url>
             if len(env_var.split("_")) != 5:

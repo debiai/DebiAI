@@ -6,8 +6,12 @@ import modules.dataProviders.webDataProvider.http.api as api
 #
 
 
-def get_project_id_list(url, id_project, analysis, _from=None, _to=None):
-    id_list = api.get_id_list(url, id_project, analysis, _from, _to)
+def get_project_id_list(url, cache, id_project, analysis, _from=None, _to=None):
+    id_list = cache.get_id_list(id_project, _from, _to)
+
+    if id_list is None:
+        id_list = api.get_id_list(url, id_project, analysis, _from, _to)
+        cache.set_id_list(id_project, id_list, _from, _to)
 
     return id_list
 

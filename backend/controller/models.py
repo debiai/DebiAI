@@ -10,6 +10,17 @@ from modules.dataProviders.DataProviderException import DataProviderException
 #############################################################################
 
 
+def get_model_id_list(dataProviderId, projectId, modelId):
+    """
+    Get the list of models for a project
+    """
+    try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+        return list(data_provider.get_model_results_id_list(projectId, modelId)), 200
+    except DataProviderException as e:
+        return e.message, e.status_code
+
+
 def get_results(dataProviderId, projectId, modelId, data):
     """
     Get the model results from a sample list

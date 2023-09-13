@@ -70,7 +70,8 @@ class PythonDataProvider(DataProvider):
     # Projects
     def get_projects(self):
         # Request method to get projects overview
-        # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}]
+        # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections,
+        # update_time, creation_time}]
         return projects.get_projects()
 
     def create_project(self, name):
@@ -83,7 +84,8 @@ class PythonDataProvider(DataProvider):
     @project_must_exist
     def get_project(self, project_id):
         # Request method to get projects overview
-        # Return object{ id, name, nb_samples, nb_models, nb_selections, update_time, creation_time}
+        # Return object{ id, name, nb_samples, nb_models, nb_selections,
+        # update_time, creation_time}
 
         project_base_info = projects.get_project(project_id)
         project_base_info["selections"] = selections.get_selections(project_id)

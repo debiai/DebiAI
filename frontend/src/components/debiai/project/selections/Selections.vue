@@ -88,7 +88,7 @@
           :class="
             'selection item selectable ' + (selectedSelectionIds.length == 0 ? 'selected' : '')
           "
-          @click="selectedSelectionIds = []"
+          @click="selectNone"
         >
           <div class="title">
             <h3 class="name">All data</h3>
@@ -342,6 +342,7 @@ export default {
   flex: 1;
   align-items: center;
   justify-content: flex-end;
+  height: 40px;
 }
 #analysisControls #selectionIntersection {
   display: flex;
