@@ -93,6 +93,7 @@ export default {
 #filter {
   flex: 1;
   display: flex;
+  align-items: center;
   flex-direction: row;
   padding: 10px;
   transition: all 0.3s ease-in-out;

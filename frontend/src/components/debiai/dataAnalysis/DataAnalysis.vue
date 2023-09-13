@@ -805,7 +805,7 @@ export default {
 
 /* Grid stack handles */
 .ui-resizable-handle {
-  z-index: 0 !important;
+  z-index: 1 !important;
 }
 .ui-resizable-sw {
   background: transparent !important;

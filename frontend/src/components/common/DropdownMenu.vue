@@ -73,7 +73,6 @@ export default {
 <style lang="scss" scoped>
 #menu {
   position: absolute;
-  top: 40px;
   min-width: 150px;
   z-index: 1;
   inset: 40px 6px auto auto;
