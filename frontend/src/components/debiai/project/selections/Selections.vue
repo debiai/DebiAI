@@ -166,17 +166,17 @@
         <div id="nbSelectedSamples">
           Selected samples :
           <div class="dataGroup">
-            <span style="padding-right: 5px">
-              {{ nbSelectedSamples }}
-            </span>
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
               width="20"
               height="20"
             />
+            <span style="padding: 0px 5px">
+              {{ nbSelectedSamples }}
+            </span>
             <span
               v-if="project.nbSamples"
-              style="padding-left: 20px"
+              style="padding-left: 10px; font-weight: normal"
               :title="(nbSelectedSamples * 100) / project.nbSamples + '%'"
             >
               ({{ Math.ceil((nbSelectedSamples * 100) / project.nbSamples) }}%)

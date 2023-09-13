@@ -271,6 +271,7 @@ export default {
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   font-size: 0.9em;
