@@ -533,7 +533,7 @@ export default {
 
       let layout = {
         title: "<b>" + colX.label + "</b> Distribution",
-        bargap: 0.05,
+        bargap: 0,
         barmode: this.secondColumnIndex !== null ? "group" : "stack",
         xaxis: {
           title: {

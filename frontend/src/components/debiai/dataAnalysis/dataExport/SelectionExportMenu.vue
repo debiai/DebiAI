@@ -1,7 +1,7 @@
 <template>
   <div id="SelectionExportMenu">
     <!-- Title -->
-    <h2>
+    <h2 class="aligned spaced">
       Export the selected samples
       <button
         @click="$emit('cancel')"

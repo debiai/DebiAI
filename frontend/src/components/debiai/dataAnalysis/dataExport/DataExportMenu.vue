@@ -1,6 +1,6 @@
 <template>
   <div id="DataExportMenu">
-    <h2>
+    <h2 class="aligned spaced">
       Export widget data
       <button
         @click="$emit('cancel')"

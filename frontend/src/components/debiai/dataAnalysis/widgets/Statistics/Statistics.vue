@@ -438,7 +438,6 @@ export default {
   background-color: var(--greyDark);
   display: flex;
   justify-content: space-between;
-  color: white;
   font-weight: bold;
 }
 #columns td {
