@@ -36,9 +36,12 @@
         <!-- Widget name and filter order -->
         <h4 class="widgetName aligned centered gapped">
           {{ groupedFilters[widget][0].from.widgetName }}
-          
+
           <!-- Filter order -->
-          <span class="filterOrder" style="margin:0; align-items: flex-end;">
+          <span
+            class="filterOrder"
+            style="margin: 0; align-items: flex-end"
+          >
             {{ i + 1 }}
           </span>
         </h4>

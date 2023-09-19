@@ -60,7 +60,7 @@
         <div
           id="bot"
           class="card"
-          style="margin:5px"
+          style="margin: 5px"
         >
           <CachePanel :project="project" />
 
