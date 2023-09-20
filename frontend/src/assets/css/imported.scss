@@ -1,0 +1,93 @@
+/* Check box */
+
+.toggle {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.toggle:before {
+  content: "";
+  position: relative;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 14px;
+  display: block;
+  background: var(--greyDarker);
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.toggle span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px var(--greyDarker);
+  transition: all 0.2s ease;
+}
+
+.toggle span:before {
+  content: "";
+  position: absolute;
+  display: block;
+  margin: -18px;
+  width: 56px;
+  height: 56px;
+  background: white;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.customCbx:checked + .toggle span {
+  background: var(--secondary);
+  transform: translateX(20px);
+  transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+  border: solid white 1px;
+}
+
+.customCbx:checked + .toggle span:before {
+  transform: scale(1);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+/* Swal */
+.swal-button {
+  background-color: var(--greyLight);
+  border: 2px solid var(--greyDark);
+  color: var(--fontColor);
+
+  &.red,
+  &.swal-button--no {
+    border-color: var(--danger);
+    color: var(--danger);
+
+    &:hover {
+      background-color: var(--greyLight);
+    }
+  }
+
+  &.swal-button--yes,
+  &.swal-button--confirm {
+    border-color: var(--success);
+    color: var(--success);
+
+    &:hover {
+      background-color: var(--greyLight);
+    }
+  }
+}

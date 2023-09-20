@@ -1,8 +1,0 @@
-{
-    "name": "Statistics",
-    "description": "Simple statistics, like the average or top value of a column",
-    "layout": {
-        "width": 4,
-        "height": 2
-    }
-}

@@ -45,7 +45,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #Messenger {
   z-index: 10;
   position: fixed;
@@ -69,16 +69,41 @@ export default {
   padding: 10px 20px 10px 20px;
 
   border-left: solid 1vh;
-  color: #fff;
   text-align: left;
-  border-radius: 15px;
-  transition: filter 0.1s;
+  border-radius: 5px;
+  transition: filter 0.05s;
   overflow: hidden;
-  background-color: var(--info);
-}
 
-.message:hover {
-  filter: brightness(90%);
+  background-color: var(--greyLight);
+  border-color: var(--greyDark);
+
+  &:hover {
+    filter: brightness(90%);
+  }
+
+  /* All colors */
+  &.info {
+    background-color: var(--blue);
+    border-color: var(--blueDark);
+    color: white;
+  }
+
+  &.success {
+    background-color: var(--success);
+    border-color: var(--successDark);
+    color: white;
+  }
+  &.warning {
+    background-color: var(--warning);
+    border-color: var(--warningDark);
+    filter: brightness(1.2);
+  }
+  &.error {
+    background-color: var(--danger);
+    border-color: var(--dangerDark);
+    font-weight: bold;
+    color: white;
+  }
 }
 
 .text {
@@ -92,32 +117,10 @@ export default {
 /* Transition */
 .list-enter-active,
 .list-leave-active {
-  transition: opacity 1s, height 1s;
+  transition: opacity 0.5s, height 0.5s;
 }
 .list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
   height: 0vh;
-}
-
-/* All colors */
-.message.info {
-  background-color: var(--info);
-  border-color: var(--infoDark);
-}
-.message.blank {
-  background-color: var(--blank);
-  border-color: var(--blankDark);
-}
-.message.success {
-  background-color: var(--success);
-  border-color: var(--successDark);
-}
-.message.warning {
-  background-color: var(--warning);
-  border-color: var(--warningDark);
-}
-.message.error {
-  background-color: var(--danger);
-  border-color: var(--dangerDark);
 }
 </style>

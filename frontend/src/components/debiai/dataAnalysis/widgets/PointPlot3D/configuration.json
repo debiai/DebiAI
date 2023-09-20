@@ -1,0 +1,15 @@
+{
+  "name": "3D Point plot",
+  "description": "3d colored visualisation of 3 selected columns",
+  "layout": {
+    "height": 6
+  },
+  "categories": [
+    "Data overview",
+    "Sample analysis",
+    "Bias detection",
+    "Outlier detection",
+    "Model evaluation"
+  ],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/3D_point_plot/"
+}

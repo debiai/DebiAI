@@ -8,6 +8,7 @@
     </div>
 
     <div id="errors">
+      <!-- Errors -->
       <div
         v-for="(error, index) in errorMessages"
         :key="index"
@@ -21,6 +22,8 @@
           </div>
         </transition>
       </div>
+
+      <!-- Warnings -->
       <div
         v-for="(warning, index) in warningMessages"
         :key="index + warningMessages.length"
@@ -44,11 +47,12 @@ export default {
   props: {
     errorMessages: { type: Array, default: () => [] },
     warningMessages: { type: Array, default: () => [] },
+    preventBodyScroll: { type: Boolean, default: true },
   },
   mounted() {
     // When the modal is opened, we want to disable scrolling on the body
     const bodyOverflowStyle = document.body.style.overflow;
-    if (bodyOverflowStyle !== "hidden") {
+    if (bodyOverflowStyle !== "hidden" && this.preventBodyScroll) {
       document.body.style.overflow = "hidden";
       this.preventBodyScroll = true;
       // The preventBodyScroll variable is used in the beforeDestroy hook
@@ -68,7 +72,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 #modal {
   z-index: 5;
   position: fixed;
@@ -76,7 +80,7 @@ export default {
   width: 100vw;
   left: 0%;
   top: 0%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
 
   overflow: auto;
   display: flex;
@@ -95,9 +99,9 @@ export default {
 #Panel {
   max-height: 90vh;
   max-width: 90vw;
-  padding: 3vh;
-  background-color: rgb(250, 250, 250);
-  border-radius: 1vh;
+  padding: 30px;
+  background-color: white;
+  border-radius: 4px;
   overflow: auto;
 
   &:hover {
@@ -120,8 +124,8 @@ export default {
   }
 
   .warning {
-    background-color: #ffc108;
-    color: #181616;
+    background-color: var(--warning);
+    color: black;
   }
 }
 </style>

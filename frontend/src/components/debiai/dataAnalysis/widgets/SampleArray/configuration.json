@@ -1,0 +1,6 @@
+{
+    "name": "Sample array",
+    "description": "Display, sort and filter the project samples in an array",
+    "categories": ["Sample analysis"],
+    "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/sample_array/"
+}

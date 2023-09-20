@@ -5,28 +5,24 @@
         <h2>
           <inline-svg
             :src="require('../../../assets/svg/gear.svg')"
-            width="20"
-            height="20"
+            width="25"
+            height="25"
+            style="margin-right: 10px"
           />
           Models
         </h2>
         <span style="display: flex; align-items: center">
+          <button @click="selectAll">All</button>
           <button
-            class="info"
-            @click="selectAll"
-          >
-            All
-          </button>
-          <button
-            class="warning"
             style="margin-right: 5px"
-            @click="selecNone"
+            @click="selectNone"
           >
             None
           </button>
           <input
             type="text"
             placeholder="Search a model"
+            class="search"
             v-model="searchBar"
           />
         </span>
@@ -100,6 +96,7 @@
     <!-- Controls -->
     <transition name="fade">
       <div
+        class="card"
         id="modelsControls"
         v-if="selectedModelIds.length > 0"
       >
@@ -170,7 +167,7 @@ export default {
       this.selectedModelIds = this.project.models.map((m) => m.id);
       this.$emit("modelSelected", this.selectedModelIds);
     },
-    selecNone() {
+    selectNone() {
       this.selectedModelIds = [];
       this.$emit("modelSelected", this.selectedModelIds);
     },
@@ -227,10 +224,10 @@ export default {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
   background-color: white;
-  border-radius: 10px;
   margin: 5px;
+  background-color: white;
+  border: solid 1px var(--greyDark);
   transition: height 0.2s;
   height: 0%;
   /* Do not remove, very important for some reason */
@@ -240,6 +237,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 25px;
+  font-size: 1.4em;
 }
 
 #modelList {
@@ -264,17 +263,15 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 
 /* modelsControls */
 #modelsControls {
-  display: flex;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-  background-color: white;
-  border-radius: 10px;
   margin: 5px;
   padding: 0 5px 0 5px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   font-size: 0.9em;
@@ -286,7 +283,7 @@ export default {
   align-items: center;
   justify-content: space-evenly;
   font-weight: bold;
-  background: #707070;
+  color: var(--fontColor);
 }
 
 #modelsControls #commonModelResults {

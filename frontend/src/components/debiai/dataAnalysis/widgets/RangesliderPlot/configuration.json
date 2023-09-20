@@ -1,0 +1,7 @@
+{
+  "name": "Rangeslider plot",
+  "description": "A line plot with a rangeslider, useful for zooming in on a particular time series.",
+  "categories": ["Sample analysis", "Outlier detection", "Model evaluation", "Data annotation"],
+  "projectTypes": ["Time series"],
+  "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/range_slider/"
+}

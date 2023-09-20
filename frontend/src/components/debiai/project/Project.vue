@@ -18,8 +18,8 @@
       <ProjectColumnsVisu />
     </Modal>
 
-    <!-- ProjectInfo -->
-    <ProjectInfo
+    <!-- Header -->
+    <Header
       :project="project"
       v-on:settings="settings = !settings"
       v-on:refresh="loadProject"
@@ -60,6 +60,7 @@
         <div
           id="bot"
           class="card"
+          style="margin: 5px"
         >
           <CachePanel :project="project" />
 
@@ -79,7 +80,7 @@
 
 <script>
 // Components
-import ProjectInfo from "./ProjectInfo";
+import Header from "./Header";
 import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
@@ -93,7 +94,7 @@ import swal from "sweetalert";
 export default {
   name: "Project",
   components: {
-    ProjectInfo,
+    Header,
     ProjectColumnsVisu,
     Models,
     Selections,
@@ -459,7 +460,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgb(240, 240, 240);
+  background-color: var(--greyLight);
 }
 
 #selectionAndModels {
@@ -472,12 +473,11 @@ export default {
   justify-content: center;
   flex-direction: row;
   padding: 10px;
-  height: 11vh;
   gap: 30px;
 
   #startAnalysisBtn {
     height: 100%;
-    font-size: 1.2em;
+    font-size: 1.5em;
     width: 400px;
   }
 }
