@@ -1,6 +1,7 @@
 from configparser import ConfigParser
-import os, json
+from termcolor import colored
 
+import os, json
 
 config_path = "config/config.ini"
 config_parser = ConfigParser()
@@ -8,15 +9,24 @@ config_parser = ConfigParser()
 config = {}
 
 
-def init_config():
+def set_config_value(section, key, value):
     global config
 
-    # Expected sections:
-    # - DATA_PROVIDERS_CONFIG
-    # - PYTHON_MODULE_DATA_PROVIDER
-    # - WEB_DATA_PROVIDERS
-    # - EXPORT_METHODS_CONFIG
-    # - EXPORT_METHODS_LIST
+    if section in config and key in config[section]:
+        if config[section][key] != value:
+            # The default value is different from the one in the config file
+            config[section][key] = value
+
+            print(
+                "Overriding "
+                + colored(section + " / " + key, "yellow")
+                + " with value "
+                + colored(value, "yellow")
+            )
+
+
+def init_config():
+    global config
 
     print("===================== CONFIG =======================")
 
@@ -28,20 +38,127 @@ def init_config():
             "web_data_provider_cache": True,
             "web_data_provider_cache_duration": 120,
         },
-        "PYTHON_MODULE_DATA_PROVIDER": {"enabled": True},
-        "WEB_DATA_PROVIDERS": {},
+        "PYTHON_MODULE_DATA_PROVIDER": {
+            "enabled": True,
+            "allow_create_projects": True,
+            "allow_delete_projects": True,
+            "allow_create_selections": True,
+            "allow_delete_selections": True,
+            "allow_create_models": True,
+            "allow_delete_models": True,
+            "allow_insert_results": True,
+        },
+        "WEB_DATA_PROVIDERS": {
+            # "name": "url"
+        },
         "ALGO_PROVIDERS_CONFIG": {
             "enable_integrated": True,
             "creation": True,
             "deletion": True,
         },
-        "ALGO_PROVIDERS": {},
-        "EXPORT_METHODS_CONFIG": {"creation": True, "deletion": True},
-        "EXPORT_METHODS_LIST": {},
+        "ALGO_PROVIDERS": {
+            # "name": "url"
+        },
+        "EXPORT_METHODS_CONFIG": {
+            "creation": True,
+            "deletion": True,
+        },
+        "EXPORT_METHODS": {
+            # "name": "type, param1, param2, ..."
+        },
     }
 
     # First, read the config file
     config_parser.read(config_path)
+
+    for section in config.keys():
+        if section not in config_parser.sections():
+            print("Section '" + section + "' not found, using default values")
+            continue
+
+        for key in config[section].keys():
+            if key not in config_parser[section]:
+                print(
+                    "Key "
+                    + colored(key, "yellow")
+                    + " not found in section "
+                    + colored(section, "yellow")
+                    + ", using default value"
+                )
+                continue
+
+            # Deal with booleans
+            if type(config[section][key]) == bool:
+                if str.lower(config_parser[section][key]) == "false":
+                    set_config_value(section, key, False)
+                elif str.lower(config_parser[section][key]) == "true":
+                    set_config_value(section, key, True)
+                else:
+                    print(
+                        "Invalid boolean value for "
+                        + colored(key, "yellow")
+                        + ", using default value"
+                    )
+                    continue
+
+            # Deal with integers
+            elif type(config[section][key]) == int:
+                try:
+                    set_config_value(section, key, int(config_parser[section][key]))
+                except ValueError:
+                    print(
+                        "Invalid integer value for "
+                        + colored(key, "yellow")
+                        + ", using default value"
+                    )
+                    continue
+
+            # Deal with strings
+            elif type(config[section][key]) == str:
+                set_config_value(section, key, str(config_parser[section][key]))
+
+        # Deal with specific cases
+        # Web data-providers
+        if section == "WEB_DATA_PROVIDERS":
+            for data_provider in config_parser[section]:
+                url = config_parser[section][data_provider]
+                print(
+                    "Adding Web data-provider "
+                    + colored(data_provider, "yellow")
+                    + " with url "
+                    + colored(url, "yellow")
+                )
+
+                config["WEB_DATA_PROVIDERS"][data_provider] = url
+
+        # Algo-providers
+        if section == "ALGO_PROVIDERS":
+            for algo_provider in config_parser[section]:
+                url = config_parser[section][algo_provider]
+                print(
+                    "Adding AlgoProvider "
+                    + colored(algo_provider, "yellow")
+                    + " with url "
+                    + colored(url, "yellow")
+                )
+
+                config["ALGO_PROVIDERS"][algo_provider] = url
+
+        # Export methods
+        if section == "EXPORT_METHODS":
+            for export_method in config_parser[section]:
+                type_and_parameters = config_parser[section][export_method]
+                print(
+                    "Adding export method "
+                    + colored(export_method, "yellow")
+                    + " with type and parameters "
+                    + colored(type_and_parameters, "yellow")
+                )
+
+                config["EXPORT_METHODS"][export_method] = type_and_parameters
+
+    print("done")
+    exit()
 
     for section in config_parser.sections():
         # Data providers config
@@ -142,14 +259,14 @@ def init_config():
                     config["EXPORT_METHODS_CONFIG"]["deletion"] = False
             continue
 
-        if section == "EXPORT_METHODS_LIST":
+        if section == "EXPORT_METHODS":
             for export_method in config_parser[section]:
                 print(
                     "Config file: detected export method '"
                     + export_method
                     + "' from config file"
                 )
-                config["EXPORT_METHODS_LIST"][export_method] = config_parser[section][
+                config["EXPORT_METHODS"][export_method] = config_parser[section][
                     export_method
                 ]
             continue
@@ -339,7 +456,7 @@ def init_config():
                 + "' from environment variables"
             )
 
-            config["EXPORT_METHODS_LIST"][
+            config["EXPORT_METHODS"][
                 export_method_name
             ] = export_method_type_and_parameters
 
