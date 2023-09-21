@@ -1,12 +1,118 @@
 from configparser import ConfigParser
 from termcolor import colored
 
-import os, json
+import os
+import json
 
 config_path = "config/config.ini"
 config_parser = ConfigParser()
 
-config = {}
+DEBUG_MAIN_COLOR = "light_blue"
+DEBUG_SECONDARY_COLOR = "blue"
+
+# Default config
+config = {
+    "DATA_PROVIDERS_CONFIG": {
+        "creation": True,
+        "deletion": True,
+    },
+    "PYTHON_MODULE_DATA_PROVIDER": {
+        "enabled": True,
+        "allow_create_projects": True,
+        "allow_delete_projects": True,
+        "allow_create_selections": True,
+        "allow_delete_selections": True,
+        "allow_create_models": True,
+        "allow_delete_models": True,
+        "allow_insert_results": True,
+    },
+    "WEB_DATA_PROVIDERS_CONFIG": {
+        "cache": True,
+        "cache_duration": 120,
+    },
+    "WEB_DATA_PROVIDERS": {
+        # "name": "url"
+    },
+    "ALGO_PROVIDERS_CONFIG": {
+        "enable_integrated": True,
+        "creation": True,
+        "deletion": True,
+    },
+    "ALGO_PROVIDERS": {
+        # "name": "url"
+    },
+    "EXPORT_METHODS_CONFIG": {
+        "creation": True,
+        "deletion": True,
+    },
+    "EXPORT_METHODS": {
+        # "name": "type, param1, param2, ..."
+    },
+}
+
+# Env vars mapping
+ENV_VAR_MAPPING = {
+    "DATA_PROVIDERS_CONFIG": {
+        "creation": "DEBIAI_DATA_PROVIDERS_CREATION_ENABLED",
+        "deletion": "DEBIAI_DATA_PROVIDERS_DELETION_ENABLED",
+    },
+    "PYTHON_MODULE_DATA_PROVIDER": {
+        "enabled": "DEBIAI_PYTHON_MODULE_DATA_PROVIDER_ENABLED",
+        "allow_create_projects": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_PROJECTS",
+        "allow_delete_projects": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_PROJECTS",
+        "allow_create_selections": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_SELECTIONS",
+        "allow_delete_selections": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_SELECTIONS",
+        "allow_create_models": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_MODELS",
+        "allow_delete_models": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_MODELS",
+        "allow_insert_results": "DEBIAI_INTEGRATED_DP_ALLOW_INSERT_RESULTS",
+    },
+    "WEB_DATA_PROVIDERS_CONFIG": {
+        "cache": "DEBIAI_WEB_DATA_PROVIDERS_CACHE_ENABLED",
+        "cache_duration": "DEBIAI_WEB_DATA_PROVIDERS_CACHE_DURATION",
+    },
+    "WEB_DATA_PROVIDERS": "DEBIAI_WEB_DATA_PROVIDERS_*",
+    "ALGO_PROVIDERS_CONFIG": {
+        "enable_integrated": "DEBIAI_ALGO_PROVIDERS_CONFIG_ENABLE_INTEGRATED",
+        "creation": "DEBIAI_ALGO_PROVIDERS_CONFIG_CREATION",
+        "deletion": "DEBIAI_ALGO_PROVIDERS_CONFIG_DELETION",
+    },
+    "ALGO_PROVIDERS": "DEBIAI_ALGO_PROVIDERS_*",
+    "EXPORT_METHODS_CONFIG": {
+        "creation": "DEBIAI_EXPORT_METHODS_CONFIG_CREATION",
+        "deletion": "DEBIAI_EXPORT_METHODS_CONFIG_DELETION",
+    },
+    "EXPORT_METHODS": "DEBIAI_EXPORT_METHODS_*",
+}
+
+
+def get_config_value(section, key, config_parser):
+    # Return the value of the key in the section of the config_parser
+    # Or return the ENV_VAR if it exists
+
+    value = None
+    ENV_VAR = ENV_VAR_MAPPING[section][key]
+
+    # Get the value from the config file
+    if section in config_parser and key in config_parser[section]:
+        value = config_parser[section][key]
+
+    # Get the value from the environment variables
+    if ENV_VAR in os.environ:
+        value = os.environ[ENV_VAR]
+
+    if value is None:
+        print(
+            "Key "
+            + colored(section, DEBUG_SECONDARY_COLOR)
+            + " / "
+            + colored(key, DEBUG_SECONDARY_COLOR)
+            + " in config or in "
+            + colored(ENV_VAR, DEBUG_SECONDARY_COLOR)
+            + " env var, using default"
+        )
+        return None
+
+    return value
 
 
 def set_config_value(section, key, value):
@@ -19,9 +125,11 @@ def set_config_value(section, key, value):
 
             print(
                 "Overriding "
-                + colored(section + " / " + key, "yellow")
+                + colored(section, DEBUG_MAIN_COLOR)
+                + " / "
+                + colored(key, DEBUG_MAIN_COLOR)
                 + " with value "
-                + colored(value, "yellow")
+                + colored(value, DEBUG_MAIN_COLOR)
             )
 
 
@@ -30,61 +138,15 @@ def init_config():
 
     print("===================== CONFIG =======================")
 
-    # Default config
-    config = {
-        "DATA_PROVIDERS_CONFIG": {
-            "creation": True,
-            "deletion": True,
-            "web_data_provider_cache": True,
-            "web_data_provider_cache_duration": 120,
-        },
-        "PYTHON_MODULE_DATA_PROVIDER": {
-            "enabled": True,
-            "allow_create_projects": True,
-            "allow_delete_projects": True,
-            "allow_create_selections": True,
-            "allow_delete_selections": True,
-            "allow_create_models": True,
-            "allow_delete_models": True,
-            "allow_insert_results": True,
-        },
-        "WEB_DATA_PROVIDERS": {
-            # "name": "url"
-        },
-        "ALGO_PROVIDERS_CONFIG": {
-            "enable_integrated": True,
-            "creation": True,
-            "deletion": True,
-        },
-        "ALGO_PROVIDERS": {
-            # "name": "url"
-        },
-        "EXPORT_METHODS_CONFIG": {
-            "creation": True,
-            "deletion": True,
-        },
-        "EXPORT_METHODS": {
-            # "name": "type, param1, param2, ..."
-        },
-    }
-
-    # First, read the config file
     config_parser.read(config_path)
 
     for section in config.keys():
-        if section not in config_parser.sections():
-            print("Section '" + section + "' not found, using default values")
-            continue
-
+        # Deal with boolean, integer and string values
         for key in config[section].keys():
-            if key not in config_parser[section]:
-                print(
-                    "Key "
-                    + colored(key, "yellow")
-                    + " not found in section "
-                    + colored(section, "yellow")
-                    + ", using default value"
-                )
+            # Get the value from the config file or the environment variables
+            value = get_config_value(section, key, config_parser)
+
+            if value is None:
                 continue
 
             # Deal with booleans
@@ -96,7 +158,7 @@ def init_config():
                 else:
                     print(
                         "Invalid boolean value for "
-                        + colored(key, "yellow")
+                        + colored(key, DEBUG_MAIN_COLOR)
                         + ", using default value"
                     )
                     continue
@@ -108,7 +170,7 @@ def init_config():
                 except ValueError:
                     print(
                         "Invalid integer value for "
-                        + colored(key, "yellow")
+                        + colored(key, DEBUG_MAIN_COLOR)
                         + ", using default value"
                     )
                     continue
@@ -117,161 +179,24 @@ def init_config():
             elif type(config[section][key]) == str:
                 set_config_value(section, key, str(config_parser[section][key]))
 
-        # Deal with specific cases
-        # Web data-providers
-        if section == "WEB_DATA_PROVIDERS":
-            for data_provider in config_parser[section]:
-                url = config_parser[section][data_provider]
+        # Deal with Web data-providers, Algo-providers and Export methods
+        if section in ["WEB_DATA_PROVIDERS", "ALGO_PROVIDERS", "EXPORT_METHODS"]:
+            for element_name in config_parser[section]:
+                parameters = config_parser[section][element_name]
                 print(
-                    "Adding Web data-provider "
-                    + colored(data_provider, "yellow")
-                    + " with url "
-                    + colored(url, "yellow")
+                    "Adding "
+                    + section.lower().replace("_", "-")[0:-1]
+                    + " "
+                    + colored(element_name, DEBUG_MAIN_COLOR)
+                    + " ("
+                    + colored(parameters, DEBUG_MAIN_COLOR)
+                    + ")"
                 )
 
-                config["WEB_DATA_PROVIDERS"][data_provider] = url
-
-        # Algo-providers
-        if section == "ALGO_PROVIDERS":
-            for algo_provider in config_parser[section]:
-                url = config_parser[section][algo_provider]
-                print(
-                    "Adding AlgoProvider "
-                    + colored(algo_provider, "yellow")
-                    + " with url "
-                    + colored(url, "yellow")
-                )
-
-                config["ALGO_PROVIDERS"][algo_provider] = url
-
-        # Export methods
-        if section == "EXPORT_METHODS":
-            for export_method in config_parser[section]:
-                type_and_parameters = config_parser[section][export_method]
-                print(
-                    "Adding export method "
-                    + colored(export_method, "yellow")
-                    + " with type and parameters "
-                    + colored(type_and_parameters, "yellow")
-                )
-
-                config["EXPORT_METHODS"][export_method] = type_and_parameters
+                config[section][element_name] = parameters
 
     print("done")
     exit()
-
-    for section in config_parser.sections():
-        # Data providers config
-        if section == "DATA_PROVIDERS_CONFIG":
-            if "creation" in config_parser[section]:
-                if str.lower(config_parser[section]["creation"]) == "false":
-                    print("Config file: Data Providers creation disabled")
-                    config["DATA_PROVIDERS_CONFIG"]["creation"] = False
-
-            if "deletion" in config_parser[section]:
-                if str.lower(config_parser[section]["deletion"]) == "false":
-                    print("Config file: Data Providers deletion disabled")
-                    config["DATA_PROVIDERS_CONFIG"]["deletion"] = False
-
-            if "web_data_provider_cache" in config_parser[section]:
-                if (
-                    str.lower(config_parser[section]["web_data_provider_cache"])
-                    == "false"
-                ):
-                    print("Config file: Web Data Provider cache disabled")
-                    config["DATA_PROVIDERS_CONFIG"]["web_data_provider_cache"] = False
-
-            if "web_data_provider_cache_duration" in config_parser[section]:
-                try:
-                    config["DATA_PROVIDERS_CONFIG"][
-                        "web_data_provider_cache_duration"
-                    ] = int(config_parser[section]["web_data_provider_cache_duration"])
-                except ValueError:
-                    print(
-                        "Config file: Invalid Web Data Provider cache duration,",
-                        "defaulting to 120 seconds",
-                    )
-
-            continue
-
-        if section == "PYTHON_MODULE_DATA_PROVIDER":
-            if "enabled" in config_parser[section]:
-                if str.lower(config_parser[section]["enabled"]) == "false":
-                    print("Config file: Python Module Data Provider disabled")
-                    config["PYTHON_MODULE_DATA_PROVIDER"]["enabled"] = False
-                elif str.lower(config_parser[section]["enabled"]) == "true":
-                    print("Config file: Python Module Data Provider enabled")
-                    config["PYTHON_MODULE_DATA_PROVIDER"]["enabled"] = True
-            continue
-
-        if section == "WEB_DATA_PROVIDERS":
-            for data_provider in config_parser[section]:
-                print(
-                    "Config file: detected data provider '"
-                    + data_provider
-                    + "' from config file"
-                )
-                config["WEB_DATA_PROVIDERS"][data_provider] = config_parser[section][
-                    data_provider
-                ]
-            continue
-
-        # AlgoProvider
-        if section == "ALGO_PROVIDERS_CONFIG":
-            if "enable_integrated" in config_parser[section]:
-                if str.lower(config_parser[section]["enable_integrated"]) == "false":
-                    print("Config file: Integrated AlgoProvider disabled")
-                    config["ALGO_PROVIDERS_CONFIG"]["enable_integrated"] = False
-
-            if "creation" in config_parser[section]:
-                if str.lower(config_parser[section]["creation"]) == "false":
-                    print("Config file: AlgoProvider creation disabled")
-                    config["ALGO_PROVIDERS_CONFIG"]["creation"] = False
-
-            if "deletion" in config_parser[section]:
-                if str.lower(config_parser[section]["deletion"]) == "false":
-                    print("Config file: AlgoProvider deletion disabled")
-                    config["ALGO_PROVIDERS_CONFIG"]["deletion"] = False
-            continue
-
-        if section == "ALGO_PROVIDERS":
-            for algo_provider in config_parser[section]:
-                print(
-                    "Config file: detected AlgoProvider '"
-                    + algo_provider
-                    + "' from config file"
-                )
-                config["ALGO_PROVIDERS"][algo_provider] = config_parser[section][
-                    algo_provider
-                ]
-            continue
-
-        # Export methods
-        if section == "EXPORT_METHODS_CONFIG":
-            if "creation" in config_parser[section]:
-                if str.lower(config_parser[section]["creation"]) == "false":
-                    print("Config file: Export method creation disabled")
-                    config["EXPORT_METHODS_CONFIG"]["creation"] = False
-
-            if "deletion" in config_parser[section]:
-                if str.lower(config_parser[section]["deletion"]) == "false":
-                    print("Config file: Export method deletion disabled")
-                    config["EXPORT_METHODS_CONFIG"]["deletion"] = False
-            continue
-
-        if section == "EXPORT_METHODS":
-            for export_method in config_parser[section]:
-                print(
-                    "Config file: detected export method '"
-                    + export_method
-                    + "' from config file"
-                )
-                config["EXPORT_METHODS"][export_method] = config_parser[section][
-                    export_method
-                ]
-            continue
-
-        print("Config section '" + section + "' not recognized, skipping")
 
     # Then deal with environment variables
     for env_var in os.environ:
