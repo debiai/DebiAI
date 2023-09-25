@@ -21,6 +21,7 @@ config = {
         "enabled": True,
         "allow_create_projects": True,
         "allow_delete_projects": True,
+        "allow_insert_data": True,
         "allow_create_selections": True,
         "allow_delete_selections": True,
         "allow_create_models": True,
@@ -61,6 +62,7 @@ ENV_VAR_MAPPING = {
         "enabled": "DEBIAI_INTEGRATED_DATA_PROVIDER_ENABLED",
         "allow_create_projects": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_PROJECTS",
         "allow_delete_projects": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_PROJECTS",
+        "allow_insert_data": "DEBIAI_INTEGRATED_DP_ALLOW_INSERT_DATA",
         "allow_create_selections": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_SELECTIONS",
         "allow_delete_selections": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_SELECTIONS",
         "allow_create_models": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_MODELS",
@@ -90,6 +92,7 @@ LIST_CONFIG_SECTIONS = {
 }
 
 changes_made = False
+
 
 def get_config_value(section, key, config_parser):
     # Return the value of the key in the section of the config_parser
