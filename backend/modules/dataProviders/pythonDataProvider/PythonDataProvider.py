@@ -1,3 +1,4 @@
+from config.init_config import get_config
 from modules.dataProviders.DataProvider import DataProvider
 from modules.dataProviders.DataProviderException import DataProviderException
 from modules.dataProviders.pythonDataProvider.dataUtils import (
@@ -75,6 +76,12 @@ class PythonDataProvider(DataProvider):
         return projects.get_projects()
 
     def create_project(self, name):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_create_projects"]
+        if not creation_allowed:
+            raise DataProviderException("Project creation is not allowed", 403)
+
         # Project must not already exist
         if projects.project_exist(name):
             raise DataProviderException("Project already exists", 400)
@@ -95,6 +102,12 @@ class PythonDataProvider(DataProvider):
 
     @project_must_exist
     def delete_project(self, project_id):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_delete_projects"]
+        if not creation_allowed:
+            raise DataProviderException("Project deletion is not allowed", 403)
+
         # Request method to delete project
         projects.delete_project(project_id)
 
@@ -109,7 +122,7 @@ class PythonDataProvider(DataProvider):
     def get_samples(self, project_id, analysis, id_list):
         # Get full data from id list
         # Return object { id: [data]}
-        return samples.get_data_from_sampleid_list(project_id, id_list)
+        return samples.get_data_from_sample_id_list(project_id, id_list)
 
     # Selections
     @project_must_exist
@@ -126,11 +139,23 @@ class PythonDataProvider(DataProvider):
 
     @project_must_exist
     def create_selection(self, project_id, name, id_list, request_id=None):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_create_selections"]
+        if not creation_allowed:
+            raise DataProviderException("Selection creation is not allowed", 403)
+
         # Selection creation
         return selections.create_selection(project_id, name, id_list, request_id)
 
     @project_must_exist
     def delete_selection(self, project_id, selection_id):
+        # Check config
+        config = get_config()
+        deletion_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_delete_selections"]
+        if not deletion_allowed:
+            raise DataProviderException("Selection deletion is not allowed", 403)
+
         # Selection deletion
         return selections.delete_selection(project_id, selection_id)
 
@@ -151,14 +176,34 @@ class PythonDataProvider(DataProvider):
 
     @project_must_exist
     def update_block_structure(self, project_id, blockStructure):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_create_projects"]
+        if not creation_allowed:
+            raise DataProviderException("Project creation is not allowed", 403)
+
+        # Update block structure
         projects.update_block_structure(project_id, blockStructure)
 
     @project_must_exist
     def add_block_tree(self, project_id, data):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_insert_data"]
+        if not creation_allowed:
+            raise DataProviderException("Data insertion is not allowed", 403)
+
+        # Insert data
         return tree.add_block_tree(project_id, data)
 
     @project_must_exist
     def update_results_structure(self, project_id, resultsStructure):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_insert_results"]
+        if not creation_allowed:
+            raise DataProviderException("Results insertion is not allowed", 403)
+
         # TODO : check resultStructure (type and default type ==)
         existing_result_structure = projects.get_result_structure(project_id)
         if existing_result_structure is not None:
@@ -170,12 +215,24 @@ class PythonDataProvider(DataProvider):
 
     @project_must_exist
     def create_model(self, project_id, data):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_create_models"]
+        if not creation_allowed:
+            raise DataProviderException("Model creation is not allowed", 403)
+
         models.create_model(
             project_id, data["name"], data["metadata"] if "metadata" in data else None
         )
 
     @project_must_exist
     def delete_model(self, project_id, model_id):
+        # Check config
+        config = get_config()
+        deletion_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_delete_models"]
+        if not deletion_allowed:
+            raise DataProviderException("Model deletion is not allowed", 403)
+
         # Check if model exist
         if not models.model_exist(project_id, model_id):
             raise DataProviderException("Model does not exist", 404)
@@ -184,4 +241,10 @@ class PythonDataProvider(DataProvider):
 
     @project_must_exist
     def add_results_dict(self, project_id, model_id, data):
+        # Check config
+        config = get_config()
+        creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_insert_results"]
+        if not creation_allowed:
+            raise DataProviderException("Results insertion is not allowed", 403)
+
         models.add_results_dict(project_id, model_id, data)
