@@ -141,7 +141,7 @@ def get_config_values(section, config_parser):
     for key in os.environ.keys():
         if key.startswith(ENV_VAR):
             # Get the key name without the env var prefix
-            key_name = key[len(ENV_VAR):]
+            key_name = key[len(ENV_VAR) :]
             values[key_name] = str.lower(os.environ[key])
 
     return values
