@@ -17,7 +17,7 @@ config = {
         "creation": True,
         "deletion": True,
     },
-    "PYTHON_MODULE_DATA_PROVIDER": {
+    "INTEGRATED_DATA_PROVIDER": {
         "enabled": True,
         "allow_create_projects": True,
         "allow_delete_projects": True,
@@ -51,21 +51,14 @@ config = {
     },
 }
 
-# List of config sections that are lists with their env var mapping
-LIST_CONFIG_SECTIONS = {
-    "WEB_DATA_PROVIDERS": "DEBIAI_WEB_DATA_PROVIDERS",
-    "ALGO_PROVIDERS": "DEBIAI_ALGO_PROVIDERS",
-    "EXPORT_METHODS": "DEBIAI_EXPORT_METHODS",
-}
-
 # Env vars mapping
 ENV_VAR_MAPPING = {
     "DATA_PROVIDERS_CONFIG": {
-        "creation": "DEBIAI_DATA_PROVIDERS_CREATION_ENABLED",
-        "deletion": "DEBIAI_DATA_PROVIDERS_DELETION_ENABLED",
+        "creation": "DEBIAI_DATA_PROVIDERS_ALLOW_CREATION",
+        "deletion": "DEBIAI_DATA_PROVIDERS_ALLOW_DELETION",
     },
-    "PYTHON_MODULE_DATA_PROVIDER": {
-        "enabled": "DEBIAI_PYTHON_MODULE_DATA_PROVIDER_ENABLED",
+    "INTEGRATED_DATA_PROVIDER": {
+        "enabled": "DEBIAI_INTEGRATED_DATA_PROVIDER_ENABLED",
         "allow_create_projects": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_PROJECTS",
         "allow_delete_projects": "DEBIAI_INTEGRATED_DP_ALLOW_DELETE_PROJECTS",
         "allow_create_selections": "DEBIAI_INTEGRATED_DP_ALLOW_CREATE_SELECTIONS",
@@ -79,16 +72,24 @@ ENV_VAR_MAPPING = {
         "cache_duration": "DEBIAI_WEB_DATA_PROVIDERS_CACHE_DURATION",
     },
     "ALGO_PROVIDERS_CONFIG": {
-        "enable_integrated": "DEBIAI_ALGO_PROVIDERS_CONFIG_ENABLE_INTEGRATED",
-        "creation": "DEBIAI_ALGO_PROVIDERS_CONFIG_CREATION",
-        "deletion": "DEBIAI_ALGO_PROVIDERS_CONFIG_DELETION",
+        "enable_integrated": "DEBIAI_ALGO_PROVIDERS_ENABLE_INTEGRATED",
+        "creation": "DEBIAI_ALGO_PROVIDERS_ALLOW_CREATION",
+        "deletion": "DEBIAI_ALGO_PROVIDERS_ALLOW_DELETION",
     },
     "EXPORT_METHODS_CONFIG": {
-        "creation": "DEBIAI_EXPORT_METHODS_CONFIG_CREATION",
-        "deletion": "DEBIAI_EXPORT_METHODS_CONFIG_DELETION",
+        "creation": "DEBIAI_EXPORT_METHODS_ALLOW_CREATION",
+        "deletion": "DEBIAI_EXPORT_METHODS_ALLOW_DELETION",
     },
 }
 
+# List of list based config sections + their env var mapping
+LIST_CONFIG_SECTIONS = {
+    "WEB_DATA_PROVIDERS": "DEBIAI_WEB_DATA_PROVIDER_",
+    "ALGO_PROVIDERS": "DEBIAI_ALGO_PROVIDER_",
+    "EXPORT_METHODS": "DEBIAI_EXPORT_METHOD_",
+}
+
+changes_made = False
 
 def get_config_value(section, key, config_parser):
     # Return the value of the key in the section of the config_parser
@@ -99,11 +100,11 @@ def get_config_value(section, key, config_parser):
 
     # Get the value from the config file
     if section in config_parser and key in config_parser[section]:
-        value = config_parser[section][key]
+        value = str.lower(config_parser[section][key])
 
     # Get the value from the environment variables
     if ENV_VAR in os.environ:
-        value = os.environ[ENV_VAR]
+        value = str.lower(os.environ[ENV_VAR])
 
     if value is None:
         print(
@@ -120,13 +121,37 @@ def get_config_value(section, key, config_parser):
     return value
 
 
+def get_config_values(section, config_parser):
+    # Return a dict of the values of the section of the config_parser
+    # Or return the ENV_VAR if it exists
+
+    values = {}
+    ENV_VAR = LIST_CONFIG_SECTIONS[section]
+
+    # Get the value from the config file
+    if section in config_parser:
+        for key in config_parser[section]:
+            values[key] = str.lower(config_parser[section][key])
+
+    # Get the value from the environment variables
+    # iterate over the keys of the env var
+    for key in os.environ.keys():
+        if key.startswith(ENV_VAR):
+            # Get the key name without the env var prefix
+            key_name = key[len(ENV_VAR):]
+            values[key_name] = str.lower(os.environ[key])
+
+    return values
+
+
 def set_config_value(section, key, value):
-    global config
+    global config, changes_made
 
     if section in config and key in config[section]:
         if config[section][key] != value:
             # The default value is different from the one in the config file
             config[section][key] = value
+            changes_made = True
 
             print(
                 " - Overriding "
@@ -143,6 +168,7 @@ def init_config():
 
     print("===================== CONFIG =======================")
 
+    # Read the config file
     config_parser.read(config_path)
 
     for section in config.keys():
@@ -156,13 +182,14 @@ def init_config():
 
             # Deal with booleans
             if type(config[section][key]) == bool:
-                if str.lower(config_parser[section][key]) == "false":
+                if value == "false":
                     set_config_value(section, key, False)
-                elif str.lower(config_parser[section][key]) == "true":
+                elif value == "true":
                     set_config_value(section, key, True)
                 else:
                     print(
-                        "Invalid boolean value for "
+                        colored("   [ERROR]", ERROR_COLOR)
+                        + " Invalid boolean value for "
                         + colored(key, DEBUG_COLOR)
                         + ", using default value"
                     )
@@ -171,10 +198,11 @@ def init_config():
             # Deal with integers
             elif type(config[section][key]) == int:
                 try:
-                    set_config_value(section, key, int(config_parser[section][key]))
+                    set_config_value(section, key, int(value))
                 except ValueError:
                     print(
-                        "Invalid integer value for "
+                        colored("   [ERROR]", ERROR_COLOR)
+                        + " Invalid integer value for "
                         + colored(key, DEBUG_COLOR)
                         + ", using default value"
                     )
@@ -182,25 +210,27 @@ def init_config():
 
             # Deal with strings
             elif type(config[section][key]) == str:
-                set_config_value(section, key, str(config_parser[section][key]))
+                set_config_value(section, key, str(value))
 
-        # Deal with Web data-providers, Algo-providers and Export methods
-        if section in LIST_CONFIG_SECTIONS and section in config_parser:
-            for element_name in config_parser[section]:
-                parameters = config_parser[section][element_name]
+        # Deal with list based config elements
+        if section in LIST_CONFIG_SECTIONS:
+            elements = get_config_values(section, config_parser)
+
+            for element_name in elements:
                 print(
                     " - Adding "
                     + section.lower().replace("_", "-")[0:-1]
                     + " "
                     + colored(element_name, DEBUG_COLOR)
                     + " ("
-                    + colored(parameters, DEBUG_COLOR)
+                    + colored(elements[element_name], DEBUG_COLOR)
                     + ")"
                 )
 
-                config[section][element_name] = parameters
+                config[section][element_name] = elements[element_name]
 
-    print("   Config loaded")
+    if not changes_made:
+        print("   Default config used")
 
 
 def get_config():

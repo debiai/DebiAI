@@ -17,7 +17,7 @@ def setup_data_providers():
     print("================== DATA PROVIDERS ==================")
     config = get_config()
     web_data_provider_config = config["WEB_DATA_PROVIDERS"]
-    python_module_data_provider_config = config["PYTHON_MODULE_DATA_PROVIDER"]
+    python_module_data_provider_config = config["INTEGRATED_DATA_PROVIDER"]
 
     keys = list(web_data_provider_config.keys())
     values = list(web_data_provider_config.values())
@@ -54,13 +54,13 @@ def setup_data_providers():
                 + " is not accessible"
             )
     # Python Data Providers
-    if python_module_data_provider_config["enabled"] != False:
+    if python_module_data_provider_config["enabled"]:
         print(" - Adding Python Module data Provider")
         add(PythonDataProvider())
         python_data_provider_disabled = False
 
     if len(data_providers_list) == 0:
-        print("Warning, No data providers setup")
+        print("   No data providers configured")
 
 
 def data_provider_exists(name):
