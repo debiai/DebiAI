@@ -109,7 +109,7 @@ class PythonDataProvider(DataProvider):
     def get_samples(self, project_id, analysis, id_list):
         # Get full data from id list
         # Return object { id: [data]}
-        return samples.get_data_from_sampleid_list(project_id, id_list)
+        return samples.get_data_from_sample_id_list(project_id, id_list)
 
     # Selections
     @project_must_exist
