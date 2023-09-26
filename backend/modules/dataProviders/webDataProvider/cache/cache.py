@@ -12,12 +12,8 @@ class Cache:
         # Get config
         self.config = get_config()
 
-        self.cache_enabled = self.config["DATA_PROVIDERS_CONFIG"][
-            "web_data_provider_cache"
-        ]
-        self.cache_ttl = self.config["DATA_PROVIDERS_CONFIG"][
-            "web_data_provider_cache_duration"
-        ]
+        self.cache_enabled = self.config["WEB_DATA_PROVIDERS_CONFIG"]["cache"]
+        self.cache_ttl = self.config["WEB_DATA_PROVIDERS_CONFIG"]["cache_duration"]
 
         # Init cache
         self.project_id_list_cache = CacheoutCache(maxsize=256, ttl=self.cache_ttl)

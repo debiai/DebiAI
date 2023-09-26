@@ -31,7 +31,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
 
 # Get data
-def get_data_from_sampleid_list(project_id, id_list):
+def get_data_from_sample_id_list(project_id, id_list):
     # Get path of the samples from the hashmap
     sample_path = hash.getPathFromHashList(project_id, id_list)
     data = {}

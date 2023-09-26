@@ -1,10 +1,12 @@
 import connexion
 import os
+import requests
+from termcolor import colored
 from flask_cors import CORS
 from flask import send_from_directory, request, Response
-import requests
 from init import init
 from utils.utils import get_app_version
+from config.init_config import DEBUG_COLOR
 
 DEV_FRONTEND_URL = "http://localhost:8080/"
 PORT = 3000
@@ -43,7 +45,8 @@ def send_frontend(path):
                 return response
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
                 return (
-                    "You are in a development environment and the DebAI frontend is not available at the url : "
+                    "You are in a development environment and the DebAI frontend "
+                    + "is not available at the url : "
                     + DEV_FRONTEND_URL,
                     503,
                 )
@@ -68,5 +71,8 @@ if __name__ == "__main__":
     print("================= DebiAI " + get_app_version() + " ====================")
     init()
     print("======================== RUN =======================")
-    print("App running : http://localhost:{}".format(PORT))
+    print(
+        "   DebiAI is available at "
+        + colored("http://localhost:" + str(PORT), DEBUG_COLOR)
+    )
     app.run(port=PORT, debug=True)
