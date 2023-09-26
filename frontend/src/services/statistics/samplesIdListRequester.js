@@ -23,7 +23,7 @@ async function getIdList(data) {
     (!data.modelIds || data.modelIds.length === 0)
   ) {
     try {
-      if (data.from && data.to)
+      if (data.from !== undefined && data.to !== undefined)
         id_list = await backendDialog.getProjectIdList(data.analysis, data.from, data.to);
       else id_list = await backendDialog.getProjectIdList(data.analysis);
 
