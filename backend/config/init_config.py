@@ -162,7 +162,7 @@ def set_config_value(section, key, value):
                 + " / "
                 + colored(key, DEBUG_COLOR)
                 + " with value "
-                + colored(value, DEBUG_COLOR)
+                + colored(str(value), DEBUG_COLOR)
             )
 
 
