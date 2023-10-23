@@ -18,7 +18,7 @@ def setup_algo_providers():
     keys = list(config_algo_providers.keys())
     values = list(config_algo_providers.values())
 
-    # Add AlgoProviderss from config file
+    # Add AlgoProviders from config file
     print(" - Loading Algo providers from config file")
     for i in range(len(config_algo_providers)):
         name = keys[i]

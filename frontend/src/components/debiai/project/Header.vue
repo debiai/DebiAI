@@ -72,7 +72,7 @@
         </span>
       </div>
 
-      <div id="btnsTop">
+      <div id="buttonsTop">
         <!-- Setting btn -->
         <button
           id="settings"
@@ -192,7 +192,7 @@ export default {
   align-items: center;
   gap: 20px;
 
-  #btnsTop {
+  #buttonsTop {
     display: flex;
     align-items: center;
     margin: 5px;

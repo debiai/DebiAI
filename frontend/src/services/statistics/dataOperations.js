@@ -12,9 +12,9 @@ const columnsCreation = function (columns, selectedSamplesIds) {
       let tickvals = [];
       let ticktext = [];
 
-      tickvals = [...Array(col.nbOccu).keys()];
+      tickvals = [...Array(col.nbOccurrence).keys()];
 
-      if (col.nbOccu > MAX_STRING_DISPLAYED)
+      if (col.nbOccurrence > MAX_STRING_DISPLAYED)
         // No text on the axis
         ticktext = tickvals.map(() => "");
       else
@@ -72,7 +72,7 @@ const mode = (arr) => {
   return { top: +mode, frequency: greatestFreq };
 };
 
-const quantile = (sorted, q) => {
+const quartile = (sorted, q) => {
   const pos = (sorted.length - 1) * q;
   const base = Math.floor(pos);
   const rest = pos - base;
@@ -81,7 +81,7 @@ const quantile = (sorted, q) => {
   return sorted[base];
 };
 
-// Average, min, max, q1, q2 and standart deviation calculation
+// Average, min, max, q1, q2 and standard deviation calculation
 const getStats = function (
   x,
   y,
@@ -116,8 +116,8 @@ const getStats = function (
       average.push(mean(ySection));
       if (detailed) min.push(sorted[0]);
       if (detailed) max.push(sorted[sorted.length - 1]);
-      if (detailed) q1.push(quantile(sorted, 0.25));
-      if (detailed) q3.push(quantile(sorted, 0.75));
+      if (detailed) q1.push(quartile(sorted, 0.25));
+      if (detailed) q3.push(quartile(sorted, 0.75));
       if (detailed) std.push(mathJs.std(ySection));
     } else {
       average.push(displayNull ? 0 : null);

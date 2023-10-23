@@ -12,10 +12,10 @@
           class="red"
           @click="settings = false"
         >
-          Close
+          <!-- Close -->
         </button>
       </h2>
-      <ProjectColumnsVisu />
+      <ProjectColumnsVisualization />
     </Modal>
 
     <!-- Header -->
@@ -81,7 +81,7 @@
 <script>
 // Components
 import Header from "./Header";
-import ProjectColumnsVisu from "./projectColumns/ProjectColumnsVisu.vue";
+import ProjectColumnsVisualization from "./projectColumns/ProjectColumnsVisualization.vue";
 import Models from "./Models.vue";
 import Selections from "./selections/Selections.vue";
 import CachePanel from "./cache/CachePanel.vue";
@@ -95,7 +95,7 @@ export default {
   name: "Project",
   components: {
     Header,
-    ProjectColumnsVisu,
+    ProjectColumnsVisualization,
     Models,
     Selections,
     CachePanel,
@@ -322,7 +322,7 @@ export default {
           this.$store.commit("setColoredColumnIndex", 0);
           this.$store.commit("clearAllFilters");
 
-          // Convert the lists in str for the querry
+          // Convert the lists in str for the query
           if (selectionIds && selectionIds.length > 0)
             selectionIds = selectionIds.reduce((sId, total) => total + "." + sId);
           if (modelIds && modelIds.length > 0)
@@ -360,7 +360,7 @@ export default {
     deleteProject() {
       swal({
         title: "Delete the project ?",
-        text: "Do you realy want to delete the project ? There is no way back.",
+        text: "Do you really want to delete the project ? There is no way back.",
         buttons: true,
         icon: "warning",
         dangerMode: true,
@@ -420,8 +420,8 @@ export default {
       return true;
     },
     selectedSelections() {
-      return this.selectedSelectionsIds.map((selecId) =>
-        this.project.selections.find((s) => selecId === s.id)
+      return this.selectedSelectionsIds.map((selectedId) =>
+        this.project.selections.find((s) => selectedId === s.id)
       );
     },
     selectedModels() {

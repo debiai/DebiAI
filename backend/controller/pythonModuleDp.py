@@ -1,6 +1,5 @@
 from modules.dataProviders.DataProviderException import DataProviderException
 import modules.dataProviders.dataProviderManager as data_provider_manager
-import modules.dataProviders.pythonDataProvider.PythonDataProvider as PythonDataProvider
 
 
 # Project
@@ -27,12 +26,12 @@ def post_project(data):
         return e.message, e.status_code
 
 
-# Blocklevel
-def post_blocklevels(dataProviderId, projectId, blocklevels):
+# Block level
+def post_block_levels(dataProviderId, projectId, block_levels):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-        data_provider.update_block_structure(projectId, blocklevels)
-        return blocklevels, 200
+        data_provider.update_block_structure(projectId, block_levels)
+        return block_levels, 200
     except DataProviderException as e:
         return e.message, e.status_code
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    id="RangesliderPlot"
+    id="RangeSliderPlot"
     class="dataVisualizationWidget"
   >
     <!-- Axis selection Modals -->
@@ -15,7 +15,7 @@
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxiesSelect"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <modal
@@ -29,7 +29,7 @@
         :colorSelection="true"
         v-on:cancel="yAxisSelection = false"
         :defaultSelected="[columnYindex]"
-        v-on:colSelect="yAxiesSelect"
+        v-on:colSelect="yAxisSelect"
       />
     </modal>
     <!-- multi Y axis selection -->
@@ -52,13 +52,13 @@
       @close="tagAxisSelection = false"
     >
       <ColumnSelection
-        title="Select the backgroud color column"
+        title="Select the background color column"
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnTagIndex === null ? undefined : [columnTagIndex]"
         v-on:cancel="tagAxisSelection = false"
-        v-on:colSelect="tagAxiesSelect"
+        v-on:colSelect="tagAxisSelect"
       />
     </modal>
 
@@ -68,7 +68,7 @@
       v-if="settings"
     >
       <div id="axisControls">
-        <!-- Axis btns -->
+        <!-- Axis buttons -->
         <div class="dataGroup axis">
           <div class="data">
             <div class="name">X axis</div>
@@ -119,7 +119,7 @@
         </div>
         <div
           class="dataGroup"
-          id="configBtns"
+          id="configButtons"
         >
           <!-- Group by color -->
           <div
@@ -207,7 +207,7 @@
     <!-- Plot -->
     <div
       class="plot"
-      :id="'rangesliderPlot_' + this.index"
+      :id="'rangeSliderPlot_' + this.index"
     ></div>
   </div>
 </template>
@@ -269,11 +269,11 @@ export default {
     this.$parent.$on("filterCleared", this.filterCleared);
   },
   mounted() {
-    this.plotDiv = document.getElementById("rangesliderPlot_" + this.index);
+    this.plotDiv = document.getElementById("rangeSliderPlot_" + this.index);
 
     if (this.data.columns.length >= 2) {
-      this.xAxiesSelect(0);
-      this.yAxiesSelect(1);
+      this.xAxisSelect(0);
+      this.yAxisSelect(1);
     }
 
     // Watch for configuration changes
@@ -385,10 +385,10 @@ export default {
       var colX = this.data.columns[this.columnXindex];
 
       // Get the Y axis index
-      let YAxisIndexs;
-      if (this.multipleYAxis) YAxisIndexs = this.selectedYColumnsIds;
-      else YAxisIndexs = [this.columnYindex];
-      var colsY = YAxisIndexs.map((index) => this.data.columns[index]);
+      let YAxisIndexes;
+      if (this.multipleYAxis) YAxisIndexes = this.selectedYColumnsIds;
+      else YAxisIndexes = [this.columnYindex];
+      var colsY = YAxisIndexes.map((index) => this.data.columns[index]);
 
       // Apply selection
       let valuesX = this.selectedData.map((i) => colX.values[i]);
@@ -406,7 +406,7 @@ export default {
             title: "Long calculation: do you want to proceed ?",
             text: "Range slider plot: You have selected to group data by color\
            with more than 20 uniques values. This will create a lot of lines, this may\
-           have an impact on the performaces",
+           have an impact on the performances",
             icon: "warning",
             buttons: {
               continue: { text: "continue", className: "warning" },
@@ -498,7 +498,7 @@ export default {
       const layout = {
         title: plotTitle,
         xaxis: {
-          rangeslider: true,
+          rangeSlider: true,
         },
         yaxis: {
           autorange: true,
@@ -540,7 +540,7 @@ export default {
       });
 
       // Deal with point click to select data
-      // Goal : place two lines and export bondaries
+      // Goal : place two lines and export boundaries
       this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
       this.plotDiv.on("plotly_click", this.selectDataOnPlot);
 
@@ -648,19 +648,19 @@ export default {
       this.border2 = null;
     },
 
-    // axies selection
-    xAxiesSelect(index) {
+    // axis selection
+    xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.plotDrawn = false;
     },
-    yAxiesSelect(index) {
+    yAxisSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.plotDrawn = false;
     },
-    yMultipleAxisSelect(indexs) {
-      this.selectedYColumnsIds = indexs;
+    yMultipleAxisSelect(indexes) {
+      this.selectedYColumnsIds = indexes;
       this.yMultipleAxisSelection = false;
       this.plotDrawn = false;
     },
@@ -670,7 +670,7 @@ export default {
       this.columnXindex = temp;
       this.drawPlot();
     },
-    tagAxiesSelect(index) {
+    tagAxisSelect(index) {
       this.columnTagIndex = index;
       this.tagAxisSelection = false;
       this.plotDrawn = false;
@@ -824,7 +824,7 @@ export default {
 </script>
 
 <style scoped>
-#RangesliderPlot {
+#RangeSliderPlot {
   display: flex;
   flex-direction: column;
 }
@@ -868,7 +868,7 @@ export default {
   flex: 1;
 }
 
-#configBtns {
+#configButtons {
   margin: 10px;
   justify-content: space-evenly;
   display: flex;

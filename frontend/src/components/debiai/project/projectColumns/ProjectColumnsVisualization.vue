@@ -1,5 +1,5 @@
 <template>
-  <div id="ProjectColumnsVisu">
+  <div id="ProjectColumnsVisualization">
     <h3>Data columns</h3>
     <div id="columns">
       <div
@@ -85,7 +85,7 @@
 import Columns from "./Columns.vue";
 
 export default {
-  name: "ProjectColumnsVisu",
+  name: "ProjectColumnsVisualization",
   components: { Columns },
   data: () => {
     return {
@@ -161,7 +161,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#ProjectColumnsVisu {
+#ProjectColumnsVisualization {
   min-width: 400px;
   min-height: 300px;
   padding-top: 20px;

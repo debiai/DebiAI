@@ -15,7 +15,7 @@
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxiesSelect"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <modal
@@ -29,7 +29,7 @@
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxiesSelect"
+        v-on:colSelect="yAxisSelect"
       />
     </modal>
     <modal
@@ -208,8 +208,8 @@ export default {
   },
   mounted() {
     this.divIntervalPlot = document.getElementById("IPDiv" + this.index);
-    this.xAxiesSelect(0);
-    this.yAxiesSelect(1);
+    this.xAxisSelect(0);
+    this.yAxisSelect(1);
 
     // Watch for configuration changes
     this.defConfChangeUpdate();
@@ -296,7 +296,7 @@ export default {
       let colUpper = this.data.columns[this.columnUpperIndex];
       let colLower = this.data.columns[this.columnLowerIndex];
 
-      // Apply selecion
+      // Apply selection
       let valuesX = this.selectedData.map((i) => colX.values[i]);
       let valuesY = this.selectedData.map((i) => colY.values[i]);
       let valuesUpper = this.selectedData.map((i) => colUpper.values[i]);
@@ -373,14 +373,14 @@ export default {
         legendgroup: "interval",
       };
 
-      let layout = this.gerenateLayout({ colX, colY });
-      this.drawPlot([upperTrace, lowerTrace, yTrace], layout); // regenererate or generate plot
+      let layout = this.generateLayout({ colX, colY });
+      this.drawPlot([upperTrace, lowerTrace, yTrace], layout); // regenerate or generate plot
       this.intervalPlotDrawn = true;
       this.$parent.$emit("drawn");
     },
 
     // Draw
-    gerenateLayout({ colX, colY }) {
+    generateLayout({ colX, colY }) {
       let layout = {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
         xaxis: {
@@ -401,7 +401,7 @@ export default {
         },
       };
 
-      // set y axies label text if string
+      // set y axis label text if string
       if (colY.type == String) {
         layout.yaxis.tickvals = colY.valuesIndexUniques;
         layout.yaxis.ticktext = colY.uniques;
@@ -416,13 +416,13 @@ export default {
       });
     },
 
-    // axies selection
-    xAxiesSelect(index) {
+    // axis selection
+    xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.intervalPlotDrawn = false;
     },
-    yAxiesSelect(index) {
+    yAxisSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.intervalPlotDrawn = false;

@@ -59,7 +59,7 @@ export default {
     this.$parent.$on("filterCleared", this.filterCleared);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccu > 1).map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccurrence > 1).map((c) => c.index);
   },
   mounted() {
     this.divParCord = document.getElementById("PCDiv" + this.index);
@@ -145,10 +145,10 @@ export default {
       this.divParCord.on("plotly_restyle", this.selectDataOnPlot);
 
       // black slider color
-      var ligneList = document.getElementsByClassName("highlight");
-      for (var i = 0; i < ligneList.length; i++) {
-        ligneList.item(i).setAttribute("stroke", "black");
-        ligneList.item(i).setAttribute("stroke-width", "6");
+      var lineList = document.getElementsByClassName("highlight");
+      for (var i = 0; i < lineList.length; i++) {
+        lineList.item(i).setAttribute("stroke", "black");
+        lineList.item(i).setAttribute("stroke-width", "6");
       }
     },
 

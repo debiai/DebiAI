@@ -6,7 +6,7 @@
     <!-- Axis selection Modals -->
     <modal
       v-if="xAxisSelection"
-      @close="cancelXaxiesSettings"
+      @close="cancelXAxisSettings"
     >
       <ColumnSelection
         title="Select the X axis"
@@ -14,36 +14,36 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
-        v-on:cancel="cancelXaxiesSettings"
-        v-on:colSelect="xAxiesSelect"
+        v-on:cancel="cancelXAxisSettings"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <modal
       v-if="yAxisSelection"
-      @close="cancelYaxiesSettings"
+      @close="cancelYAxisSettings"
     >
       <ColumnSelection
         title="Select the Y axis"
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="cancelYaxiesSettings"
+        v-on:cancel="cancelYAxisSettings"
         :defaultSelected="[columnYindex]"
-        v-on:colSelect="yAxiesSelect"
+        v-on:colSelect="yAxisSelect"
       />
     </modal>
     <modal
       v-if="zAxisSelection"
-      @close="cancelZaxiesSettings"
+      @close="cancelZAxisSettings"
     >
       <ColumnSelection
         title="Select the Z axis"
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="cancelZaxiesSettings"
+        v-on:cancel="cancelZAxisSettings"
         :defaultSelected="[columnZindex]"
-        v-on:colSelect="zAxiesSelect"
+        v-on:colSelect="zAxisSelect"
       />
     </modal>
 
@@ -52,7 +52,7 @@
       v-if="settings"
     >
       <div id="axisControls">
-        <!-- Axis btns -->
+        <!-- Axis buttons -->
         <div class="dataGroup axis">
           <div class="data">
             <div class="name">X axis</div>
@@ -187,9 +187,9 @@ export default {
   mounted() {
     this.divPointPlot = document.getElementById("PP3DDiv" + this.index);
     if (this.data.columns.length >= 3) {
-      this.xAxiesSelect(0);
-      this.yAxiesSelect(1);
-      this.zAxiesSelect(2);
+      this.xAxisSelect(0);
+      this.yAxisSelect(1);
+      this.zAxisSelect(2);
       this.setPointOpacity();
     }
   },
@@ -334,7 +334,7 @@ export default {
       this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
 
-    // axies selection
+    // axis selection
     selectXaxis() {
       this.xAxisSelection = true;
     },
@@ -344,26 +344,26 @@ export default {
     selectZaxis() {
       this.zAxisSelection = true;
     },
-    cancelXaxiesSettings() {
+    cancelXAxisSettings() {
       this.xAxisSelection = false;
     },
-    cancelYaxiesSettings() {
+    cancelYAxisSettings() {
       this.yAxisSelection = false;
     },
-    cancelZaxiesSettings() {
+    cancelZAxisSettings() {
       this.zAxisSelection = false;
     },
-    xAxiesSelect(index) {
+    xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.plotDrawn = false;
     },
-    yAxiesSelect(index) {
+    yAxisSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.plotDrawn = false;
     },
-    zAxiesSelect(index) {
+    zAxisSelect(index) {
       this.columnZindex = index;
       this.zAxisSelection = false;
       this.plotDrawn = false;

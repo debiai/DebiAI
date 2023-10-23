@@ -6,30 +6,30 @@
     <!-- Axis selection Modals -->
     <modal
       v-if="trueAxisSelection"
-      @close="cancelXaxiesSettings"
+      @close="cancelXAxisSettings"
     >
       <ColumnSelection
         title="Select the True axis"
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        :defaultSelected="[columnTindex]"
-        v-on:cancel="cancelXaxiesSettings"
-        v-on:colSelect="xAxiesSelect"
+        :defaultSelected="[columnTIndex]"
+        v-on:cancel="cancelXAxisSettings"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <modal
       v-if="predAxisSelection"
-      @close="cancelYaxiesSettings"
+      @close="cancelYAxisSettings"
     >
       <ColumnSelection
         title="Select the Predicted axis"
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        :defaultSelected="[columnPindex]"
-        v-on:cancel="cancelYaxiesSettings"
-        v-on:colSelect="yAxiesSelect"
+        :defaultSelected="[columnPIndex]"
+        v-on:cancel="cancelYAxisSettings"
+        v-on:colSelect="yAxisSelect"
       />
     </modal>
 
@@ -38,7 +38,7 @@
       v-if="settings"
     >
       <div id="axisControls">
-        <!-- Axis btns -->
+        <!-- Axis buttons -->
         <div
           class="dataGroup"
           id="left"
@@ -48,7 +48,7 @@
               <div class="name">Truth</div>
               <div class="value">
                 <Column
-                  :column="data.columns.find((c) => c.index == columnTindex)"
+                  :column="data.columns.find((c) => c.index == columnTIndex)"
                   :colorSelection="true"
                   v-on:selected="trueAxisSelection = true"
                 />
@@ -64,20 +64,20 @@
               <div class="name">Prediction</div>
               <div class="value">
                 <Column
-                  :column="data.columns.find((c) => c.index == columnPindex)"
+                  :column="data.columns.find((c) => c.index == columnPIndex)"
                   :colorSelection="true"
                   v-on:selected="predAxisSelection = true"
                 />
               </div>
             </div>
           </div>
-          <!-- Groub by color -->
+          <!-- Group by color -->
           <div
             class="data"
             id="groupByColor"
             v-if="coloredColumnIndex != null"
           >
-            <span class="name">Groub by color</span>
+            <span class="name">Group by color</span>
             <div class="value">
               <input
                 type="checkbox"
@@ -131,9 +131,9 @@ export default {
   },
   data() {
     return {
-      // Cofigurations
-      columnTindex: 0,
-      columnPindex: 0,
+      // Configurations
+      columnTIndex: 0,
+      columnPIndex: 0,
       dividePerColor: true,
 
       // Settings
@@ -158,8 +158,8 @@ export default {
   },
   mounted() {
     this.divConfusionMatrix = document.getElementById("CFM" + this.index);
-    this.xAxiesSelect(0);
-    this.yAxiesSelect(1);
+    this.xAxisSelect(0);
+    this.yAxisSelect(1);
 
     // Watch for configuration changes
     this.defConfChangeUpdate();
@@ -167,15 +167,15 @@ export default {
   methods: {
     async checkMatrix() {
       // Check that there isn't too many unique values in the selected columns
-      let uniquesGDT = this.data.columns[this.columnTindex].uniques;
-      let uniquesPred = this.data.columns[this.columnPindex].uniques;
+      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
+      let uniquesPred = this.data.columns[this.columnPIndex].uniques;
 
       if (uniquesGDT.length > 30 || uniquesPred.length > 30) {
         let rep = await swal({
           title: "Long calculation: do you want to proceed ?",
           text: "Confusion Matrix: You have selected a truth or a prediction column\
            with more than 30 uniques values. This will create a very big matrix and\
-           have an impact on the performaces",
+           have an impact on the performances",
           icon: "warning",
           buttons: {
             continue: { text: "continue", className: "warning" },
@@ -198,7 +198,7 @@ export default {
             title: "Long calculation: do you want to proceed ?",
             text: "Confusion Matrix: The selected colored column has\
            more than 30 uniques values and you have chosen to group by color.\
-           This will create a large number matrix and have an impact on the performaces",
+           This will create a large number matrix and have an impact on the performances",
             icon: "warning",
             buttons: {
               continue: { text: "continue", className: "warning" },
@@ -224,16 +224,16 @@ export default {
     createMatrix() {
       console.time("ConfusionMatrix");
       // Load values
-      let truthColumnValues = this.data.columns[this.columnTindex].values;
-      let predictedColumnValues = this.data.columns[this.columnPindex].values;
+      let truthColumnValues = this.data.columns[this.columnTIndex].values;
+      let predictedColumnValues = this.data.columns[this.columnPIndex].values;
       let selectedTruth = this.selectedData.map((i) => truthColumnValues[i]);
       let selectedPred = this.selectedData.map((i) => predictedColumnValues[i]);
 
       // Find all the unique values in the selected columns
       let allUniques = [
         ...new Set([
-          ...this.data.columns[this.columnTindex].uniques,
-          ...this.data.columns[this.columnPindex].uniques,
+          ...this.data.columns[this.columnTIndex].uniques,
+          ...this.data.columns[this.columnPIndex].uniques,
         ]),
       ];
 
@@ -257,7 +257,7 @@ export default {
           let colorTruth = idValues.map((i) => selectedTruth[i]);
           let colorPred = idValues.map((i) => selectedPred[i]);
 
-          // Finnaly, we create and add the matrix
+          // Finally, we create and add the matrix
           matrixList.push(this.fillMatrix(allUniques, colorTruth, colorPred));
         });
 
@@ -286,7 +286,7 @@ export default {
 
       // Fill matrix according to indexer
       let matrix = [];
-      let uniquesGDT = this.data.columns[this.columnTindex].uniques;
+      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
       uniquesGDT.forEach((uniqueValue) => {
         let row = [];
         allUniques.forEach((uniqueValue2) => {
@@ -306,7 +306,7 @@ export default {
         [1, "rgb(255,0,0)"],
       ];
 
-      let uniquesGDT = this.data.columns[this.columnTindex].uniques;
+      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
       let data = [];
       for (let i = 0; i < matrixList.length; i++) {
         // Find the subplot title
@@ -339,19 +339,19 @@ export default {
           pattern: "independent",
         },
 
-        // add the axies title
+        // add the axis title
         yaxis: {
           // Truth axis
           dtick: 1,
           type: "category",
-          title: this.data.columns[this.columnTindex].label + " (Truth)",
+          title: this.data.columns[this.columnTIndex].label + " (Truth)",
           autorange: "reversed",
         },
         xaxis: {
           // Predicted axis
           dtick: 1,
           type: "category",
-          title: this.data.columns[this.columnPindex].label + " (Predicted)",
+          title: this.data.columns[this.columnPIndex].label + " (Predicted)",
           side: "top",
         },
         margin: {
@@ -425,27 +425,27 @@ export default {
       this.divConfusionMatrix.removeListener("plotly_click", this.selectDataOnPlot);
       this.divConfusionMatrix.on("plotly_click", this.selectDataOnPlot);
     },
-    // axies selection
-    cancelXaxiesSettings() {
+    // axis selection
+    cancelXAxisSettings() {
       this.trueAxisSelection = false;
     },
-    cancelYaxiesSettings() {
+    cancelYAxisSettings() {
       this.predAxisSelection = false;
     },
-    xAxiesSelect(index) {
-      this.columnTindex = index;
+    xAxisSelect(index) {
+      this.columnTIndex = index;
       this.trueAxisSelection = false;
       this.plotDrawn = false;
     },
-    yAxiesSelect(index) {
-      this.columnPindex = index;
+    yAxisSelect(index) {
+      this.columnPIndex = index;
       this.predAxisSelection = false;
       this.plotDrawn = false;
     },
     swap() {
-      let temp = this.columnPindex;
-      this.columnPindex = this.columnTindex;
-      this.columnTindex = temp;
+      let temp = this.columnPIndex;
+      this.columnPIndex = this.columnTIndex;
+      this.columnTIndex = temp;
       this.checkMatrix();
     },
 
@@ -453,37 +453,37 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnTindex: this.data.columns[this.columnTindex].label,
-        columnPindex: this.data.columns[this.columnPindex].label,
+        columnTIndex: this.data.columns[this.columnTIndex].label,
+        columnPIndex: this.data.columns[this.columnPIndex].label,
       };
 
       return conf;
     },
     setConf(conf) {
       if (!conf) return;
-      if ("columnTindex" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnTindex);
-        if (c) this.columnTindex = c.index;
+      if ("columnTIndex" in conf) {
+        let c = this.data.columns.find((c) => c.label == conf.columnTIndex);
+        if (c) this.columnTIndex = c.index;
         else
           this.$store.commit("sendMessage", {
             title: "warning",
-            msg: "The column " + conf.columnTindex + " hasn't been found",
+            msg: "The column " + conf.columnTIndex + " hasn't been found",
           });
       }
-      if ("columnPindex" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnPindex);
-        if (c) this.columnPindex = c.index;
+      if ("columnPIndex" in conf) {
+        let c = this.data.columns.find((c) => c.label == conf.columnPIndex);
+        if (c) this.columnPIndex = c.index;
         else
           this.$store.commit("sendMessage", {
             title: "warning",
-            msg: "The column " + conf.columnPindex + " hasn't been found",
+            msg: "The column " + conf.columnPIndex + " hasn't been found",
           });
       }
       this.checkMatrix();
     },
     defConfChangeUpdate() {
       this.$watch(
-        (vm) => (vm.columnTindex, vm.columnPindex, Date.now()),
+        (vm) => (vm.columnTIndex, vm.columnPIndex, Date.now()),
         () => {
           this.$parent.confAsChanged = true;
         }
@@ -491,9 +491,9 @@ export default {
     },
     getConfNameSuggestion() {
       return (
-        this.data.columns[this.columnTindex].label +
+        this.data.columns[this.columnTIndex].label +
         " and " +
-        this.data.columns[this.columnPindex].label
+        this.data.columns[this.columnPIndex].label
       );
     },
 
@@ -507,8 +507,8 @@ export default {
         "pointIndex" in event.points[0]
       ) {
         let filters = [];
-        let colTruth = this.data.columns[this.columnTindex];
-        let colPred = this.data.columns[this.columnPindex];
+        let colTruth = this.data.columns[this.columnTIndex];
+        let colPred = this.data.columns[this.columnPIndex];
         let selectedSquareCoordinates = event.points[0].pointIndex;
 
         let selectedTruth = colTruth.uniques[selectedSquareCoordinates[0]];

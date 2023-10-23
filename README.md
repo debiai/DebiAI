@@ -26,7 +26,7 @@ DebiAI provides data scientists with features to:
 
 ## Dashboard
 
-DebiAI has a Web Graphical User Interface with a complete data visualisation toolkit offering many statistical analysis tools:
+DebiAI has a Web Graphical User Interface with a complete data visualization toolkit offering many statistical analysis tools:
 
 <p align="center">
   <img src="./images/DebiAI_dashboard.png">

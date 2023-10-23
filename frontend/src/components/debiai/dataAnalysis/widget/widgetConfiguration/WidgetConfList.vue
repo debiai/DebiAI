@@ -49,7 +49,7 @@ import WidgetConf from "./WidgetConf";
 export default {
   components: { WidgetConf },
   props: {
-    configurations: { type: Array, required: true }, // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
+    configurations: { type: Array, required: true }, // [{ id, name, description, configuration, projectId, dataProviderId, creationDate }]
     widgetKey: { type: String, required: true },
   },
   computed: {

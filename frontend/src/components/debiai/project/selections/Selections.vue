@@ -51,7 +51,7 @@
         <span class="aligned">
           <!-- <button
             style="margin-right: 10px"
-            title="Create a selection from a request, available in a futur update"
+            title="Create a selection from a request, available in a future update"
             @click="selectionCreation = !selectionCreation"
           >
             <inline-svg

@@ -56,7 +56,7 @@
 <script>
 export default {
   props: {
-    configuration: { type: Object, required: true }, // { id, name, description, configuration, projectId, dataProviderId, creatinDate }
+    configuration: { type: Object, required: true }, // { id, name, description, configuration, projectId, dataProviderId, creationDate }
     widgetKey: { type: String, required: true },
   },
   methods: {
