@@ -59,7 +59,9 @@ export default {
     this.$parent.$on("filterCleared", this.filterCleared);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccurrence > 1).map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns
+      .filter((c) => c.nbOccurrence > 1)
+      .map((c) => c.index);
   },
   mounted() {
     this.divParCord = document.getElementById("PCDiv" + this.index);

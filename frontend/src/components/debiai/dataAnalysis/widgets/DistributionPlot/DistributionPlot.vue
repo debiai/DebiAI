@@ -617,7 +617,8 @@ export default {
             type: "values",
             columnIndex: this.currentDrawnColorIndex,
             values: [
-              "" + this.data.columns[this.currentDrawnColorIndex].uniques[selectionPoint.curveNumber],
+              "" +
+                this.data.columns[this.currentDrawnColorIndex].uniques[selectionPoint.curveNumber],
             ],
           });
         }
@@ -661,7 +662,8 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      this.bins = colX.type == String ? colX.nbOccurrence : colX.nbOccurrence > 100 ? 100 : colX.nbOccurrence;
+      this.bins =
+        colX.type == String ? colX.nbOccurrence : colX.nbOccurrence > 100 ? 100 : colX.nbOccurrence;
     },
   },
   computed: {

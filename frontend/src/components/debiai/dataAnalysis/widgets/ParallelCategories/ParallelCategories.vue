@@ -57,7 +57,9 @@ export default {
     this.$parent.$on("redraw", this.checkPlot);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccurrence <= 20).map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns
+      .filter((c) => c.nbOccurrence <= 20)
+      .map((c) => c.index);
   },
   mounted() {
     this.divParCat = document.getElementById("PCatDiv" + this.index);
