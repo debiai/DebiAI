@@ -1,8 +1,5 @@
 from modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
-    selections,
-    models,
-    selections,
     tree,
     hash,
 )
@@ -100,7 +97,7 @@ def _block_to_array_recur(block):
         return ret
 
 
-# def projectSamplesGerenator(projectId):
+# def projectSamplesGenerator(projectId):
 #     """
 #     Generator used to iterate over all samples in a project.
 #     Used by the 'createSelectionFromRequest' method
@@ -118,7 +115,7 @@ def _block_to_array_recur(block):
 
 
 # def yieldSample(path, level, sampleInfo, sampleLevel, blockLevelInfo):
-#     # TODO : optimisations : add in parameters the block that we need to open
+#     # TODO : optimizations : add in parameters the block that we need to open
 #     blockInfo = utils.readJsonFile(path + "info.json")
 #     sampleInfo.append(getBlockInfo(blockLevelInfo[level], blockInfo))
 

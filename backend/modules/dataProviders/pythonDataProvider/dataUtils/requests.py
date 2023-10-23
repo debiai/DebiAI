@@ -13,10 +13,10 @@ def getRequestsIds(projectId):
         return []
 
 
-def getRequests(projetId):
+def getRequests(projectId):
     requests = []
-    for requestIds in getRequestsIds(projetId):
-        requests.append(getRequest(projetId, requestIds))
+    for requestIds in getRequestsIds(projectId):
+        requests.append(getRequest(projectId, requestIds))
     return requests
 
 
@@ -125,7 +125,7 @@ def createSelection(projectId, requestId, selectionName):
 
     # Find the samples that match the request
     selectionSamplesIds = []
-    for sample, sampleId in samplesUtils.projectSamplesGerenator(projectId):
+    for sample, sampleId in samplesUtils.projectSamplesGenerator(projectId):
         if isSampleInSelection(sample, request["filters"]):
             selectionSamplesIds.append(sampleId)
 

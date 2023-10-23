@@ -78,7 +78,7 @@ export default {
   data() {
     return {
       newWidgetName: "",
-      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creationDate }]
     };
   },
   created() {

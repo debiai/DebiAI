@@ -6,7 +6,7 @@
     <!-- Axis selection Modal -->
     <modal
       v-if="axisSelection"
-      @close="cancelAxiesSettings"
+      @close="cancelAxisSettings"
     >
       <ColumnSelection
         title="Select the columns to compute"
@@ -15,8 +15,8 @@
         :cancelAvailable="true"
         :colorSelection="true"
         :defaultSelected="selectedColumns.map((c) => c.index)"
-        v-on:cancel="cancelAxiesSettings"
-        v-on:validate="axiesSelect"
+        v-on:cancel="cancelAxisSettings"
+        v-on:validate="AxisSelect"
       />
     </modal>
 
@@ -25,7 +25,7 @@
       id="axisControls"
       v-if="settings"
     >
-      <!-- Axis btns -->
+      <!-- Axis buttons -->
       <div
         id="columnAxisSelection"
         class="dataGroup"
@@ -60,17 +60,17 @@
           </div>
         </div>
         <div class="data">
-          <div class="name">Significativ only</div>
+          <div class="name">Significative only</div>
           <div class="value">
             <input
               type="checkbox"
-              :id="'significativOnly' + index"
+              :id="'significativeOnly' + index"
               class="customCbx"
-              v-model="significativOnly"
+              v-model="significativeOnly"
               style="display: none"
             />
             <label
-              :for="'significativOnly' + index"
+              :for="'significativeOnly' + index"
               class="toggle"
             >
               <span></span>
@@ -115,7 +115,7 @@ export default {
 
       // Settings
       settings: true,
-      significativOnly: false,
+      significativeOnly: false,
       matrixDrawn: false,
       axisSelection: false,
       selectedMatrixType: "pearson",
@@ -139,17 +139,17 @@ export default {
     this.divHeatMapPlot = document.getElementById("matrix" + this.index);
   },
   methods: {
-    // axies selection
+    // axis selection
     selectAxis() {
       this.axisSelection = true;
     },
-    cancelAxiesSettings() {
+    cancelAxisSettings() {
       this.axisSelection = false;
     },
-    axiesSelect(selectedColumns) {
+    AxisSelect(selectedColumns) {
       this.selectedColumns = selectedColumns
         .map((colId) => this.data.columns.find((col) => col.index == colId))
-        .filter((c) => c.nbOccu > 1);
+        .filter((c) => c.nbOccurrence > 1);
 
       this.axisSelection = false;
       this.matrixDrawn = false;
@@ -205,7 +205,7 @@ export default {
         [0.5, "rgb(255,255,255)"],
         [1, "rgb(255,0,0)"],
       ];
-      if (this.significativOnly) {
+      if (this.significativeOnly) {
         colorscale = [
           [0, "rgb(0,0,255)"],
           [0.1, "rgb(0,0,255)"],
@@ -250,7 +250,7 @@ export default {
         for (let j = 0; j < this.matrix[i].length; j++) {
           let value = this.matrix[i][j][0];
           layout.annotations.push({
-            text: this.significativOnly
+            text: this.significativeOnly
               ? Math.abs(value) > 0.8
                 ? Math.round(value * 100) / 100 + "<br>" + "&#9733;".repeat(this.matrix[i][j][1])
                 : ""
@@ -288,7 +288,7 @@ export default {
       this.matrixDrawn = false;
       this.$parent.selectedDataWarning = true;
     },
-    significativOnly() {
+    significativeOnly() {
       this.drawMatrix();
     },
   },
@@ -317,7 +317,7 @@ export default {
   max-height: 150px;
   overflow-y: auto;
 }
-/* Axies Selection */
+/* Axis Selection */
 #columnAxisSelection {
   flex: 1;
   display: flex;

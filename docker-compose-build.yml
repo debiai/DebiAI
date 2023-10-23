@@ -12,7 +12,7 @@ services:
       # - DEBIAI_WEB_DATA_PROVIDER_my-web-provider1=http://localhost:3010/debiai
       # - DEBIAI_WEB_DATA_PROVIDER_my-web-provider2=http://localhost:3011
 
-      # Export methods (DEBIAI_EXPORT_METHOD_<name>="<type>, <parmeter1>, <parmeter 2>)
+      # Export methods (DEBIAI_EXPORT_METHOD_<name>="<type>, <parameter1>, <parameter 2>)
       # - DEBIAI_EXPORT_METHOD_MyExport1="kafka, local:9092, my_topic_1"
       # - DEBIAI_EXPORT_METHOD_MyExport2="kafka, local:9092, my_topic_2"
 

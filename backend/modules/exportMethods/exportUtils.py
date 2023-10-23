@@ -134,7 +134,7 @@ def delete_export_method(method_id):
 
     # Check the method id
     if not method_exist(method_id):
-        raise Exception("The expons method wasn't found")
+        raise Exception("The export method wasn't found")
 
     # Delete the method
     export_methods = [method for method in export_methods if method.id != method_id]

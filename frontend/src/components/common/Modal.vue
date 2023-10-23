@@ -56,7 +56,7 @@ export default {
       document.body.style.overflow = "hidden";
       this.preventBodyScroll = true;
       // The preventBodyScroll variable is used in the beforeDestroy hook
-      // Usefull in case of recursive modals
+      // Useful in case of recursive modals
       // (the beforeDestroy would be called before the last modal is closed)
     }
   },

@@ -43,9 +43,9 @@ var customColumnCreation = function (data, colName, firstColumnIndex, rules) {
   };
 
   col.uniques = [...new Set(col.values)];
-  col.nbOccu = col.uniques.length;
+  col.nbOccurrence = col.uniques.length;
 
-  // Cheking if the column is type text, number or got undefined values
+  // Checking if the column is type text, number or got undefined values
   if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
     // undefined Values
     col.type = undefined;
@@ -69,7 +69,7 @@ var customColumnCreation = function (data, colName, firstColumnIndex, rules) {
     // Default Type
     col.type = Number;
     col.typeText = "Num";
-    col.nbOccu = col.uniques.length;
+    col.nbOccurrence = col.uniques.length;
     col.min = Math.min(...col.uniques);
     col.max = Math.max(...col.uniques);
     col.values = col.values.map((v) => +v);

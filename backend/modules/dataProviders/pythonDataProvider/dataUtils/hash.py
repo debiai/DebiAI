@@ -11,9 +11,9 @@ def hash(text: str):
 
 
 # hash
-def __createProjetHashMap(projectId, blockPath, hashmap, sampleLevel, curentLevel):
+def __createProjectHashMap(projectId, blockPath, hashmap, sampleLevel, currentLevel):
     blockPath += "/"
-    if curentLevel == sampleLevel:
+    if currentLevel == sampleLevel:
         # We are at the sample level, we can fill the hashmap
         sampleHash = hash(blockPath)
         hashmap[sampleHash] = blockPath
@@ -29,8 +29,8 @@ def __createProjetHashMap(projectId, blockPath, hashmap, sampleLevel, curentLeve
     for children in pythonModuleUtils.listDir(
         DATA_PATH + projectId + "/blocks/" + blockPath
     ):
-        __createProjetHashMap(
-            projectId, blockPath + children, hashmap, sampleLevel, curentLevel + 1
+        __createProjectHashMap(
+            projectId, blockPath + children, hashmap, sampleLevel, currentLevel + 1
         )
 
 

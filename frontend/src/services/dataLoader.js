@@ -528,7 +528,7 @@ function createColumn(label, values, category, type = null, group = null) {
   };
 
   col.uniques = [...new Set(col.values)];
-  col.nbOccu = col.uniques.length;
+  col.nbOccurrence = col.uniques.length;
 
   // Checking if the column is type text, number or got undefined values
   if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
@@ -560,7 +560,7 @@ function createColumn(label, values, category, type = null, group = null) {
     col.typeText = "Num";
     col.values = col.values.map((v) => +v);
     col.uniques = col.uniques.map((v) => +v);
-    col.nbOccu = col.uniques.length;
+    col.nbOccurrence = col.uniques.length;
     col.min = min(col.uniques);
     col.max = max(col.uniques);
     col.average = col.values.reduce((a, b) => a + b, 0) / col.values.length || 0;

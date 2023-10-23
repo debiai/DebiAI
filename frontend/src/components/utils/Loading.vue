@@ -17,7 +17,7 @@
           <div class="loader" />
         </div>
 
-        <!-- Progress bar if anny -->
+        <!-- Progress bar if any -->
         <div
           class="progress"
           v-if="req.progress !== undefined"
@@ -191,7 +191,7 @@ export default {
   font-weight: bold;
 }
 
-/* Trasitions */
+/* Transitions */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.2s;

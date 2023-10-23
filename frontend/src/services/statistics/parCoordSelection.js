@@ -1,7 +1,7 @@
-let convertPlotlySelectionsToFilters = (data, intervales) => {
+let convertPlotlySelectionsToFilters = (data, intervals) => {
   let filters = [];
 
-  intervales.forEach((inter) => {
+  intervals.forEach((inter) => {
     if (inter.constraintrange !== undefined) {
       let col = data.columns.find((col) => col.label == inter.label);
       let cr = inter.constraintrange;
@@ -47,7 +47,7 @@ let updateIntervals = (filters, newFilter) => {
 
   if (!createdFilter) {
     if (newFilter.type === "interval")
-      // Create a new intelvals filter
+      // Create a new intervals filter
       filters.push({
         type: "intervals",
         columnIndex: newFilter.columnIndex,

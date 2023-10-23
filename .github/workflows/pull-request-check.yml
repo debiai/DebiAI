@@ -1,0 +1,131 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  black-format-check: # Check that the backend codebase is formatted with black
+    name: Black format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install dependencies and check black format
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install black
+          black --check --diff .
+
+  prettier-check: # Check that the frontend codebase is formatted with prettier
+    name: Prettier format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies and check prettier format
+        run: cd frontend && npm install && npm run prettier:check
+
+  cspell-check: # Check that the project does not contain spelling errors
+    name: CSpell check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies and check prettier format
+        run: npm install -g cspell && cspell --no-summary --no-progress --no-color .
+
+  version-upgrade-check: # Check that the version is greater than the previous commit version
+    name: Version upgrade check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check that the version in backend and frontend are the same
+        id: version-check
+        run: |
+          cd frontend
+          FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+          cd ../backend
+          BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
+          if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'."
+            exit 1
+          fi
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
+          echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Check that the version is greater than the previous commit version
+        run: |
+          BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
+          cd frontend
+          PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+
+          echo "PREVIOUS_VERSION=$PREVIOUS_VERSION"
+          echo "BRANCH_VERSION=$BRANCH_VERSION"
+
+          if [ "$BRANCH_VERSION" == "" ]; then
+            echo "No version found in current branch."
+            exit 1
+          fi
+
+          if [ "$PREVIOUS_VERSION" == "" ]; then
+            echo "No version found in main branch."
+            exit 1
+          fi
+
+          if [[ $PREVIOUS_VERSION == $BRANCH_VERSION ]]; then
+            echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
+            exit 1
+          fi
+
+          if [[ $PREVIOUS_VERSION > $BRANCH_VERSION ]]; then
+            echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' > branch version '$BRANCH_VERSION'."
+            exit 1
+          fi
+
+          echo "Version upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
+
+  python-tests: # Install dependencies and run tests with pytest
+    name: Python tests
+    needs:
+      [black-format-check, prettier-check, cspell-check, version-upgrade-check]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+      - name: Test with pytest
+        run: |
+          cd backend
+          python websrv.py & sleep 5 && pytest tests/

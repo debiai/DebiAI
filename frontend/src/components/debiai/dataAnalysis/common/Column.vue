@@ -25,19 +25,19 @@
     <!-- Number of uniques values display -->
     <div
       v-if="disabled || (!reduced && (!colorSelection || column.type == undefined))"
-      :class="selectedAsColor ? 'nbOccu color' : 'nbOccu'"
+      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
       title="Number of uniques values"
     >
-      {{ column.nbOccu }}
+      {{ column.nbOccurrence }}
     </div>
     <button
       v-else-if="!reduced"
-      :class="selectedAsColor ? 'nbOccu color btn' : 'nbOccu btn'"
+      :class="selectedAsColor ? 'nbOccurrence color btn' : 'nbOccurrence btn'"
       title="Number of uniques values
 Click to set column as the main color"
       @click="selectAsColor"
     >
-      {{ column.nbOccu }}
+      {{ column.nbOccurrence }}
     </button>
 
     <!-- Type display -->
@@ -116,8 +116,8 @@ export default {
     color: rgb(27, 27, 27);
   }
 
-  /* Occu */
-  .nbOccu {
+  /* Occurrence */
+  .nbOccurrence {
     min-width: 40px;
     padding: 4px;
     display: flex;
@@ -127,7 +127,7 @@ export default {
   }
 
   /* Colored column */
-  .nbOccu.color {
+  .nbOccurrence.color {
     border: solid 2px var(--secondary);
     color: var(--secondary);
     font-weight: bold;

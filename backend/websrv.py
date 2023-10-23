@@ -62,7 +62,7 @@ def send_index():
 
 # For serving the dashboard assets
 @app.route("/<path:path>")
-def send_supporting_elmt(path):
+def send_supporting_elements(path):
     return send_frontend(path)
 
 

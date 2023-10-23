@@ -89,7 +89,7 @@ export default {
         let uniques = [...new Set(values)].sort((a, b) => a - b);
         column.values = values;
         column.uniques = uniques;
-        column.nbOccu = uniques.length;
+        column.nbOccurrence = uniques.length;
         column.min = Math.min(...uniques);
         column.max = Math.max(...uniques);
         column.average = values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0;
@@ -102,7 +102,7 @@ export default {
         values = new Array(this.data.nbLines).fill(0);
         this.selectedData.forEach((i) => (values[i] = tagValue));
         let uniques = [...new Set(values)].sort((a, b) => a - b);
-        let nbOccu = uniques.length;
+        let nbOccurrence = uniques.length;
         this.data.columns.push({
           label: this.tagName,
           index: this.data.nbColumns,
@@ -111,7 +111,7 @@ export default {
           category: "tag",
           values,
           uniques,
-          nbOccu,
+          nbOccurrence,
           min: Math.min(...uniques),
           max: Math.max(...uniques),
           average: values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0,

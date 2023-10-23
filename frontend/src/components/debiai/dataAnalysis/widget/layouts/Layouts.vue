@@ -69,7 +69,7 @@
 
           <!-- Right -->
           <div id="right">
-            <!-- LayoutVisualisation -->
+            <!-- LayoutVisualization -->
             <LayoutViewer
               :layout="current_layout"
               bigger

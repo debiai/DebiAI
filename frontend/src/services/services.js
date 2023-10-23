@@ -19,7 +19,7 @@ export default {
     if (Math.floor(days) == 1) return "1 day ago";
     if (days < 30) return Math.floor(days) + " days ago";
     let months = days / 30;
-    if (Math.floor(months) == 1) return "1 mounth ago";
+    if (Math.floor(months) == 1) return "1 month ago";
     if (months < 12) return Math.floor(months) + " months ago";
     let years = months / 12;
     if (Math.floor(years) == 1) return "1 year ago";

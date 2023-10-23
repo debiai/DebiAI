@@ -211,7 +211,7 @@ export default {
       filter.values.splice(valIndex, 1);
     },
 
-    // Itervals filters
+    // Intervals filters
     addIntervalToFilter({ interval, id }) {
       let filter = this.filters.find((f) => f.id === id);
       if (!filter) return;

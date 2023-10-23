@@ -7,7 +7,7 @@
       ✓ Available
     </div>
     <div
-      class="status notavailable"
+      class="status notAvailable"
       v-else
     >
       ❌ Not available
@@ -33,7 +33,7 @@ export default {
 .status.available {
   color: var(--success);
 }
-.status.notavailable {
+.status.notAvailable {
   color: var(--danger);
 }
 </style>
