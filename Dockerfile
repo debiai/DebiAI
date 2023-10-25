@@ -6,7 +6,7 @@ RUN npm install
 RUN npm run build
 
 # DebiAI Python Backend
-FROM python:3.8-slim-buster
+FROM python:3.10.12
 WORKDIR /backend
 COPY backend/ .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
