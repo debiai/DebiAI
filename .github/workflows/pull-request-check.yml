@@ -34,7 +34,10 @@ jobs:
         with:
           node-version: 16
       - name: Install dependencies and check prettier format
-        run: cd frontend && npm install && npm run prettier:check
+        run: |
+          cd frontend
+          npm install prettier
+          npm run prettier:check
 
   cspell-check: # Check that the project does not contain spelling errors
     name: CSpell check
@@ -143,22 +146,20 @@ jobs:
         run: docker build -t debiai .
       - name: Run the Docker image
         run: docker run -d -p 3000:3000 debiai
-      - name: Wait for Health Check
+      - name: Wait for the Docker container to start
         run: |
           for i in {1..10}; do
-            status=$(docker inspect --format='{{.State.Status}}' $(docker ps -q))
-            echo "Docker status: $status"
-            if [ "$status" = "running" ]; then
-              echo "Container is running"
-              exit 0
-            fi
-            if [ "$status" = "exited" ]; then
-              echo "Container exited"
-              exit 1
-            fi
-            echo "Waiting for container status..."
-            echo "Current container status: $status"
-            sleep 5
+              status=$(docker inspect --format='{{.State.Status}}' $(docker ps -q) | tr -d '[:space:]')
+              echo "Docker status: $status"
+              if [ "$status" = "running" ]; then
+                  echo "Container is running"
+                  exit 0
+              elif [ "$status" = "exited" ]; then
+                  echo "Container exited"
+                  exit 1
+              fi
+              echo "Waiting for container status..."
+              sleep 5
           done
           echo "Container did not start in time"
           exit 1

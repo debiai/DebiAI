@@ -17,6 +17,7 @@
     "Drange",
     "dtype",
     "dvec",
+    "elif",
     "fromlist",
     "groundtruth",
     "kneighbors",
