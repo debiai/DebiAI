@@ -62,6 +62,7 @@
     "*.png",
     "*.yaml",
     ".vscode/*",
+    "backend/requirements.txt",
     "backend/data/*",
     "__pycache__/",
     "frontend/dist",
