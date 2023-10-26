@@ -129,3 +129,19 @@ jobs:
         run: |
           cd backend
           python websrv.py & sleep 5 && pytest tests/
+
+  docker-build-check: # Build the docker image and check that it can run
+    name: Docker build check
+    needs:
+      [black-format-check, prettier-check, cspell-check, version-upgrade-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build the Docker image
+        run: |
+          docker build -t debiai .
+      - name: Run the Docker image
+        run: |
+          docker run -d -p 3000:3000 debiai
