@@ -5,6 +5,7 @@
     "*index",
     "applymap",
     "astype",
+    "buildx",
     "cacheout",
     "ckdtree",
     "Confiance",
