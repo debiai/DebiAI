@@ -140,8 +140,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Build the Docker image
-        run: |
-          docker build -t debiai .
+        run: docker build -t debiai .
+
       - name: Run the Docker image
+        run: docker run -d -p 3000:3000 debiai
+
+      - name: Wait for Health Check
         run: |
-          docker run -d -p 3000:3000 debiai
+          for i in {1..10}; do
+            health_status=$(docker inspect --format='{{.State.Health.Status}}' $(docker ps -q))
+            echo "Health status: $health_status"
+            if [ "$health_status" = "healthy" ]; then
+              echo "Container is healthy"
+              exit 0
+            fi
+            if [ "$health_status" = "unhealthy" ]; then
+              echo "Container is unhealthy"
+              exit 1
+            fi
+            echo "Waiting for container health status..."
+            sleep 5
+          done
+          echo "Container did not become healthy within the expected time"
+          exit 1
