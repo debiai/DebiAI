@@ -92,8 +92,23 @@
 
     <!-- Title & cancel btn -->
     <h2 class="aligned spaced padded-bot">
-      Use an algorithm
-      <!-- <DocumentationBlock>TODO</DocumentationBlock> -->
+      <span class="aligned spaced">
+        Use an algorithm
+        <DocumentationBlock>
+          DebiAI provides a way to use algorithms from other services as long as they respect the
+          <b>algo-providers</b> API.
+          <br />
+          To demonstrate this, DebiAI provide an <b>integrated Algo-provider</b> that can be used to
+          run algorithms on your data to generate metrics.
+          <br />
+          <br />
+          <a
+            href="https://debiai.irt-systemx.fr/dashboard/algoProviders/"
+            target="_blank"
+            >More information on our documentation.</a
+          >
+        </DocumentationBlock>
+      </span>
 
       <span>
         <button

@@ -172,13 +172,19 @@
               v-for="result in experiment.results"
               :key="result.name"
             >
+              <!-- Display Outputs -->
               <div class="name">{{ result.name }}</div>
-              <div class="value">{{ result.value.toString() }}</div>
               <div
                 class="value"
                 v-if="Array.isArray(result.value)"
               >
-                {{ result.value.length }} elements
+                {{ result.value.length }} elements {{ result.value.slice(0, 5) }}...
+              </div>
+              <div
+                class="value"
+                v-else
+              >
+                {{ result.value }}
               </div>
 
               <button
@@ -426,7 +432,7 @@ export default {
       border: solid 1px var(--fontColorLight);
       padding: 2px 7px 2px 7px;
       border-radius: 4px;
-      max-width: 250px;
+      max-width: 450px;
       max-height: 50px;
       overflow: hidden;
       text-overflow: ellipsis;
