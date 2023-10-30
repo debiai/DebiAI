@@ -149,11 +149,7 @@ def add_results_dict(project_id, modelId, data):
 
     if not model_exist(project_id, modelId):
         raise (
-            "Model '"
-            + modelId
-            + "' in project : '"
-            + projects.getProjectNameFromId(project_id)
-            + "' doesn't exist"
+            "Model '" + modelId + "' in project : '" + project_id + "' doesn't exist"
         )
 
     # Get resultStructure & project_block_structure
