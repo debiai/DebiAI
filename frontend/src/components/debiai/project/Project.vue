@@ -12,7 +12,7 @@
           class="red"
           @click="settings = false"
         >
-          <!-- Close -->
+          Close
         </button>
       </h2>
       <ProjectColumnsVisualization />
