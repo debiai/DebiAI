@@ -148,14 +148,13 @@ jobs:
         run: docker run -d -p 3000:3000 debiai
       - name: Wait for the Docker container to start
         run: |
+          echo "Waiting for container status..."
           for i in {1..10}; do
-              echo "Waiting for container status..."
               sleep 3
-              docker ps
-              docker ps -q
-              docker inspect --format='{{.State.Status}}' $(docker ps -q)
-              status=$(docker inspect --format='{{.State.Status}}' $(docker ps -q) | tr -d '[:space:]')
+              container_id=$(docker ps -q -f "ancestor=debiai")
+              status=$(docker inspect --format='{{.State.Status}}' $container_id | tr -d '[:space:]') 
               echo "Docker status: '$status'";
+              
               if [ "$status" = "running" ]; then
                   echo "Container is running"
                   exit 0
