@@ -149,8 +149,13 @@ jobs:
       - name: Wait for the Docker container to start
         run: |
           for i in {1..10}; do
+              echo "Waiting for container status..."
+              sleep 3
+              docker ps
+              docker ps -q
+              docker inspect --format='{{.State.Status}}' $(docker ps -q)
               status=$(docker inspect --format='{{.State.Status}}' $(docker ps -q) | tr -d '[:space:]')
-              echo "Docker status: $status"
+              echo "Docker status: '$status'";
               if [ "$status" = "running" ]; then
                   echo "Container is running"
                   exit 0
@@ -158,8 +163,6 @@ jobs:
                   echo "Container exited"
                   exit 1
               fi
-              echo "Waiting for container status..."
-              sleep 5
           done
           echo "Container did not start in time"
           exit 1
