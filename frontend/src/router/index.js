@@ -10,6 +10,11 @@ let router = new Router({
       path: "/",
       component: () => import("../components/debiai/frontpage/FrontPage"),
     },
+    {
+      name: "legal",
+      path: "/legal",
+      component: () => import("../components/debiai/frontpage/legal/Legal"),
+    },
 
     // === Project
     {

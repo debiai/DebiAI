@@ -1,5 +1,10 @@
 <template>
-  <div id="menu">
+  <div
+    id="menu"
+    :style="{
+      inset: offset.y + 'px ' + offset.x + 'px auto auto',
+    }"
+  >
     <!-- Dropdown menu -->
     <div
       v-for="(item, index) in availableMenuItems"
@@ -41,6 +46,15 @@ export default {
       type: Array,
       required: true,
     },
+    offset: {
+      type: Object,
+      default: () => {
+        return {
+          x: 0,
+          y: 0,
+        };
+      },
+    },
   },
   data() {
     return {};
@@ -75,15 +89,15 @@ export default {
   position: absolute;
   min-width: 150px;
   z-index: 1;
-  inset: 40px 6px auto auto;
+  // inset: 0px 0px auto auto; This property is changed dynamically
 
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   background-color: #fff;
+  border-radius: 5px;
 
   .menu-item {
     padding: 10px 18px;
     cursor: pointer;
-    background-color: #fff;
     transition: background-color 0.1s ease-in-out;
     text-align: left;
 
