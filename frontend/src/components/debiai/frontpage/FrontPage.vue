@@ -100,8 +100,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/data.svg')"
-            width="14"
-            height="14"
+            width="16"
+            height="16"
           />
           Samples
         </div>
@@ -113,8 +113,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/loop.svg')"
-            width="14"
-            height="14"
+            width="16"
+            height="16"
           />
           Selections
         </div>
@@ -126,8 +126,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/gear.svg')"
-            width="17"
-            height="17"
+            width="16"
+            height="16"
           />
           Models
         </div>
@@ -360,6 +360,10 @@ export default {
       display: flex;
       align-items: center;
       gap: 10px;
+
+      input {
+        margin-right: 10px;
+      }
     }
   }
 }
