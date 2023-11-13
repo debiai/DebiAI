@@ -307,6 +307,7 @@
           { name: 'separator' },
           { name: 'Close', action: remove, icon: 'close' },
         ]"
+        :offset="{ x: 6, y: 40 }"
         @close="showMenu = false"
       />
     </transition>
