@@ -27,6 +27,9 @@
                   icon: 'questionMark',
                 },
                 {
+                  name: 'separator',
+                },
+                {
                   name: 'Data providers',
                   action: () => {
                     displayDataProviders = !displayDataProviders;
@@ -37,14 +40,14 @@
                   name: 'separator',
                 },
                 {
-                  name: 'Privacy Policy',
-                  action: openLegalNotice,
-                  icon: 'legal',
-                },
-                {
                   name: 'Latest releases',
                   action: openLatestReleases,
                   icon: 'rocket',
+                },
+                {
+                  name: 'Suggest a feature',
+                  action: createIssue,
+                  icon: 'idea',
                 },
                 {
                   name: appVersion,
@@ -299,10 +302,8 @@ export default {
     openGithub() {
       window.open("https://github.com/debiai/debiai", "_blank");
     },
-    openLegalNotice() {
-      this.$router.push({
-        path: "/legal",
-      });
+    createIssue() {
+      window.open("https://github.com/debiai/debiai/issues/new/choose", "_blank");
     },
   },
   computed: {
