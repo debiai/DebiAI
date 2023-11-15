@@ -23,15 +23,54 @@
     </p>
     <p>You can opt out of being tracked by our Matomo Analytics instance below:</p>
 
-    <div id="matomo-opt-out"></div>
+    <button
+      @click="optIn"
+      v-if="userHasOptedOut"
+    >
+      Opt-in to website tracking
+    </button>
+    <button
+      @click="optOut"
+      v-else
+    >
+      Opt-out of website tracking
+    </button>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      userHasOptedOut: false,
+    };
+  },
+  mounted() {
+    this.userHasOptedOut = this.$matomo.isUserOptedOut();
+  },
   methods: {
     back() {
       this.$router.push("/");
+    },
+    optIn() {
+      this.$matomo.forgetUserOptOut();
+      this.userHasOptedOut = this.$matomo.isUserOptedOut();
+      if (!this.userHasOptedOut) {
+        this.$store.commit("sendMessage", {
+          title: "success",
+          msg: "You have opted in to website tracking.",
+        });
+      }
+    },
+    optOut() {
+      this.$matomo.optUserOut();
+      this.userHasOptedOut = this.$matomo.isUserOptedOut();
+      if (this.userHasOptedOut) {
+        this.$store.commit("sendMessage", {
+          title: "success",
+          msg: "You have opted out of website tracking.",
+        });
+      }
     },
   },
 };

@@ -2,6 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import tracking from "./tracking";
+import VueMatomo from 'vue-matomo'
 
 Vue.config.productionTip = false;
 
@@ -23,6 +25,10 @@ Vue.prototype.$API_URL = config.API_URL;
 
 // Custom directive
 Vue.directive("focus", { inserted: (el) => el.focus() });
+
+// Tracking
+tracking.router = router;
+Vue.use(VueMatomo, tracking);
 
 // New Vue
 new Vue({

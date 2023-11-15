@@ -22,6 +22,7 @@
     "uuid": "^8.3.2",
     "vue": "^2.6.11",
     "vue-inline-svg": "^2.0.0",
+    "vue-matomo": "^4.2.0",
     "vue-progressive-image": "^3.2.0",
     "vue-router": "^3.3.4",
     "vue-table-dynamic": "^0.4.4",

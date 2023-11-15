@@ -63,7 +63,7 @@ export default {
 
 .message {
   cursor: pointer;
-  height: 4vh;
+  height: 40px;
 
   margin-bottom: 1vh;
   padding: 10px 20px 10px 20px;
