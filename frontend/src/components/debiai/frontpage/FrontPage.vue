@@ -37,7 +37,7 @@
                   name: 'separator',
                 },
                 {
-                  name: 'Privacy Policy',
+                  name: 'Legal & privacy policy',
                   action: openLegalNotice,
                   icon: 'legal',
                 },
