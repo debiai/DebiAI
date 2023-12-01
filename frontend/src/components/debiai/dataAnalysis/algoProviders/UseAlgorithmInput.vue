@@ -25,13 +25,15 @@
         v-if="input.type === 'number' || input.type === 'string'"
         title="Value of the input that will be sent to the Algo Provider"
       >
-        <input v-if="!isProjectId"
+        <input
+          v-if="!isProjectId"
           :type="input.type"
           v-model="value"
         />
-        <input v-if="isProjectId"
+        <input
+          v-if="isProjectId"
           :type="input.type"
-          v-model="projectId"
+          v-model="value"
           readonly
         />
       </div>
@@ -107,7 +109,7 @@
         v-if="input.type === 'array' && isIdList"
         class="arrayInputType"
       >
-              <!-- input options -->
+        <!-- input options -->
         <button
           :class="'radioBtn ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
           @click="selectedArrayInputOption = 'manual'"
@@ -134,9 +136,7 @@
         >
           Selected Id List
         </button>
-
       </div>
-      
     </div>
     <div class="bot">
       <!-- Array input type-->
@@ -176,17 +176,17 @@
         <div class="arrayInput">
           <div v-if="!isIdList">
             <Column
-            v-if="columnIndex !== null"
-            :column="data.columns.find((c) => c.index == columnIndex)"
-            :colorSelection="false"
-            v-on:selected="columnSelection = true"
-          />
-          <button
-            v-else
-            @click="columnSelection = true"
-          >
-            Select a column
-          </button>
+              v-if="columnIndex !== null"
+              :column="data.columns.find((c) => c.index == columnIndex)"
+              :colorSelection="false"
+              v-on:selected="columnSelection = true"
+            />
+            <button
+              v-else
+              @click="columnSelection = true"
+            >
+              Select a column
+            </button>
           </div>
           <div
             class="nbValues"
@@ -228,8 +228,8 @@ export default {
     };
   },
   mounted() {
-    this.projectId = this.$store.state.ProjectPage.projectId
-  
+    if (this.isProjectId) this.value = this.$store.state.ProjectPage.projectId;
+
     if (this.input.default !== null && this.input.default !== undefined)
       this.value = this.input.default;
     else if (this.input.availableValues && this.input.availableValues.length > 0)
@@ -254,24 +254,24 @@ export default {
       this.$emit("inputValueUpdate", this.value);
     },
     idListSelected(type) {
-      let idColumnsIndex = null
+      let idColumnsIndex = null;
       for (let i = 0; i < this.data.columns.length; i++) {
         if (this.data.columns[i].label === "Data ID") {
-          idColumnsIndex = i
-          break
+          idColumnsIndex = i;
+          break;
         }
       }
       if (type == "column") {
         this.value = this.data.columns[idColumnsIndex].values;
       } else {
-        let selectedValues = []
-          for (let i = 0; i < this.selectedData.length; i++) {
-            selectedValues.push(this.data.columns[idColumnsIndex].values[this.selectedData[i]])
-          }
+        let selectedValues = [];
+        for (let i = 0; i < this.selectedData.length; i++) {
+          selectedValues.push(this.data.columns[idColumnsIndex].values[this.selectedData[i]]);
+        }
         this.value = selectedValues;
       }
       this.$emit("inputValueUpdate", this.value);
-    }
+    },
   },
   computed: {
     valueMatchInputType() {
@@ -295,12 +295,12 @@ export default {
         }
       } else return this.value;
     },
-     isIdList: function () {
+    isIdList: function () {
       return this.input.type === "array" && this.input.name === "idList";
     },
-    isProjectId: function() {
+    isProjectId: function () {
       return this.input.type === "string" && this.input.name === "projectId";
-    }
+    },
   },
   watch: {
     valueWithGoodType: function (val) {
