@@ -128,7 +128,7 @@ def getBlockTreeFromSamples(projectId, samples: list):
                     )
 
                 cur["childrenInfoList"].append(sampleBlocksData)
-        except StopIteration as e:
+        except StopIteration:
             # TODO : Find why this happens of certain projects
             print("Warning, the sample " + samplePath + " doesn't have a root block")
 
@@ -137,7 +137,7 @@ def getBlockTreeFromSamples(projectId, samples: list):
 
 def __getBlockTreeFromSample(projectId, blockPath, addedBlocks):
     """
-    Go from the botom to the top of a tree
+    Go from the bottom to the top of a tree
     if at the top or, if block already added, return
 
     """
@@ -150,7 +150,7 @@ def __getBlockTreeFromSample(projectId, blockPath, addedBlocks):
         info = json.load(sampleData)
 
     if info["level"] == 0:
-        # Top of the tree, end of the recursivity
+        # Top of the tree, end of the recursively
         return info, 0
 
     if info["parentPath"] in addedBlocks:
@@ -257,7 +257,7 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
         raise KeyError(
             "Block : "
             + block["name"]
-            + " has no child block, the tree need to be complet"
+            + " has no child block, the tree need to be complete"
         )
 
     levelInfo = blockLevelInfo[level]
@@ -268,7 +268,7 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
                 raise KeyError(
                     "At least one value of type "
                     + type_
-                    + " is requiered in the block : "
+                    + " is required in the block : "
                     + levelInfo["name"]
                 )
 
@@ -278,7 +278,7 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
                     + str(len(levelInfo[type_]))
                     + " "
                     + type_
-                    + " requiered in the block : "
+                    + " required in the block : "
                     + levelInfo["name"]
                 )
 
@@ -289,7 +289,7 @@ def __checkBlockCompliant(block, level, blockLevelInfo):
                     raise KeyError(
                         "Col "
                         + col["name"]
-                        + " requier an integer in the block : "
+                        + " require an integer in the block : "
                         + levelInfo["name"]
                     )
 
@@ -327,5 +327,5 @@ def addBlock(projectId, block):
         print(
             "Warning : The block "
             + block["path"]
-            + " already exist, this is not suposed to append"
+            + " already exist, this is not supposed to append"
         )

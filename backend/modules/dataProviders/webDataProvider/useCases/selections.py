@@ -35,8 +35,14 @@ def get_project_selections(url, project_id):
         return []
 
 
-def get_id_list_from_selection(url, project_id, selection_id):
-    return api.get_selection_id(url, project_id, selection_id)
+def get_id_list_from_selection(url, cache, project_id, selection_id):
+    id_list = cache.get_selection_id_list(project_id, selection_id)
+
+    if id_list is None:
+        id_list = api.get_selection_id(url, project_id, selection_id)
+        cache.set_selection_id_list(project_id, selection_id, id_list)
+
+    return id_list
 
 
 def create_selection(url, project_id, name, id_list, request_id):

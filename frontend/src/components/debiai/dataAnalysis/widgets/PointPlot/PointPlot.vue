@@ -221,12 +221,12 @@
         id="commonControls"
         class="dataGroup"
       >
-        <!-- Groub by color -->
+        <!-- Group by color -->
         <div
           class="data"
           v-if="coloredColumnIndex != null"
         >
-          <span class="name">Groub by color</span>
+          <span class="name">Group by color</span>
           <div class="value">
             <input
               type="checkbox"
@@ -294,7 +294,7 @@
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
         v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxiesSelect"
+        v-on:colSelect="xAxisSelect"
       />
     </modal>
     <!-- Ycol selection -->
@@ -309,7 +309,7 @@
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
         v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxiesSelect"
+        v-on:colSelect="yAxisSelect"
       />
     </modal>
     <!-- Size axis selection -->
@@ -324,7 +324,7 @@
         :colorSelection="true"
         :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
         v-on:cancel="sizeAxisSelection = false"
-        v-on:colSelect="sizeAxiesSelect"
+        v-on:colSelect="sizeAxisSelect"
       />
     </modal>
     <!-- Axis range selection -->
@@ -332,7 +332,7 @@
       @close="axisRangeModal = false"
       v-if="axisRangeModal"
     >
-      <AxiesRangeSelection
+      <AxisRangeSelection
         :index="index"
         :axisXAuto="axisXAuto"
         :axisYAuto="axisYAuto"
@@ -360,7 +360,7 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 // components
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
-import AxiesRangeSelection from "../../common/AxiesRangeSelection";
+import AxisRangeSelection from "../../common/AxisRangeSelection";
 
 // services
 import dataOperations from "@/services/statistics/dataOperations";
@@ -370,7 +370,7 @@ export default {
   components: {
     ColumnSelection,
     Column,
-    AxiesRangeSelection,
+    AxisRangeSelection,
   },
   data() {
     return {
@@ -433,8 +433,8 @@ export default {
   },
   mounted() {
     this.divPointPlot = document.getElementById("PPDiv" + this.index);
-    this.xAxiesSelect(0);
-    this.yAxiesSelect(1);
+    this.xAxisSelect(0);
+    this.yAxisSelect(1);
     this.setPointOpacity();
 
     // Watch for configuration changes
@@ -623,8 +623,8 @@ export default {
 
       // Size
       let size;
-      let tmin;
-      let tmax;
+      let valueMin;
+      let valueMax;
       const MIN_POINT_SIZE = 3;
       let colSize;
       if (this.columnSizeIndex !== null) {
@@ -633,13 +633,13 @@ export default {
           colSize.type == String ? colSize.valuesIndex[i] : colSize.values[i]
         );
         if (colSize.type === String) {
-          tmax = colSize.valuesIndexUniques.length - 1;
+          valueMax = colSize.valuesIndexUniques.length - 1;
         } else {
-          tmin = colSize.min;
-          tmax = colSize.max;
-          size = size.map((s) => s - tmin);
+          valueMin = colSize.min;
+          valueMax = colSize.max;
+          size = size.map((s) => s - valueMin);
         }
-        let ratio = (this.maxPointSize - MIN_POINT_SIZE) / tmax;
+        let ratio = (this.maxPointSize - MIN_POINT_SIZE) / valueMax;
         size = size.map((s) => MIN_POINT_SIZE + ratio * s);
       }
 
@@ -658,17 +658,21 @@ export default {
           colorscale,
           showscale,
           size,
+          line: {
+            // Don't show the border
+            width: 0,
+          },
         },
       };
 
-      let layout = this.gerenateLayout({ colX, colY, colColor, colSize });
+      let layout = this.generateLayout({ colX, colY, colColor, colSize });
 
       // Draw
       this.clearPointPlot();
       if (this.linePlotDrawn) {
         Plotly.addTraces(this.divPointPlot, [pointData], 0);
         this.updateLayout(layout);
-      } else this.drawPlot([pointData], layout); // regenererate or generate plot
+      } else this.drawPlot([pointData], layout); // regenerate or generate plot
 
       this.pointPlotDrawn = true;
       this.$parent.$emit("drawn");
@@ -695,7 +699,7 @@ export default {
         return;
       }
 
-      // Check that the group by color is not to performance intensiv
+      // Check that the group by color is not to performance intensive
       let colColor = this.data.columns[this.coloredColumnIndex];
 
       if (colColor.uniques.length <= 100) {
@@ -841,7 +845,7 @@ export default {
             mode: "lines",
             type: "scattergl",
             name: "Third decile",
-            line: { color: "purle", shape: "spline" },
+            line: { color: "purple", shape: "spline" },
             visible: "legendonly",
           },
           {
@@ -850,19 +854,19 @@ export default {
             mode: "lines",
             type: "scattergl",
             name: "First decile",
-            line: { color: "purle", shape: "spline" },
+            line: { color: "purple", shape: "spline" },
             visible: "legendonly",
           },
         ];
       }
 
-      let layout = this.gerenateLayout({ colX, colY, colColor });
+      let layout = this.generateLayout({ colX, colY, colColor });
 
       this.clearLinePlot();
       if (this.pointPlotDrawn) {
         Plotly.addTraces(this.divPointPlot, traces);
         this.updateLayout(layout);
-      } else this.drawPlot(traces, layout); // regenererate or generate plot
+      } else this.drawPlot(traces, layout); // regenerate or generate plot
 
       this.linePlotDrawn = true;
       this.$parent.$emit("drawn");
@@ -883,7 +887,7 @@ export default {
     },
 
     // Draw
-    gerenateLayout({ colX, colY, colColor, colSize }) {
+    generateLayout({ colX, colY, colColor, colSize }) {
       let layout = {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>",
         xaxis: {
@@ -918,7 +922,7 @@ export default {
       // Add if y is absolute
       if (this.absolute) layout.yaxis.title.text += " (absolute value)";
 
-      // set y axies label text if string
+      // set y axis label text if string
       if (colY.type == String) {
         layout.yaxis.tickvals = colY.valuesIndexUniques;
         layout.yaxis.ticktext = colY.uniques;
@@ -995,45 +999,6 @@ export default {
         this.getFilterFromColumn(coly, selections[0].y1, selections[0].y0, this.absolute),
       ];
 
-      // // Create the other filters
-      // We are not doing this anymore because it is not possible make filters union in DebiAI
-      // TODO : make it possible to make filters union in DebiAI
-      // for (let i = 1; i < selections.length; i++) {
-      //   const nextFiltersx = this.getFilterFromColumn(
-      //     colx,
-      //     selections[i].x0,
-      //     selections[0].x1,
-      //     false
-      //   );
-      //   const nextFiltersy = this.getFilterFromColumn(
-      //     coly,
-      //     selections[i].y1,
-      //     selections[0].y0,
-      //     this.absolute
-      //   );
-
-      //   if (filters[0].intervals) filters[0].intervals.push(nextFiltersx.intervals[0]);
-      //   if (filters[0].values) filters[0].values = filters[0].values.concat(nextFiltersx.values);
-      //   if (filters[1].intervals) filters[1].intervals.push(nextFiltersy.intervals[0]);
-      //   if (filters[1].values) filters[1].values = filters[1].values.concat(nextFiltersy.values);
-      // }
-
-      // Display a rectangle on the plot
-      // This doesn't work , it triggers a recursive loop, I think that relayout triggers a plotly_selected event
-      // const recStyle = {
-      //   type: "rect",
-      //   x0: selections[0].x0,
-      //   x1: selections[0].x1,
-      //   y0: selections[0].y0,
-      //   y1: selections[0].y1,
-
-      //   fillcolor: "none",
-      //   line: { width: 2, color: "red" },
-      // };
-
-      // console.log("update");
-      // Plotly.relayout(this.divPointPlot, { shapes: [recStyle] });
-
       // Store the filters in the DebiAI selection system
       this.$store.commit("addFilters", {
         filters,
@@ -1045,7 +1010,7 @@ export default {
         removeExisting: true,
       });
 
-      // Exporting the bondaries of the selections with the export feature
+      // Exporting the boundaries of the selections with the export feature
       // Exporting only the first selection TODO : add all the selections
       // Goal format :
       // {
@@ -1160,21 +1125,21 @@ export default {
       this.$parent.$emit("setExport", null);
     },
 
-    // axies selection
-    xAxiesSelect(index) {
+    // axis selection
+    xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
       this.setBins();
     },
-    yAxiesSelect(index) {
+    yAxisSelect(index) {
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
     },
-    sizeAxiesSelect(index) {
+    sizeAxisSelect(index) {
       this.columnSizeIndex = index;
       this.sizeAxisSelection = false;
       this.pointPlotDrawn = false;
@@ -1191,8 +1156,8 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      if (colX.type == String) this.bins = Math.min(colX.nbOccu, 300);
-      else this.bins = Math.min(colX.nbOccu, 30);
+      if (colX.type == String) this.bins = Math.min(colX.nbOccurrence, 300);
+      else this.bins = Math.min(colX.nbOccurrence, 30);
       this.linePlotDrawn = false;
     },
     setPointOpacity() {

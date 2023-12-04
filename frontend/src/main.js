@@ -5,7 +5,7 @@ import store from "./store";
 
 Vue.config.productionTip = false;
 
-// Common Componants
+// Common Components
 import commonComponents from "./components/common";
 commonComponents.forEach((component) => {
   Vue.component(component.name, component);
@@ -21,7 +21,7 @@ Vue.prototype.$services = services;
 import config from "../config";
 Vue.prototype.$API_URL = config.API_URL;
 
-// Custon directive
+// Custom directive
 Vue.directive("focus", { inserted: (el) => el.focus() });
 
 // New Vue

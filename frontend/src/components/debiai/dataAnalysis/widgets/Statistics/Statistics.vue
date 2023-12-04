@@ -313,7 +313,7 @@ export default {
       // Average by color
       if (this.coloredColumnIndex != null) {
         let colColor = this.data.columns[this.coloredColumnIndex];
-        if (colColor.nbOccu <= 100) {
+        if (colColor.nbOccurrence <= 100) {
           this.toMuchUniqueValues = false;
           let selectedColors;
           if (colColor.type === String)
@@ -438,7 +438,6 @@ export default {
   background-color: var(--greyDark);
   display: flex;
   justify-content: space-between;
-  color: white;
   font-weight: bold;
 }
 #columns td {

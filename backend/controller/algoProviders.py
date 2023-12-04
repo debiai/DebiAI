@@ -18,7 +18,7 @@ def get_algo_providers():
 
 
 def post_algo_provider(data):
-    # Check if we are allowed to add AlgoProviderss from the config file
+    # Check if we are allowed to add AlgoProviders from the config file
     config = get_config()
     creation_allowed = config["ALGO_PROVIDERS_CONFIG"]["creation"]
     if not creation_allowed:
@@ -49,8 +49,8 @@ def use_algo(algoProviderName, algoId, data):
 
     try:
         # Use algoProviders
-        algo_prodier = algo_provider_manager.get_single_algo_provider(algoProviderName)
-        return algo_prodier.use_algorithm(algoId, data), 200
+        algo_provider = algo_provider_manager.get_single_algo_provider(algoProviderName)
+        return algo_provider.use_algorithm(algoId, data), 200
     except AlgoProviderException as e:
         return e.message, e.status_code
 

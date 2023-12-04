@@ -1,7 +1,7 @@
 <template>
   <div id="SelectionExportMenu">
     <!-- Title -->
-    <h2>
+    <h2 class="aligned spaced">
       Export the selected samples
       <button
         @click="$emit('cancel')"
@@ -26,7 +26,7 @@
           Selection name
 
           <DocumentationBlock>
-            Name that will be written in the expoted 'selection_name' Json field.
+            Name that will be written in the exported 'selection_name' Json field.
           </DocumentationBlock>
         </span>
         <span class="value">
@@ -45,7 +45,7 @@
           <DocumentationBlock>
             Add an extra value to the exported Json data.
             <br />
-            This value can be used for anotation or for object creation purpose.
+            This value can be used for annotation or for object creation purpose.
           </DocumentationBlock>
         </span>
         <span class="value">

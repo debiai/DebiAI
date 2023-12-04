@@ -250,7 +250,7 @@ export default {
               callback: this.customColumn,
             },
             {
-              name: "Use an external algorithm",
+              name: "Use an algorithm",
               description: "Use an algorithm from DebiAI or from an external algo-provider",
               callback: this.useAlgorithm,
             },
@@ -805,7 +805,7 @@ export default {
 
 /* Grid stack handles */
 .ui-resizable-handle {
-  z-index: 0 !important;
+  z-index: 1 !important;
 }
 .ui-resizable-sw {
   background: transparent !important;

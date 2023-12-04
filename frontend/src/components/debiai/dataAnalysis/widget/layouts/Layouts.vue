@@ -69,7 +69,7 @@
 
           <!-- Right -->
           <div id="right">
-            <!-- LayoutVisualisation -->
+            <!-- LayoutVisualization -->
             <LayoutViewer
               :layout="current_layout"
               bigger
@@ -299,6 +299,7 @@ export default {
 
 <style scoped lang="scss">
 #layouts {
+  min-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: stretch;

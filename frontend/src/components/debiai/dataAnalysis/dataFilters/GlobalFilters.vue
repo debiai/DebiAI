@@ -53,7 +53,7 @@
       <!-- TODO, revert in the filters update -->
       <!-- <button
         @click="requestSelection = true"
-        title="Available in a futur update"
+        title="Available in a future update"
       >
         <inline-svg
           :src="require('@/assets/svg/import.svg')"
@@ -64,12 +64,12 @@
         Load filters from a request
       </button> -->
       <!-- Save request btn -->
-      <!-- TODO, revert the always disapled in the filters update -->
+      <!-- TODO, revert the always displayed in the filters update -->
       <!-- <button
         class="green"
         :disabled="filters.length == 0"
         @click="requestCreation = true"
-        title="Available in a futur update"
+        title="Available in a future update"
       >
         <inline-svg
           :src="require('@/assets/svg/save.svg')"

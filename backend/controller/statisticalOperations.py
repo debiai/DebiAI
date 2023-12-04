@@ -2,15 +2,12 @@ import pandas as pd
 import numpy as np
 import numpy.random as nr
 
-from scipy import stats
 from scipy.stats.stats import pearsonr, spearmanr
 from scipy.special import digamma
 import scipy.spatial as ss
 from scipy.spatial.ckdtree import cKDTree
 from sklearn.neighbors import NearestNeighbors
-from math import log, pi, hypot, fabs, sqrt
-
-import utils.utils as utils
+from math import log, fabs, sqrt
 
 
 #  === Correlation matrix ===
@@ -24,7 +21,7 @@ def pearsonCorrelation(data):
 
     Return
     ------
-    result: correlation matrix along with the p-value of the signficance test of the coefficients
+    result: correlation matrix along with the p-value of the significance test of the coefficients
             significance level legend: 3(***) -> p-value<0.01 -> The coefficient is significant at 99%
                                         2(**) -> p-value<0.05 ->The coefficient is significant at 95%
                                          1(*) -> p-value<0.1  -> The coefficient is significant at 90%
@@ -63,7 +60,7 @@ def spearmanCorrelation(data):
 
         Return
         ------
-        result: correlation matrix along with the p-value of the signficance test of the coefficients
+        result: correlation matrix along with the p-value of the significance test of the coefficients
                 significance level legend: 3(***) -> p-value<0.01 -> The coefficient is significant at 99%
                                             2(**) -> p-value<0.05 ->The coefficient is significant at 95%
                                              1(*) -> p-value<0.1  -> The coefficient is significant at 90%
@@ -105,10 +102,10 @@ def entropy_discrete(x, base=2):
     Output: A float: The value of the entropy
     """
     _, count = np.unique(x, return_counts=True, axis=0)
-    proba = count.astype(float) / len(x)
-    # supprimer les probabilités nulles afin d'eviter log(0) # Removing the elements which have 0 probability/weight
-    proba = proba[proba > 0.0]
-    return np.sum(-1 * proba * np.log(proba)) / np.log(base)
+    probability = count.astype(float) / len(x)
+    # Removing the elements which have 0 probability/weight to avoid log(0)
+    probability = probability[probability > 0.0]
+    return np.sum(-1 * probability * np.log(probability)) / np.log(base)
 
 
 def entropy_discrete_xy(x, y, base=2):
@@ -152,7 +149,7 @@ def discrete_mutual_information(x, y, base=2):
 
     Output: The value of the mutual information
     """
-    assert len(x) == len(y), "Il faut y avoir la même longueur pour les 2 variables"
+    assert len(x) == len(y), "The two provided samples should be of the same length"
     return (
         entropy_discrete(x, base)
         + entropy_discrete(y, base)
@@ -162,12 +159,12 @@ def discrete_mutual_information(x, y, base=2):
 
 def continuous_mutual_information(x, y, k=1, base=2):
     """
-    Computes the mutual information between two continuous ranom variables
+    Computes the mutual information between two continuous random variables
 
     Parameters:
     -----------
     x,y: Data: lists or numpy arrays
-    k: the number of neighbours to consider
+    k: the number of neighbors to consider
     base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
 
     Returns:
@@ -183,11 +180,11 @@ def continuous_mutual_information(x, y, k=1, base=2):
     x_tree = cKDTree(x)
     y_tree = cKDTree(y)
     xy_tree = cKDTree(xy)
-    # query with k=k+1 to return the nearest neighbour, not counting the data point itself
+    # query with k=k+1 to return the nearest neighbor, not counting the data point itself
     dist, _ = xy_tree.query(xy, k=k + 1, p=np.inf)
     epsilon = dist[:, -1]
 
-    # for each point, count the number of neighbours
+    # for each point, count the number of neighbors
     # whose distance in the x-subspace is strictly < epsilon
     # repeat for the y subspace
     n = len(x)
@@ -219,7 +216,7 @@ def continuous_mutual_information(x, y, k=1, base=2):
         digamma(k) - np.mean(digamma(nx + 1) + digamma(ny + 1)) + digamma(n)
     ) / np.log(
         base
-    )  # version (1) in kraskov scientific paper
+    )  # version (1) in krakow scientific paper
 
     return mi
 
@@ -292,7 +289,7 @@ def normalise_function(normalise, mutual_information, entropy_X, entropy_Y):
     normalize the mutual information coefficient
     Parameters:
     -----------
-    normalise: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+    normalize: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
     mutual_information: mutual information coefficient
     entropy_X: the entropy of the first variable
     entropy_Y: the entropy of the second variable
@@ -324,14 +321,14 @@ def continuous_iterate_function(list_continuous, k=3, base=3, normalise="none"):
       Parameters:
      -----------
     list_continuous: list of list of the continuous variables
-    k: the number of neighbours to consider
+    k: the number of neighbors to consider
      base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
      normalise: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
 
      Returns:
      -------
      Output:
-     an array of the mutual information between the continous variables
+     an array of the mutual information between the continuous variables
     """
     continuous = np.eye(len(list_continuous), len(list_continuous)).tolist()
     for i in range(len(continuous)):
@@ -356,7 +353,7 @@ def discrete_iterate_function(list_discrete, base=10, normalise="none"):
      Parameters:
      -----------
     list_discrete: list of list of the discrete variables
-    k: the number of neighbours to consider
+    k: the number of neighbors to consider
      base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
      normalise: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
 
@@ -387,7 +384,7 @@ def mixed_iterate_function(
     -----------
     list_continuous: list of list of the continuous variables
     list_discrete: list of list of the discrete variables
-    k: the number of neighbours to consider
+    k: the number of neighbors to consider
     base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
     normalise: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
 
@@ -431,16 +428,20 @@ def mutualInformation(data):
      the global matrix of mutual information
     Parameters:
     -----------
-    list_continuous: list of list of the continuous variables, if there is no continous variables, please send an empty list of list [[]]
-    list_discrete: list of list of the discrete variables,if there is no discrete variables, please send an empty list of list [[]]
-    k: the number of neighbours to consider
+    list_continuous: list of list of the continuous variables, if there is no
+    continuous variables, please send an empty list of list [[]]
+    list_discrete: list of list of the discrete variables,if there is no discrete
+    variables, please send an empty list of list [[]]
+    k: the number of neighbors to consider
     base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
-    normalise: the choice of normalize function : takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+    normalise: the choice of normalize function : takes either 'max' or 'min'
+    or 'square root' or 'mean' or 'none'
 
     Returns:
     -------
     Output:
-    an array of the mutual information between the variables: the continous ones only, the discrete ones only or the continuous and the discrete ones
+    an array of the mutual information between the variables: the continuous
+    ones only, the discrete ones only or the continuous and the discrete ones
     """
     k = data["k"]
     list_continuous = data["list_continuous"]
@@ -466,7 +467,7 @@ def mutualInformation(data):
     else:
         normalise = "max"
 
-    # Calculate mutual informations between features
+    # Calculate mutual information between features
     if list_continuous != [[]] and list_discrete == [[]]:
         return continuous_iterate_function(
             list_continuous, k=k, base=base, normalise=normalise
@@ -482,7 +483,7 @@ def mutualInformation(data):
 
 
 # === Mutual Information higher dimension ===
-def avgdigamma(points, dvec):
+def averageDigamma(points, dvec):
     """
     This part finds number of neighbors in some radius in the marginal space
 
@@ -513,20 +514,25 @@ def avgdigamma(points, dvec):
 # @utils.traceLogLight
 def higherDimensionMutualInformation(data):
     """
-    permet de calculer l’information mutuelle entre plusieurs variables continues ( 3, 4 variables).
-    Elle prend comme entrée la liste de liste [ [variable1] , [variable2] , [variable 3] , ..] ,
-    le nombre K et la base soit 2 ou 10 ( l’unité de l’information soit respectivement bits ou nats )
+    This function calculates the mutual information between several continuous
+    variables (3, 4 variables). It takes as input a list of lists [[variable1],
+    [variable2], [variable3], ...], the number K, and the base, either 2 or 10
+    (the unit of information is respectively bits or nats).
 
-    Elle renvoie l’information mutuelle entre les différentes variable
+    It returns the mutual information between the different variables.
 
-    Concernant sa représentation dans l’outil, on peut juste faire une petite fenêtre où on sélectionne les variables, k et la base et on affiche juste le résultat ou même dans ta fenêtre de 3D plot, on peut ajouter le résultat de l’information mutuelles des 3 variables en dessous  du graphe.
+    Regarding its representation in the tool, we can simply create a small window
+    where we select the variables, K, and the base, and display only the result.
+    Alternatively, in your 3D plot window, we can add the result of the mutual
+    information of the 3 variables below the graph.
 
     The mutual information estimator by Kraskov et al.
-    ith row of X represents ith dimension of the data, e.g. X = [[1.0,3.0,3.0],[0.1,1.2,5.4]], if X has two dimensions and we have three samples
-    Paramaters:
+    ith row of X represents ith dimension of the data, e.g. X = [[1.0,3.0,3.0],[0.1,1.2,5.4]],
+    if X has two dimensions and we have three samples
+    Parameters:
     ----------
         X: list of list of the variables : it could take more than 2 variables
-        k: the number of neighbours to consider
+        k: the number of neighbors to consider
         base: The base in which the entropy value is represented, i.e 2 for bits, 10 for nats
 
     Returns:
@@ -581,7 +587,7 @@ def higherDimensionMutualInformation(data):
 
     ret = 0.0
     for i in range(len(x)):
-        ret -= avgdigamma(x[i], dvec[i])
+        ret -= averageDigamma(x[i], dvec[i])
     ret += (
         digamma(k)
         - (float(len(x)) - 1.0) / float(k)

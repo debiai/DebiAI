@@ -15,11 +15,11 @@
       </div>
     </div>
 
-    <!-- inerted filter message -->
+    <!-- inverted filter message -->
     <span
       id="invertedFilterMessage"
       v-if="filter.inverted"
-      >The invertion of :
+      >The inversion of :
     </span>
 
     <!-- Specific filter -->
@@ -29,7 +29,7 @@
 
     <!-- Filter effect -->
     <div
-      id="fitlerEffect"
+      id="filterEffect"
       class="aligned centered margedSide gapped"
       v-if="filtersEffects && filtersEffects[filter.id] !== undefined"
     >
@@ -93,6 +93,7 @@ export default {
 #filter {
   flex: 1;
   display: flex;
+  align-items: center;
   flex-direction: row;
   padding: 10px;
   transition: all 0.3s ease-in-out;

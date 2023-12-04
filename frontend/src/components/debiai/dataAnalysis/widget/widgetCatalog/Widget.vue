@@ -95,7 +95,7 @@ export default {
   data() {
     return {
       description: "",
-      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creatinDate }]
+      configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creationDate }]
       displayConfigurations: false,
     };
   },

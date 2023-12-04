@@ -1,5 +1,5 @@
 <template>
-  <div id="values">
+  <div>
     <!-- Add values modal -->
     <modal
       v-if="addValuePanel"
@@ -76,22 +76,39 @@
     </modal>
 
     <!-- Display values -->
-    <button
-      class="value"
-      :class="!readOnly ? 'removable' : ''"
-      v-for="(value, j) in filter.values"
-      :key="j"
-      @click="removeValue(value)"
-      title="Remove the value form the filter"
-    >
-      {{ value }}
-    </button>
-    <button
-      @click="addValuePanel = true"
+
+    <span
       v-if="!readOnly"
+      id="values"
     >
-      Add values
-    </button>
+      <button
+        class="value removable"
+        v-for="(value, j) in filter.values"
+        :key="j"
+        @click="removeValue(value)"
+        title="Remove the value form the filter"
+      >
+        {{ value }}
+      </button>
+      <button
+        @click="addValuePanel = true"
+        v-if="!readOnly"
+      >
+        Add values
+      </button>
+    </span>
+    <span
+      v-else
+      id="values"
+    >
+      <div
+        class="value"
+        v-for="(value, j) in filter.values"
+        :key="j"
+      >
+        {{ value }}
+      </div>
+    </span>
   </div>
 </template>
 
@@ -125,6 +142,8 @@ export default {
       if (closeAfter) this.addValuePanel = false;
     },
     removeValue(value) {
+      if (this.readOnly) return;
+
       this.$store.commit("removeValueFromFilter", {
         filterId: this.filter.id,
         value,
@@ -138,14 +157,17 @@ export default {
 <style scoped>
 #values {
   display: flex;
-  padding: 10px;
   max-width: 420px;
   overflow: auto;
-  margin: 0 20px 0 20px;
+  margin: 0 20px;
+  gap: 5px;
 }
 
 .value {
   display: flex;
+  border: solid var(--greyDarker) 1px;
+  padding: 5px;
+  border-radius: 3px;
 }
 
 .removable:hover {

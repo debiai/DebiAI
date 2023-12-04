@@ -15,7 +15,7 @@
             Close
           </button>
         </h3>
-        <br>
+        <br />
         <div class="center">
           <input
             v-model="newName"
@@ -69,28 +69,30 @@
       v-if="showLocalFilters"
       @close="showLocalFilters = false"
     >
-      <h3 class="aligned spaced gapped">
-        <span>
-          <inline-svg
-            :src="require('@/assets/svg/filter.svg')"
-            width="18"
-            height="18"
-            style="margin-right: 3px"
-          />
-          Filters applied to this widget
-        </span>
-        <button
-          class="red"
-          @click="showLocalFilters = false"
-        >
-          Close
-        </button>
-      </h3>
-      <FilterList
-        :data="data"
-        :filters="localFilters"
-        :readOnly="true"
-      />
+      <div id="localFilters">
+        <h3 class="aligned spaced gapped">
+          <span>
+            <inline-svg
+              :src="require('@/assets/svg/filter.svg')"
+              width="18"
+              height="18"
+              style="margin-right: 3px"
+            />
+            Filters applied to this widget
+          </span>
+          <button
+            class="red"
+            @click="showLocalFilters = false"
+          >
+            Close
+          </button>
+        </h3>
+        <FilterList
+          :data="data"
+          :filters="localFilters"
+          :readOnly="true"
+        />
+      </div>
     </modal>
 
     <!-- Widget Header -->
@@ -224,7 +226,7 @@
             height="12"
             fill="black"
           />
-          On creation
+          Filters applied
           <span class="badge">{{ localFilters.length }}</span>
         </button>
 
@@ -261,6 +263,7 @@
         <button
           @click="showMenu = !showMenu"
           :title="'Open the ' + title + ' widget menu'"
+          style="margin-right: 7px"
         >
           <inline-svg
             :src="require('@/assets/svg/menu.svg')"
@@ -304,6 +307,7 @@
           { name: 'separator' },
           { name: 'Close', action: remove, icon: 'close' },
         ]"
+        :offset="{ x: 6, y: 40 }"
         @close="showMenu = false"
       />
     </transition>
@@ -748,7 +752,7 @@ export default {
         padding: 0px 8px 0px 8px;
       }
 
-      /* Set all the text to no wram and overflow hidden */
+      /* Set all the text to no wrap and overflow hidden */
       .updateWarning * {
         white-space: nowrap;
         overflow: hidden;
@@ -771,6 +775,10 @@ export default {
         filter: brightness(80%);
       }
     }
+  }
+
+  #localFilters {
+    min-width: 850px;
   }
 }
 </style>

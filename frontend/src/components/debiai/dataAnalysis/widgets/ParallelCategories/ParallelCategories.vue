@@ -4,20 +4,16 @@
     class="dataVisualizationWidget"
   >
     <!-- Settings -->
-    <modal
+    <ColumnSelection
       v-if="settings"
-      @close="settings = false"
-    >
-      <ColumnSelection
-        title="Select the columns to display in the parallel coordinates plot"
-        :data="data"
-        :cancelAvailable="selectedColumnsIds.length > 0"
-        :colorSelection="true"
-        :defaultSelected="selectedColumnsIds"
-        v-on:cancel="settings = false"
-        v-on:validate="selectColumns"
-      />
-    </modal>
+      title="Select the columns to display in the parallel coordinates plot"
+      :data="data"
+      :cancelAvailable="selectedColumnsIds.length > 0"
+      :colorSelection="true"
+      :defaultSelected="selectedColumnsIds"
+      v-on:cancel="settings = false"
+      v-on:validate="selectColumns"
+    />
     <div
       class="plot"
       :id="'PCatDiv' + index"
@@ -40,7 +36,7 @@ export default {
   },
   data() {
     return {
-      settings: false,
+      settings: true,
       currentDrawnColorIndex: null,
 
       // Conf
@@ -61,7 +57,9 @@ export default {
     this.$parent.$on("redraw", this.checkPlot);
 
     // Select default columns
-    this.selectedColumnsIds = this.data.columns.filter((c) => c.nbOccu <= 20).map((c) => c.index);
+    this.selectedColumnsIds = this.data.columns
+      .filter((c) => c.nbOccurrence <= 20)
+      .map((c) => c.index);
   },
   mounted() {
     this.divParCat = document.getElementById("PCatDiv" + this.index);
@@ -98,7 +96,7 @@ export default {
       let nbColor;
       if (coloredColIndex !== null) {
         colColor = this.data.columns[coloredColIndex];
-        nbColor = colColor.nbOccu;
+        nbColor = colColor.nbOccurrence;
       }
 
       // Get columns
@@ -106,11 +104,11 @@ export default {
         this.data.columns.find((c) => c.index == cIdx)
       );
 
-      // Cḧeck that columns arn't too eavy on unique values
-      if (selectedColumns.some((c) => c.nbOccu > 20) || (nbColor && nbColor > 20)) {
+      // Check that columns are not too numerous
+      if (selectedColumns.some((c) => c.nbOccurrence > 20) || (nbColor && nbColor > 20)) {
         swal({
           title: "Display the Parallel Categories diagram ?",
-          text: "You have selected some columns or a color with more than 20 unique values, this will have an impact on the readability of the plot and on the performances.\r \nThe Parallel Coordinates diagram is more suited for the visualisations with a lot of unique values.",
+          text: "You have selected some columns or a color with more than 20 unique values, this will have an impact on the readability of the plot and on the performances.\r \nThe Parallel Coordinates diagram is more suited for the visualizations with a lot of unique values.",
           buttons: true,
           dangerMode: true,
         }).then((validate) => {

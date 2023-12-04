@@ -34,7 +34,7 @@
       or
     </span>
 
-    <!-- Delete infternal btn -->
+    <!-- Delete interval button -->
     <button
       class="red"
       @click="$emit('remove')"

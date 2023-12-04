@@ -3,6 +3,7 @@ import cacheService from "./cacheService";
 import services from "./services";
 
 const backendDialog = require("./backendDialog");
+const samplesIdListRequester = require("./statistics/samplesIdListRequester").default;
 
 let currentAnalysis = {};
 
@@ -18,9 +19,7 @@ function resetCurrentAnalysis() {
   };
 }
 
-//
 //  Need to take position on which columns stay available or not
-//
 const CATEGORIES = [
   { blName: "inputs", singleName: "input" },
   { blName: "groundTruth", singleName: "ground truth" },
@@ -30,26 +29,6 @@ const CATEGORIES = [
   { blName: "annotations", singleName: "annotations" },
 ];
 
-// Requests functions
-function startRequest(name, cancelCallback = null) {
-  const requestCode = services.uuid();
-  store.commit("startRequest", { name, code: requestCode, cancelCallback });
-  return requestCode;
-}
-function startProgressRequest(name) {
-  let requestCode = services.uuid();
-  store.commit("startRequest", { name, code: requestCode, progress: 0 });
-  return requestCode;
-}
-function updateRequestProgress(code, progress) {
-  store.commit("updateRequestProgress", { code, progress });
-}
-function updateRequestQuantity(code, quantity) {
-  store.commit("updateRequestQuantity", { code, quantity });
-}
-function endRequest(code) {
-  store.commit("endRequest", code);
-}
 async function getDataProviderLimit() {
   try {
     let dataProviderInfo = store.state.ProjectPage.dataProviderInfo;
@@ -105,7 +84,7 @@ async function getProjectSamplesIdList(
     // At the moment, we gather all ID when we deal with selections and models
     // If we have a small project, we gather all ID
     // Also, if we don't have the number of samples, we gather all ID
-    const res = await backendDialog.default.getProjectSamples({
+    const res = await samplesIdListRequester.getIdList({
       analysis: { id: currentAnalysis.id, start: true, end: true },
       selectionIds,
       selectionIntersection,
@@ -119,7 +98,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
     let i = 0;
     console.warn("Project samples number is not known, loading samples ID list by chunks");
-    let requestCode = startRequest("Step 1/2: Loading the data ID list");
+    let requestCode = services.startRequest("Step 1/2: Loading the data ID list");
     currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
@@ -133,7 +112,7 @@ async function getProjectSamplesIdList(
         if (i === 0) analysis.start = true;
 
         // Send the request
-        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
+        const res = await samplesIdListRequester.getIdList({ analysis, from, to });
 
         if (res.samples.length === 0) {
           console.log("No samples found while loading project samples ID list");
@@ -159,15 +138,15 @@ async function getProjectSamplesIdList(
         if (currentAnalysis.canceled) break;
 
         // Update a new progress bar counter
-        updateRequestQuantity(requestCode, samplesIdList.length);
+        services.updateRequestQuantity(requestCode, samplesIdList.length);
 
         i++;
       }
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
     } catch (error) {
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
       throw error;
     }
 
@@ -180,7 +159,7 @@ async function getProjectSamplesIdList(
     let samplesIdList = [];
 
     console.log("Splitting ID list request in ", nbRequest, " requests");
-    let requestCode = startProgressRequest("Step 1/2: Loading the data ID list");
+    let requestCode = services.startProgressRequest("Step 1/2: Loading the data ID list");
     currentAnalysis.requestCodes.projectSamplesIdList = requestCode;
 
     try {
@@ -195,34 +174,34 @@ async function getProjectSamplesIdList(
         if (i === nbRequest - 1) analysis.end = true;
 
         // Send the request
-        const res = await backendDialog.default.getProjectSamples({ analysis, from, to });
+        const idList = await backendDialog.default.getProjectIdList(analysis, from, to);
 
-        if (res.samples.length === 0)
+        if (idList.length === 0)
           throw "No samples found while loading project samples ID list from " + from + " to " + to;
-        if (res.samples.length !== to - from + 1)
+        if (idList.length !== to - from + 1)
           throw (
             "Wrong number of samples while loading project samples ID list from " +
             from +
             " to " +
             to +
             ", got " +
-            res.samples.length +
+            idList.length +
             " instead of " +
             (to - from + 1)
           );
 
         // Add the samples to the list
-        samplesIdList = samplesIdList.concat(res.samples);
-        updateRequestProgress(requestCode, (i + 1) / nbRequest);
+        samplesIdList = samplesIdList.concat(idList);
+        services.updateRequestProgress(requestCode, (i + 1) / nbRequest);
 
         // Check if the request has been canceled
         if (currentAnalysis.canceled) break;
       }
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
     } catch (error) {
       console.timeEnd("getProjectSamplesIdList");
-      endRequest(requestCode);
+      services.endRequest(requestCode);
       throw error;
     }
 
@@ -301,7 +280,7 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
   let nbSamples = sampleIds.length;
 
   // Create a request
-  let requestCode = startProgressRequest("Loading the project data");
+  let requestCode = services.startProgressRequest("Loading the project data");
   console.time("Loading the project data");
   // Pull the tree
   let retArray = [];
@@ -363,13 +342,13 @@ async function downloadSamplesData(projectMetadata, sampleIds) {
 
       // Update the progress
       pulledData += CHUNK_SIZE;
-      updateRequestProgress(requestCode, pulledData / nbSamples);
+      services.updateRequestProgress(requestCode, pulledData / nbSamples);
 
       // Check if the request has been canceled
       if (currentAnalysis.canceled) break;
     }
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
     console.timeEnd("Loading the project data");
   }
   return { dataArray: retArray, sampleIdList: retDataIdList };
@@ -381,7 +360,7 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
   let pulledData = 0;
 
   // Create a request
-  let requestCode = startProgressRequest(modelId);
+  let requestCode = services.startProgressRequest(modelId);
   currentAnalysis.requestCodes.modelResults = requestCode;
 
   let modelResultsRet = {};
@@ -413,14 +392,14 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
       // cacheService.saveResults(timestamp, modelId, resultsToSave)
 
       pulledData += CHUNK_SIZE;
-      updateRequestProgress(requestCode, pulledData / nbSamples);
+      services.updateRequestProgress(requestCode, pulledData / nbSamples);
 
       // Check if the request has been canceled
       if (currentAnalysis.canceled) break;
     }
-    updateRequestProgress(requestCode, 1);
+    services.updateRequestProgress(requestCode, 1);
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
   }
 
   return modelResultsRet;
@@ -480,7 +459,7 @@ async function loadDataAndModelResults(
 
   // =========== Then add the model results
   // Create a request
-  let requestCode = startProgressRequest("Loading the model results");
+  let requestCode = services.startProgressRequest("Loading the model results");
 
   try {
     let dataArrayFull = [];
@@ -510,9 +489,8 @@ async function loadDataAndModelResults(
 
       dataArrayFull = [...dataArrayFull, ...dataAndResultsArray];
       samplesToPullFull = [...samplesToPullFull, ...modelsSamplesToPull];
-      updateRequestProgress(requestCode, (i + 1) / modelIds.length);
+      services.updateRequestProgress(requestCode, (i + 1) / modelIds.length);
     }
-    store.commit("endRequest", requestCode);
 
     return {
       metaData: projectMetadata,
@@ -520,8 +498,9 @@ async function loadDataAndModelResults(
       sampleIdList: samplesToPullFull,
     };
   } catch (error) {
-    store.commit("endRequest", requestCode);
     throw error;
+  } finally {
+    services.endRequest(requestCode);
   }
 }
 
@@ -549,7 +528,7 @@ function createColumn(label, values, category, type = null, group = null) {
   };
 
   col.uniques = [...new Set(col.values)];
-  col.nbOccu = col.uniques.length;
+  col.nbOccurrence = col.uniques.length;
 
   // Checking if the column is type text, number or got undefined values
   if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
@@ -581,7 +560,7 @@ function createColumn(label, values, category, type = null, group = null) {
     col.typeText = "Num";
     col.values = col.values.map((v) => +v);
     col.uniques = col.uniques.map((v) => +v);
-    col.nbOccu = col.uniques.length;
+    col.nbOccurrence = col.uniques.length;
     col.min = min(col.uniques);
     col.max = max(col.uniques);
     col.average = col.values.reduce((a, b) => a + b, 0) / col.values.length || 0;
@@ -595,7 +574,7 @@ function createColumn(label, values, category, type = null, group = null) {
 }
 
 async function arrayToJson(array, metaData) {
-  let requestCode = startProgressRequest("Preparing the analysis");
+  let requestCode = services.startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
 
   let ret = {
@@ -633,14 +612,14 @@ async function arrayToJson(array, metaData) {
     col.index = i;
     ret.columns[i] = col;
 
-    updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
+    services.updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
     console.timeLog(
       "Preparing the analysis",
       "Column " + label + " " + (i + 1) + " / " + ret.nbColumns
     );
   }
 
-  endRequest(requestCode);
+  services.endRequest(requestCode);
   console.timeEnd("Preparing the analysis");
 
   return ret;
@@ -657,7 +636,7 @@ async function loadProjectSamples({
 
   // Setups the analysis
   resetCurrentAnalysis();
-  let requestCode = startRequest("The analysis is starting", cancelCallback);
+  let requestCode = services.startRequest("The analysis is starting", cancelCallback);
   currentAnalysis.requestCodes.analysisStarting = requestCode;
   currentAnalysis.id = services.uuid();
 
@@ -689,7 +668,7 @@ async function loadProjectSamples({
     resetCurrentAnalysis();
     throw e;
   } finally {
-    endRequest(requestCode);
+    services.endRequest(requestCode);
   }
 
   if (currentAnalysis.canceled) {
@@ -708,9 +687,9 @@ function cancelCallback() {
   currentAnalysis.canceled = true;
 
   // Stop all the requests
-  endRequest(currentAnalysis.requestCodes.analysisStarting);
-  endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
-  endRequest(currentAnalysis.requestCodes.modelResults);
+  services.endRequest(currentAnalysis.requestCodes.analysisStarting);
+  services.endRequest(currentAnalysis.requestCodes.projectSamplesIdList);
+  services.endRequest(currentAnalysis.requestCodes.modelResults);
 }
 function isAnalysisLoading() {
   if (currentAnalysis.id == null || currentAnalysis.canceled) return false;

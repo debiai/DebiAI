@@ -224,9 +224,13 @@ export default {
         if (this.input.arrayType === "number") {
           if (this.selectedArrayInputOption === "columnSelectedData") return this.value;
           else if (this.selectedArrayInputOption === "column") return this.value;
-          else if (this.selectedArrayInputOption === "manual")
+          else if (this.selectedArrayInputOption === "manual") {
             return this.value.split(",").map((v) => Number(v));
-        } else return this.value.split(",");
+          }
+        } else {
+          // we don't need to convert the values
+          return this.value;
+        }
       } else return this.value;
     },
   },

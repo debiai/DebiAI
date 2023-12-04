@@ -106,7 +106,7 @@ export default {
     if (this.defaultSelected == undefined) {
       if (this.validateRequired) {
         this.selectedColumns = this.data.columns
-          .filter((col) => col.nbOccu > 1 && col.type !== undefined)
+          .filter((col) => col.nbOccurrence > 1 && col.type !== undefined)
           .map((col) => col.index);
       }
     } else {
@@ -143,12 +143,12 @@ export default {
       if (this.validateRequired) {
         if (name) {
           this.categories[name].forEach((col) => {
-            if (!this.selectedColumns.includes(col.index) && col.nbOccu > 1)
+            if (!this.selectedColumns.includes(col.index) && col.nbOccurrence > 1)
               this.selectedColumns.push(col.index);
           });
         } else {
           this.selectedColumns = this.data.columns
-            .filter((col) => col.type !== undefined && col.nbOccu > 1)
+            .filter((col) => col.type !== undefined && col.nbOccurrence > 1)
             .map((col) => col.index);
         }
       }

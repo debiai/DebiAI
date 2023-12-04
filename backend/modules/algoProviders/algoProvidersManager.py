@@ -1,4 +1,6 @@
-from config.init_config import get_config
+from termcolor import colored
+
+from config.init_config import get_config, DEBUG_COLOR, ERROR_COLOR, SUCCESS_COLOR
 from modules.algoProviders.AlgoProviderException import AlgoProviderException
 from modules.algoProviders.AlgoProvider import AlgoProvider
 from modules.algoProviders.integratedAlgoProvider.integratedAlgoProvider import (
@@ -16,7 +18,7 @@ def setup_algo_providers():
     keys = list(config_algo_providers.keys())
     values = list(config_algo_providers.values())
 
-    # Add AlgoProviderss from config file
+    # Add AlgoProviders from config file
     print(" - Loading Algo providers from config file")
     for i in range(len(config_algo_providers)):
         name = keys[i]
@@ -26,20 +28,29 @@ def setup_algo_providers():
         if url[-1] == "/":
             url = url[:-1]
 
-        print(" - Adding AlgoProviders " + name + " from " + url + " - ")
+        print(
+            " - Adding AlgoProvider "
+            + colored(name, DEBUG_COLOR)
+            + " ("
+            + colored(url, DEBUG_COLOR)
+            + ")"
+        )
         try:
             algo_provider = AlgoProvider(url, name)
-            if algo_provider.is_alive():
-                print(
-                    "   AlgoProvider " + name + " added to list and already accessible"
-                )
-            else:
-                print("   [ERROR] : AlgoProvider " + name + " Is not accessible now")
-
             algo_providers.append(algo_provider)
 
-        except AlgoProviderException as e:
-            print("   [ERROR] : AlgoProvider " + e.message + " Is not accessible now")
+            if algo_provider.is_alive():
+                print(colored("   [SUCCESS]", SUCCESS_COLOR) + " AlgoProvider ready")
+            else:
+                raise AlgoProviderException()
+
+        except AlgoProviderException:
+            print(
+                colored("   [ERROR]", ERROR_COLOR)
+                + " AlgoProvider "
+                + colored(name, ERROR_COLOR)
+                + " is not accessible"
+            )
 
     # Add the integrated algo provider
     enable_integrated = config["ALGO_PROVIDERS_CONFIG"]["enable_integrated"]
@@ -48,10 +59,19 @@ def setup_algo_providers():
         algo_provider = IntegratedAlgoProvider()
         nb_algos = len(algo_provider.get_algorithms())
         algo_providers.append(algo_provider)
-        print("   Integrated AlgoProvider ready with " + str(nb_algos) + " algorithms")
+
+        if nb_algos > 0:
+            print(
+                colored("   [SUCCESS]", SUCCESS_COLOR)
+                + " Integrated AlgoProvider ready with "
+                + str(nb_algos)
+                + " algorithms"
+            )
+        else:
+            print("   No algorithms found")
 
     if len(algo_providers) == 0:
-        print("   No AlgoProviders found")
+        print("No Algo providers")
 
 
 def get_algo_providers():

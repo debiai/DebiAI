@@ -3,7 +3,7 @@ import ujson as json
 
 appUrl = "http://localhost:3000/"
 testWidgetKey = "testWidgetKey"
-testConfigurantionId = None
+testConfigurationId = None
 
 
 def delete_configuration(id):
@@ -28,7 +28,7 @@ def test_get_configurations():
 
 
 def test_add_configuration():
-    global testConfigurantionId
+    global testConfigurationId
     url = appUrl + "app/widgets/" + testWidgetKey + "/configurations"
     data = {
         "name": "testName",
@@ -59,7 +59,7 @@ def test_add_configuration():
     assert "id" in configurations[0]
     assert type(configurations[0]["id"]) is str
     assert len(configurations[0]["id"]) > 0
-    testConfigurantionId = configurations[0]["id"]
+    testConfigurationId = configurations[0]["id"]
 
 
 def test_get_configurations_overview():
@@ -74,7 +74,7 @@ def test_get_configurations_overview():
 
 def test_delete_configuration():
     # Remove the configuration
-    delete_configuration(testConfigurantionId)
+    delete_configuration(testConfigurationId)
 
     # Check if the configuration was removed
     url = appUrl + "app/widgets/" + testWidgetKey + "/configurations"

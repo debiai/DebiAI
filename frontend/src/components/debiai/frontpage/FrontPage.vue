@@ -11,44 +11,72 @@
           id="debiaiLogo"
           height="48"
         />
-        <!-- DebiAI version -->
-        <a
-          id="version"
-          href="https://github.com/debiai/debiai/"
-          target="_blank"
-        >
-          {{ appVersion }}
-        </a>
-        <!-- Doc link -->
-        <a
-          id="docLink"
-          href="https://debiai.irt-systemx.fr/"
-          target="_blank"
-        >
-          Online documentation
-        </a>
       </div>
 
       <!-- Data-providers, searchbar -->
       <div id="right">
-        <!-- Data provider manager -->
-        <button
-          id="dataProviders"
-          title="List the data providers"
-          @click="displayDataProviders = !displayDataProviders"
-        >
-          Data providers
+        <!-- dropdown menu -->
+        <div style="position: relative">
+          <transition name="fade">
+            <dropdown-menu
+              v-if="displayMenu"
+              :menu="[
+                {
+                  name: 'Documentation',
+                  action: openDocumentation,
+                  icon: 'questionMark',
+                },
+                {
+                  name: 'separator',
+                },
+                {
+                  name: 'Data providers',
+                  action: () => {
+                    displayDataProviders = !displayDataProviders;
+                  },
+                  icon: 'data',
+                },
+                {
+                  name: 'separator',
+                },
+                {
+                  name: 'Latest releases',
+                  action: openLatestReleases,
+                  icon: 'rocket',
+                },
+                {
+                  name: 'Suggest a feature',
+                  action: createIssue,
+                  icon: 'idea',
+                },
+                {
+                  name: appVersion,
+                  action: openGithub,
+                  icon: 'github',
+                },
+              ]"
+              :offset="{ x: -40, y: 19 }"
+              @close="displayMenu = false"
+            />
+          </transition>
+        </div>
+        <button @click="displayMenu = !displayMenu">
+          <inline-svg
+            :src="require('@/assets/svg/gear.svg')"
+            width="15"
+            height="15"
+          />
         </button>
 
         <!-- Refresh button -->
         <button
-          class="warning"
+          class="warning aligned gapped"
           @click="loadProjects"
         >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
-            width="10"
-            height="10"
+            width="15"
+            height="15"
           />
           Refresh
         </button>
@@ -75,8 +103,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/data.svg')"
-            width="14"
-            height="14"
+            width="16"
+            height="16"
           />
           Samples
         </div>
@@ -88,8 +116,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/loop.svg')"
-            width="14"
-            height="14"
+            width="16"
+            height="16"
           />
           Selections
         </div>
@@ -101,8 +129,8 @@
         >
           <inline-svg
             :src="require('@/assets/svg/gear.svg')"
-            width="17"
-            height="17"
+            width="16"
+            height="16"
           />
           Models
         </div>
@@ -213,7 +241,7 @@
           href="https://debiai.irt-systemx.fr/dataInsertion"
           target="_blank"
         >
-          Website
+          Online documentation
         </a>
       </span>
     </div>
@@ -230,16 +258,19 @@
 
 <script>
 import jsonPackage from "../../../../package";
+import DropdownMenu from "../../common/DropdownMenu.vue";
 import dataProviders from "./dataproviders/DataProviders.vue";
 
 export default {
   name: "FrontPage",
   components: {
     dataProviders,
+    DropdownMenu,
   },
   data: () => {
     return {
       projects: null, // List of projects
+      displayMenu: false, // Display the dropdown menu
       dataProviders: null, // List of data providers that contains the projects
       searchBar: "",
       appVersion: jsonPackage.version,
@@ -278,6 +309,18 @@ export default {
         params: { projectId, dataProviderId },
       });
     },
+    openDocumentation() {
+      window.open("https://debiai.irt-systemx.fr/", "_blank");
+    },
+    openLatestReleases() {
+      window.open("https://github.com/debiai/debiai/releases", "_blank");
+    },
+    openGithub() {
+      window.open("https://github.com/debiai/debiai", "_blank");
+    },
+    createIssue() {
+      window.open("https://github.com/debiai/debiai/issues/new/choose", "_blank");
+    },
   },
   computed: {
     filteredProject() {
@@ -311,6 +354,10 @@ export default {
     background-color: var(--greyLight);
     border-bottom: var(--greyDark) 2px solid;
 
+    button {
+      height: 30px;
+    }
+
     #left {
       display: flex;
       align-items: center;
@@ -330,12 +377,16 @@ export default {
       display: flex;
       align-items: center;
       gap: 10px;
+
+      input {
+        margin-right: 10px;
+      }
     }
   }
 }
 
 #projectTitle {
-  width: 100%;
+  width: 95%;
   max-width: 1300px;
   text-align: left;
   margin: 30px 30px 20px 15px;
@@ -408,6 +459,7 @@ export default {
       display: flex;
       align-items: flex-start;
       font-weight: bold;
+      text-align: left;
     }
 
     /* Items */

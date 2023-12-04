@@ -1,4 +1,4 @@
-// This service is used by the Filters componant to
+// This service is used by the Filters component to
 // get selected data samples ids from a filter list
 
 let getSelected = (filters, data) => {

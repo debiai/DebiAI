@@ -1,4 +1,6 @@
-from config.init_config import get_config
+from termcolor import colored
+
+from config.init_config import get_config, DEBUG_COLOR, ERROR_COLOR, SUCCESS_COLOR
 from modules.dataProviders.webDataProvider.WebDataProvider import WebDataProvider
 from modules.dataProviders.pythonDataProvider.PythonDataProvider import (
     PythonDataProvider,
@@ -15,7 +17,7 @@ def setup_data_providers():
     print("================== DATA PROVIDERS ==================")
     config = get_config()
     web_data_provider_config = config["WEB_DATA_PROVIDERS"]
-    python_module_data_provider_config = config["PYTHON_MODULE_DATA_PROVIDER"]
+    python_module_data_provider_config = config["INTEGRATED_DATA_PROVIDER"]
 
     keys = list(web_data_provider_config.keys())
     values = list(web_data_provider_config.values())
@@ -29,29 +31,36 @@ def setup_data_providers():
         if url[-1] == "/":
             url = url[:-1]
 
-        print(" - Adding external data Provider " + name + " from " + url + " - ")
+        print(
+            " - Adding external data Provider "
+            + colored(name, DEBUG_COLOR)
+            + " ("
+            + url
+            + ")"
+        )
         try:
             data_provider = WebDataProvider(url, name)
-            if data_provider.is_alive():
-                print(
-                    "   Data Provider "
-                    + name
-                    + " added to Data Providers list and already accessible"
-                )
-            else:
-                print("   [ERROR] : Data Provider " + name + " Is not accessible now")
             add(data_provider)
-        except DataProviderException as e:
-            print("   [ERROR] : Data Provider " + e.message + " Is not accessible now")
 
+            if data_provider.is_alive():
+                print(colored("   [SUCCESS]", SUCCESS_COLOR) + " Data Provider ready")
+            else:
+                raise DataProviderException()
+        except DataProviderException:
+            print(
+                colored("   [ERROR]", ERROR_COLOR)
+                + " : Data Provider "
+                + colored(name, ERROR_COLOR)
+                + " is not accessible"
+            )
     # Python Data Providers
-    if python_module_data_provider_config["enabled"] != False:
+    if python_module_data_provider_config["enabled"]:
         print(" - Adding Python Module data Provider")
         add(PythonDataProvider())
         python_data_provider_disabled = False
 
     if len(data_providers_list) == 0:
-        print("Warning, No data providers setup")
+        print("   No data providers configured")
 
 
 def data_provider_exists(name):

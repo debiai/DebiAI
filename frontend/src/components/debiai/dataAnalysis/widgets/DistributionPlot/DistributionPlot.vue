@@ -39,7 +39,7 @@
       id="axisControls"
       v-if="settings"
     >
-      <!-- Axis btns -->
+      <!-- Axis buttons -->
       <div
         id="columnAxisSelection"
         class="dataGroup"
@@ -95,7 +95,7 @@
             id="groupByColor"
             v-if="coloredColumnIndex != null && secondColumnIndex === null"
           >
-            <div class="name">Groub by color</div>
+            <div class="name">Group by color</div>
             <div class="value">
               <input
                 type="checkbox"
@@ -527,13 +527,13 @@ export default {
           );
       }
 
-      // set labels for x absis
+      // set labels for x axis
       if (colX.type == String) xSectionsText = xSections.map((v, i) => colX.uniques[i]);
       else xSections = undefined;
 
       let layout = {
         title: "<b>" + colX.label + "</b> Distribution",
-        bargap: 0.05,
+        bargap: 0,
         barmode: this.secondColumnIndex !== null ? "group" : "stack",
         xaxis: {
           title: {
@@ -589,7 +589,7 @@ export default {
         selection.points[0].x !== undefined &&
         this.bins > 0
       ) {
-        let selec = selection.points[0];
+        let selectionPoint = selection.points[0];
         let col = this.data.columns[this.columnXindex];
         let filters = [];
 
@@ -597,10 +597,10 @@ export default {
           filters.push({
             type: "values",
             columnIndex: this.columnXindex,
-            values: [col.uniques[selec.x]],
+            values: [col.uniques[selectionPoint.x]],
           });
         } else {
-          let min = selec.x;
+          let min = selectionPoint.x;
           // Find the bins intervals
           let max = min + (col.max - col.min) / this.bins;
 
@@ -617,7 +617,8 @@ export default {
             type: "values",
             columnIndex: this.currentDrawnColorIndex,
             values: [
-              "" + this.data.columns[this.currentDrawnColorIndex].uniques[selec.curveNumber],
+              "" +
+                this.data.columns[this.currentDrawnColorIndex].uniques[selectionPoint.curveNumber],
             ],
           });
         }
@@ -661,7 +662,8 @@ export default {
     },
     setBins() {
       let colX = this.data.columns[this.columnXindex];
-      this.bins = colX.type == String ? colX.nbOccu : colX.nbOccu > 100 ? 100 : colX.nbOccu;
+      this.bins =
+        colX.type == String ? colX.nbOccurrence : colX.nbOccurrence > 100 ? 100 : colX.nbOccurrence;
     },
   },
   computed: {

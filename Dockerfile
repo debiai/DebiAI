@@ -1,13 +1,12 @@
 # DebiAI Vuejs Frontend
-FROM node:lts-alpine as build-stage
+FROM node:16.13-alpine as build-stage
 WORKDIR /frontend
 COPY frontend/ .
-ENV NODE_OPTIONS="--openssl-legacy-provider"
 RUN npm install
 RUN npm run build
 
 # DebiAI Python Backend
-FROM python:3.8-slim-buster
+FROM python:3.10.12-slim-bullseye
 WORKDIR /backend
 COPY backend/ .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt

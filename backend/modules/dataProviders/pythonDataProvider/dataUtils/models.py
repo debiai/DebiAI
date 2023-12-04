@@ -2,9 +2,7 @@ import os
 import ujson as json
 from modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
-    selections,
     projects,
-    hash,
     tree,
 )
 from modules.dataProviders.DataProviderException import DataProviderException
@@ -46,7 +44,7 @@ def model_exist(project_id, model_id):
 def create_model(project_id, model_name, metadata=None):
     # ParametersCheck
     if not pythonModuleUtils.is_filename_clean(model_name):
-        raise DataProviderException("Model name contain prohibed caracters", 402)
+        raise DataProviderException("Model name contain invalid characters", 402)
 
     model_id = model_name
 
@@ -151,11 +149,7 @@ def add_results_dict(project_id, modelId, data):
 
     if not model_exist(project_id, modelId):
         raise (
-            "Model '"
-            + modelId
-            + "' in project : '"
-            + projects.getProjectNameFromId(project_id)
-            + "' doesn't exist"
+            "Model '" + modelId + "' in project : '" + project_id + "' doesn't exist"
         )
 
     # Get resultStructure & project_block_structure
@@ -218,7 +212,7 @@ def add_results_dict(project_id, modelId, data):
             print(msg)
             return msg, 403
 
-    # The given tree is complient, let's add the results
+    # The given tree is compliant, let's add the results
     newResults = pythonModuleUtils.addToJsonFIle(
         DATA_PATH + project_id + "/models/" + modelId + "/results.json", resultsToAdd
     )

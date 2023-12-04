@@ -1,4 +1,7 @@
 import os
+from termcolor import colored
+
+from config.init_config import DEBUG_COLOR
 from modules.algoProviders.AlgoProvider import AlgoProvider
 from modules.algoProviders.AlgoProviderException import AlgoProviderException
 
@@ -60,7 +63,7 @@ class IntegratedAlgoProvider(AlgoProvider):
         # Import the algorithms
         algorithms_python = []
         for file in algorithm_files:
-            print("   Importing " + file)
+            print("   Importing " + colored(file, DEBUG_COLOR))
             try:
                 algorithms_python.append(_get_algorithm_python(file))
             except ModuleNotFoundError as e:

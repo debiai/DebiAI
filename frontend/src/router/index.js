@@ -10,7 +10,6 @@ let router = new Router({
       path: "/",
       component: () => import("../components/debiai/frontpage/FrontPage"),
     },
-
     // === Project
     {
       name: "project",

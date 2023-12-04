@@ -1,6 +1,6 @@
 <template>
   <div id="DataExportMenu">
-    <h2>
+    <h2 class="aligned spaced">
       Export widget data
       <button
         @click="$emit('cancel')"
@@ -21,7 +21,7 @@
           <DocumentationBlock>
             Add an extra value to the exported Json data.
             <br />
-            This value can be used for anotation or for object creation purpose.
+            This value can be used for annotation or for object creation purpose.
           </DocumentationBlock>
         </span>
         <span class="value">

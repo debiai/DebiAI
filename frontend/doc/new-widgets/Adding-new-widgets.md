@@ -38,7 +38,7 @@ Add a squared `icon.png` file in the directory, it will be displayed in the widg
 
 ## Widget code
 
-Finaly create a `MyWidget.vue` file in the directory.
+Finally create a `MyWidget.vue` file in the directory.
 This is the main file of your widget, **it must have the same name as the folder**.
 
 Refer to the `WidgetTemplateEmpty` and `WidgetTemplateFull` template widgets available in the widgets directory to have something to start with.

@@ -1,5 +1,5 @@
 <template>
-  <div id="axiesRangeSelection">
+  <div id="AxisRangeSelection">
     <!-- Title -->
     <h3 style="padding-bottom: 10px; display: flex; justify-content: space-between">
       Set the plot X and Y axis ranges

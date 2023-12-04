@@ -51,7 +51,7 @@
         <span class="aligned">
           <!-- <button
             style="margin-right: 10px"
-            title="Create a selection from a request, available in a futur update"
+            title="Create a selection from a request, available in a future update"
             @click="selectionCreation = !selectionCreation"
           >
             <inline-svg
@@ -88,7 +88,7 @@
           :class="
             'selection item selectable ' + (selectedSelectionIds.length == 0 ? 'selected' : '')
           "
-          @click="selectedSelectionIds = []"
+          @click="selectNone"
         >
           <div class="title">
             <h3 class="name">All data</h3>
@@ -166,17 +166,17 @@
         <div id="nbSelectedSamples">
           Selected samples :
           <div class="dataGroup">
-            <span style="padding-right: 5px">
-              {{ nbSelectedSamples }}
-            </span>
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
               width="20"
               height="20"
             />
+            <span style="padding: 0px 5px">
+              {{ nbSelectedSamples }}
+            </span>
             <span
               v-if="project.nbSamples"
-              style="padding-left: 20px"
+              style="padding-left: 10px; font-weight: normal"
               :title="(nbSelectedSamples * 100) / project.nbSamples + '%'"
             >
               ({{ Math.ceil((nbSelectedSamples * 100) / project.nbSamples) }}%)
@@ -342,6 +342,7 @@ export default {
   flex: 1;
   align-items: center;
   justify-content: flex-end;
+  height: 40px;
 }
 #analysisControls #selectionIntersection {
   display: flex;

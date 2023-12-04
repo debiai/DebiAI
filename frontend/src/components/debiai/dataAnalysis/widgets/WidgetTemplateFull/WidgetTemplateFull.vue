@@ -28,9 +28,9 @@
         v-if="multipleColSelection"
         title="Select columns"
         :data="data"
-        :cancelAvailable="selectedColumnsIndexs.length > 0"
+        :cancelAvailable="selectedColumnsIndexes.length > 0"
         :colorSelection="true"
-        :defaultSelected="selectedColumnsIndexs"
+        :defaultSelected="selectedColumnsIndexes"
         v-on:cancel="multipleColSelection = false"
         v-on:validate="multipleColsSelected"
       />
@@ -41,7 +41,7 @@
       id="settings"
       v-if="settings"
     >
-      <!-- Axis btns -->
+      <!-- Axis buttons -->
       <div class="dataGroup">
         <!-- Column selection -->
         <div class="data">
@@ -59,7 +59,7 @@
           <div class="name">My columns</div>
           <div class="value">
             <button @click="multipleColSelection = true">
-              {{ selectedColumnsIndexs.length }} col selectd
+              {{ selectedColumnsIndexes.length }} col selected
             </button>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default {
 
       // Conf
       selectedColumnIndex: 0,
-      selectedColumnsIndexs: [0],
+      selectedColumnsIndexes: [0],
       checkboxValue: true,
       option: "Opt.1",
       value: 0,
@@ -209,8 +209,8 @@ export default {
       this.selectedColumnIndex = index;
       this.colSelection = false;
     },
-    multipleColsSelected(indexs) {
-      this.selectedColumnsIndexs = indexs;
+    multipleColsSelected(indexes) {
+      this.selectedColumnsIndexes = indexes;
       this.multipleColSelection = false;
     },
     display() {
@@ -240,7 +240,7 @@ export default {
     getConf() {
       let conf = {
         selectedColumn: this.data.columns[this.selectedColumnIndex].label,
-        selectedColumns: this.selectedColumnsIndexs.map((index) => this.data.columns[index].label),
+        selectedColumns: this.selectedColumnsIndexes.map((index) => this.data.columns[index].label),
         checkboxValue: this.checkboxValue,
         option: this.option,
         value: this.value,
@@ -270,10 +270,10 @@ export default {
         }
       }
       if ("selectedColumns" in conf) {
-        this.selectedColumnsIndexs = [];
+        this.selectedColumnsIndexes = [];
         conf.selectedColumns.forEach((cLabel) => {
           let c = this.data.columns.find((c) => c.label == cLabel);
-          if (c) this.selectedColumnsIndexs.push(c.index);
+          if (c) this.selectedColumnsIndexes.push(c.index);
           else
             this.$store.commit("sendMessage", {
               title: "warning",
@@ -295,7 +295,7 @@ export default {
       this.$watch(
         (vm) => (
           vm.selectedColumnIndex,
-          vm.selectedColumnsIndexs,
+          vm.selectedColumnsIndexes,
           vm.checkboxValue,
           vm.option,
           vm.value,
