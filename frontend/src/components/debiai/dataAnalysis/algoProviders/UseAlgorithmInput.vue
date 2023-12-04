@@ -28,6 +28,7 @@
         <input
           :type="input.type"
           v-model="value"
+          :readonly="isProjectId"
         />
       </div>
 
@@ -65,7 +66,7 @@
 
       <!-- Array input type-->
       <div
-        v-if="input.type === 'array'"
+        v-if="input.type === 'array' && !isIdList"
         class="arrayInputType"
       >
         <!-- input options -->
@@ -96,6 +97,32 @@
           "
         >
           Selected Column data
+        </button>
+      </div>
+      <div
+        v-if="input.type === 'array' && isIdList"
+        class="arrayInputType"
+      >
+        <!-- input options -->
+        <button
+          :class="'radioBtn ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
+          @click="
+            selectedArrayInputOption = 'column';
+            idListSelected('column');
+          "
+        >
+          Complete project Id List
+        </button>
+        <button
+          :class="
+            'radioBtn ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')
+          "
+          @click="
+            selectedArrayInputOption = 'columnSelectedData';
+            idListSelected('columnSelectedData');
+          "
+        >
+          Selected Id List
         </button>
       </div>
     </div>
@@ -135,19 +162,20 @@
         "
       >
         <div class="arrayInput">
-          <Column
-            v-if="columnIndex !== null"
-            :column="data.columns.find((c) => c.index == columnIndex)"
-            :colorSelection="false"
-            v-on:selected="columnSelection = true"
-          />
-          <button
-            v-else
-            @click="columnSelection = true"
-          >
-            Select a column
-          </button>
-
+          <div v-if="!isIdList">
+            <Column
+              v-if="columnIndex !== null"
+              :column="data.columns.find((c) => c.index == columnIndex)"
+              :colorSelection="false"
+              v-on:selected="columnSelection = true"
+            />
+            <button
+              v-else
+              @click="columnSelection = true"
+            >
+              Select a column
+            </button>
+          </div>
           <div
             class="nbValues"
             v-if="value !== null && value !== undefined"
@@ -179,6 +207,7 @@ export default {
   data: () => {
     return {
       value: null,
+      projectId: null,
 
       // Array input
       selectedArrayInputOption: "manual",
@@ -187,6 +216,13 @@ export default {
     };
   },
   mounted() {
+    if (this.isProjectId) this.value = this.$store.state.ProjectPage.projectId;
+    if (this.isIdList) {
+      this.idColumnsIndex = this.data.columns.findIndex((c) => c.label === "Data ID");
+      this.selectedArrayInputOption = "column";
+      this.value = this.data.columns[this.idColumnsIndex].values;
+    }
+
     if (this.input.default !== null && this.input.default !== undefined)
       this.value = this.input.default;
     else if (this.input.availableValues && this.input.availableValues.length > 0)
@@ -199,14 +235,23 @@ export default {
 
       this.columnSelection = false;
       this.columnIndex = index;
-      console.log("this.selectedArrayInputOption");
-      console.log(this.selectedArrayInputOption);
       if (this.selectedArrayInputOption === "columnSelectedData") {
         this.value = this.selectedData.map((id) => {
           return this.data.columns[index].values[id];
         });
       } else {
         this.value = this.data.columns[index].values;
+      }
+      this.$emit("inputValueUpdate", this.value);
+    },
+    idListSelected(type) {
+      if (type == "column") {
+        this.value = this.data.columns[this.idColumnsIndex].values;
+      } else {
+        const selectedValues = this.selectedData.map((id) => {
+          return this.data.columns[this.idColumnsIndex].values[id];
+        });
+        this.value = selectedValues;
       }
       this.$emit("inputValueUpdate", this.value);
     },
@@ -232,6 +277,12 @@ export default {
           return this.value;
         }
       } else return this.value;
+    },
+    isIdList: function () {
+      return this.input.type === "array" && this.input.name === "idList";
+    },
+    isProjectId: function () {
+      return this.input.type === "string" && this.input.name === "projectId";
     },
   },
   watch: {
