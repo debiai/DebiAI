@@ -453,7 +453,7 @@ export default {
           dataProviderId: this.$route.query.dataProviderId,
           selectedColumnsIndex: this.selectedColumnsIndex,
         },
-        // TODO: Pass agrerations
+        // TODO: Pass aggregations
       });
     },
     createSelection() {

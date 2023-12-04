@@ -72,7 +72,7 @@
         </span>
       </div>
 
-      <div id="btnsTop">
+      <div id="topButtons">
         <!-- Refresh btn -->
         <button
           id="refresh"
@@ -178,7 +178,7 @@ export default {
   align-items: center;
   gap: 20px;
 
-  #btnsTop {
+  #topButtons {
     display: flex;
     align-items: center;
     margin: 5px;
