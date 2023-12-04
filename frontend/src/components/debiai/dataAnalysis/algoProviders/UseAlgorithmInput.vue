@@ -26,15 +26,9 @@
         title="Value of the input that will be sent to the Algo Provider"
       >
         <input
-          v-if="!isProjectId"
           :type="input.type"
           v-model="value"
-        />
-        <input
-          v-if="isProjectId"
-          :type="input.type"
-          v-model="value"
-          readonly
+          :readonly="isProjectId"
         />
       </div>
 
@@ -110,12 +104,6 @@
         class="arrayInputType"
       >
         <!-- input options -->
-        <button
-          :class="'radioBtn ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
-          @click="selectedArrayInputOption = 'manual'"
-        >
-          Manual
-        </button>
         <button
           :class="'radioBtn ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
           @click="
@@ -229,6 +217,11 @@ export default {
   },
   mounted() {
     if (this.isProjectId) this.value = this.$store.state.ProjectPage.projectId;
+    if (this.isIdList) {
+      this.idColumnsIndex = this.data.columns.findIndex((c) => c.label === "Data ID");
+      this.selectedArrayInputOption = "column";
+      this.value = this.data.columns[this.idColumnsIndex].values;
+    }
 
     if (this.input.default !== null && this.input.default !== undefined)
       this.value = this.input.default;
@@ -242,8 +235,6 @@ export default {
 
       this.columnSelection = false;
       this.columnIndex = index;
-      console.log("this.selectedArrayInputOption");
-      console.log(this.selectedArrayInputOption);
       if (this.selectedArrayInputOption === "columnSelectedData") {
         this.value = this.selectedData.map((id) => {
           return this.data.columns[index].values[id];
@@ -254,20 +245,12 @@ export default {
       this.$emit("inputValueUpdate", this.value);
     },
     idListSelected(type) {
-      let idColumnsIndex = null;
-      for (let i = 0; i < this.data.columns.length; i++) {
-        if (this.data.columns[i].label === "Data ID") {
-          idColumnsIndex = i;
-          break;
-        }
-      }
       if (type == "column") {
-        this.value = this.data.columns[idColumnsIndex].values;
+        this.value = this.data.columns[this.idColumnsIndex].values;
       } else {
-        let selectedValues = [];
-        for (let i = 0; i < this.selectedData.length; i++) {
-          selectedValues.push(this.data.columns[idColumnsIndex].values[this.selectedData[i]]);
-        }
+        const selectedValues = this.selectedData.map((id) => {
+          return this.data.columns[this.idColumnsIndex].values[id];
+        });
         this.value = selectedValues;
       }
       this.$emit("inputValueUpdate", this.value);
