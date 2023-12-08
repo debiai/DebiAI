@@ -22,86 +22,10 @@
           / <span style="color: var(--fontColorLight)"> {{ project.id }} / Exploration</span>
         </div>
       </div>
-
-      <!-- Project items -->
-      <div
-        id="items"
-        v-if="project"
-      >
-        <!-- Nb samples -->
-        <div
-          class="item nbSamples"
-          title="Number of samples"
-        >
-          <inline-svg :src="require('@/assets/svg/data.svg')" />
-          {{ project.nbSamples }} samples
-        </div>
-
-        <!-- Nb selections -->
-        <div
-          class="item nbSelections"
-          title="Project selections"
-        >
-          <inline-svg :src="require('@/assets/svg/loop.svg')" />
-          {{ project.nbSelections }} selections
-        </div>
-
-        <!-- Nb models -->
-        <div
-          class="item nbModel"
-          title="Model added to the project"
-        >
-          <inline-svg :src="require('@/assets/svg/gear.svg')" />
-          {{ project.nbModels }} models
-        </div>
-      </div>
     </div>
 
     <!-- Controls & date -->
-    <div id="right">
-      <!-- Dates -->
-      <div
-        id="dates"
-        v-if="project && project.creationDate && project.updateDate"
-      >
-        <span :title="$services.timeStampToDate(project.creationDate)">
-          Created {{ $services.prettyTimeStamp(project.creationDate) }}
-        </span>
-        <span :title="$services.timeStampToDate(project.updateDate)">
-          Updated {{ $services.prettyTimeStamp(project.updateDate) }}
-        </span>
-      </div>
-
-      <div id="topButtons">
-        <!-- Refresh btn -->
-        <button
-          id="refresh"
-          class="warning"
-          @click="$emit('refresh')"
-        >
-          <inline-svg
-            :src="require('../../../assets/svg/update.svg')"
-            width="10"
-            height="10"
-          />
-          Refresh
-        </button>
-
-        <!-- Delete btn -->
-        <button
-          id="delete"
-          class="red"
-          @click="$emit('deleteProject')"
-          v-if="
-            $store.state.ProjectPage.dataProviderInfo &&
-            $store.state.ProjectPage.dataProviderInfo.canDelete &&
-            $store.state.ProjectPage.dataProviderInfo.canDelete.projects
-          "
-        >
-          Delete
-        </button>
-      </div>
-    </div>
+    <div id="right"></div>
   </div>
 </template>
 
@@ -116,6 +40,9 @@ export default {
 #Header {
   height: 60px;
   width: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 2;
 
   display: flex;
   align-items: center;
@@ -143,9 +70,11 @@ export default {
       #projectName {
         font-size: 18px;
         font-weight: bold;
+        color: var(--fontColorLight);
 
         a {
           cursor: pointer;
+          color: var(--fontColor);
           text-decoration: none;
 
           &:hover {

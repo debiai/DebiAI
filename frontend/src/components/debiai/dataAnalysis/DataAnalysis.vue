@@ -353,6 +353,8 @@ export default {
     // Check that the selector ".grid-stack" is present in the DOM
     if (!document.querySelector(".grid-stack")) return;
     this.grid = GridStack.init(gridStackOptions);
+
+    // Event listeners
     this.grid.on("resizestop", () => {
       // Create move event to update the plotly plots
       setTimeout(() => {
@@ -761,66 +763,8 @@ export default {
 }
 </style>
 
-<style>
-/* Css for all widgets */
-.dataVisualizationWidget {
-  height: 100%;
-  min-height: 100px;
-}
-
-.plot {
-  height: 100%;
-}
-
-.filterOrder {
-  transition: opacity 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  color: var(--primary);
-  border: var(--primary) 2px solid;
-  border-radius: 20px;
-  margin-left: 10px;
-  font-weight: bold;
-}
-
-/* Grid stack background item placeholder */
-.grid-stack-placeholder {
-  border: none;
-  transition: all 0.2s !important;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-
-  background-color: var(--greyDark);
-  opacity: 0.5;
-  border-radius: 3px;
-  /* Artificial padding: */
-  transform: scale(0.95);
-  transform-origin: center;
-}
-
-/* Grid stack handles */
-.ui-resizable-handle {
-  z-index: 1 !important;
-}
-.ui-resizable-sw {
-  background: transparent !important;
-  border-left: solid 4px var(--greyDark) !important;
-  border-bottom: solid 4px var(--greyDark) !important;
-  transform: none !important;
-  width: 12px !important;
-  height: 12px !important;
-}
-.ui-resizable-se {
-  background: transparent !important;
-  border-right: solid 4px var(--greyDark) !important;
-  border-bottom: solid 4px var(--greyDark) !important;
-  transform: none !important;
-  width: 12px !important;
-  height: 12px !important;
-}
+<style lang="scss">
+// Css for all widgets
+// Import Analysis mode css
+@import "@/assets/css/analysis.scss";
 </style>

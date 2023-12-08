@@ -1,14 +1,6 @@
 <template>
   <div id="ExplorationMode">
-    <!-- Header -->
-    <Header
-      :project="project"
-      v-on:refresh="loadProject"
-      v-on:deleteProject="deleteProject"
-      v-on:backToProjects="backToProjects"
-    />
-
-    <!-- Content -->
+    <!-- WIDGET GRIDSTACK BOARD -->
     <div
       class="grid-stack"
       v-if="!loading"
@@ -41,7 +33,7 @@
 
             <documentation-block>
               The exploration mode only support columns <br />
-              with <b> 20 unique values at most</b>. If a <br>
+              with <b> 20 unique values at most</b>. If a <br />
               column has too many unique values, <br />
               it will be ignored. <br />
               <br />
@@ -80,6 +72,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Header -->
+    <Header
+      :project="project"
+      v-on:backToProjects="backToProjects"
+    />
+
+    <!-- Side menu -->
+    <SideBar :menuList="[]" />
   </div>
 </template>
 
@@ -88,7 +89,7 @@ import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.css";
 
 import Header from "./Header.vue";
-import swal from "sweetalert";
+import SideBar from "../dataAnalysis/SideBar.vue";
 
 // Widgets
 import AggregationVue from "./aggregation/Aggregation.vue";
@@ -99,6 +100,7 @@ export default {
   name: "ExplorationMode",
   components: {
     Header,
+    SideBar,
     AggregationVue,
     FilteringVue,
     ColumnSelectionVue,
@@ -212,33 +214,6 @@ export default {
           });
         });
     },
-    deleteProject() {
-      swal({
-        title: "Delete the project ?",
-        text: "Do you really want to delete the project ? There is no way back.",
-        buttons: true,
-        icon: "warning",
-        dangerMode: true,
-      }).then((validate) => {
-        if (validate)
-          this.$backendDialog
-            .deleteProject()
-            .then(() => {
-              this.$store.commit("sendMessage", {
-                title: "success",
-                msg: "Project deleted",
-              });
-              this.$router.push("/");
-            })
-            .catch((e) => {
-              console.log(e);
-              this.$store.commit("sendMessage", {
-                title: "error",
-                msg: "Could not delete the project",
-              });
-            });
-      });
-    },
     backToProjects() {
       this.$router.push("/");
     },
@@ -248,24 +223,27 @@ export default {
       // Init gridStack
       let gridStackOptions = {
         minRow: 25, // don't collapse when empty
-        float: false,
+        cellHeight: 100,
         disableOneColumnMode: true,
+        animate: true,
+        float: false,
         resizable: {
           autoHide: true,
           handles: "e, se, s, sw, w",
         },
-        animate: true,
       };
 
-      // Init gridStack
+      // Check that the selector ".grid-stack" is present in the DOM
       if (!document.querySelector(".grid-stack")) throw "No grid-stack selector found in the DOM";
       this.grid = GridStack.init(gridStackOptions);
 
       // Event listeners
       this.grid.on("resizestop", () => {
         // Create move event to update the plotly plots
-        this.$emit("GridStack_resizestop");
-        window.dispatchEvent(new Event("resize"));
+        setTimeout(() => {
+          this.$emit("GridStack_resizestop");
+          window.dispatchEvent(new Event("resize"));
+        }, 200);
       });
 
       // Animate the component when added
@@ -298,70 +276,27 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding-top: 60px; /* Height of Header */
 }
 
-#header {
-  display: flex;
-  align-items: center;
-  color: white;
-  padding: 2px;
-  background-color: var(--primary);
-}
-
-#debiaiMenuLogo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: red;
-  color: #fff;
-  text-decoration: none;
-  background: none;
+/* Grid stack */
+.grid-stack-item {
+  overflow: hidden;
+  top: 0px;
 }
 
 .grid-stack {
+  margin-left: 60px; /* Width of Sidebar */
   background-color: var(--greyLight);
 
   .card {
     height: 99%;
-    width: 99%;
-
-    .title {
-      height: 20px;
-      position: static;
-      box-shadow: none;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .body {
-      height: 100%;
-      overflow: auto;
-    }
   }
 }
 </style>
 
-<style lang="scss" scoped>
-#ExplorationMode {
-  background-color: var(--greyLight);
-}
-/* Grid stack */
-.grid-stack {
-  width: 99%;
-}
-.grid-stack-item {
-  top: 0px;
-}
-
-.grid-stack-placeholder {
-  border: none;
-  background-color: var(--greyDark);
-  border-radius: 5px;
-  transform: scale(0.95);
-  transform-origin: center;
-}
-
-.ui-resizable-handle {
-  z-index: 0 !important;
-}
+<style lang="scss">
+// Css for all widgets
+// Import Analysis mode css
+@import "@/assets/css/analysis.scss";
 </style>
