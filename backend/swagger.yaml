@@ -902,11 +902,11 @@ paths:
           description: selection deleted
 
   # Exploration
-  /data-providers/{dataProviderId}/projects/{projectId}/exploration/columnsMetrics:
-    post:
-      summary: Get some columns metrics such as the columns number of unique values
+  /data-providers/{dataProviderId}/projects/{projectId}/exploration/allColumnsMetrics:
+    get:
+      summary: Get the project columns metrics such as the columns number of unique values
       tags: [Exploration]
-      operationId: controller.exploration.get_columns_metrics
+      operationId: controller.exploration.get_all_columns_metrics
       parameters:
         - name: dataProviderId
           in: path
@@ -916,18 +916,6 @@ paths:
           in: path
           type: string
           required: true
-        - name: data
-          in: body
-          schema:
-            type: object
-            required:
-              - columnLabels
-            properties:
-              columnLabels:
-                type: array
-                items:
-                  type: string
-                description: List of the column names
       responses:
         200:
           description: Project columns metrics
@@ -936,13 +924,63 @@ paths:
             items:
               type: object
               required:
-                - columnLabel
+                - label
                 - nbUniqueValues
+                - type
               properties:
-                label:
+                name:
                   type: string
                 nbUniqueValues:
                   type: integer
+                type:
+                  type: string
+                  description: Column type
+                  enum:
+                    - string
+                    - number
+                    - boolean
+
+  # /data-providers/{dataProviderId}/projects/{projectId}/exploration/columnsMetrics:
+  #   post:
+  #     summary: Get some columns metrics such as the columns number of unique values
+  #     tags: [Exploration]
+  #     operationId: controller.exploration.get_columns_metrics
+  #     parameters:
+  #       - name: dataProviderId
+  #         in: path
+  #         type: string
+  #         required: true
+  #       - name: projectId
+  #         in: path
+  #         type: string
+  #         required: true
+  #       - name: data
+  #         in: body
+  #         schema:
+  #           type: object
+  #           required:
+  #             - columnLabels
+  #           properties:
+  #             columnLabels:
+  #               type: array
+  #               items:
+  #                 type: string
+  #               description: List of the column names
+  #     responses:
+  #       200:
+  #         description: Project columns metrics
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: object
+  #             required:
+  #               - columnLabel
+  #               - nbUniqueValues
+  #             properties:
+  #               label:
+  #                 type: string
+  #               nbUniqueValues:
+  #                 type: integer
 
   /data-providers/{dataProviderId}/projects/{projectId}/exploration/combinatorialMetrics:
     post:

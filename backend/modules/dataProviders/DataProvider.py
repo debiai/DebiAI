@@ -61,9 +61,13 @@ class DataProvider(ABC):
 
     # Exploration
     @abstractmethod
-    def get_columns_metrics(self, _projectId, _columnLabels):
+    def get_all_columns_metrics(self, _projectId):
         # Return a list of metrics for each column
         pass
+
+    # def get_columns_metrics(self, _projectId, _columnLabels):
+    #     # Return a list of metrics for each column
+    #     pass
 
     @abstractmethod
     def get_combinatorial_metrics(self, _projectId, _columns):

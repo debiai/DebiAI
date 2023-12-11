@@ -309,21 +309,35 @@ export default {
   },
 
   // ====== Exploration
-  getColumnsMetrics(columnLabels) {
+  getAllColumnsMetrics() {
     let code = startRequest("Loading columns metrics");
     return axios
-      .post(
+      .get(
         apiURL +
           "data-providers/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
-          "/exploration/columnsMetrics",
-        { columnLabels }
+          "/exploration/allColumnsMetrics"
       )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
+  // getColumnsMetrics(columnLabels) {
+  //   let code = startRequest("Loading columns metrics");
+  //   return axios
+  //     .post(
+  //       apiURL +
+  //         "data-providers/" +
+  //         dataProviderId() +
+  //         "/projects/" +
+  //         projectId() +
+  //         "/exploration/columnsMetrics",
+  //       { columnLabels }
+  //     )
+  //     .finally(() => endRequest(code))
+  //     .then((response) => response.data);
+  // },
   getColumnsCombinatorialMetrics(columns) {
     let code = startRequest("Loading columns combinatorial metrics");
     return axios

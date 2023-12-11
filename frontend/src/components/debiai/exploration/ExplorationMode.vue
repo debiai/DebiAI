@@ -1,73 +1,80 @@
 <template>
   <div id="ExplorationMode">
-    <!-- WIDGET GRIDSTACK BOARD -->
-    <div
-      class="grid-stack"
-      v-if="!loading"
-    >
-      <!-- Column selection -->
+    <div id="content">
+      <!-- Columns configuration -->
+      <ColumnsConfiguration :data="data" v-if="data"/>
+
+      <!-- WIDGET GRIDSTACK BOARD -->
       <div
-        id="colSelection"
-        data-gs-width="6"
-        data-gs-height="4"
+        class="grid-stack"
+        v-if="!loading"
       >
-        <div class="card">
-          <div class="title grid-stack-item-content">
-            Select the columns you want to use for the exploration
-          </div>
-          <div class="body">
-            <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+        <!-- Column selection -->
+        <div
+          id="colSelection"
+          data-gs-width="6"
+          data-gs-height="4"
+        >
+          <div class="card">
+            <div class="title grid-stack-item-content">
+              Select the columns you want to use for the exploration
+            </div>
+            <div class="body">
+              <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Aggregation -->
-      <div
-        id="aggregation"
-        data-gs-width="6"
-        data-gs-height="4"
-      >
-        <div class="card">
-          <div class="title grid-stack-item-content">
-            Aggregation
+        <!-- Aggregation -->
+        <div
+          id="aggregation"
+          data-gs-width="6"
+          data-gs-height="4"
+        >
+          <div class="card">
+            <div class="title grid-stack-item-content">
+              Aggregation
 
-            <documentation-block>
-              The exploration mode only support columns <br />
-              with <b> 20 unique values at most</b>. If a <br />
-              column has too many unique values, <br />
-              it will be ignored. <br />
-              <br />
-              If you want to use a column with many unique<br />
-              values, you can aggregate it using different<br />
-              aggregation methods. <br />
-            </documentation-block>
-          </div>
-          <div class="body">
-            <AggregationVue
-              :selectedColumnsIndex="selectedColumnsIndex"
-              @save="
-                selectedMetrics = $event['selectedMetrics'];
-                selectedColumnsMetrics = $event['selectedColumnsMetrics'];
-              "
-            />
+              <documentation-block>
+                The exploration mode only support columns <br />
+                with <b> 20 unique values at most</b>. If a <br />
+                column has too many unique values, <br />
+                it will be ignored. <br />
+                <br />
+                If you want to use a column with many unique<br />
+                values, you can aggregate it using different<br />
+                aggregation methods. <br />
+              </documentation-block>
+            </div>
+            <div class="body">
+              <AggregationVue
+                :selectedColumnsIndex="selectedColumnsIndex"
+                @save="
+                  selectedMetrics = $event['selectedMetrics'];
+                  selectedColumnsMetrics = $event['selectedColumnsMetrics'];
+                "
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Filtering -->
-      <div
-        id="filtering"
-        data-gs-width="12"
-        data-gs-height="8"
-      >
-        <div class="card">
-          <div class="title grid-stack-item-content">Filter the data that you want to explore</div>
-          <div class="body">
-            <FilteringVue
-              :selectedColumnsIndex="selectedColumnsIndex"
-              :selectedColumnsMetrics="selectedColumnsMetrics"
-              :selectedMetrics="selectedMetrics"
-            />
+        <!-- Filtering -->
+        <div
+          id="filtering"
+          data-gs-width="12"
+          data-gs-height="8"
+        >
+          <div class="card">
+            <div class="title grid-stack-item-content">
+              Filter the data that you want to explore
+            </div>
+            <div class="body">
+              <FilteringVue
+                :selectedColumnsIndex="selectedColumnsIndex"
+                :selectedColumnsMetrics="selectedColumnsMetrics"
+                :selectedMetrics="selectedMetrics"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -91,29 +98,38 @@ import "gridstack/dist/gridstack.css";
 import Header from "./Header.vue";
 import SideBar from "../dataAnalysis/SideBar.vue";
 
+// Content
+import ColumnsConfiguration from "./ColumnsConfiguration/ColumnsConfiguration.vue";
+
 // Widgets
 import AggregationVue from "./aggregation/Aggregation.vue";
 import FilteringVue from "./filtering/Filtering.vue";
 import ColumnSelectionVue from "./columnSelection/ColumnSelection.vue";
+
+// Models
+import Data from "./models/Data";
 
 export default {
   name: "ExplorationMode",
   components: {
     Header,
     SideBar,
+    ColumnsConfiguration,
     AggregationVue,
     FilteringVue,
     ColumnSelectionVue,
   },
   data: () => {
     return {
+      loading: false,
+
       // Project
       dataProviderId: null,
       projectId: null,
       project: null,
-      loading: false,
 
       // Exploration
+      data: null,
       selectedColumnsIndex: [], // The selected columns index
       selectedMetrics: ["Samples number"],
       selectedColumnsMetrics: null,
@@ -150,41 +166,38 @@ export default {
   mounted() {},
   methods: {
     async loadProject() {
-      this.project = null;
+      // this.project = null;
       this.loading = true;
       return this.$backendDialog
-        .getProject()
-        .then((project) => {
-          this.project = project;
-          this.nbSelectedSamples = this.project.nbSamples;
+        .getAllColumnsMetrics()
+        .then((columns) => {
+          console.log(columns);
+          this.data = new Data(columns);
+
+          console.log(this.data);
+
+          // this.project = project;
+          // this.nbSelectedSamples = this.project.nbSamples;
 
           // Sort models and selections by update date
-          this.project.selections = this.project.selections.sort(
-            (a, b) => b.updateDate - a.updateDate
-          );
-          this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
+          // this.project.selections = this.project.selections.sort(
+          //   (a, b) => b.updateDate - a.updateDate
+          // );
+          // this.project.models = this.project.models.sort((a, b) => b.updateDate - a.updateDate);
 
           // Get the project columns
-          // Expected project columns example :
-          //  [
-          //      { "name": "storage", "category": "other" },
-          //      { "name": "age", "category": "context" },
-          //      { "name": "path", "category": "input" },
-          //      { "name": "label", "category": "groundtruth" },
-          //      { "name": "type" }, # category is not specified, it will be "other"
-          //  ]
-          if (!this.project.columns) this.project.columns = [];
+          // if (!this.project.columns) this.project.columns = [];
 
           // Expected project results columns example :
           // [
           //   { name: "Model prediction", type: "number" },
           //   { name: "Model error", type: "number" },
           // ];
-          if (!this.project.resultStructure) this.project.resultStructure = [];
+          // if (!this.project.resultStructure) this.project.resultStructure = [];
 
           // Store some info
-          this.$store.commit("setProjectColumns", this.project.columns);
-          this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
+          // this.$store.commit("setProjectColumns", this.project.columns);
+          // this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
         })
         .catch((e) => {
           if (e.response && e.response.status === 500) {
@@ -273,26 +286,24 @@ export default {
 
 <style scoped lang="scss">
 #ExplorationMode {
-  height: 100%;
   display: flex;
   flex-direction: column;
   padding-top: 60px; /* Height of Header */
 }
 
 /* Grid stack */
-.grid-stack-item {
-  overflow: hidden;
-  top: 0px;
-}
 
-.grid-stack {
+#content {
   margin-left: 60px; /* Width of Sidebar */
   background-color: var(--greyLight);
-
-  .card {
-    height: 99%;
+  .grid-stack {
+    .card {
+      height: 97%;
+      margin: 5px;
+    }
   }
 }
+
 </style>
 
 <style lang="scss">

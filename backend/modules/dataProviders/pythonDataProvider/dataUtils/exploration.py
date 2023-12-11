@@ -1,3 +1,4 @@
+from modules.dataProviders.DataProvider import DataProvider
 from modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
 )
@@ -8,27 +9,54 @@ MAX_COMBINATORIAL = 3000
 
 
 # Columns metrics
-def get_columns_metrics(project_id, column_labels):
+def get_all_columns_metrics(data_provider: DataProvider, project_id):
     """
     Return a list of metrics for each column
     """
 
-    from time import sleep
     from random import randint
 
-    # TODO: make the real function
-    sleep(1)
+    project = data_provider.get_project(project_id)
+    print("project")
+    print(project)
+    columns = project["columns"]
 
     results = []
-    for column_label in column_labels:
+    for column in columns:
+        print("column name: " + column["name"])
         results.append(
             {
-                "label": column_label,
+                "name": column["name"],
                 "nbUniqueValues": randint(1, 35),
+                "type": column["type"],
+                "category": column["category"],
             }
         )
 
     return results
+
+
+# def get_columns_metrics(project_id, column_labels):
+#     """
+#     Return a list of metrics for each column
+#     """
+
+#     from time import sleep
+#     from random import randint
+
+#     # TODO: make the real function
+#     sleep(1)
+
+#     results = []
+#     for column_label in column_labels:
+#         results.append(
+#             {
+#                 "label": column_label,
+#                 "nbUniqueValues": randint(1, 35),
+#             }
+#         )
+
+#     return results
 
 
 def get_combinatorial_metrics(project_id, columns):

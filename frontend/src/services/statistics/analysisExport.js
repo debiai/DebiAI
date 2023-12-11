@@ -17,6 +17,7 @@ export async function plotlyToImage(plot, width = 400, height = 300, filename = 
       format: "jpeg",
       width,
       height,
+      scale: 3
     });
 
     return imageUrl;

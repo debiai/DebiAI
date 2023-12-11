@@ -20,6 +20,12 @@
   font-weight: bold;
 }
 
+/* Grid stack */
+.grid-stack-item {
+  overflow: hidden;
+  top: 0px;
+}
+
 /* Grid stack background item placeholder */
 .grid-stack-placeholder {
   border: none;

@@ -752,10 +752,6 @@ export default {
 }
 
 /* Grid stack */
-.grid-stack-item {
-  overflow: hidden;
-  top: 0px;
-}
 
 .grid-stack {
   margin-left: 60px; /* Width of Sidebar */

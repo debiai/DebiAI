@@ -162,9 +162,13 @@ class PythonDataProvider(DataProvider):
 
     # Exploration
     @project_must_exist
-    def get_columns_metrics(self, project_id, column_labels):
+    def get_all_columns_metrics(self, project_id):
         # Get columns metrics
-        return exploration.get_columns_metrics(project_id, column_labels)
+        return exploration.get_all_columns_metrics(self, project_id)
+
+    # def get_columns_metrics(self, project_id, column_labels):
+    #     # Get columns metrics
+    #     return exploration.get_columns_metrics(project_id, column_labels)
 
     def get_combinatorial_metrics(self, project_id, columns):
         # Get combinatorial metrics
