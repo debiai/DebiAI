@@ -8,7 +8,7 @@ export default class Data {
     });
     this.nbColumns = columns.length;
 
-    this.globalMetrics = [{ name: "nbData", type: "number" }];
+    this.globalMetrics = [{ name: "nbData", type: "number", index: 0}];
   }
 }
 

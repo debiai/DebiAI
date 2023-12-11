@@ -2,29 +2,17 @@
   <div id="ExplorationMode">
     <div id="content">
       <!-- Columns configuration -->
-      <ColumnsConfiguration :data="data" v-if="data"/>
+      <ColumnsConfiguration
+        v-if="data"
+        :data="data"
+        @validate="ColumnsConfigurationValidation"
+      />
 
       <!-- WIDGET GRIDSTACK BOARD -->
       <div
         class="grid-stack"
         v-if="!loading"
       >
-        <!-- Column selection -->
-        <div
-          id="colSelection"
-          data-gs-width="6"
-          data-gs-height="4"
-        >
-          <div class="card">
-            <div class="title grid-stack-item-content">
-              Select the columns you want to use for the exploration
-            </div>
-            <div class="body">
-              <ColumnSelectionVue @save="selectedColumnsIndex = $event" />
-            </div>
-          </div>
-        </div>
-
         <!-- Aggregation -->
         <div
           id="aggregation"
@@ -104,7 +92,6 @@ import ColumnsConfiguration from "./ColumnsConfiguration/ColumnsConfiguration.vu
 // Widgets
 import AggregationVue from "./aggregation/Aggregation.vue";
 import FilteringVue from "./filtering/Filtering.vue";
-import ColumnSelectionVue from "./columnSelection/ColumnSelection.vue";
 
 // Models
 import Data from "./models/Data";
@@ -117,7 +104,6 @@ export default {
     ColumnsConfiguration,
     AggregationVue,
     FilteringVue,
-    ColumnSelectionVue,
   },
   data: () => {
     return {
@@ -157,7 +143,7 @@ export default {
       });
 
       // Load the project data
-      this.loadProject();
+      this.loadColumnsMetrics();
     } else {
       console.log("No project ID or no data provider ID");
       this.$router.push("/");
@@ -165,16 +151,13 @@ export default {
   },
   mounted() {},
   methods: {
-    async loadProject() {
+    async loadColumnsMetrics() {
       // this.project = null;
       this.loading = true;
       return this.$backendDialog
         .getAllColumnsMetrics()
         .then((columns) => {
-          console.log(columns);
           this.data = new Data(columns);
-
-          console.log(this.data);
 
           // this.project = project;
           // this.nbSelectedSamples = this.project.nbSamples;
@@ -276,9 +259,14 @@ export default {
 
       // Setup widgets
       this.grid.removeAll();
-      this.grid.makeWidget(document.getElementById("colSelection"));
       this.grid.makeWidget(document.getElementById("aggregation"));
       this.grid.makeWidget(document.getElementById("filtering"));
+    },
+
+    // Columns configuration
+    ColumnsConfigurationValidation(configuration) {
+      this.selectedColumnsIndex = configuration.selectedColumns;
+      console.log(this.selectedColumnsIndex);
     },
   },
 };
@@ -303,7 +291,6 @@ export default {
     }
   }
 }
-
 </style>
 
 <style lang="scss">

@@ -119,8 +119,12 @@ export default {
       }
     },
     metricSelected(colIndex) {
-      console.log("metricSelected", colIndex);
       this.$emit("metricSelect", colIndex);
+
+      if (colIndex == 0) {
+        alert("You can't unselect the data number global metric");
+        return;
+      }
 
       if (this.selectedMetrics.includes(colIndex)) {
         this.selectedMetrics = this.selectedMetrics.filter((index) => index != colIndex);
@@ -129,7 +133,10 @@ export default {
       }
     },
     validate() {
-      this.$emit("validate", this.selectedColumns);
+      this.$emit("validate", {
+        selectedColumns: this.selectedColumns,
+        selectedMetrics: this.selectedMetrics,
+      });
     },
   },
   computed: {

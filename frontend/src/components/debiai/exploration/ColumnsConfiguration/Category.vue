@@ -91,7 +91,6 @@ export default {
   },
   methods: {
     columnSelect(colIndex) {
-      console.log("columnSelect", colIndex);
       this.$emit("columnSelected", colIndex);
     },
     all() {
