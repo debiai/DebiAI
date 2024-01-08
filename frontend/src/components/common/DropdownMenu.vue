@@ -125,9 +125,9 @@ export default {
   }
 
   .separator {
-    height: 1px;
+    height: 1.3px;
     background: var(--grey);
-    margin: 5px 0;
+    margin: 0px 0;
   }
 }
 </style>

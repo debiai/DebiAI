@@ -2,9 +2,8 @@
   <div id="frontPage">
     <!-- header -->
     <div id="header">
-      <!-- Logo, version, doc link -->
+      <!-- DebiAI Logo -->
       <div id="left">
-        <!-- DebiAI Logo -->
         <img
           src="@/assets/images/DebiAI_black.png"
           alt="DebiAI"
@@ -15,20 +14,26 @@
 
       <!-- Data-providers, searchbar -->
       <div id="right">
+        <!-- Doc -->
+        <button
+          class="borderless"
+          @click="openDocumentation"
+          title="Documentation"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/questionMark.svg')"
+            width="11"
+            height="11"
+          />
+          Documentation
+        </button>
+
         <!-- dropdown menu -->
         <div style="position: relative">
           <transition name="fade">
             <dropdown-menu
               v-if="displayMenu"
               :menu="[
-                {
-                  name: 'Documentation',
-                  action: openDocumentation,
-                  icon: 'questionMark',
-                },
-                {
-                  name: 'separator',
-                },
                 {
                   name: 'Data providers',
                   action: () => {
@@ -360,7 +365,7 @@ export default {
     #right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
 
       input {
         margin-right: 10px;
