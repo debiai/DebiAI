@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   fill="#000000"
+   version="1.1"
+   id="Capa_1"
+   width="800px"
+   height="800px"
+   viewBox="-7 -7 45 46"
+   xml:space="preserve"
+   sodipodi:docname="questionMarkCircle.svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs9" /><sodipodi:namedview
+   id="namedview7"
+   pagecolor="#505050"
+   bordercolor="#eeeeee"
+   borderopacity="1"
+   showgrid="false"
+   />
+<g
+   id="g4">
+	<path
+   d="M15.255,0c5.424,0,10.764,2.498,10.764,8.473c0,5.51-6.314,7.629-7.67,9.62c-1.018,1.481-0.678,3.562-3.475,3.562   c-1.822,0-2.712-1.482-2.712-2.838c0-5.046,7.414-6.188,7.414-10.343c0-2.287-1.522-3.643-4.066-3.643   c-5.424,0-3.306,5.592-7.414,5.592c-1.483,0-2.756-0.89-2.756-2.584C5.339,3.683,10.084,0,15.255,0z M15.044,24.406   c1.904,0,3.475,1.566,3.475,3.476c0,1.91-1.568,3.476-3.475,3.476c-1.907,0-3.476-1.564-3.476-3.476   C11.568,25.973,13.137,24.406,15.044,24.406z"
+   id="path2"
+   style="fill:#2c3e50;fill-opacity:1" />
+<ellipse
+   style="fill:none;stroke:#2c3e50;stroke-width:3.14335;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="path969"
+   ry="21.309929"
+   rx="21.368341"
+   cy="15.968208"
+   cx="15.457919" /></g>
+</svg>
