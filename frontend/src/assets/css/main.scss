@@ -296,11 +296,12 @@ button + button {
   font-weight: bold;
   padding: 10px;
   margin: 10px;
-  opacity: 0.8;
   transition: all ease-out 0.1s;
-}
-.tip:hover {
-  opacity: 1;
+
+  a {
+    color: rgb(255, 255, 255);
+    text-decoration: underline;
+  }
 }
 
 /* Other */

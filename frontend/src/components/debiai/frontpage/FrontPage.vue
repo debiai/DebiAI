@@ -222,6 +222,67 @@
         </div>
       </div>
     </transition>
+
+    <!-- Demo message -->
+    <transition name="fade">
+      <div
+        id="demo"
+        class="tip"
+      >
+        <h1>Welcome to the DebiAI demonstration instance</h1>
+        <p>
+          Explore the capabilities of
+          <a
+            href="https://debiai.irt-systemx.fr/"
+            target="_blank"
+            >DebiAI</a
+          >, a web application designed to help data-scientists:
+        </p>
+
+        <ul>
+          <li>Detect anomalies and bias in their datasets faster</li>
+          <li>
+            Analyze the results of their models according to the contexts that matter the most for
+            the problem they are trying to solve.
+          </li>
+        </ul>
+
+        <p>
+          This demonstration instance is a great starting point to experience our app's features and
+          functionalities.
+        </p>
+
+        <h2>WoodScape step by step Guide</h2>
+        <p>
+          This demonstration features two projects made from the
+          <a
+            href="https://woodscape.valeo.com/woodscape/"
+            target="_blank"
+            >WoodScape dataset</a
+          >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
+        </p>
+        <p>
+          If you're interested in following specific use cases and learning through practical
+          examples, check out our
+          <a
+            href="https://debiai.irt-systemx.fr/useCases/woodscape/"
+            target="_blank"
+            >Complete Guide</a
+          >.
+        </p>
+
+        <h2>Documentation</h2>
+        <p>
+          For detailed information and a deeper understanding of DebiAI, visit our
+          <a
+            href="https://debiai.irt-systemx.fr/"
+            target="_blank"
+            >Documentation Website</a
+          >.
+        </p>
+      </div>
+    </transition>
+
     <!-- Loading -->
     <div
       id="loading"
@@ -314,6 +375,11 @@ export default {
     },
     createIssue() {
       window.open("https://github.com/debiai/debiai/issues/new/choose", "_blank");
+    },
+    openLegalNotice() {
+      this.$router.push({
+        path: "/legal",
+      });
     },
   },
   computed: {
@@ -418,7 +484,6 @@ export default {
 #projects {
   width: 100%;
   max-width: 1350px;
-  flex: 1;
   overflow-y: auto;
 
   .project {
@@ -513,5 +578,12 @@ export default {
   flex-direction: column;
   font-size: 1.5em;
   opacity: 0.5;
+}
+
+#demo {
+  margin-top: 100px;
+  padding: 30px 100px;
+  text-align: left;
+  width: 900px;
 }
 </style>

@@ -23,6 +23,13 @@ let router = new Router({
       path: "/dataAnalysis",
       component: () => import("../components/debiai/dataAnalysis/DataAnalysis"),
     },
+
+    // === Other
+    {
+      name: "legal",
+      path: "/legal",
+      component: () => import("../components/debiai/frontpage/legal/Legal"),
+    },
   ],
 });
 const DEFAULT_TITLE = "DebiAI";
