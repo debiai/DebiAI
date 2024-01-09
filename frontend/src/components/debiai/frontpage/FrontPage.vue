@@ -21,11 +21,10 @@
           title="Documentation"
         >
           <inline-svg
-            :src="require('@/assets/svg/questionMark.svg')"
-            width="11"
-            height="11"
+            :src="require('@/assets/svg/questionMarkCircle.svg')"
+            width="25"
+            height="25"
           />
-          Documentation
         </button>
 
         <!-- dropdown menu -->
@@ -65,38 +64,19 @@
                   icon: 'github',
                 },
               ]"
-              :offset="{ x: -40, y: 19 }"
+              :offset="{ x: -70, y: 45 }"
               @close="displayMenu = false"
             />
           </transition>
         </div>
-        <button @click="displayMenu = !displayMenu">
-          <inline-svg
-            :src="require('@/assets/svg/gear.svg')"
-            width="15"
-            height="15"
-          />
-        </button>
 
-        <!-- Refresh button -->
         <button
-          class="warning aligned gapped"
-          @click="loadProjects"
+          id="menuButton"
+          @click="displayMenu = !displayMenu"
+          class="borderless"
         >
-          <inline-svg
-            :src="require('@/assets/svg/update.svg')"
-            width="15"
-            height="15"
-          />
-          Refresh
+          <div class="dot"></div>
         </button>
-
-        <!-- Search bar -->
-        <input
-          class="search"
-          placeholder="Search project"
-          v-model="searchBar"
-        />
       </div>
     </div>
 
@@ -144,6 +124,28 @@
           />
           Models
         </div>
+      </div>
+
+      <!-- controls -->
+      <div id="control">
+        <!-- Search bar -->
+        <input
+          class="search"
+          placeholder="🔍  Filter projects"
+          v-model="searchBar"
+        />
+        <!-- Refresh button -->
+        <button
+          class="borderless aligned gapped"
+          @click="loadProjects"
+          title="Refresh projects"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/update.svg')"
+            width="15"
+            height="15"
+          />
+        </button>
       </div>
     </div>
     <!-- Project list -->
@@ -228,58 +230,95 @@
       <div
         id="demo"
         class="tip"
+        v-if="projects !== null && projects.length"
       >
         <h1>Welcome to the DebiAI demonstration instance</h1>
-        <p>
+        <div>
           Explore the capabilities of
           <a
             href="https://debiai.irt-systemx.fr/"
             target="_blank"
             >DebiAI</a
           >, a web application designed to help data-scientists:
-        </p>
 
-        <ul>
-          <li>Detect anomalies and bias in their datasets faster</li>
-          <li>
-            Analyze the results of their models according to the contexts that matter the most for
-            the problem they are trying to solve.
-          </li>
-        </ul>
+          <ul>
+            <li>Detect anomalies and bias in their datasets faster</li>
+            <li>
+              Analyze the results of their models according to the contexts that matter the most for
+              the problem they are trying to solve.
+            </li>
+          </ul>
 
-        <p>
           This demonstration instance is a great starting point to experience our app's features and
-          functionalities.
-        </p>
-
-        <h2>WoodScape step by step Guide</h2>
-        <p>
-          This demonstration features two projects made from the
+          functionalities. It features two projects made from the
           <a
             href="https://woodscape.valeo.com/woodscape/"
             target="_blank"
             >WoodScape dataset</a
           >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
-        </p>
-        <p>
+          <br />
           If you're interested in following specific use cases and learning through practical
           examples, check out our
+          <br />
+          <br />
           <a
+            id="guideLink"
             href="https://debiai.irt-systemx.fr/useCases/woodscape/"
             target="_blank"
-            >Complete Guide</a
-          >.
-        </p>
+            >Complete step by step Guide</a
+          >
+          <br />
+          <br />
+          <br />
 
-        <h2>Documentation</h2>
-        <p>
-          For detailed information and a deeper understanding of DebiAI, visit our
+          For detailed information on how to setup and understand DebiAI, visit our
           <a
             href="https://debiai.irt-systemx.fr/"
             target="_blank"
             >Documentation Website</a
           >.
-        </p>
+          <br />
+          This demonstration instance is powered by the
+          <a
+            target="_blank"
+            href="https://www.irt-systemx.fr/en/"
+            >IRT SystemX</a
+          >
+          technological research institute and the
+          <a
+            target="_blank"
+            href="https://www.confiance.ai/en/"
+            >Confiance.ai</a
+          >
+          research program.
+        </div>
+
+        <div
+          class="aligned padded"
+          style="gap: 40px; padding-top: 30px;"
+        >
+          <a
+            target="_blank"
+            href="https://www.irt-systemx.fr/en/"
+          >
+            <img
+              src="https://www.irt-systemx.fr/wp-content/uploads/2019/09/System-X-Blanc.png"
+              alt="IRT SystemX"
+              height="50"
+            />
+          </a>
+
+          <a
+            target="_blank"
+            href="https://www.confiance.ai/en/"
+          >
+            <img
+              src="https://www.confiance.ai/wp-content/uploads/2023/09/logo-confiance@2x-1.png"
+              alt="Confiance.ai"
+              height="50"
+            />
+          </a>
+        </div>
       </div>
     </transition>
 
@@ -435,11 +474,34 @@ export default {
 
     #right {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      padding-right: 20px;
 
-      input {
-        margin-right: 10px;
+      #menuButton {
+        width: 60px;
+        .dot,
+        .dot:before,
+        .dot:after {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          border-radius: 10px;
+          background-color: var(--fontColor);
+        }
+
+        .dot {
+          left: 50%;
+          margin-top: -3px;
+        }
+
+        .dot:before {
+          right: 10px;
+          content: "";
+        }
+
+        .dot:after {
+          left: 10px;
+          content: "";
+        }
       }
     }
   }
@@ -449,21 +511,19 @@ export default {
   width: 95%;
   max-width: 1300px;
   text-align: left;
-  margin: 30px 30px 20px 15px;
+  margin: 30px 20px 20px 15px;
   display: flex;
   justify-content: space-between;
 
   h2 {
-    flex: 3;
-    font-size: 2.2em;
+    font-size: 2em;
+    width: 500px;
   }
 
   #itemDetails {
-    flex: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-right: 210px; // Width of the dates
 
     .nb {
       display: flex;
@@ -478,6 +538,22 @@ export default {
       }
     }
   }
+
+  #control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    button {
+      height: 30px;
+    }
+    .search {
+      width: 150px;
+      border-radius: 5px;
+      border: solid var(--greyDark) 1px;
+      font-size: 1.1em;
+    }
+  }
 }
 
 /* Projects */
@@ -488,13 +564,10 @@ export default {
 
   .project {
     cursor: pointer;
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr;
-    grid-template-rows: 1fr;
-    grid-template-areas: "name items dates";
-
+    display: flex;
+    justify-content: space-between;
     padding: 15px;
-    margin: 0 20px 0 20px;
+    margin: 0 10px 0 10px;
     border-bottom: solid rgba(0, 0, 0, 0.172) 2px;
     transition: background-color ease-out 0.1s;
     min-height: 40px;
@@ -512,10 +585,10 @@ export default {
       align-items: center;
     }
 
-    /* Name & desc  */
+    /* Name */
     .name {
-      grid-area: name;
-      display: flex;
+      width: 500px;
+      justify-self: flex-start;
       align-items: flex-start;
       font-weight: bold;
       text-align: left;
@@ -549,24 +622,15 @@ export default {
         white-space: nowrap;
       }
     }
-
-    .createdDate {
-      grid-area: createdDate;
-    }
-
-    .updatedDate {
-      grid-area: updatedDate;
-    }
   }
 }
 
 /* No projects */
 #loading {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5em;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0.5;
 }
 
@@ -581,9 +645,57 @@ export default {
 }
 
 #demo {
-  margin-top: 100px;
-  padding: 30px 100px;
+  display: flex;
+  max-width: 1100px;
+  align-items: flex-start;
+  flex-direction: column;
   text-align: left;
-  width: 900px;
+
+  margin: 3px;
+  margin-top: 40px;
+  padding: 30px 100px 10px;
+  border-radius: 5px;
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  #guideLink {
+    padding: 8px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: solid white 1px;
+    font-size: 1.2em;
+  }
+}
+
+// Small screens
+@media screen and (max-width: 1000px) {
+  #frontPage {
+    font-size: 0.8em;
+  }
+
+  #projectTitle {
+    h2 {
+      display: none;
+    }
+  }
+
+  #projects {
+    .project {
+      .items {
+        flex-direction: column;
+        gap: 5px;
+      }
+      .dates {
+        align-items: flex-start;
+      }
+    }
+  }
+
+  #demo {
+    height: 50vh;
+    overflow-y: auto;
+  }
 }
 </style>
