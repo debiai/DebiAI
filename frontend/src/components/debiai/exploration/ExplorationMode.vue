@@ -241,7 +241,7 @@ export default {
           this.$emit("combinationUpdate");
         })
         .catch((e) => {
-          console.error(error);
+          console.error(e);
           this.$store.commit("sendMessage", {
             title: "error",
             msg: "An error occurred while loading the metrics.",

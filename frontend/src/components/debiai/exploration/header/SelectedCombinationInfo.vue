@@ -1,29 +1,32 @@
 <template>
   <div id="SelectedDataInfo">
     <!-- <div>Selected samples :</div> -->
-    <div
-      id="selectedSamples"
-      :title="'Selected samples: ' + (selectedData.length / data.nbLines) * 100 + '%'"
-    >
-      <div id="nbSelected">{{ selectedData.length }} / {{ data.nbLines }}</div>
-      <div id="selectedBar">
-        <div
-          id="selectedBarValue"
-          :style="'width:' + (selectedData.length / data.nbLines) * 100 + '%'"
-        ></div>
-      </div>
-      <!-- <div id="percentSelect">
-        ({{ Math.round((selectedData.length / data.nbLines) * 10000) / 100 }} %)
+    <transition name="fade">
+      <div
+        v-if="nbCombination"
+        id="selectedSamples"
+        :title="'Selected samples: ' + (nbSelectedData / nbCombination) * 100 + '%'"
+      >
+        <div id="nbSelected">{{ nbSelectedData }} / {{ nbCombination }}</div>
+        <div id="selectedBar">
+          <div
+            id="selectedBarValue"
+            :style="'width:' + (nbSelectedData / nbCombination) * 100 + '%'"
+          ></div>
+        </div>
+        <!-- <div id="percentSelect">
+        ({{ Math.round((nbSelectedData / nbCombination) * 10000) / 100 }} %)
       </div> -->
-    </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
+    nbCombination: { type: Number, required: true },
+    nbSelectedData: { type: Number, required: true },
   },
 };
 </script>

@@ -130,22 +130,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 20px;
-
-  #topButtons {
-    display: flex;
-    align-items: center;
-    margin: 5px;
-
-    #settings {
-      width: 60px;
-    }
-  }
-  #dates {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--fontColorLight);
-    gap: 20px;
-  }
+  padding-right: 20px;
 }
 </style>
