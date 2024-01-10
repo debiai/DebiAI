@@ -2,9 +2,8 @@
   <div id="frontPage">
     <!-- header -->
     <div id="header">
-      <!-- Logo, version, doc link -->
+      <!-- DebiAI Logo -->
       <div id="left">
-        <!-- DebiAI Logo -->
         <img
           src="@/assets/images/DebiAI_black.png"
           alt="DebiAI"
@@ -15,20 +14,25 @@
 
       <!-- Data-providers, searchbar -->
       <div id="right">
+        <!-- Doc -->
+        <button
+          class="borderless"
+          @click="openDocumentation"
+          title="Documentation"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/questionMarkCircle.svg')"
+            width="25"
+            height="25"
+          />
+        </button>
+
         <!-- dropdown menu -->
         <div style="position: relative">
           <transition name="fade">
             <dropdown-menu
               v-if="displayMenu"
               :menu="[
-                {
-                  name: 'Documentation',
-                  action: openDocumentation,
-                  icon: 'questionMark',
-                },
-                {
-                  name: 'separator',
-                },
                 {
                   name: 'Data providers',
                   action: () => {
@@ -55,38 +59,19 @@
                   icon: 'github',
                 },
               ]"
-              :offset="{ x: -40, y: 19 }"
+              :offset="{ x: -70, y: 45 }"
               @close="displayMenu = false"
             />
           </transition>
         </div>
-        <button @click="displayMenu = !displayMenu">
-          <inline-svg
-            :src="require('@/assets/svg/gear.svg')"
-            width="15"
-            height="15"
-          />
-        </button>
 
-        <!-- Refresh button -->
         <button
-          class="warning aligned gapped"
-          @click="loadProjects"
+          id="menuButton"
+          @click="displayMenu = !displayMenu"
+          class="borderless"
         >
-          <inline-svg
-            :src="require('@/assets/svg/update.svg')"
-            width="15"
-            height="15"
-          />
-          Refresh
+          <div class="dot"></div>
         </button>
-
-        <!-- Search bar -->
-        <input
-          class="search"
-          placeholder="Search project"
-          v-model="searchBar"
-        />
       </div>
     </div>
 
@@ -134,6 +119,28 @@
           />
           Models
         </div>
+      </div>
+
+      <!-- controls -->
+      <div id="control">
+        <!-- Search bar -->
+        <input
+          class="search"
+          placeholder="🔍  Filter projects"
+          v-model="searchBar"
+        />
+        <!-- Refresh button -->
+        <button
+          class="borderless aligned gapped"
+          @click="loadProjects"
+          title="Refresh projects"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/update.svg')"
+            width="15"
+            height="15"
+          />
+        </button>
       </div>
     </div>
     <!-- Project list -->
@@ -375,11 +382,34 @@ export default {
 
     #right {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      padding-right: 20px;
 
-      input {
-        margin-right: 10px;
+      #menuButton {
+        width: 60px;
+        .dot,
+        .dot:before,
+        .dot:after {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          border-radius: 10px;
+          background-color: var(--fontColor);
+        }
+
+        .dot {
+          left: 50%;
+          margin-top: -3px;
+        }
+
+        .dot:before {
+          right: 10px;
+          content: "";
+        }
+
+        .dot:after {
+          left: 10px;
+          content: "";
+        }
       }
     }
   }
@@ -389,21 +419,19 @@ export default {
   width: 95%;
   max-width: 1300px;
   text-align: left;
-  margin: 30px 30px 20px 15px;
+  margin: 30px 20px 20px 15px;
   display: flex;
   justify-content: space-between;
 
   h2 {
-    flex: 3;
-    font-size: 2.2em;
+    font-size: 2em;
+    width: 500px;
   }
 
   #itemDetails {
-    flex: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-right: 210px; // Width of the dates
 
     .nb {
       display: flex;
@@ -418,6 +446,22 @@ export default {
       }
     }
   }
+
+  #control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    button {
+      height: 30px;
+    }
+    .search {
+      width: 150px;
+      border-radius: 5px;
+      border: solid var(--greyDark) 1px;
+      font-size: 1.1em;
+    }
+  }
 }
 
 /* Projects */
@@ -429,13 +473,10 @@ export default {
 
   .project {
     cursor: pointer;
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr 100px;
-    grid-template-rows: 1fr;
-    grid-template-areas: "name items dates";
-
+    display: flex;
+    justify-content: space-between;
     padding: 15px;
-    margin: 0 20px 0 20px;
+    margin: 0 10px 0 10px;
     border-bottom: solid rgba(0, 0, 0, 0.172) 2px;
     transition: background-color ease-out 0.1s;
     min-height: 40px;
@@ -453,10 +494,10 @@ export default {
       align-items: center;
     }
 
-    /* Name & desc  */
+    /* Name */
     .name {
-      grid-area: name;
-      display: flex;
+      width: 500px;
+      justify-self: flex-start;
       align-items: flex-start;
       font-weight: bold;
       text-align: left;
@@ -492,22 +533,19 @@ export default {
     }
 
     .createdDate {
-      grid-area: createdDate;
     }
 
     .updatedDate {
-      grid-area: updatedDate;
     }
   }
 }
 
 /* No projects */
 #loading {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5em;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0.5;
 }
 
@@ -519,5 +557,30 @@ export default {
   flex-direction: column;
   font-size: 1.5em;
   opacity: 0.5;
+}
+
+// Small screens
+@media screen and (max-width: 1000px) {
+  #frontPage {
+    font-size: 0.8em;
+  }
+
+  #projectTitle {
+    h2 {
+      display: none;
+    }
+  }
+
+  #projects {
+    .project {
+      .items {
+        flex-direction: column;
+        gap: 5px;
+      }
+      .dates {
+        align-items: flex-start;
+      }
+    }
+  }
 }
 </style>
