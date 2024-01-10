@@ -1,14 +1,5 @@
 <template>
   <div id="ColumnSelection">
-    <!-- <div id="top">
-      <h3 id="title">Select the columns you want to use for the exploration:</h3>
-      <button
-        :disabled="selectedColumnsIndex.length === 0"
-        @click="save"
-      >
-        Save
-      </button>
-    </div> -->
     <ProjectColumns
       :columns="projectColumns"
       :selectedColumnsIndex="selectedColumnsIndex"

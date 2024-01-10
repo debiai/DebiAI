@@ -5,42 +5,15 @@
   >
     <div class="title">
       <h3>Select the columns used by the exploration mode</h3>
-      <div class="dataGroup">
-        <div class="data">
-          <div class="name">Selected columns</div>
-          <div class="value">{{ selectedColumns.length }} / {{ data.nbColumns }}</div>
-        </div>
-        <div
-          class="data"
-          v-if="minimumSelection > 0"
-        >
-          <div class="name">Minimum required columns</div>
-          <div class="value">{{ minimumSelection }}</div>
-        </div>
-      </div>
       <div class="buttons">
         <button
           class="green"
           @click="validate"
           :disabled="selectedColumns.length < minimumSelection"
         >
-          Validate
+          Compute
         </button>
       </div>
-    </div>
-    <div id="searchBar">
-      Filter:
-      <input
-        ref="columnsSearch"
-        v-model="searchFilter"
-        type="text"
-      />
-      <inline-svg
-        :src="require('@/assets/svg/loop.svg')"
-        height="14"
-        width="14"
-        fill="white"
-      />
     </div>
     <div
       id="columns"
@@ -197,16 +170,10 @@ export default {
 #ColumnsConfiguration {
   margin: 0;
   .title {
-    justify-content: space-between;
-  }
-  #searchBar {
-    display: flex;
-    gap: 3px;
-    color: white;
-    font-weight: bold;
-    align-items: center;
-    background-color: var(--greyDark);
-    padding: 5px;
+    justify-content: center;
+    gap: 10px;
+    background-color: white;
+    padding: 3px 10px 0;
   }
   #searchBar input {
     margin: 0px 10px;

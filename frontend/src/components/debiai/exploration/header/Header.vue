@@ -24,15 +24,39 @@
       </div>
     </div>
 
-    <!-- Controls & date -->
-    <div id="right"></div>
+    <!-- Exploration data -->
+    <div id="right">
+      <SelectedCombinationInfo
+        :nbSelectedData="nbCombinations"
+        :nbCombination="nbCombinations"
+      />
+    </div>
   </div>
 </template>
 
 <script>
+import SelectedCombinationInfo from "./SelectedCombinationInfo.vue";
+
 export default {
   name: "Header",
-  props: { project: { type: Object } },
+  components: {
+    SelectedCombinationInfo,
+  },
+  props: { project: { type: Object }, data: { type: Object } },
+  data() {
+    return {
+      nbCombinations: 0,
+    };
+  },
+  mounted() {
+    // Listen for combinationUpdate event
+    this.$parent.$on("combinationUpdate", () => {
+      console.log("Combination update");
+      console.log(this.data.combinations);
+      console.log(this.data.combinations.length);
+      this.nbCombinations = this.data.combinations.length;
+    });
+  },
 };
 </script>
 

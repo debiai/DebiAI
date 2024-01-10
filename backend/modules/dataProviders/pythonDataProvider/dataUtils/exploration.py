@@ -76,7 +76,7 @@ def get_combinatorial_metrics(project_id, columns):
         unique_values = {
             "nbUniqueValues": randint(1, 20),
             "uniqueValues": [],
-            "label": column["label"],
+            "name": column["name"],
         }
         if "nbChunks" in column and column["nbChunks"] is not None:
             unique_values["nbUniqueValues"] = column["nbChunks"]
@@ -93,14 +93,14 @@ def get_combinatorial_metrics(project_id, columns):
 
         columns_unique_values.append(unique_values)
 
-    # Compute nb combinations
-    nb_combinations = 1
+    # # Compute nb combinations
+    # nb_combinations = 1
 
-    for column in columns_unique_values:
-        if "nbChunks" in column and column["nbChunks"] is not None:
-            nb_combinations *= column["nbChunks"]
-        else:
-            nb_combinations *= column["nbUniqueValues"]
+    # for column in columns_unique_values:
+    #     if "nbChunks" in column and column["nbChunks"] is not None:
+    #         nb_combinations *= column["nbChunks"]
+    #     else:
+    #         nb_combinations *= column["nbUniqueValues"]
 
     # Then, generate combinatorial
     combinations = _get_combinations_recur(0, columns_unique_values)
@@ -123,7 +123,6 @@ def get_combinatorial_metrics(project_id, columns):
 
     return {
         "combinations": results,
-        "totalCombinations": nb_combinations,
     }
 
 

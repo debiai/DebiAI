@@ -13,39 +13,6 @@
         class="grid-stack"
         v-if="!loading"
       >
-        <!-- Aggregation -->
-        <div
-          id="aggregation"
-          data-gs-width="6"
-          data-gs-height="4"
-        >
-          <div class="card">
-            <div class="title grid-stack-item-content">
-              Aggregation
-
-              <documentation-block>
-                The exploration mode only support columns <br />
-                with <b> 20 unique values at most</b>. If a <br />
-                column has too many unique values, <br />
-                it will be ignored. <br />
-                <br />
-                If you want to use a column with many unique<br />
-                values, you can aggregate it using different<br />
-                aggregation methods. <br />
-              </documentation-block>
-            </div>
-            <div class="body">
-              <AggregationVue
-                :selectedColumnsIndex="selectedColumnsIndex"
-                @save="
-                  selectedMetrics = $event['selectedMetrics'];
-                  selectedColumnsMetrics = $event['selectedColumnsMetrics'];
-                "
-              />
-            </div>
-          </div>
-        </div>
-
         <!-- Filtering -->
         <div
           id="filtering"
@@ -71,6 +38,7 @@
     <!-- Header -->
     <Header
       :project="project"
+      :data="data"
       v-on:backToProjects="backToProjects"
     />
 
@@ -83,7 +51,7 @@
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.css";
 
-import Header from "./Header.vue";
+import Header from "./header/Header.vue";
 import SideBar from "../dataAnalysis/SideBar.vue";
 
 // Content
@@ -259,14 +227,29 @@ export default {
 
       // Setup widgets
       this.grid.removeAll();
-      this.grid.makeWidget(document.getElementById("aggregation"));
+      // this.grid.makeWidget(document.getElementById("aggregation"));
       this.grid.makeWidget(document.getElementById("filtering"));
     },
 
     // Columns configuration
-    ColumnsConfigurationValidation(configuration) {
-      this.selectedColumnsIndex = configuration.selectedColumns;
-      console.log(this.selectedColumnsIndex);
+    async ColumnsConfigurationValidation(configuration) {
+      this.loading = true;
+      console.log(this.data);
+      this.data
+        .selectColumns(configuration.selectedColumns)
+        .then(() => {
+          this.$emit("combinationUpdate");
+        })
+        .catch((e) => {
+          console.error(error);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "An error occurred while loading the metrics.",
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };

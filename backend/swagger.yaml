@@ -940,48 +940,6 @@ paths:
                     - number
                     - boolean
 
-  # /data-providers/{dataProviderId}/projects/{projectId}/exploration/columnsMetrics:
-  #   post:
-  #     summary: Get some columns metrics such as the columns number of unique values
-  #     tags: [Exploration]
-  #     operationId: controller.exploration.get_columns_metrics
-  #     parameters:
-  #       - name: dataProviderId
-  #         in: path
-  #         type: string
-  #         required: true
-  #       - name: projectId
-  #         in: path
-  #         type: string
-  #         required: true
-  #       - name: data
-  #         in: body
-  #         schema:
-  #           type: object
-  #           required:
-  #             - columnLabels
-  #           properties:
-  #             columnLabels:
-  #               type: array
-  #               items:
-  #                 type: string
-  #               description: List of the column names
-  #     responses:
-  #       200:
-  #         description: Project columns metrics
-  #         schema:
-  #           type: array
-  #           items:
-  #             type: object
-  #             required:
-  #               - columnLabel
-  #               - nbUniqueValues
-  #             properties:
-  #               label:
-  #                 type: string
-  #               nbUniqueValues:
-  #                 type: integer
-
   /data-providers/{dataProviderId}/projects/{projectId}/exploration/combinatorialMetrics:
     post:
       summary:
@@ -1011,9 +969,9 @@ paths:
                 items:
                   type: object
                   required:
-                    - label
+                    - name
                   properties:
-                    label:
+                    name:
                       type: string
                       description: Column name
                     nbChunks:
@@ -1029,7 +987,6 @@ paths:
             type: object
             required:
               - combinations
-              - totalCombinations
             properties:
               combinations:
                 type: array
@@ -1051,9 +1008,6 @@ paths:
                           type: integer
                           description: Number of unique values for the combination
                           # More metrics can be added in the future
-              totalCombinations:
-                type: integer
-                description: Total number of combinations
 
   /data-providers/{dataProviderId}/projects/{projectId}/exploration/dataIdList:
     post:
