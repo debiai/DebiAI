@@ -1,6 +1,9 @@
 // Data class for the exploration page
 // Used by the different to display results
 
+import { Column } from "./Column";
+import { Combination } from "./Combination";
+
 import backendDialog from "@/services/backendDialog";
 
 export default class Data {
@@ -40,10 +43,11 @@ export default class Data {
       });
     });
 
-    console.log("computeCombinations");
     const metrics = await backendDialog.getColumnsCombinatorialMetrics(parameters);
-    console.log(metrics);
-    this.combinations = metrics.combinations;
+    this.combinations = metrics.combinations.map((combination, i) => {
+      console.log(combination);
+      return new Combination(i, combination.combination, combination.metrics.nbValues);
+    });
 
     // if (metrics.totalCombinations > metrics.combinations.length)
     //   this.tooManyCombinationsWarning = true;
@@ -57,17 +61,5 @@ export default class Data {
     // });
 
     // this.drawPlot();
-  }
-}
-
-export class Column {
-  constructor(column, index) {
-    this.name = column.name;
-    this.index = index;
-    this.type = column.type;
-    this.category = column.category;
-    this.nbUniqueValues = column.nbUniqueValues;
-    this.nbUniqueAggregations = this.nbUniqueValues;
-    this.nbMetrics = 0;
   }
 }

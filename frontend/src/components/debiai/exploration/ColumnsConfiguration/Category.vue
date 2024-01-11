@@ -8,7 +8,7 @@
       class="title"
       :id="name"
     >
-      <h2>{{ name }}</h2>
+      <h2>{{ $services.capitalizeFirstLetter(name) }}</h2>
       <div style="flex: 1"></div>
       <div
         id="controls"
@@ -94,10 +94,10 @@ export default {
       this.$emit("columnSelected", colIndex);
     },
     all() {
-      this.$emit("all", this.name);
+      this.$emit("all", this.name.toLowerCase());
     },
     none() {
-      this.$emit("none", this.name);
+      this.$emit("none", this.name.toLowerCase());
     },
     getNbSelectedColumns(columns) {
       return columns.filter((col) => this.selectedColumns.includes(col.index)).length;

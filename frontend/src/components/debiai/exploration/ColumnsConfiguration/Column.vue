@@ -11,7 +11,7 @@
 
     <!-- Number of uniques values display -->
     <div
-      :class="selectedAsColor ? 'nbUniqueValues color' : 'nbUniqueValues'"
+      class="nbUniqueValues"
       title="Number of uniques values"
       v-if="!metric"
     >
@@ -76,11 +76,6 @@ export default {
     openAggregationPanel() {},
     openMetricsPanel() {},
   },
-  computed: {
-    selectedAsColor: function () {
-      return this.$store.state.StatisticalAnalysis.coloredColumnIndex == this.column.index;
-    },
-  },
 };
 </script>
 
@@ -125,14 +120,6 @@ export default {
     justify-content: center;
     align-items: center;
     border: solid 2px transparent;
-
-    /* Colored column */
-    &.color {
-      border: solid 2px var(--secondary);
-      border-radius: 5px;
-      color: var(--secondary);
-      font-weight: bold;
-    }
   }
 
   /* Type  */
@@ -154,6 +141,11 @@ export default {
       color: var(--number);
     }
     &.text {
+      border: solid var(--class) 2px;
+      color: var(--class);
+    }
+
+    &.auto {
       border: solid var(--class) 2px;
       color: var(--class);
     }

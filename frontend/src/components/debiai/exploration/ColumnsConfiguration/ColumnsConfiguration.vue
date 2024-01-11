@@ -25,7 +25,9 @@
         :columns="columns"
         :selectedColumns="selectedColumns"
         :name="i"
-        v-on:columnSelected="columnSelected"
+        @columnSelected="columnSelected"
+        @all="categorySelected"
+        @none="categoryUnselected"
         multipleSelection
         colorSelection
       />
@@ -35,7 +37,7 @@
         v-if="data.globalMetrics.length"
         :columns="data.globalMetrics"
         :selectedColumns="selectedMetrics"
-        v-on:columnSelected="metricSelected"
+        @columnSelected="metricSelected"
         name="Global metrics"
         multipleSelection
         colorSelection
@@ -56,7 +58,7 @@ export default {
     return {
       selectedColumns: [],
       selectedMetrics: [0],
-      searchFilter: "",
+      searchFilter: "", // TODO: Implement or remove
     };
   },
   props: {
@@ -81,6 +83,20 @@ export default {
       if (k.key == "Escape") {
         this.$emit("cancel");
       }
+    },
+    categorySelected(category) {
+      this.selectedColumns = this.selectedColumns.concat(
+        this.data.columns.filter((col) => col.category == category).map((col) => col.index)
+      );
+    },
+    categoryUnselected(category) {
+      this.selectedColumns = this.selectedColumns.filter(
+        (col) =>
+          !this.data.columns
+            .filter((c) => c.category == category)
+            .map((c) => c.index)
+            .includes(col)
+      );
     },
     columnSelected(colIndex) {
       this.$emit("colSelect", colIndex);
@@ -114,45 +130,15 @@ export default {
   },
   computed: {
     categories: function () {
-      return {
-        Others: this.data.columns.filter(
-          (c) =>
-            c.category === "other" && c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Contexts: this.data.columns.filter(
-          (c) =>
-            c.category === "context" &&
-            c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Inputs: this.data.columns.filter(
-          (c) =>
-            c.category === "input" && c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        GroundTruth: this.data.columns.filter(
-          (c) =>
-            c.category === "groundtruth" &&
-            c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Results: this.data.columns.filter(
-          (c) =>
-            c.category === "results" &&
-            c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Virtual: this.data.columns.filter(
-          (c) =>
-            c.category === "virtual" &&
-            c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Tag: this.data.columns.filter(
-          (c) =>
-            c.category === "tag" && c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        AlgorithmOutput: this.data.columns.filter(
-          (c) =>
-            c.category === "Algorithm output" &&
-            c.name.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-      };
+      const categories = {};
+
+      for (const col of this.data.columns) {
+        if (!categories[col.category]) categories[col.category] = [];
+
+        categories[col.category].push(col);
+      }
+
+      return categories;
     },
   },
   watch: {
@@ -171,9 +157,9 @@ export default {
   margin: 0;
   .title {
     justify-content: center;
-    gap: 10px;
+    gap: 20px;
     background-color: white;
-    padding: 3px 10px 0;
+    padding: 10px 10px 0;
   }
   #searchBar input {
     margin: 0px 10px;

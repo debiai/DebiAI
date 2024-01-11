@@ -9,10 +9,7 @@
       />
 
       <!-- WIDGET GRIDSTACK BOARD -->
-      <div
-        class="grid-stack"
-        v-if="!loading"
-      >
+      <div class="grid-stack">
         <!-- Filtering -->
         <div
           id="filtering"
@@ -76,6 +73,7 @@ export default {
   data: () => {
     return {
       loading: false,
+      combinationLoading: false,
 
       // Project
       dataProviderId: null,
@@ -233,8 +231,6 @@ export default {
 
     // Columns configuration
     async ColumnsConfigurationValidation(configuration) {
-      this.loading = true;
-      console.log(this.data);
       this.data
         .selectColumns(configuration.selectedColumns)
         .then(() => {
@@ -246,9 +242,6 @@ export default {
             title: "error",
             msg: "An error occurred while loading the metrics.",
           });
-        })
-        .finally(() => {
-          this.loading = false;
         });
     },
   },

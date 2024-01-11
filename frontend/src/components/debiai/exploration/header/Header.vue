@@ -51,9 +51,6 @@ export default {
   mounted() {
     // Listen for combinationUpdate event
     this.$parent.$on("combinationUpdate", () => {
-      console.log("Combination update");
-      console.log(this.data.combinations);
-      console.log(this.data.combinations.length);
       this.nbCombinations = this.data.combinations.length;
     });
   },

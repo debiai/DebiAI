@@ -163,4 +163,8 @@ export default {
   endRequest(code) {
     store.commit("endRequest", code);
   },
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 };
