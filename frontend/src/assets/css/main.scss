@@ -290,20 +290,19 @@ button + button {
 
 /* Tips */
 .tip {
-  background-color: var(--blue);
-  border-left: var(--blueDark) solid 5px;
-  color: white;
-  font-weight: bold;
+  color: #059;
+  background-color: #bef;
+  border-left: var(--blue) solid 5px;
   padding: 10px;
   margin: 10px;
   transition: all ease-out 0.1s;
 
   a {
-    color: rgb(255, 255, 255);
+    color: #06f;
     text-decoration: underline;
 
     &:hover {
-      color: rgb(228, 228, 228);
+      color: #039;
     }
   }
 }

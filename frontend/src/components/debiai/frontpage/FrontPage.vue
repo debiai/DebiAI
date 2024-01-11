@@ -80,6 +80,86 @@
       </div>
     </div>
 
+    <!-- Demo message -->
+    <transition name="fade">
+      <div
+        id="demo"
+        class="tip"
+        v-if="projects !== null && projects.length"
+      >
+        <h1>Welcome to the DebiAI demonstration instance</h1>
+        <div>
+          Explore the capabilities of
+          <a
+            href="https://debiai.irt-systemx.fr/"
+            target="_blank"
+            >DebiAI</a
+          >, a web application designed to help data-scientists:
+
+          <ul>
+            <li>Detect anomalies and bias in their datasets faster</li>
+            <li>
+              Analyze the results of their models according to the contexts that matter the most for
+              the problem they are trying to solve.
+            </li>
+          </ul>
+
+          This demonstration instance is a great starting point to experience our app's features and
+          functionalities. It features two projects made from the
+          <a
+            href="https://woodscape.valeo.com/woodscape/"
+            target="_blank"
+            >WoodScape dataset</a
+          >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
+          <br />
+          If you're interested in following specific use cases and learning through practical
+          examples, check out our
+          <a
+            href="https://debiai.irt-systemx.fr/useCases/woodscape/"
+            target="_blank"
+            >Complete step by step guide</a
+          >.
+          <br />
+          <br />
+
+          <div style="display: flex; gap: 30px; justify-content: center">
+            <a
+              href="https://debiai.irt-systemx.fr/"
+              target="_blank"
+              id="guideLink"
+              >Learn more about DebiAI</a
+            >
+            <a
+              href="https://debiai.irt-systemx.fr/introduction/gettingStarted/installation/"
+              target="_blank"
+              id="guideLink"
+              >Installation guide</a
+            >
+            <a
+              href="https://debiai.irt-systemx.fr/useCases/woodscape/"
+              target="_blank"
+              id="guideLink"
+              >Complete step by step guide</a
+            >
+          </div>
+          <!-- <br />
+          This demonstration instance is powered by the
+          <a
+            target="_blank"
+            href="https://www.irt-systemx.fr/en/"
+            >IRT SystemX</a
+          >
+          technological research institute and the
+          <a
+            target="_blank"
+            href="https://www.confiance.ai/en/"
+            >Confiance.ai</a
+          >
+          research program. -->
+        </div>
+      </div>
+    </transition>
+
     <!-- Title, name of the columns -->
     <div id="projectTitle">
       <h2>Projects</h2>
@@ -225,100 +305,35 @@
       </div>
     </transition>
 
-    <!-- Demo message -->
+    <!-- Partners -->
     <transition name="fade">
       <div
-        id="demo"
-        class="tip"
+        id="partners"
+        class="aligned padded"
+        style="gap: 50px; padding: 10px 0 10px; justify-self: flex-start"
         v-if="projects !== null && projects.length"
       >
-        <h1>Welcome to the DebiAI demonstration instance</h1>
-        <div>
-          Explore the capabilities of
-          <a
-            href="https://debiai.irt-systemx.fr/"
-            target="_blank"
-            >DebiAI</a
-          >, a web application designed to help data-scientists:
-
-          <ul>
-            <li>Detect anomalies and bias in their datasets faster</li>
-            <li>
-              Analyze the results of their models according to the contexts that matter the most for
-              the problem they are trying to solve.
-            </li>
-          </ul>
-
-          This demonstration instance is a great starting point to experience our app's features and
-          functionalities. It features two projects made from the
-          <a
-            href="https://woodscape.valeo.com/woodscape/"
-            target="_blank"
-            >WoodScape dataset</a
-          >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
-          <br />
-          If you're interested in following specific use cases and learning through practical
-          examples, check out our
-          <br />
-          <br />
-          <a
-            id="guideLink"
-            href="https://debiai.irt-systemx.fr/useCases/woodscape/"
-            target="_blank"
-            >Complete step by step Guide</a
-          >
-          <br />
-          <br />
-          <br />
-
-          For detailed information on how to setup and understand DebiAI, visit our
-          <a
-            href="https://debiai.irt-systemx.fr/"
-            target="_blank"
-            >Documentation Website</a
-          >.
-          <br />
-          This demonstration instance is powered by the
-          <a
-            target="_blank"
-            href="https://www.irt-systemx.fr/en/"
-            >IRT SystemX</a
-          >
-          technological research institute and the
-          <a
-            target="_blank"
-            href="https://www.confiance.ai/en/"
-            >Confiance.ai</a
-          >
-          research program.
-        </div>
-
-        <div
-          class="aligned padded"
-          style="gap: 40px; padding-top: 30px;"
+        <a
+          target="_blank"
+          href="https://www.irt-systemx.fr/en/"
         >
-          <a
-            target="_blank"
-            href="https://www.irt-systemx.fr/en/"
-          >
-            <img
-              src="https://www.irt-systemx.fr/wp-content/uploads/2019/09/System-X-Blanc.png"
-              alt="IRT SystemX"
-              height="50"
-            />
-          </a>
+          <img
+            src="@/assets/images/irt-systemx.jpg"
+            alt="IRT SystemX"
+            height="60"
+          />
+        </a>
 
-          <a
-            target="_blank"
-            href="https://www.confiance.ai/en/"
-          >
-            <img
-              src="https://www.confiance.ai/wp-content/uploads/2023/09/logo-confiance@2x-1.png"
-              alt="Confiance.ai"
-              height="50"
-            />
-          </a>
-        </div>
+        <a
+          target="_blank"
+          href="https://www.confiance.ai/en/"
+        >
+          <img
+            src="@/assets/images/confiance-ai.png"
+            alt="Confiance.ai"
+            height="40"
+          />
+        </a>
       </div>
     </transition>
 
@@ -652,8 +667,8 @@ export default {
   text-align: left;
 
   margin: 3px;
-  margin-top: 40px;
-  padding: 30px 100px 10px;
+  margin-top: 20px;
+  padding: 30px 100px;
   border-radius: 5px;
 
   h1 {
@@ -661,11 +676,10 @@ export default {
   }
 
   #guideLink {
-    padding: 8px 8px;
-    border-radius: 10px;
+    border: solid 1px;
+    border-radius: 5px;
+    padding: 5px 10px;
     text-decoration: none;
-    border: solid white 1px;
-    font-size: 1.2em;
   }
 }
 
