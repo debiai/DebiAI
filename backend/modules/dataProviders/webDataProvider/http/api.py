@@ -37,7 +37,6 @@ def get_projects(url):
     try:
         r = requests.get(url + "/projects")
         return get_http_response(r)
-        # return r.json()
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         return None
 

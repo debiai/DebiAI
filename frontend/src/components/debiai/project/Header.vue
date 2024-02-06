@@ -19,7 +19,7 @@
           v-if="project"
         >
           <a @click="$emit('backToProjects')"> Projects </a>
-          / {{ project.id }}
+          / {{ project.name }}
         </div>
       </div>
 
