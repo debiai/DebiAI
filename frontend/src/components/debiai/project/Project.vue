@@ -194,6 +194,10 @@ export default {
           // Store some info
           this.$store.commit("setProjectColumns", this.project.columns);
           this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
+
+          // Change the browser title
+          if (this.project.name) document.title = this.project.name;
+          else document.title = this.project.id;
         })
         .catch((e) => {
           if (e.response && e.response.status === 500) {
