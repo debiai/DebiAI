@@ -30,12 +30,7 @@
       <!-- DebiAI Logo -->
       <router-link
         id="debiaiLogo"
-        :to="
-          '/dataprovider/' +
-          $store.state.ProjectPage.dataProviderId +
-          '/project/' +
-          $store.state.ProjectPage.projectId
-        "
+        to="/"
       >
         <img
           src="@/assets/images/DebiAI_black.png"
@@ -55,7 +50,11 @@
             '/project/' +
             $store.state.ProjectPage.projectId
           "
-          >{{ $store.state.ProjectPage.projectId }}</router-link
+          >{{
+            $store.state.ProjectPage.projectName
+              ? $store.state.ProjectPage.projectName
+              : $store.state.ProjectPage.projectId
+          }}</router-link
         >
         / Analysis
       </div>

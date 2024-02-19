@@ -277,6 +277,9 @@ export default {
   created() {
     // Load the projects
     this.loadProjects();
+
+    // Change the browser title
+    document.title = "DebiAI";
   },
   methods: {
     loadProjects() {

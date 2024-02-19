@@ -63,6 +63,7 @@ const Dashboard = {
 const ProjectPage = {
   state: {
     projectId: null,
+    projectName: null,
     dataProviderId: null,
     selectionsIds: [],
     projectColumns: [],
@@ -73,6 +74,9 @@ const ProjectPage = {
   mutations: {
     setProjectId(state, projectId) {
       state.projectId = projectId;
+    },
+    setProjectName(state, projectName) {
+      state.projectName = projectName;
     },
     setDataProviderId(state, dataProviderId) {
       state.dataProviderId = dataProviderId;
