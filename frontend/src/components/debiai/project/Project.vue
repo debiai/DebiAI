@@ -194,6 +194,7 @@ export default {
           // Store some info
           this.$store.commit("setProjectColumns", this.project.columns);
           this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
+          this.$store.commit("setProjectName", this.project.name);
 
           // Change the browser title
           if (this.project.name) document.title = this.project.name;
