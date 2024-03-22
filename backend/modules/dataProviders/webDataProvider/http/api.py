@@ -1,8 +1,9 @@
-import requests, json
+import requests
+import json
 from modules.dataProviders.DataProviderException import DataProviderException
 
 
-### Todo : change info if in not alive anymore
+# Todo : change info if in not alive anymore
 def get_status(url):
     try:
         r = requests.get(url + "/info")

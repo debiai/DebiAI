@@ -5,8 +5,6 @@ from modules.dataProviders.webDataProvider.useCases.selections import (
     get_project_selections,
 )
 
-from utils.utils import timeNow
-
 
 def get_all_projects_from_data_provider(url, name):
     projects = api.get_projects(url)

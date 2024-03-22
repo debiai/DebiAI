@@ -24,7 +24,7 @@ def get_models_info(url, project_id):
             debiai_models.append(model)
 
         return debiai_models
-    except DataProviderException as e:
+    except DataProviderException:
         # The route may not be implemented in the data provider
         return []
 

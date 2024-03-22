@@ -22,7 +22,7 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
 
     # In case of streaming purpose
     if _from is not None and _to is not None:
-        samples = samples[_from : _to + 1]
+        samples = samples[_from : _to + 1] # noqa
 
     return samples
 
