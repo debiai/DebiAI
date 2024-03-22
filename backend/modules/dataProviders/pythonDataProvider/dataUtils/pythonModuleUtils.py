@@ -40,7 +40,7 @@ def clean_filename(filename):
 
 
 def is_filename_clean(filename):
-    cleanFilename = "".join(i for i in filename if i not in "\/:*?<>|") # noqa
+    cleanFilename = "".join(i for i in filename if i not in "\/:*?<>|")  # noqa
     return filename == cleanFilename
 
 
