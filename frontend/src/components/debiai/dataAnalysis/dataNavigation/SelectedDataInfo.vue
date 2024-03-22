@@ -5,16 +5,18 @@
       id="selectedSamples"
       :title="'Selected samples: ' + (selectedData.length / data.nbLines) * 100 + '%'"
     >
-      <div id="nbSelected">{{ selectedData.length }} / {{ data.nbLines }}</div>
       <div id="selectedBar">
         <div
           id="selectedBarValue"
           :style="'width:' + (selectedData.length / data.nbLines) * 100 + '%'"
         ></div>
       </div>
-      <!-- <div id="percentSelect">
-        ({{ Math.round((selectedData.length / data.nbLines) * 10000) / 100 }} %)
-      </div> -->
+      <div id="bottom">
+        <div id="nbSelected">{{ selectedData.length }} / {{ data.nbLines }}</div>
+        <div id="percentSelect">
+          {{ Math.round((selectedData.length / data.nbLines) * 10000) / 100 }} %
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -37,20 +39,29 @@ export default {
   #selectedSamples {
     display: flex;
     align-items: center;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 3px;
     margin: 2px;
     padding: 2px;
     padding-top: 22px;
     // border-radius: 5px;
 
-    #nbSelected {
-      // margin: 0px 5px;
-      font-size: 0.95em;
-    }
-
-    #percentSelect {
-      color: grey;
+    #bottom {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      #nbSelected {
+        // margin: 0px 5px;
+        font-size: 0.95em;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      #percentSelect {
+        color: grey;
+        font-size: 0.6em;
+        display: inline-block;
+        vertical-align: middle;
+      }
     }
 
     #selectedBar {
