@@ -12,7 +12,8 @@ from ..utils import get_input_from_inputs
 # Technical details (must respect the algo-api format):
 algorithm_description = {
     "name": "Regression Metric",
-    "description": """Calculates the regression error according to the ground truth, the predictions and a ceil value""",
+    "description": """Calculates the regression error according to the ground truth, \
+the predictions and a ceil value""",
     "author": "DebiAI",
     "version": "1.0.0",
     "creationDate": "2023-05-23",
@@ -26,7 +27,8 @@ algorithm_description = {
         },
         {
             "name": "Predictions",
-            "description": "List of predictions, must have the same length as the ground truth list",
+            "description": "List of predictions, must have the same length as the  \
+ground truth list",
             "type": "array",
             "arrayType": "number",
         },
@@ -41,13 +43,35 @@ algorithm_description = {
     ],
     "outputs": [
         {
+            "name": "Error",
+            "description": "Difference between the ground truth and the predictions",
+            "type": "array",
+            "arrayType": "number",
+        },
+        {
+            "name": "Absolute error",
+            "description": "Absolute value of the error",
+            "type": "array",
+            "arrayType": "number",
+        },
+        {
             "name": "Binary error",
-            "description": "Regression metric of the input list, False if abs(GDT - PRED) < ceil, True otherwise",
+            "description": "True if Absolute error > ceil, False otherwise",
             "type": "array",
             "arrayType": "boolean",
         },
         {
             "name": "Error percentage",
+            "type": "number",
+        },
+        {
+            "name": "Binary success",
+            "description": "True if Absolute error <= ceil, False otherwise",
+            "type": "array",
+            "arrayType": "boolean",
+        },
+        {
+            "name": "Success percentage",
             "type": "number",
         },
     ],
@@ -72,26 +96,54 @@ def use_algorithm(inputs):
         raise TypeError("Ground truth and predictions must have the same length")
 
     # Calculate regression metric
-    regressionMetric = []
-    for i in range(len(gdt)):
-        error = gdt[i] - predictions[i]
+    nb_values = len(gdt)
+    error = [None] * nb_values
+    absolute_error = [None] * nb_values
+    binary_error = [None] * nb_values
+    binary_success = [None] * nb_values
 
-        if abs(error) < ceil:
-            regressionMetric.append(False)
+    for i in range(nb_values):
+        error_value = gdt[i] - predictions[i]
+        error[i] = error_value
+        absolute_error[i] = abs(error_value)
+
+        if abs(error_value) > ceil:
+            binary_error[i] = True
+            binary_success[i] = False
         else:
-            regressionMetric.append(True)
+            binary_error[i] = False
+            binary_success[i] = True
 
-    percentage = regressionMetric.count(True) / len(regressionMetric)
-    percentage = round(percentage * 100, 2)
+    # Calculate percentages
+    error_percentage = binary_error.count(True) / nb_values
+    error_percentage = round(error_percentage * 100, 2)
+    success_percentage = binary_success.count(True) / nb_values
+    success_percentage = round(success_percentage * 100, 2)
 
     # Return outputs
     return [
         {
+            "name": "Error",
+            "value": error,
+        },
+        {
+            "name": "Absolute error",
+            "value": absolute_error,
+        },
+        {
             "name": "Binary error",
-            "value": regressionMetric,
+            "value": binary_error,
         },
         {
             "name": "Error percentage",
-            "value": percentage,
+            "value": error_percentage,
+        },
+        {
+            "name": "Binary success",
+            "value": binary_success,
+        },
+        {
+            "name": "Success percentage",
+            "value": success_percentage,
         },
     ]
