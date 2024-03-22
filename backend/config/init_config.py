@@ -141,7 +141,7 @@ def get_config_values(section, config_parser):
     for key in os.environ.keys():
         if key.startswith(ENV_VAR):
             # Get the key name without the env var prefix
-            key_name = key[len(ENV_VAR) :]
+            key_name = key[len(ENV_VAR) :]  # noqa
             values[key_name] = str.lower(os.environ[key])
 
     return values
@@ -184,7 +184,7 @@ def init_config():
                 continue
 
             # Deal with booleans
-            if type(config[section][key]) == bool:
+            if type(config[section][key]) is bool:
                 if value == "false":
                     set_config_value(section, key, False)
                 elif value == "true":
@@ -199,7 +199,7 @@ def init_config():
                     continue
 
             # Deal with integers
-            elif type(config[section][key]) == int:
+            elif type(config[section][key]) is int:
                 try:
                     set_config_value(section, key, int(value))
                 except ValueError:
@@ -212,7 +212,7 @@ def init_config():
                     continue
 
             # Deal with strings
-            elif type(config[section][key]) == str:
+            elif type(config[section][key]) is str:
                 set_config_value(section, key, str(value))
 
         # Deal with list based config elements

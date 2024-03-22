@@ -12,7 +12,8 @@ from ..utils import get_input_from_inputs
 # Technical details (must respect the algo-api format):
 algorithm_description = {
     "name": "Classification Metric",
-    "description": """Calculates the classification error according to the ground truth and the predictions""",
+    "description": """Calculates the classification error according \
+to the ground truth and the predictions""",
     "author": "DebiAI",
     "version": "1.0.0",
     "creationDate": "2023-10-30",
@@ -26,7 +27,8 @@ algorithm_description = {
         },
         {
             "name": "Predictions",
-            "description": "List of predictions, must have the same length as the ground truth list",
+            "description": "List of predictions, must have the same \
+length as the ground truth list",
             "type": "array",
             "arrayType": "text",
         },
@@ -34,13 +36,15 @@ algorithm_description = {
     "outputs": [
         {
             "name": "Binary error",
-            "description": "Classification metric of the input list, False if GDT == PRED, True otherwise",
+            "description": "Classification metric of the input list, \
+False if GDT == PRED, True otherwise",
             "type": "array",
             "arrayType": "boolean",
         },
         {
             "name": "Binary success",
-            "description": "Classification metric of the input list, True if GDT == PRED, False otherwise",
+            "description": "Classification metric of the input list, \
+True if GDT == PRED, False otherwise",
             "type": "array",
             "arrayType": "boolean",
         },

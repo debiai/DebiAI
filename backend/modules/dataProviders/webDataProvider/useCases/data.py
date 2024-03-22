@@ -2,7 +2,8 @@ import modules.dataProviders.webDataProvider.http.api as api
 
 #
 # UseCase folder role is the middleware between class methods and http requests
-# It's used to make all changes in data we took from DP and send it back to the class/controller
+# It's used to make all changes in data we took from DP and send it back to
+# the class/controller
 #
 
 

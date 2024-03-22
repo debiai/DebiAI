@@ -198,7 +198,8 @@ def __addResultsToABlock(block, modelResults, sampleLevel, commonOnly):
         # Adding the results to the sample
         block["results"] = {}
         for modelId in modelResults:
-            # If no more than 1 model and commonOnly, no need to check if sample exist in tree
+            # If no more than 1 model and commonOnly, no need to check if
+            # sample exist in tree
             if (
                 commonOnly
                 or len(modelResults) == 1

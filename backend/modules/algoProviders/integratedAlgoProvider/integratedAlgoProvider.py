@@ -37,7 +37,7 @@ def _get_algorithm_python(algorithm_name):
 
 
 class IntegratedAlgoProvider(AlgoProvider):
-    ### Integrated AlgoProvider
+    # Integrated AlgoProvider
     # Used to expose the algorithms that are integrated
     # directly in DebiAI
     def __init__(self):

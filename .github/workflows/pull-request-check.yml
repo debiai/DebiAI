@@ -24,6 +24,22 @@ jobs:
           pip install black
           black --check --diff .
 
+  flake8-check: # Check that the backend codebase does not contain linting errors
+    name: Flake8 check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install dependencies and check flake8 format
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install flake8
+          flake8 .
+
   prettier-check: # Check that the frontend codebase is formatted with prettier
     name: Prettier format check
     runs-on: ubuntu-latest
@@ -83,6 +99,12 @@ jobs:
 
           echo "PREVIOUS_VERSION=$PREVIOUS_VERSION"
           echo "BRANCH_VERSION=$BRANCH_VERSION"
+
+          # If pervious version is beta, ignore test
+          if [[ $PREVIOUS_VERSION == *"beta"* ]]; then
+            echo "Beta version detected, skipping version upgrade check."
+            exit 0
+          fi
 
           if [ "$BRANCH_VERSION" == "" ]; then
             echo "No version found in current branch."
