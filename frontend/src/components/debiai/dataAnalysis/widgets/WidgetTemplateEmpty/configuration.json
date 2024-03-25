@@ -1,13 +1,6 @@
 {
     "name": "Widget template empty",
     "description": "Empty widget template for developers",
-    "layout": {
-        "width": 5,
-        "minWidth": 2,
-        "height": 4,
-        "minHeight": 2,
-        "maxHeight": 15
-    },
     "categories": ["Template"],
     "documentationLink": "https://url.to.documentation",
     "display": false
