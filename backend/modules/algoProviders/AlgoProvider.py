@@ -1,5 +1,6 @@
 # Class for AlgoProvider
-import requests, json
+import requests
+import json
 from modules.algoProviders.AlgoProviderException import AlgoProviderException
 
 

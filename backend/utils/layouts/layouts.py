@@ -102,7 +102,7 @@ def add_layout(data):
     layouts = get_layouts()
 
     # Check if their is already a "last saved" layout
-    if "lastLayoutSaved" in data and data["lastLayoutSaved"] == True:
+    if "lastLayoutSaved" in data and data["lastLayoutSaved"]:
         file_to_add["lastLayoutSaved"] = True
 
         for layout in layouts:
@@ -110,7 +110,7 @@ def add_layout(data):
                 layout["projectId"] == data["projectId"]
                 and layout["dataProviderId"] == data["dataProviderId"]
                 and "lastLayoutSaved" in layout
-                and layout["lastLayoutSaved"] == True
+                and layout["lastLayoutSaved"]
             ):
                 # Remove the "last saved" layout
                 layouts.remove(layout)

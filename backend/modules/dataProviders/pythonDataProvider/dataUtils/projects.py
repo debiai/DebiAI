@@ -97,7 +97,6 @@ def create_project(projectId, projectName):
     os.mkdir(DATA_PATH + projectId)
     os.mkdir(DATA_PATH + projectId + "/blocks")
     os.mkdir(DATA_PATH + projectId + "/models")
-    os.mkdir(DATA_PATH + projectId + "/requests")
     os.mkdir(DATA_PATH + projectId + "/selections")
 
     now = pythonModuleUtils.timeNow()

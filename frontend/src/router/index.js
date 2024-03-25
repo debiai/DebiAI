@@ -32,10 +32,5 @@ let router = new Router({
     },
   ],
 });
-const DEFAULT_TITLE = "DebiAI";
-router.beforeEach((to, from, next) => {
-  document.title = to.query.projectId || to.params.projectId || DEFAULT_TITLE;
-  next();
-});
 
 export default router;

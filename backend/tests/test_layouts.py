@@ -121,7 +121,7 @@ def test_last_layout_saved():
     assert resp.status_code == 200
     assert type(layouts) is list
     assert len(layouts) == 1
-    assert layouts[0]["lastLayoutSaved"] == True
+    assert layouts[0]["lastLayoutSaved"] is True
     assert layouts[0]["name"] == data["name"]
     assert layouts[0]["description"] == data["description"]
     assert layouts[0]["projectId"] == data["projectId"]

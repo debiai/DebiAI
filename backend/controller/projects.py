@@ -10,7 +10,7 @@ import modules.dataProviders.dataProviderManager as data_provider_manager
 
 
 def ping():
-    return "Online v0.15.1", 200
+    return "Online", 200
 
 
 def get_data_providers_project(dataProviderId):

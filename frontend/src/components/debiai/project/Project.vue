@@ -194,6 +194,11 @@ export default {
           // Store some info
           this.$store.commit("setProjectColumns", this.project.columns);
           this.$store.commit("setProjectResultsColumns", this.project.resultStructure);
+          this.$store.commit("setProjectName", this.project.name);
+
+          // Change the browser title
+          if (this.project.name) document.title = this.project.name;
+          else document.title = this.project.id;
         })
         .catch((e) => {
           if (e.response && e.response.status === 500) {
@@ -347,11 +352,23 @@ export default {
         })
         .finally(() => (this.loading = false))
         .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Something went wrong",
-          });
+          console.log(e.response.status);
+          if (e.response && e.response.status === 500) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Internal server error while loading data",
+            });
+          } else if (e.response && e.response.status === 404) {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Data not found",
+            });
+          } else {
+            this.$store.commit("sendMessage", {
+              title: "error",
+              msg: "Error while loading data",
+            });
+          }
           this.loadProject();
         });
     },

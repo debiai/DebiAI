@@ -5,8 +5,6 @@ from modules.dataProviders.webDataProvider.useCases.selections import (
     get_project_selections,
 )
 
-from utils.utils import timeNow
-
 
 def get_all_projects_from_data_provider(url, name):
     projects = api.get_projects(url)
@@ -83,7 +81,7 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
     # Converting views to DebiAI projects
     return {
         "id": id_project,
-        "name": project["name"],
+        "name": project["name"] if "name" in project else id_project,
         "dataProvider": data_provider_name,
         "columns": project_columns,
         "resultStructure": project["expectedResults"],

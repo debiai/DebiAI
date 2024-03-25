@@ -7,15 +7,17 @@ def get_project_selections(url, project_id):
         selections = api.get_selections(url, project_id)
 
         if selections is None:
-            print(
-                "Error: No selections found for project {} on {}".format(
-                    project_id, url
-                )
-            )
+            print(f"Error: No selections found for project {project_id} on {url}")
             raise DataProviderException("No selections found", 404)
 
         debiai_selections = []
         for selection in selections:
+            if "id" not in selection or selection["id"] is None:
+                print(f"Error: No id for selection: {selection}")
+                raise DataProviderException(
+                    "An id is missing in the given selection", 400
+                )
+
             selection_to_add = {
                 "name": selection["name"] if "name" in selection else selection["id"],
                 "id": selection["id"],
@@ -30,7 +32,8 @@ def get_project_selections(url, project_id):
 
             debiai_selections.append(selection_to_add)
         return debiai_selections
-    except DataProviderException as e:
+
+    except DataProviderException:
         # The route may not be implemented in the data provider
         return []
 
