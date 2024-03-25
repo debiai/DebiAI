@@ -5,24 +5,23 @@ const defaultLayout = {
   layout: [
     {
       widgetKey: "ParallelCoordinate",
-      x: 0,
-      y: 0,
-      width: 12,
-      height: 5,
-    },
-    {
-      widgetKey: "PointPlot",
-      x: 6,
-      y: 5,
-      width: 6,
-      height: 5,
     },
     {
       widgetKey: "DistributionPlot",
-      x: 0,
-      y: 5,
+      y: 6,
       width: 6,
-      height: 5,
+      height: 4,
+    },
+    {
+      widgetKey: "DistributionPlot",
+      x: 6,
+      y: 6,
+      width: 6,
+      height: 4,
+    },
+    {
+      widgetKey: "PointPlot",
+      y: 10,
     },
   ],
 };
@@ -31,13 +30,18 @@ const defaultLayout = {
 const BASE_LAYOUT = {
   x: 0,
   y: 0,
-  width: 5,
+  width: 12,
   minWidth: 2,
   maxWidth: 15,
-  height: 4,
+  height: 6,
   minHeight: 2,
   maxHeight: 15,
 };
+
+// Apply Base layout to default layout
+defaultLayout.layout = defaultLayout.layout.map((widget) => {
+  return { ...BASE_LAYOUT, ...widget };
+});
 
 const availableWidgetsConfiguration = {};
 // Load every json configuration extension in the widgets folder

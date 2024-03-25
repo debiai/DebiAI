@@ -2,7 +2,8 @@
   "name": "Data distribution",
   "description": "Bar plot with the distribution of a column",
   "layout": {
-    "width": 6
+    "width": 6,
+    "height": 4
   },
   "categories": ["Data overview", "Bias detection", "Data selection"],
   "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/2_data_distribution/"

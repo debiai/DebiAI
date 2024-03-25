@@ -2,8 +2,8 @@
   "name": "Statistics",
   "description": "Simple statistics, like the average or top value of a column",
   "layout": {
-    "width": 4,
-    "height": 2
+    "width": 6,
+    "height": 3
   },
   "categories": ["Data overview", "Bias detection", "Model evaluation"],
   "documentationLink": "https://debiai.irt-systemx.fr/dashboard/widgets/statistics/"
