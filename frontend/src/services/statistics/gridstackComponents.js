@@ -110,9 +110,6 @@ function createWidget(widgetKey) {
   const layoutCopy = { ...availableWidgetsConfiguration[widgetKey].layout };
   const copyConfiguration = { ...availableWidgetsConfiguration[widgetKey] };
   copyConfiguration.layout = layoutCopy;
-  console.log(copyConfiguration);
-  console.log(widgetId);
-  console.log("test");
   return { ...copyConfiguration, id: widgetId };
 }
 
