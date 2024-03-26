@@ -67,148 +67,141 @@
       id="settings"
       v-if="settings"
     >
-      <div id="axisControls">
-        <!-- Axis buttons -->
-        <div class="dataGroup axis">
-          <!-- X axis -->
-          <div class="data">
-            <div class="name">X axis</div>
-            <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnXindex)"
-                :colorSelection="true"
-                v-on:selected="xAxisSelection = true"
-              />
-            </div>
+      <!-- Axis buttons -->
+      <div class="dataGroup axis">
+        <!-- X axis -->
+        <div class="data">
+          <div class="name">X axis</div>
+          <div class="value">
+            <Column
+              :column="data.columns.find((c) => c.index == columnXindex)"
+              :colorSelection="true"
+              v-on:selected="xAxisSelection = true"
+            />
           </div>
-          <!-- Y axis 1 -->
-          <div class="data">
-            <div class="name">Y1 axis</div>
-            <div class="value gapped">
-              <!-- Display the selected column -->
-              <Column
-                v-if="selectedY1ColumnsIds.length == 1"
-                :column="data.columns.find((c) => c.index == selectedY1ColumnsIds[0])"
-                :colorSelection="true"
-                v-on:selected="y1AxisSelection = true"
+        </div>
+        <!-- Y axis 1 -->
+        <div class="data">
+          <div class="name">Y1 axis</div>
+          <div class="value gapped">
+            <!-- Display the selected column -->
+            <Column
+              v-if="selectedY1ColumnsIds.length == 1"
+              :column="data.columns.find((c) => c.index == selectedY1ColumnsIds[0])"
+              :colorSelection="true"
+              v-on:selected="y1AxisSelection = true"
+            />
+            <!-- Display the button to select the columns -->
+            <button
+              v-else
+              class="selectColumnsBtn"
+              title="Add more columns for the Y axis"
+              @click="y1AxisSelection = true"
+            >
+              {{
+                selectedY1ColumnsIds.length > 0
+                  ? `${selectedY1ColumnsIds.length} columns selected`
+                  : "Select columns"
+              }}
+            </button>
+
+            <!-- Group by color -->
+            <div
+              v-if="coloredColumnIndex !== null"
+              class="aligned"
+            >
+              <span style="white-space: nowrap"> Group by color </span>
+              <input
+                type="checkbox"
+                :id="'gbcY1' + index"
+                class="customCbx"
+                style="display: none"
+                v-model="divideY1PerColor"
               />
-              <!-- Display the button to select the columns -->
-              <button
-                v-else
-                class="selectColumnsBtn"
-                title="Add more columns for the Y axis"
-                @click="y1AxisSelection = true"
+              <label
+                :for="'gbcY1' + index"
+                class="toggle"
               >
-                {{
-                  selectedY1ColumnsIds.length > 0
-                    ? `${selectedY1ColumnsIds.length} columns selected`
-                    : "+ Select Y1 columns"
-                }}
-              </button>
-
-              <!-- Group by color -->
-              <div
-                v-if="coloredColumnIndex !== null"
-                class="aligned"
-              >
-                Group by color
-                <input
-                  type="checkbox"
-                  :id="'gbcY1' + index"
-                  class="customCbx"
-                  style="display: none"
-                  v-model="divideY1PerColor"
-                />
-                <label
-                  :for="'gbcY1' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
-            </div>
-          </div>
-          <!-- Y axis 2 -->
-          <div class="data">
-            <div class="name">Y2 axis</div>
-            <div class="value gapped">
-              <!-- Display the selected column -->
-              <Column
-                v-if="selectedY2ColumnsIds.length == 1"
-                :column="data.columns.find((c) => c.index == selectedY2ColumnsIds[0])"
-                :colorSelection="true"
-                v-on:selected="y2AxisSelection = true"
-              />
-
-              <!-- Display the button to select the columns -->
-              <button
-                v-else
-                class="selectColumnsBtn"
-                title="Add more columns for the Y axis"
-                @click="y2AxisSelection = true"
-              >
-                {{
-                  selectedY2ColumnsIds.length > 0
-                    ? `${selectedY2ColumnsIds.length} columns selected`
-                    : "+ Select Y2 columns"
-                }}
-              </button>
-
-              <!-- Group by color -->
-              <div
-                v-if="coloredColumnIndex !== null"
-                class="aligned"
-              >
-                Group by color
-                <input
-                  type="checkbox"
-                  :id="'gbcY2' + index"
-                  class="customCbx"
-                  style="display: none"
-                  v-model="divideY2PerColor"
-                />
-                <label
-                  :for="'gbcY2' + index"
-                  class="toggle"
-                >
-                  <span></span>
-                </label>
-              </div>
+                <span></span>
+              </label>
             </div>
           </div>
         </div>
-        <div
-          class="dataGroup"
-          id="configButtons"
-        >
-          <!-- Tag column -->
-          <div class="data">
-            <span class="name">Background color</span>
-            <div
-              class="value"
-              v-if="columnTagIndex !== null"
-            >
-              <Column
-                :column="data.columns.find((c) => c.index == columnTagIndex)"
-                :colorSelection="true"
-                v-on:selected="tagAxisSelection = true"
-              />
-              <button
-                class="red"
-                @click="
-                  columnTagIndex = null;
-                  plotDrawn = false;
-                "
-              >
-                Remove
-              </button>
-            </div>
-            <div
-              class="value"
+        <!-- Y axis 2 -->
+        <div class="data">
+          <div class="name">Y2 axis</div>
+          <div class="value gapped">
+            <!-- Display the selected column -->
+            <Column
+              v-if="selectedY2ColumnsIds.length == 1"
+              :column="data.columns.find((c) => c.index == selectedY2ColumnsIds[0])"
+              :colorSelection="true"
+              v-on:selected="y2AxisSelection = true"
+            />
+
+            <!-- Display the button to select the columns -->
+            <button
               v-else
+              class="selectColumnsBtn"
+              title="Add more columns for the Y axis"
+              @click="y2AxisSelection = true"
             >
-              <button @click="tagAxisSelection = true">Select a column</button>
+              {{
+                selectedY2ColumnsIds.length > 0
+                  ? `${selectedY2ColumnsIds.length} columns selected`
+                  : "Select columns"
+              }}
+            </button>
+
+            <!-- Group by color -->
+            <div
+              v-if="coloredColumnIndex !== null"
+              class="aligned"
+            >
+              <span style="white-space: nowrap"> Group by color </span>
+              <input
+                type="checkbox"
+                :id="'gbcY2' + index"
+                class="customCbx"
+                style="display: none"
+                v-model="divideY2PerColor"
+              />
+              <label
+                :for="'gbcY2' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
             </div>
+          </div>
+        </div>
+        <!-- Background color -->
+        <div class="data">
+          <span class="name">Background color</span>
+          <div
+            class="value"
+            v-if="columnTagIndex !== null"
+          >
+            <Column
+              :column="data.columns.find((c) => c.index == columnTagIndex)"
+              :colorSelection="true"
+              v-on:selected="tagAxisSelection = true"
+            />
+            <button
+              class="red"
+              @click="
+                columnTagIndex = null;
+                plotDrawn = false;
+              "
+            >
+              Remove
+            </button>
+          </div>
+          <div
+            class="value"
+            v-else
+          >
+            <button @click="tagAxisSelection = true">Select column</button>
           </div>
         </div>
       </div>
@@ -450,24 +443,17 @@ export default {
       // Create the layout
       const layout = this.generatePlotLayout(colX, colY1, colY2);
 
+      // Deal with background tag color
+      if (this.columnTagIndex !== null) {
+        const heatmap = this.drawTagHeatmap(valuesX, layout);
+        data.unshift(heatmap);
+      }
+
       // Draw the plot
       Plotly.react(this.plotDiv, data, layout, { displayModeBar: false, responsive: true });
 
-      // // Deal with background tag color
-      // let traces = lines;
-      // // const traces = [];
-      // const heatmap = this.drawTagHeatmap(valuesX, layout);
-      // if (heatmap) {
-      //   // Set all the lines axis to y2
-      //   lines.forEach((line) => {
-      //     line.yaxis = "y2";
-      //   });
-
-      //   traces.unshift(heatmap);
-      // }
-
       // Deal with point click to select data
-      // Goal : place two lines and export boundaries
+      // Goal : place two vertical lines and export boundaries
       this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
       this.plotDiv.on("plotly_click", this.selectDataOnPlot);
 
@@ -642,6 +628,9 @@ export default {
           fixedrange: false,
           overlaying: "y",
           side: "right",
+
+          // Hide the grid
+          showgrid: false,
         };
       }
 
@@ -699,39 +688,37 @@ export default {
       const valuesTagY = [];
       for (let i = 0; i < valuesTag.length; i++) valuesTagY.push(1);
 
-      const heatmap = {
+      const trace = {
         name: colTag.label,
         x: x,
         y: valuesTagY,
         z: valuesTag,
         text: textTag,
-        hovertemplate: "%{text}",
+        hovertemplate: "%{text}, %{z}",
+        yaxis: "y3",
         type: "heatmap",
         opacity: 0.45,
         colorscale: "Portland",
       };
 
-      if (colTag.type === String) heatmap.showscale = false;
+      if (colTag.type === String) trace.showscale = false;
 
       // Complete the layout with an additional yaxis
-      layout.yaxis = {
+      layout.yaxis3 = {
         title: "Ax1",
-        side: "right",
+        side: "bottom",
         showgrid: false,
         showticklabels: false,
         showline: false,
         zeroline: false,
         ticks: "",
         ticksuffix: " ",
-      };
-      layout.yaxis2 = {
+
+        // Display behind the other axis
         overlaying: "y",
-        autorange: true,
-        type: "linear",
-        fixedrange: false,
       };
 
-      return heatmap;
+      return trace;
     },
     resetShapes() {
       if (this.border1 !== null && this.border2 !== null)
