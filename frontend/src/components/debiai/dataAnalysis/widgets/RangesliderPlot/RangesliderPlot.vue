@@ -101,7 +101,7 @@
               >
                 {{
                   selectedY1ColumnsIds.length > 0
-                    ? `${selectedY1ColumnsIds.length} Y column(s) selected`
+                    ? `${selectedY1ColumnsIds.length} columns selected`
                     : "+ Select Y1 columns"
                 }}
               </button>
@@ -149,7 +149,7 @@
               >
                 {{
                   selectedY2ColumnsIds.length > 0
-                    ? `${selectedY2ColumnsIds.length} Y column(s) selected`
+                    ? `${selectedY2ColumnsIds.length} columns selected`
                     : "+ Select Y2 columns"
                 }}
               </button>
@@ -257,8 +257,8 @@ export default {
       columnXindex: 0,
       selectedY1ColumnsIds: [],
       selectedY2ColumnsIds: [],
-      divideY1PerColor: true,
-      divideY2PerColor: true,
+      divideY1PerColor: false,
+      divideY2PerColor: false,
       columnTagIndex: null,
 
       // Other
@@ -305,7 +305,8 @@ export default {
         columnsY2: this.selectedY2ColumnsIds.map((id) => this.data.columns[id].label),
 
         // Options
-        dividePerColor: this.dividePerColor,
+        divideY1PerColor: this.divideY1PerColor,
+        divideY2PerColor: this.divideY2PerColor,
       };
 
       // Tag column
@@ -348,7 +349,8 @@ export default {
       }
 
       // Options
-      if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
+      if ("divideY1PerColor" in conf) this.divideY1PerColor = conf.divideY1PerColor;
+      if ("divideY2PerColor" in conf) this.divideY2PerColor = conf.divideY2PerColor;
       if (conf.columnTag === null || conf.columnTag === undefined) this.columnTagIndex = null;
       if ("columnTag" in conf && conf.columnTag !== null) {
         let c = this.data.columns.find((c) => c.label == conf.columnTag);
@@ -364,7 +366,8 @@ export default {
           vm.columnXindex,
           vm.selectedY1ColumnsIds,
           vm.selectedY2ColumnsIds,
-          vm.dividePerColor,
+          vm.divideY1PerColor,
+          vm.divideY2PerColor,
           vm.columnTagIndex,
           Date.now()
         ),
@@ -385,6 +388,9 @@ export default {
         confName = confName.slice(0, -3);
       }
 
+      if (this.divideY1PerColor && this.coloredColumnIndex !== null)
+        confName += " / " + this.data.columns[this.coloredColumnIndex].label;
+
       // Y2 axis
       if (this.selectedY2ColumnsIds.length >= 0) {
         confName += " & ";
@@ -394,9 +400,10 @@ export default {
         confName = confName.slice(0, -3);
       }
 
-      if (this.dividePerColor && this.coloredColumnIndex !== null)
+      if (this.divideY2PerColor && this.coloredColumnIndex !== null)
         confName += " / " + this.data.columns[this.coloredColumnIndex].label;
 
+      // Background color
       if (this.columnTagIndex !== null)
         confName += ", Background is " + this.data.columns[this.columnTagIndex].label;
 
@@ -417,14 +424,28 @@ export default {
       const valuesY1 = colY1.map((col) => this.selectedData.map((i) => col.values[i]));
       const valuesY2 = colY2.map((col) => this.selectedData.map((i) => col.values[i]));
 
-      let data;
-      if (this.dividePerColor && this.coloredColumnIndex !== null) {
+      // Generate the plot traces
+      let tracesY1;
+      if (this.divideY1PerColor && this.coloredColumnIndex !== null) {
         // Color
-        data = await this.generateColorerPlotData(valuesX, colY1, valuesY1, colY2, valuesY2);
+        tracesY1 = await this.generateColorerPlotTraces(valuesX, colY1, valuesY1);
+        if (!tracesY1) return; // Canceled
       } else {
         // No color
-        data = this.generatePlotData(valuesX, colY1, valuesY1, colY2, valuesY2);
+        tracesY1 = this.generatePlotTraces(valuesX, colY1, valuesY1);
       }
+
+      let tracesY2;
+      if (this.divideY2PerColor && this.coloredColumnIndex !== null) {
+        // Color
+        tracesY2 = await this.generateColorerPlotTraces(valuesX, colY2, valuesY2, "y2");
+        if (!tracesY2) return; // Canceled
+      } else {
+        // No color
+        tracesY2 = this.generatePlotTraces(valuesX, colY2, valuesY2, "y2");
+      }
+
+      const data = [...tracesY1, ...tracesY2];
 
       // Create the layout
       const layout = this.generatePlotLayout(colX, colY1, colY2);
@@ -454,12 +475,13 @@ export default {
       this.$parent.$emit("drawn");
       this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
-    generatePlotData(valuesX, colY1, valuesY1, colY2, valuesY2) {
-      // Create the Y1 traces
-      const tracesY1 = valuesY1.map((valuesY, i) => {
-        const yAxisColumnLabel = colY1[i].label;
+    generatePlotTraces(valuesX, colY, valuesY, isY2 = false) {
+      if (valuesY.length == 0) return [];
+      // Create the Y traces
+      const traces = valuesY.map((valuesY, i) => {
+        const yAxisColumnLabel = colY[i].label;
 
-        return {
+        const trace = {
           x: valuesX,
           y: valuesY,
           name: yAxisColumnLabel,
@@ -472,39 +494,35 @@ export default {
             },
           ],
         };
+
+        if (isY2) {
+          trace.yaxis = "y2";
+          trace.legendgroup = "Y2";
+          trace.line = { dash: "dot" };
+        } else {
+          trace.legendgroup = "Y1";
+        }
+
+        return trace;
       });
 
-      // Create the Y2 traces
-      const tracesY2 = valuesY2.map((valuesY, i) => {
-        const yAxisColumnLabel = colY2[i].label;
-
-        return {
-          x: valuesX,
-          y: valuesY,
-          name: yAxisColumnLabel,
-          yaxis: "y2",
-          type: "scatter",
-          transforms: [
-            {
-              type: "sort",
-              target: "x",
-              order: "descending",
-            },
-          ],
-        };
-      });
-
-      return [...tracesY1, ...tracesY2];
+      return traces;
     },
-    async generateColoredPlotData(valuesX, colY1, valuesY1, colY2, valuesY2) {
+    async generateColorerPlotTraces(valuesX, colY, valuesY, isY2 = false) {
+      if (valuesY.length == 0) return [];
+
       const colColor = this.data.columns[this.coloredColumnIndex];
 
+      // Check if the color column is not too big
       if (colColor.uniques.length > 20) {
         // This is a lot, we ask for confirmation
-        let rep = await swal({
+        const rep = await swal({
           title: "Long calculation: do you want to proceed ?",
-          text: "Range slider plot: You have selected to group data by color\
-           with more than 20 uniques values. This will create a lot of lines, this may\
+          text:
+            "Range slider plot: You have selected to group data by color\
+           with more than 20 uniques values (" +
+            colColor.uniques.length +
+            " unique values). This will create a lot of lines, this may\
            have an impact on the performances",
           icon: "warning",
           buttons: {
@@ -513,31 +531,35 @@ export default {
           },
           dangerMode: true,
         });
-        if (rep != "continue") return;
+        if (rep != "continue") return false;
       }
 
-      let selectedColorsValues =
+      // Get the colored column values
+      const selectedColorsValues =
         colColor.type == String
           ? this.selectedData.map((i) => colColor.valuesIndex[i])
           : this.selectedData.map((i) => colColor.values[i]);
-      let selectorUniques =
+      const selectorUniques =
         colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
-      valuesListY.forEach((valuesY, i) => {
-        const yAxisColumnLabel = colsY[i].label;
-        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
+      // Create the Y traces
+      // The traces are a combination of the Y selected axis
+      // and the color unique values
+      const traces = [];
 
-        groupedValues.forEach((idValues, j) => {
-          let colorX = idValues.map((k) => valuesX[k]);
-          let colorY = idValues.map((k) => valuesY[k]);
+      valuesY.forEach((valuesY, i) => {
+        const yAxisColumnLabel = colY[i].label;
+        const groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
 
-          let lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
+        const colorTraces = groupedValues.map((idValues, j) => {
+          const colorX = idValues.map((k) => valuesX[k]);
+          const colorY = idValues.map((k) => valuesY[k]);
 
-          lines.push({
+          const trace = {
             x: colorX,
             y: colorY,
             type: "line",
-            name: lineName,
+            name: yAxisColumnLabel + " - " + colColor.uniques[j],
             transforms: [
               {
                 type: "sort",
@@ -545,31 +567,53 @@ export default {
                 order: "descending",
               },
             ],
-          });
+          };
+
+          if (isY2) {
+            trace.yaxis = "y2";
+            trace.legendgroup = "Y2 - " + colColor.uniques[j];
+            trace.line = { dash: "dot" };
+          } else {
+            trace.legendgroup = "Y1 - " + colColor.uniques[j];
+          }
+
+          return trace;
         });
+
+        traces.push(...colorTraces);
       });
+
+      return traces;
     },
     generatePlotLayout(colX, colY1, colY2) {
       // Create the plot title
-      let colY1Labels = colY1.map((col) => col.label).join(", ");
-      let colY2Labels = colY2.map((col) => col.label).join(", ");
-      if (colY1Labels.length > 50) colY1Labels = colY1Labels.slice(0, 50) + "...";
-      if (colY2Labels.length > 50) colY2Labels = colY2Labels.slice(0, 50) + "...";
+      let plotTitle = "<b>" + colX.label + "</b>";
 
-      let plotTitle = "<b>" + colX.label + "</b> / <b>" + colY1Labels + "</b>";
+      // Add the Y1 columns to the title
+      let colY1Labels = colY1.map((col) => col.label).join(", ");
+      if (colY1Labels.length > 50) colY1Labels = colY1Labels.slice(0, 50) + "...";
+      if (colY1Labels.length > 0) {
+        plotTitle += "/ <b>" + colY1Labels + "</b>";
+        if (this.divideY1PerColor && this.coloredColumnIndex !== null)
+          plotTitle +=
+            " grouped by <b>" + this.data.columns[this.coloredColumnIndex].label + "</b>";
+      }
 
       // Add the Y2 columns to the title
-      if (colY2Labels.length > 0) plotTitle += " & <b>" + colY2Labels + "</b>";
+      let colY2Labels = colY2.map((col) => col.label).join(", ");
+      if (colY2Labels.length > 50) colY2Labels = colY2Labels.slice(0, 50) + "...";
+      if (colY2Labels.length > 0) {
+        plotTitle += " & <b>" + colY2Labels + "</b>";
+        if (this.divideY1PerColor && this.coloredColumnIndex !== null)
+          plotTitle +=
+            " grouped by <b>" + this.data.columns[this.coloredColumnIndex].label + "</b>";
+      }
 
-      // if (this.dividePerColor && this.coloredColumnIndex !== null) {
-      //   const colColor = this.data.columns[this.coloredColumnIndex];
-      //   plotTitle += " grouped by <b>" + colColor.label + "</b>";
-      // }
-
-      // if (this.columnTagIndex !== null) {
-      //   const colTag = this.data.columns[this.columnTagIndex];
-      //   plotTitle += " with background color <b>" + colTag.label + "</b>";
-      // }
+      // Add the background color to the title
+      if (this.columnTagIndex !== null) {
+        const colTag = this.data.columns[this.columnTagIndex];
+        plotTitle += " with background color <b>" + colTag.label + "</b>";
+      }
 
       // Create the layout
       const layout = {
@@ -578,15 +622,8 @@ export default {
           rangeslider: true,
         },
         yaxis: {
-          autorange: true,
-          type: "linear",
           fixedrange: false,
           title: this.selectedY1ColumnsIds.length == 1 ? colY1[0].label : "",
-        },
-        scene: {
-          yaxis: {
-            autorange: true,
-          },
         },
         selectdirection: "h",
         margin: {
@@ -602,6 +639,7 @@ export default {
       if (this.selectedY2ColumnsIds.length > 0) {
         layout.yaxis2 = {
           title: this.selectedY2ColumnsIds.length == 1 ? colY2[0].label : "",
+          fixedrange: false,
           overlaying: "y",
           side: "right",
         };
