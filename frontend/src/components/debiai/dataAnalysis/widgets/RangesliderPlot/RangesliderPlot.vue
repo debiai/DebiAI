@@ -699,7 +699,7 @@ export default {
         type: "heatmap",
         opacity: 0.45,
         colorscale: "Portland",
-        showscale: false
+        showscale: false,
       };
 
       if (colTag.type === String) trace.showscale = false;
