@@ -84,7 +84,7 @@
           <!-- Y axis 1 -->
           <div class="data">
             <div class="name">Y1 axis</div>
-            <div class="value">
+            <div class="value gapped">
               <!-- Display the selected column -->
               <Column
                 v-if="selectedY1ColumnsIds.length == 1"
@@ -105,12 +105,33 @@
                     : "+ Select Y1 columns"
                 }}
               </button>
+
+              <!-- Group by color -->
+              <div
+                v-if="coloredColumnIndex !== null"
+                class="aligned"
+              >
+                Group by color
+                <input
+                  type="checkbox"
+                  :id="'gbcY1' + index"
+                  class="customCbx"
+                  style="display: none"
+                  v-model="divideY1PerColor"
+                />
+                <label
+                  :for="'gbcY1' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
+              </div>
             </div>
           </div>
           <!-- Y axis 2 -->
           <div class="data">
             <div class="name">Y2 axis</div>
-            <div class="value">
+            <div class="value gapped">
               <!-- Display the selected column -->
               <Column
                 v-if="selectedY2ColumnsIds.length == 1"
@@ -132,6 +153,27 @@
                     : "+ Select Y2 columns"
                 }}
               </button>
+
+              <!-- Group by color -->
+              <div
+                v-if="coloredColumnIndex !== null"
+                class="aligned"
+              >
+                Group by color
+                <input
+                  type="checkbox"
+                  :id="'gbcY2' + index"
+                  class="customCbx"
+                  style="display: none"
+                  v-model="divideY2PerColor"
+                />
+                <label
+                  :for="'gbcY2' + index"
+                  class="toggle"
+                >
+                  <span></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -139,28 +181,6 @@
           class="dataGroup"
           id="configButtons"
         >
-          <!-- Group by color -->
-          <div
-            class="data"
-            v-if="coloredColumnIndex !== null"
-          >
-            <div class="name">Group by color</div>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'gbc' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="dividePerColor"
-              />
-              <label
-                :for="'gbc' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </div>
-          </div>
           <!-- Tag column -->
           <div class="data">
             <span class="name">Background color</span>
@@ -237,7 +257,8 @@ export default {
       columnXindex: 0,
       selectedY1ColumnsIds: [],
       selectedY2ColumnsIds: [],
-      dividePerColor: true,
+      divideY1PerColor: true,
+      divideY2PerColor: true,
       columnTagIndex: null,
 
       // Other
@@ -366,14 +387,12 @@ export default {
 
       // Y2 axis
       if (this.selectedY2ColumnsIds.length >= 0) {
-        confName += " / ";
+        confName += " & ";
         this.selectedY2ColumnsIds.forEach((id) => {
           confName += this.data.columns[id].label + ", ";
         });
         confName = confName.slice(0, -3);
       }
-
-      console.log(confName);
 
       if (this.dividePerColor && this.coloredColumnIndex !== null)
         confName += " / " + this.data.columns[this.coloredColumnIndex].label;
@@ -386,154 +405,45 @@ export default {
 
     // Display
     async drawPlot() {
-      var colX = this.data.columns[this.columnXindex];
+      // Get the X column
+      const colX = this.data.columns[this.columnXindex];
 
-      // Get the Y axis index
-      let YAxisIndexes = this.selectedY1ColumnsIds;
-      var colsY = YAxisIndexes.map((index) => this.data.columns[index]);
+      // Get the Y columns
+      const colY1 = this.selectedY1ColumnsIds.map((index) => this.data.columns[index]);
+      const colY2 = this.selectedY2ColumnsIds.map((index) => this.data.columns[index]);
 
-      // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesListY = colsY.map((col) => this.selectedData.map((i) => col.values[i]));
+      // Apply selection filters
+      const valuesX = this.selectedData.map((i) => colX.values[i]);
+      const valuesY1 = colY1.map((col) => this.selectedData.map((i) => col.values[i]));
+      const valuesY2 = colY2.map((col) => this.selectedData.map((i) => col.values[i]));
 
-      const lines = [];
-
+      let data;
       if (this.dividePerColor && this.coloredColumnIndex !== null) {
         // Color
-        const colColor = this.data.columns[this.coloredColumnIndex];
-
-        if (colColor.uniques.length > 20) {
-          // This is a lot, we ask for confirmation
-          let rep = await swal({
-            title: "Long calculation: do you want to proceed ?",
-            text: "Range slider plot: You have selected to group data by color\
-           with more than 20 uniques values. This will create a lot of lines, this may\
-           have an impact on the performances",
-            icon: "warning",
-            buttons: {
-              continue: { text: "continue", className: "warning" },
-              cancel: "cancel",
-            },
-            dangerMode: true,
-          });
-          if (rep != "continue") return;
-        }
-
-        let selectedColorsValues =
-          colColor.type == String
-            ? this.selectedData.map((i) => colColor.valuesIndex[i])
-            : this.selectedData.map((i) => colColor.values[i]);
-        let selectorUniques =
-          colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
-
-        valuesListY.forEach((valuesY, i) => {
-          const yAxisColumnLabel = colsY[i].label;
-          let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
-
-          groupedValues.forEach((idValues, j) => {
-            let colorX = idValues.map((k) => valuesX[k]);
-            let colorY = idValues.map((k) => valuesY[k]);
-
-            let lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
-
-            lines.push({
-              x: colorX,
-              y: colorY,
-              type: "line",
-              name: lineName,
-              transforms: [
-                {
-                  type: "sort",
-                  target: "x",
-                  order: "descending",
-                },
-              ],
-            });
-          });
-        });
+        data = await this.generateColorerPlotData(valuesX, colY1, valuesY1, colY2, valuesY2);
       } else {
         // No color
-        valuesListY.forEach((valuesY, i) => {
-          const yAxisColumnLabel = colsY[i].label;
-
-          lines.push({
-            x: valuesX,
-            y: valuesY,
-            type: "line",
-            name: yAxisColumnLabel,
-            transforms: [
-              {
-                type: "sort",
-                target: "x",
-                order: "descending",
-              },
-            ],
-          });
-        });
-        // Set the color to black if there is only one line
-        if (lines.length == 1) lines[0].line = { color: "black" };
-      }
-
-      // Create the plot title
-      let colYLabels = colsY.map((col) => col.label).join(", ");
-      if (colYLabels.length > 50) colYLabels = colYLabels.slice(0, 50) + "...";
-
-      let plotTitle = "<b>" + colX.label + "</b> / <b>" + colYLabels + "</b>";
-
-      if (this.dividePerColor && this.coloredColumnIndex !== null) {
-        const colColor = this.data.columns[this.coloredColumnIndex];
-        plotTitle += " grouped by <b>" + colColor.label + "</b>";
-      }
-
-      if (this.columnTagIndex !== null) {
-        const colTag = this.data.columns[this.columnTagIndex];
-        plotTitle += " with background color <b>" + colTag.label + "</b>";
+        data = this.generatePlotData(valuesX, colY1, valuesY1, colY2, valuesY2);
       }
 
       // Create the layout
-      const layout = {
-        title: plotTitle,
-        xaxis: {
-          rangeSlider: true,
-        },
-        yaxis: {
-          autorange: true,
-          type: "linear",
-          fixedrange: false,
-        },
-        scene: {
-          yaxis: {
-            autorange: true,
-          },
-        },
-        selectdirection: "h",
-        margin: {
-          l: 50,
-          r: 20,
-          b: 50,
-          t: 50,
-        },
-        shapes: [],
-      };
+      const layout = this.generatePlotLayout(colX, colY1, colY2);
 
-      // Deal with background tag color
-      let traces = lines;
-      // const traces = [];
-      const heatmap = this.drawTagHeatmap(valuesX, layout);
-      if (heatmap) {
-        // Set all the lines axis to y2
-        lines.forEach((line) => {
-          line.yaxis = "y2";
-        });
+      // Draw the plot
+      Plotly.react(this.plotDiv, data, layout, { displayModeBar: false, responsive: true });
 
-        traces.unshift(heatmap);
-      }
+      // // Deal with background tag color
+      // let traces = lines;
+      // // const traces = [];
+      // const heatmap = this.drawTagHeatmap(valuesX, layout);
+      // if (heatmap) {
+      //   // Set all the lines axis to y2
+      //   lines.forEach((line) => {
+      //     line.yaxis = "y2";
+      //   });
 
-      // Draw
-      Plotly.react(this.plotDiv, traces, layout, {
-        displayModeBar: false,
-        responsive: true,
-      });
+      //   traces.unshift(heatmap);
+      // }
 
       // Deal with point click to select data
       // Goal : place two lines and export boundaries
@@ -543,6 +453,161 @@ export default {
       this.plotDrawn = true;
       this.$parent.$emit("drawn");
       this.currentDrawnColorIndex = this.coloredColumnIndex;
+    },
+    generatePlotData(valuesX, colY1, valuesY1, colY2, valuesY2) {
+      // Create the Y1 traces
+      const tracesY1 = valuesY1.map((valuesY, i) => {
+        const yAxisColumnLabel = colY1[i].label;
+
+        return {
+          x: valuesX,
+          y: valuesY,
+          name: yAxisColumnLabel,
+          type: "scatter",
+          transforms: [
+            {
+              type: "sort",
+              target: "x",
+              order: "descending",
+            },
+          ],
+        };
+      });
+
+      // Create the Y2 traces
+      const tracesY2 = valuesY2.map((valuesY, i) => {
+        const yAxisColumnLabel = colY2[i].label;
+
+        return {
+          x: valuesX,
+          y: valuesY,
+          name: yAxisColumnLabel,
+          yaxis: "y2",
+          type: "scatter",
+          transforms: [
+            {
+              type: "sort",
+              target: "x",
+              order: "descending",
+            },
+          ],
+        };
+      });
+
+      return [...tracesY1, ...tracesY2];
+    },
+    async generateColoredPlotData(valuesX, colY1, valuesY1, colY2, valuesY2) {
+      const colColor = this.data.columns[this.coloredColumnIndex];
+
+      if (colColor.uniques.length > 20) {
+        // This is a lot, we ask for confirmation
+        let rep = await swal({
+          title: "Long calculation: do you want to proceed ?",
+          text: "Range slider plot: You have selected to group data by color\
+           with more than 20 uniques values. This will create a lot of lines, this may\
+           have an impact on the performances",
+          icon: "warning",
+          buttons: {
+            continue: { text: "continue", className: "warning" },
+            cancel: "cancel",
+          },
+          dangerMode: true,
+        });
+        if (rep != "continue") return;
+      }
+
+      let selectedColorsValues =
+        colColor.type == String
+          ? this.selectedData.map((i) => colColor.valuesIndex[i])
+          : this.selectedData.map((i) => colColor.values[i]);
+      let selectorUniques =
+        colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
+
+      valuesListY.forEach((valuesY, i) => {
+        const yAxisColumnLabel = colsY[i].label;
+        let groupedValues = dataOperations.groupBy(selectedColorsValues, selectorUniques);
+
+        groupedValues.forEach((idValues, j) => {
+          let colorX = idValues.map((k) => valuesX[k]);
+          let colorY = idValues.map((k) => valuesY[k]);
+
+          let lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
+
+          lines.push({
+            x: colorX,
+            y: colorY,
+            type: "line",
+            name: lineName,
+            transforms: [
+              {
+                type: "sort",
+                target: "x",
+                order: "descending",
+              },
+            ],
+          });
+        });
+      });
+    },
+    generatePlotLayout(colX, colY1, colY2) {
+      // Create the plot title
+      let colY1Labels = colY1.map((col) => col.label).join(", ");
+      let colY2Labels = colY2.map((col) => col.label).join(", ");
+      if (colY1Labels.length > 50) colY1Labels = colY1Labels.slice(0, 50) + "...";
+      if (colY2Labels.length > 50) colY2Labels = colY2Labels.slice(0, 50) + "...";
+
+      let plotTitle = "<b>" + colX.label + "</b> / <b>" + colY1Labels + "</b>";
+
+      // Add the Y2 columns to the title
+      if (colY2Labels.length > 0) plotTitle += " & <b>" + colY2Labels + "</b>";
+
+      // if (this.dividePerColor && this.coloredColumnIndex !== null) {
+      //   const colColor = this.data.columns[this.coloredColumnIndex];
+      //   plotTitle += " grouped by <b>" + colColor.label + "</b>";
+      // }
+
+      // if (this.columnTagIndex !== null) {
+      //   const colTag = this.data.columns[this.columnTagIndex];
+      //   plotTitle += " with background color <b>" + colTag.label + "</b>";
+      // }
+
+      // Create the layout
+      const layout = {
+        title: plotTitle,
+        xaxis: {
+          rangeslider: true,
+        },
+        yaxis: {
+          autorange: true,
+          type: "linear",
+          fixedrange: false,
+          title: this.selectedY1ColumnsIds.length == 1 ? colY1[0].label : "",
+        },
+        scene: {
+          yaxis: {
+            autorange: true,
+          },
+        },
+        selectdirection: "h",
+        margin: {
+          l: 70,
+          r: 20,
+          b: 50,
+          t: 50,
+        },
+        shapes: [],
+      };
+
+      // Add yaxis2 to the layout
+      if (this.selectedY2ColumnsIds.length > 0) {
+        layout.yaxis2 = {
+          title: this.selectedY2ColumnsIds.length == 1 ? colY2[0].label : "",
+          overlaying: "y",
+          side: "right",
+        };
+      }
+
+      return layout;
     },
     drawLine(x) {
       const lineStyle = {
@@ -664,6 +729,7 @@ export default {
       this.tagAxisSelection = false;
       this.plotDrawn = false;
     },
+
     // Filters
     selectDataOnPlot(data) {
       if (!this.filtering) return;
