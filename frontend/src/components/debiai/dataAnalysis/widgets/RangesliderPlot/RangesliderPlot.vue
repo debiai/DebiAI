@@ -18,32 +18,32 @@
         v-on:colSelect="xAxisSelect"
       />
     </modal>
+    <!-- multi Y1 axis selection -->
     <modal
-      v-if="yAxisSelection"
-      @close="yAxisSelection = false"
+      v-if="y1AxisSelection"
+      @close="y1AxisSelection = false"
     >
       <ColumnSelection
-        title="Select the Y axis"
+        title="Select the columns to display in the first Y axis"
         :data="data"
-        :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="yAxisSelection = false"
-        :defaultSelected="[columnYindex]"
-        v-on:colSelect="yAxisSelect"
+        :defaultSelected="[...selectedY1ColumnsIds]"
+        v-on:cancel="y1AxisSelection = false"
+        v-on:validate="y1AxisSelect"
       />
     </modal>
-    <!-- multi Y axis selection -->
+    <!-- multi Y2 axis selection -->
     <modal
-      v-if="yMultipleAxisSelection"
-      @close="yMultipleAxisSelection = false"
+      v-if="y2AxisSelection"
+      @close="y2AxisSelection = false"
     >
       <ColumnSelection
-        title="Select the other columns to display in Y axis"
+        title="Select the columns to display in the second Y axis"
         :data="data"
         :colorSelection="true"
-        :defaultSelected="[...selectedYColumnsIds]"
-        v-on:cancel="yMultipleAxisSelection = false"
-        v-on:validate="yMultipleAxisSelect"
+        :defaultSelected="[...selectedY2ColumnsIds]"
+        v-on:cancel="y2AxisSelection = false"
+        v-on:validate="y2AxisSelect"
       />
     </modal>
     <!-- Tag axis selection -->
@@ -70,6 +70,7 @@
       <div id="axisControls">
         <!-- Axis buttons -->
         <div class="dataGroup axis">
+          <!-- X axis -->
           <div class="data">
             <div class="name">X axis</div>
             <div class="value">
@@ -80,38 +81,55 @@
               />
             </div>
           </div>
-          <button
-            class="warning"
-            @click="swap"
-          >
-            Swap
-          </button>
+          <!-- Y axis 1 -->
           <div class="data">
-            <div class="name">Y axis</div>
-            <div
-              class="value"
-              v-if="!multipleYAxis"
-            >
+            <div class="name">Y1 axis</div>
+            <div class="value">
+              <!-- Display the selected column -->
               <Column
-                :column="data.columns.find((c) => c.index == columnYindex)"
+                v-if="selectedY1ColumnsIds.length == 1"
+                :column="data.columns.find((c) => c.index == selectedY1ColumnsIds[0])"
                 :colorSelection="true"
-                v-on:selected="yAxisSelection = true"
+                v-on:selected="y1AxisSelection = true"
               />
-            </div>
-            <div
-              class="value"
-              v-else
-            >
+              <!-- Display the button to select the columns -->
               <button
-                id="addColumnBtn"
-                class=""
+                v-else
+                class="selectColumnsBtn"
                 title="Add more columns for the Y axis"
-                @click="yMultipleAxisSelection = true"
+                @click="y1AxisSelection = true"
               >
                 {{
-                  selectedYColumnsIds.length > 0
-                    ? `${selectedYColumnsIds.length} Y column(s) selected`
-                    : "+ Select Y columns"
+                  selectedY1ColumnsIds.length > 0
+                    ? `${selectedY1ColumnsIds.length} Y column(s) selected`
+                    : "+ Select Y1 columns"
+                }}
+              </button>
+            </div>
+          </div>
+          <!-- Y axis 2 -->
+          <div class="data">
+            <div class="name">Y2 axis</div>
+            <div class="value">
+              <!-- Display the selected column -->
+              <Column
+                v-if="selectedY2ColumnsIds.length == 1"
+                :column="data.columns.find((c) => c.index == selectedY2ColumnsIds[0])"
+                :colorSelection="true"
+                v-on:selected="y2AxisSelection = true"
+              />
+
+              <!-- Display the button to select the columns -->
+              <button
+                v-else
+                class="selectColumnsBtn"
+                title="Add more columns for the Y axis"
+                @click="y2AxisSelection = true"
+              >
+                {{
+                  selectedY2ColumnsIds.length > 0
+                    ? `${selectedY2ColumnsIds.length} Y column(s) selected`
+                    : "+ Select Y2 columns"
                 }}
               </button>
             </div>
@@ -172,25 +190,6 @@
               <button @click="tagAxisSelection = true">Select a column</button>
             </div>
           </div>
-          <!-- Multiple Y axis -->
-          <div class="data">
-            <div class="name">Multiple Y columns</div>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'mya' + index"
-                class="customCbx"
-                style="display: none"
-                v-model="multipleYAxis"
-              />
-              <label
-                :for="'mya' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -208,7 +207,7 @@
     <div
       class="plot"
       :id="'rangeSliderPlot_' + this.index"
-    ></div>
+    />
   </div>
 </template>
 
@@ -230,15 +229,14 @@ export default {
       // Settings
       settings: true,
       xAxisSelection: false,
-      yAxisSelection: false,
-      yMultipleAxisSelection: false,
-      multipleYAxis: false,
+      y1AxisSelection: false,
+      y2AxisSelection: false,
       tagAxisSelection: false,
 
       // Conf
       columnXindex: 0,
-      columnYindex: 0,
-      selectedYColumnsIds: [],
+      selectedY1ColumnsIds: [],
+      selectedY2ColumnsIds: [],
       dividePerColor: true,
       columnTagIndex: null,
 
@@ -271,10 +269,7 @@ export default {
   mounted() {
     this.plotDiv = document.getElementById("rangeSliderPlot_" + this.index);
 
-    if (this.data.columns.length >= 2) {
-      this.xAxisSelect(0);
-      this.yAxisSelect(1);
-    }
+    if (this.data.columns.length >= 1) this.xAxisSelect(0);
 
     // Watch for configuration changes
     this.defConfChangeUpdate();
@@ -285,16 +280,12 @@ export default {
       let conf = {
         // Axis
         columnX: this.data.columns[this.columnXindex].label,
+        columnsY1: this.selectedY1ColumnsIds.map((id) => this.data.columns[id].label),
+        columnsY2: this.selectedY2ColumnsIds.map((id) => this.data.columns[id].label),
+
+        // Options
         dividePerColor: this.dividePerColor,
       };
-
-      // Multiple Y axis
-      if (this.multipleYAxis) {
-        conf.multipleYAxis = true;
-        conf.YColumns = this.selectedYColumnsIds.map((id) => this.data.columns[id].label);
-      } else {
-        conf.columnY = this.data.columns[this.columnYindex].label;
-      }
 
       // Tag column
       if (this.columnTagIndex !== null)
@@ -311,25 +302,31 @@ export default {
         });
       };
       if (!conf) return;
+
+      // Axis
       if ("columnX" in conf) {
         let c = this.data.columns.find((c) => c.label == conf.columnX);
         if (c) this.columnXindex = c.index;
         else sendColNotFoundMessage(conf.columnX);
       }
-      if ("columnY" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnY);
-        if (c) this.columnYindex = c.index;
-        else sendColNotFoundMessage(conf.columnY);
-      }
-      if ("multipleYAxis" in conf && conf.multipleYAxis && "YColumns" in conf) {
-        this.multipleYAxis = true;
-        this.selectedYColumnsIds = [];
-        conf.YColumns.forEach((label) => {
+      if ("columnsY1" in conf) {
+        this.selectedY1ColumnsIds = [];
+        conf.columnsY1.forEach((label) => {
           let c = this.data.columns.find((c) => c.label == label);
-          if (c) this.selectedYColumnsIds.push(c.index);
+          if (c) this.selectedY1ColumnsIds.push(c.index);
           else sendColNotFoundMessage(label);
         });
-      } else this.multipleYAxis = false;
+      }
+      if ("columnsY2" in conf) {
+        this.selectedY2ColumnsIds = [];
+        conf.columnsY2.forEach((label) => {
+          let c = this.data.columns.find((c) => c.label == label);
+          if (c) this.selectedY2ColumnsIds.push(c.index);
+          else sendColNotFoundMessage(label);
+        });
+      }
+
+      // Options
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
       if (conf.columnTag === null || conf.columnTag === undefined) this.columnTagIndex = null;
       if ("columnTag" in conf && conf.columnTag !== null) {
@@ -337,16 +334,16 @@ export default {
         if (c) this.columnTagIndex = c.index;
         else sendColNotFoundMessage(conf.columnTag);
       }
+
       this.plotDrawn = false;
     },
     defConfChangeUpdate() {
       this.$watch(
         (vm) => (
           vm.columnXindex,
-          vm.columnYindex,
-          vm.selectedYColumnsIds,
+          vm.selectedY1ColumnsIds,
+          vm.selectedY2ColumnsIds,
           vm.dividePerColor,
-          vm.multipleYAxis,
           vm.columnTagIndex,
           Date.now()
         ),
@@ -356,21 +353,28 @@ export default {
       );
     },
     getConfNameSuggestion() {
-      let confName;
-      if (this.multipleYAxis) {
-        confName = this.data.columns[this.columnXindex].label + " / ";
-        this.selectedYColumnsIds.forEach((id) => {
+      // X axis
+      let confName = this.data.columns[this.columnXindex].label + " / ";
+
+      // Y2 axis
+      if (this.selectedY1ColumnsIds.length >= 0) {
+        this.selectedY1ColumnsIds.forEach((id) => {
           confName += this.data.columns[id].label + ", ";
         });
         confName = confName.slice(0, -3);
-      } else
-        confName =
-          this.data.columns[this.columnXindex].label +
-          " / " +
-          this.data.columns[this.columnYindex].label;
+      }
 
-      console.log(this.multipleYAxis);
+      // Y2 axis
+      if (this.selectedY2ColumnsIds.length >= 0) {
+        confName += " / ";
+        this.selectedY2ColumnsIds.forEach((id) => {
+          confName += this.data.columns[id].label + ", ";
+        });
+        confName = confName.slice(0, -3);
+      }
+
       console.log(confName);
+
       if (this.dividePerColor && this.coloredColumnIndex !== null)
         confName += " / " + this.data.columns[this.coloredColumnIndex].label;
 
@@ -385,9 +389,7 @@ export default {
       var colX = this.data.columns[this.columnXindex];
 
       // Get the Y axis index
-      let YAxisIndexes;
-      if (this.multipleYAxis) YAxisIndexes = this.selectedYColumnsIds;
-      else YAxisIndexes = [this.columnYindex];
+      let YAxisIndexes = this.selectedY1ColumnsIds;
       var colsY = YAxisIndexes.map((index) => this.data.columns[index]);
 
       // Apply selection
@@ -432,9 +434,7 @@ export default {
             let colorX = idValues.map((k) => valuesX[k]);
             let colorY = idValues.map((k) => valuesY[k]);
 
-            let lineName;
-            if (this.multipleYAxis) lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
-            else lineName = colColor.uniques[j];
+            let lineName = yAxisColumnLabel + " - " + colColor.uniques[j];
 
             lines.push({
               x: colorX,
@@ -475,14 +475,10 @@ export default {
       }
 
       // Create the plot title
-      let plotTitle;
+      let colYLabels = colsY.map((col) => col.label).join(", ");
+      if (colYLabels.length > 50) colYLabels = colYLabels.slice(0, 50) + "...";
 
-      if (this.multipleYAxis) {
-        let colYLabels = colsY.map((col) => col.label).join(", ");
-        if (colYLabels.length > 50) colYLabels = colYLabels.slice(0, 50) + "...";
-
-        plotTitle = "<b>" + colX.label + "</b> / <b>" + colYLabels + "</b>";
-      } else plotTitle = "<b>" + colX.label + "</b> / <b>" + colsY[0].label + "</b>";
+      let plotTitle = "<b>" + colX.label + "</b> / <b>" + colYLabels + "</b>";
 
       if (this.dividePerColor && this.coloredColumnIndex !== null) {
         const colColor = this.data.columns[this.coloredColumnIndex];
@@ -612,13 +608,12 @@ export default {
         colorscale: "Portland",
       };
 
-      if (colTag.type === String || this.multipleYAxis) heatmap.showscale = false;
+      if (colTag.type === String) heatmap.showscale = false;
 
       // Complete the layout with an additional yaxis
       layout.yaxis = {
         title: "Ax1",
         side: "right",
-        title: "",
         showgrid: false,
         showticklabels: false,
         showline: false,
@@ -654,21 +649,15 @@ export default {
       this.xAxisSelection = false;
       this.plotDrawn = false;
     },
-    yAxisSelect(index) {
-      this.columnYindex = index;
-      this.yAxisSelection = false;
+    y1AxisSelect(indexes) {
+      this.selectedY1ColumnsIds = indexes;
+      this.y1AxisSelection = false;
       this.plotDrawn = false;
     },
-    yMultipleAxisSelect(indexes) {
-      this.selectedYColumnsIds = indexes;
-      this.yMultipleAxisSelection = false;
+    y2AxisSelect(indexes) {
+      this.selectedY2ColumnsIds = indexes;
+      this.y2AxisSelection = false;
       this.plotDrawn = false;
-    },
-    swap() {
-      let temp = this.columnYindex;
-      this.columnYindex = this.columnXindex;
-      this.columnXindex = temp;
-      this.drawPlot();
     },
     tagAxisSelect(index) {
       this.columnTagIndex = index;
@@ -816,14 +805,17 @@ export default {
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
-    multipleYAxis() {
+    selectedY1ColumnsIds() {
+      this.plotDrawn = false;
+    },
+    selectedY2ColumnsIds() {
       this.plotDrawn = false;
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #RangeSliderPlot {
   display: flex;
   flex-direction: column;
@@ -843,6 +835,10 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
+
+  .selectColumnsBtn {
+    white-space: nowrap;
+  }
 }
 
 .otherControls {
