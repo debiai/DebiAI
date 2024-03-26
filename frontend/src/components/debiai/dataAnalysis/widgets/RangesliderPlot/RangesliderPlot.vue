@@ -609,7 +609,7 @@ export default {
         },
         yaxis: {
           fixedrange: false,
-          title: this.selectedY1ColumnsIds.length == 1 ? colY1[0].label : "",
+          title: this.selectedY1ColumnsIds.length == 1 ? colY1[0].label : colY1Labels,
         },
         selectdirection: "h",
         margin: {
@@ -624,7 +624,7 @@ export default {
       // Add yaxis2 to the layout
       if (this.selectedY2ColumnsIds.length > 0) {
         layout.yaxis2 = {
-          title: this.selectedY2ColumnsIds.length == 1 ? colY2[0].label : "",
+          title: this.selectedY2ColumnsIds.length == 1 ? colY2[0].label : colY2Labels,
           fixedrange: false,
           overlaying: "y",
           side: "right",
@@ -699,13 +699,14 @@ export default {
         type: "heatmap",
         opacity: 0.45,
         colorscale: "Portland",
+        showscale: false
       };
 
       if (colTag.type === String) trace.showscale = false;
 
       // Complete the layout with an additional yaxis
       layout.yaxis3 = {
-        title: "Ax1",
+        title: "",
         side: "bottom",
         showgrid: false,
         showticklabels: false,
