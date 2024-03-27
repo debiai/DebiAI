@@ -115,7 +115,7 @@
           If you're interested in following specific use cases and learning through practical
           examples, check out our
           <a
-            href="https://debiai.irt-systemx.fr/useCases/woodscape/"
+            href="https://debiai.irt-systemx.fr/tutorials/woodscapeTutorial/"
             target="_blank"
             >Complete step by step guide</a
           >.
