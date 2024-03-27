@@ -81,13 +81,11 @@ export default {
   },
   data() {
     return {
-      newWidgetName: "",
       configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creationDate }]
     };
   },
   created() {
     this.loadWidgetConfigurations();
-    this.newWidgetName = this.widgetName;
   },
   methods: {
     loadWidgetConfigurations() {
@@ -103,7 +101,7 @@ export default {
         });
     },
     handleConfSaved(confName) {
-      this.newWidgetName = confName;
+      this.$emit("saved", confName);
       this.loadWidgetConfigurations();
     },
   },
