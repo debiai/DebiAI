@@ -80,7 +80,7 @@
     </modal>
     <!-- WidgetCatalog -->
     <modal
-      v-show="widgetCatalog"
+      v-if="widgetCatalog"
       @close="widgetCatalog = false"
       :preventBodyScroll="false"
     >

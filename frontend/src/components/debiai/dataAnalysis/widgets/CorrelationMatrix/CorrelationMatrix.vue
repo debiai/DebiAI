@@ -273,6 +273,37 @@ export default {
       this.$parent.$emit("drawn");
       this.matrixDrawn = true;
     },
+    // Conf
+    getConf() {
+      let conf = {
+        selectedColumns: this.selectedColumns.map((c) => c.index),
+        selectedMatrixType: this.selectedMatrixType,
+        significativeOnly: this.significativeOnly,
+      };
+
+      return conf;
+    },
+    setConf(conf) {
+      if (!conf) return;
+      if ("selectedColumns" in conf) {
+        this.selectedColumns = conf.selectedColumns
+          .map((colId) => {
+            const column = this.data.columns.find((col) => col.index == colId);
+            if (!column) {
+              this.$store.commit("sendMessage", {
+                title: "warning",
+                msg: "The selected column " + colId + " hasn't been found",
+              });
+            }
+            return column;
+          })
+          .filter((column) => column && column.nbOccurrence > 1);
+      }
+      if ("selectedMatrixType" in conf) this.selectedMatrixType = conf.selectedMatrixType;
+      if ("significativeOnly" in conf) this.significativeOnly = conf.significativeOnly;
+
+      this.calculate();
+    },
 
     // Export
     async getImage() {

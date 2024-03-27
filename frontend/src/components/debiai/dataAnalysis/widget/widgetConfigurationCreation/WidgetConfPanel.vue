@@ -35,7 +35,11 @@
           :widgetTitle="widgetTitle"
           :widgetKey="widgetKey"
           :suggestedConfName="suggestedConfName"
-          @saved="(confName) => $emit('saved', confName)"
+          @saved="
+            (confName) => {
+              handleConfSaved(confName);
+            }
+          "
           class="card"
         />
       </div>
@@ -77,13 +81,11 @@ export default {
   },
   data() {
     return {
-      newWidgetName: "",
       configurations: [], // [{ id, name, description, configuration, projectId, dataProviderId, creationDate }]
     };
   },
   created() {
     this.loadWidgetConfigurations();
-    this.newWidgetName = this.widgetName;
   },
   methods: {
     loadWidgetConfigurations() {
@@ -97,6 +99,10 @@ export default {
         .catch((e) => {
           console.log(e);
         });
+    },
+    handleConfSaved(confName) {
+      this.$emit("saved", confName);
+      this.loadWidgetConfigurations();
     },
   },
 };
