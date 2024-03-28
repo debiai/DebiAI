@@ -1,7 +1,7 @@
 <div align="center">
     <img src="images/DebiAI_logo.svg" height="200" align="">
 
-[![Online documentation](https://img.shields.io/static/v1?label=&message=Online documentation =0077de)](https://debiai.irt-systemx.fr/)
+[![Online documentation](https://img.shields.io/static/v1?label=&message=Online documentation&color=0077de)](https://debiai.irt-systemx.fr/)
 </br>
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![cd](https://github.com/debiai/debiai/actions/workflows/docker-push.yml/badge.svg)
@@ -75,11 +75,11 @@ Withing the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been a
 <p align="center">
   DebiAI is developed by 
   <a href="https://www.irt-systemx.fr/" title="IRT SystemX">
-   <img src="https://www.irt-systemx.fr/wp-content/uploads/2013/03/system-x-logo.jpeg"  height="70" style="border-radius: 5px; margin:10px; padding:10px; background:white">
+   <img src="https://www.irt-systemx.fr/wp-content/uploads/2013/03/system-x-logo.jpeg"  height="70">
   </a>
   And is integrated in 
   <a href="https://www.confiance.ai/" title="Confiance.ai">
-   <img src="https://pbs.twimg.com/profile_images/1443838558549258264/EvWlv1Vq_400x400.jpg"  height="70"  style="border-radius: 5px; margin:10px; padding:10px; background:white">
+   <img src="https://pbs.twimg.com/profile_images/1443838558549258264/EvWlv1Vq_400x400.jpg"  height="70">
   </a>
 </p>
 
