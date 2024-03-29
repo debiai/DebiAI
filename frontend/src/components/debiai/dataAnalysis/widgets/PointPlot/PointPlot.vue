@@ -733,7 +733,9 @@ export default {
           "The column X " +
           colNameX +
           " has exceeded the recommended 1000 uniques values" +
-          "("+ uniquesValX +")" +
+          "(" +
+          uniquesValX +
+          ")" +
           "\n";
       }
 
@@ -742,7 +744,9 @@ export default {
           "The column Y " +
           colNameY +
           " has exceeded the recommended 1000 uniques values" +
-          "("+ uniquesValY +")" +
+          "(" +
+          uniquesValY +
+          ")" +
           "\n";
       }
 
