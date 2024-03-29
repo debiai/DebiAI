@@ -384,7 +384,7 @@ export default {
       // === Configuration ===
       // Axis
       columnXindex: 0,
-      columnYindex: 0,
+      columnYindex: 1,
       // Shared settings
       dividePerColor: true,
       absolute: false,
@@ -433,8 +433,6 @@ export default {
   },
   mounted() {
     this.divPointPlot = document.getElementById("PPDiv" + this.index);
-    this.xAxisSelect(0);
-    this.yAxisSelect(1);
     this.setPointOpacity();
 
     // Watch for configuration changes
@@ -723,17 +721,29 @@ export default {
     async DoesUserAcceptRisk() {
       let colX = this.data.columns[this.columnXindex];
       let colY = this.data.columns[this.columnYindex];
+      let colNameX = colX.label;
+      let colNameY = colY.label;
       let uniquesValX = colX.uniques.length;
       let uniquesValY = colY.uniques.length;
 
       let warningMessage = "";
 
       if (colX.type == String && uniquesValX > 1000) {
-        warningMessage += "The column X has more than 1000 uniques values\n";
+        warningMessage +=
+          "The column X " +
+          colNameX +
+          " has exceeded the recommended 1000 uniques values" +
+          "("+ uniquesValX +")" +
+          "\n";
       }
 
       if (colY.type == String && uniquesValY > 100) {
-        warningMessage += "The column Y has more than 100 uniques values\n";
+        warningMessage +=
+          "The column Y " +
+          colNameY +
+          " has exceeded the recommended 1000 uniques values" +
+          "("+ uniquesValY +")" +
+          "\n";
       }
 
       if (warningMessage == "") return true;
@@ -1185,15 +1195,21 @@ export default {
       this.pointPlotDrawn = false;
     },
     async swap() {
-      const userAccept = await this.DoesUserAcceptRisk();
-      if (!userAccept) return;
-
       let memoryLinePlotDrawn = this.linePlotDrawn;
+      // Swap the columns
       let temp = this.columnYindex;
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
+      // Ask the user if he accepts the risk then swap the columns
+      const userAccept = await this.DoesUserAcceptRisk();
+      if (!userAccept) {
+        // if he does not accept, swap back the columns
+        temp = this.columnXindex;
+        this.columnXindex = this.columnYindex;
+        this.columnYindex = temp;
+        return;
+      }
       this.setBins();
-
       this.linePlotDrawn = memoryLinePlotDrawn;
       this.updateTraces();
     },
