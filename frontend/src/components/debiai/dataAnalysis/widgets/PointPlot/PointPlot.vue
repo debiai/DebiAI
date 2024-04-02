@@ -743,7 +743,7 @@ export default {
         warningMessage +=
           "The column Y " +
           colNameY +
-          " has exceeded the recommended 1000 uniques values" +
+          " has exceeded the recommended 100 uniques values" +
           "(" +
           uniquesValY +
           ")" +
@@ -760,7 +760,7 @@ export default {
         dangerMode: true,
       });
 
-      return rep == true;
+      return rep;
     },
 
     async linePlot() {
@@ -1204,7 +1204,7 @@ export default {
       let temp = this.columnYindex;
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
-      // Ask the user if he accepts the risk then swap the columns
+      // Ask the user if he accepts the risk
       const userAccept = await this.DoesUserAcceptRisk();
       if (!userAccept) {
         // if he does not accept, swap back the columns
