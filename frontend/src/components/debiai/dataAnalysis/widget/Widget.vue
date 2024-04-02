@@ -545,6 +545,10 @@ export default {
       const storeFilters = this.$store.state.StatisticalAnalysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
+    // Get local filters
+    getLocalFilters() {
+      return this.localFilters;
+    },
 
     // Export
     setExport(exportData) {

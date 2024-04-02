@@ -518,6 +518,13 @@ export default {
       // Update the components list with their config
       this.components.forEach((component) => {
         component.config = this.$refs[component.id][0].getComponentConf();
+        console.log(this.$refs[component.id][0]);
+      });
+    },
+    updateLayoutLocalFilters() {
+      // Update the components list with their local filters
+      this.components.forEach((component) => {
+        component.localFilters = this.$refs[component.id][0].getLocalFilters();
       });
     },
     saveLayout() {
@@ -526,6 +533,9 @@ export default {
 
       // Get the current layout from the gridstack
       this.updateLayoutConfig();
+      // Get the local filter configuration
+      this.updateLayoutLocalFilters();
+
       let gridStackLayout = this.grid.save();
       const layout = [];
       gridStackLayout.forEach((gsComp) => {
@@ -536,6 +546,7 @@ export default {
         // Add the widgetKey and config to the gs layout
         gsComp.widgetKey = gridComponent.widgetKey;
         gsComp.config = gridComponent.config;
+        gsComp.localFilters = gridComponent.localFilters;
 
         layout.push(gsComp);
       });
@@ -561,6 +572,7 @@ export default {
       // We remove some properties from the layout
       // Expected layout:
       // [{ x, y, w, h, widgetKey, config }];
+
       layout.forEach((component) => {
         requestBody.layout.push({
           x: component.x,
@@ -569,9 +581,12 @@ export default {
           height: component.height,
           widgetKey: component.widgetKey,
           config: component.config,
+          localFilters: component.localFilters,
         });
+        console.log("component : ", component);
       });
-
+      // Save the body into a json file
+      console.log(requestBody);
       // Send the request
       this.$backendDialog
         .saveLayout(requestBody)
@@ -675,6 +690,9 @@ export default {
 
           // Get configuration
           const config = this.$refs[componentId][0].getComponentConf();
+
+          // Get local filters
+          // TODO and add to markdown
 
           // Get Comments
           const comments = this.$refs[componentId][0].getComments();
