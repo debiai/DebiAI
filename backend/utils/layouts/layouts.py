@@ -3,7 +3,18 @@ import json
 import utils.utils as utils
 import uuid
 
+# from marshmallow import Schema, fields
+
 LAYOUTS_PATH = "data/layouts.json"
+
+
+# class layoutSchema(Schema):
+#     id = fields.Int()
+#     name, description, projectId, dataProviderId = fields.Str()
+#     creationDate = fields.DateTime(default=utils.timeNow())
+#     layout = fields.Dict()
+#     lastLayoutSaved = fields.Bool()
+
 
 # Layouts file structure
 # [
@@ -24,6 +35,8 @@ LAYOUTS_PATH = "data/layouts.json"
 #            "height": 0,
 #            "config": {}, # Widget config (optional)
 #            "name": "", # Name given to the widget (optional)
+#            "localFilters" : [
+#             {}],
 #          },
 #       ],
 #       "selectedColorColumn": "col", # (optional)
@@ -77,12 +90,20 @@ def add_layout(data):
             "widgetKey": widget["widgetKey"],
         }
 
-        if "config" in widget:
-            widget_position["config"] = widget["config"]
+    # if "config" in widget:
+    #     widget_position["config"] = widget["config"]
 
-        if "name" in widget:
-            widget_position["name"] = widget["name"]
+    # if "name" in widget:
+    #     widget_position["name"] = widget["name"]
 
+    # if "localFilters" in widget:
+    #     widget_position["localFilters"] = widget["localFilters"]
+
+    keys = ["config", "name", "localFilters"]
+
+    for key in keys:
+        if key in widget:
+            widget_position[key] = widget[key]
         layout_to_add.append(widget_position)
 
     file_to_add = {
