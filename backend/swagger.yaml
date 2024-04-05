@@ -483,8 +483,8 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict:
-    post:
+  ? /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict
+  : post:
       summary: Add a results to a model
       tags: [Model]
       operationId: controller.pythonModuleDp.add_results_dict
@@ -524,8 +524,8 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
-    post:
+  ? /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults
+  : post:
       summary: Get the model results from a sample list
       tags: [Model]
       operationId: controller.models.get_results
@@ -706,8 +706,8 @@ paths:
           schema:
             type: object
 
-  /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
-    get:
+  ? /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}
+  : get:
       summary: Get a project selection id list
       tags: [Selection]
       operationId: controller.selection.get_selection_id_list
@@ -1773,6 +1773,13 @@ definitions:
           type: object
           description: Configuration of the widget
           x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object
+
 
   # Algo providers
   algoProvider:

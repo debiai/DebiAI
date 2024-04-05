@@ -206,53 +206,14 @@ export default {
     },
     save(e) {
       e.preventDefault();
-
-      const requestBody = {
+      this.$emit("save", {
         name: this.layoutName,
         description: this.layoutDescription,
-        layout: [],
-      };
-
-      // Expected layout:
-      // [{ x, y, w, h, widgetKey, config }];
-
-      this.current_layout.forEach((component) => {
-        requestBody.layout.push({
-          x: component.x,
-          y: component.y,
-          width: component.width,
-          height: component.height,
-          widgetKey: component.widgetKey,
-          config: component.config,
-        });
       });
-
-      // Add the selectedColorColumn
-      const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
-      if (coloredColumnIndex !== null) {
-        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
-      }
-
-      // Send the request
-      this.$backendDialog
-        .saveLayout(requestBody)
-        .then(() => {
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Layout saved",
-          });
-          // this.$emit("cancel");
-          this.showNewLayoutModal = false;
-          this.layoutName = "New layout";
-          this.loadLayouts();
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't save the layout",
-          });
-        });
+      this.showNewLayoutModal = false;
+      this.layoutName = "New layout";
+      this.layoutDescription = "";
+      this.loadLayouts();
     },
     deleteLayout(layoutId) {
       this.$backendDialog

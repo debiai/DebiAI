@@ -65,6 +65,7 @@
         :gridstack="grid"
         @cancel="layoutModal = false"
         @selected="loadLayout"
+        @save="(parameters) => saveLayout(parameters.name, parameters.description)"
       />
     </modal>
     <!-- Algorithms -->
@@ -114,6 +115,7 @@
           :widgetKey="component.widgetKey"
           :title="component.name"
           :configuration="component.configuration"
+          :localFilters="component.localFilters"
           :index="component.id"
           :ref="component.id"
           v-on:remove="removeWidget(component)"
@@ -370,11 +372,6 @@ export default {
       const componentElement = document.getElementById(component.id);
       componentElement.style.animation = "hiThere 300ms ease-in-out";
     });
-
-    // this.grid.on("added removed change", () => {
-    //   // Save layout in local cache
-    //   this.saveLayout();
-    // });
   },
   methods: {
     // Grid stack & widgets
@@ -466,6 +463,9 @@ export default {
         // set configuration from given layout
         if (c.config) component.configuration = { configuration: c.config };
 
+        // set local filters from given layout
+        if (c.localFilters) component.localFilters = c.localFilters;
+
         this.components.push(component);
       });
 
@@ -518,7 +518,6 @@ export default {
       // Update the components list with their config
       this.components.forEach((component) => {
         component.config = this.$refs[component.id][0].getComponentConf();
-        console.log(this.$refs[component.id][0]);
       });
     },
     updateLayoutLocalFilters() {
@@ -527,7 +526,7 @@ export default {
         component.localFilters = this.$refs[component.id][0].getLocalFilters();
       });
     },
-    saveLayout() {
+    saveLayout(name, description, lastLayoutSaved = false) {
       // Get the current layout
       if (!this.grid) return;
 
@@ -551,16 +550,11 @@ export default {
         layout.push(gsComp);
       });
 
-      // Create the layout save request body
-      const projectId = this.$store.state.ProjectPage.projectId;
-      const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
-
       const requestBody = {
-        name: projectId + " last layout",
-        description:
-          "Last layout for project " + projectId + " and data provider " + dataProviderId,
+        name,
+        description,
         layout: [],
-        lastLayoutSaved: true, // This will erase the previous last layout saved
+        lastLayoutSaved: lastLayoutSaved, // This will erase the previous last layout saved
       };
 
       // Add the selectedColorColumn
@@ -583,10 +577,8 @@ export default {
           config: component.config,
           localFilters: component.localFilters,
         });
-        console.log("component : ", component);
       });
       // Save the body into a json file
-      console.log(requestBody);
       // Send the request
       this.$backendDialog
         .saveLayout(requestBody)
@@ -692,7 +684,7 @@ export default {
           const config = this.$refs[componentId][0].getComponentConf();
 
           // Get local filters
-          // TODO and add to markdown
+          const localFilters = this.$refs[componentId][0].getLocalFilters();
 
           // Get Comments
           const comments = this.$refs[componentId][0].getComments();
@@ -704,6 +696,7 @@ export default {
             comments: comments,
             imageUrl: imageUrl,
             config: config,
+            localFilters: localFilters,
           });
         }
 
@@ -749,10 +742,17 @@ export default {
     },
   },
   beforeDestroy() {
-    // Save the layout
-    this.saveLayout();
+    // Save the last layout
+    const projectId = this.$store.state.ProjectPage.projectId;
+    const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
 
-    // this.$store.commit("selectProjectId", null);
+    const name = projectId + " last layout";
+    const description =
+      "Last layout for project " + projectId + " and data provider " + dataProviderId;
+
+    this.saveLayout(name, description, true);
+
+    // Clear the filters and other stored data
     this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
 

@@ -344,6 +344,7 @@ export default {
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     configuration: { type: Object },
+    localFiltersIn: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -413,6 +414,11 @@ export default {
 
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
+
+        // Apply local filters
+        if (this.canFilterSamples && this.localFiltersIn.filters) {
+          this.setLocalFilters(this.localFiltersIn.filters);
+        }
         this.loading = false;
       } else {
         // No component instance
@@ -545,9 +551,11 @@ export default {
       const storeFilters = this.$store.state.StatisticalAnalysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
-    // Get local filters
     getLocalFilters() {
       return this.localFilters;
+    },
+    setLocalFilters(filters) {
+      this.localFilters = filters;
     },
 
     // Export
