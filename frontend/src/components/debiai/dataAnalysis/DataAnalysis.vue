@@ -115,7 +115,7 @@
           :widgetKey="component.widgetKey"
           :title="component.name"
           :configuration="component.configuration"
-          :localFilters="component.localFilters"
+          :localFiltersIn="component.localFilters"
           :index="component.id"
           :ref="component.id"
           v-on:remove="removeWidget(component)"

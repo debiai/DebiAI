@@ -344,7 +344,7 @@ export default {
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     configuration: { type: Object },
-    localFiltersIn: { type: Array, default: () => [] },
+    localFiltersIn: { type: Array},
   },
   data() {
     return {
@@ -415,9 +415,11 @@ export default {
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
 
+        console.log(this.localFiltersIn);
+
         // Apply local filters
-        if (this.canFilterSamples && this.localFiltersIn.filters) {
-          this.setLocalFilters(this.localFiltersIn.filters);
+        if (this.localFiltersIn) {
+          this.setLocalFilters(this.localFiltersIn);
         }
         this.loading = false;
       } else {
@@ -552,9 +554,11 @@ export default {
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
     getLocalFilters() {
+      console.log("get local filters :", this.localFilters);
       return this.localFilters;
     },
     setLocalFilters(filters) {
+      console.log("filters :", filters);
       this.localFilters = filters;
     },
 
