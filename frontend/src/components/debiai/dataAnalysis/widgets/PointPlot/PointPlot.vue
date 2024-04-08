@@ -47,7 +47,7 @@
 
       <!-- 2D points & lite plot specific controls -->
       <div id="plotControls">
-        <!-- 2d Point Plot Controls -->
+        <!-- 2D Point Plot Controls -->
         <div
           id="2dPointPlotControls"
           class="dataGroup"
@@ -139,7 +139,7 @@
           </div>
         </div>
 
-        <!-- line Plot Controls -->
+        <!-- Line Plot Controls -->
         <div
           id="linePlotControls"
           class="dataGroup"
@@ -384,7 +384,7 @@ export default {
       // === Configuration ===
       // Axis
       columnXindex: 0,
-      columnYindex: 0,
+      columnYindex: 1,
       // Shared settings
       dividePerColor: true,
       absolute: false,
@@ -433,8 +433,6 @@ export default {
   },
   mounted() {
     this.divPointPlot = document.getElementById("PPDiv" + this.index);
-    this.xAxisSelect(0);
-    this.yAxisSelect(1);
     this.setPointOpacity();
 
     // Watch for configuration changes
@@ -594,7 +592,7 @@ export default {
       if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
-      // abs checked
+      // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
       // Color
@@ -707,7 +705,7 @@ export default {
         return;
       }
 
-      // if it is, ask for confirmation
+      // If it is, ask for confirmation
       swal({
         title: "Long calculation: do you want to proceed ?",
         text: "Point plot: You appear to have selected more than 100 uniques color values. This may take a while !",
@@ -718,7 +716,55 @@ export default {
         if (validate) this.linePlot();
       });
     },
-    linePlot() {
+
+    // Check columns type and uniques values
+    async DoesUserAcceptRisk() {
+      let colX = this.data.columns[this.columnXindex];
+      let colY = this.data.columns[this.columnYindex];
+      let colNameX = colX.label;
+      let colNameY = colY.label;
+      let uniquesValX = colX.uniques.length;
+      let uniquesValY = colY.uniques.length;
+
+      let warningMessage = "";
+
+      if (colX.type == String && uniquesValX > 1000) {
+        warningMessage +=
+          "The column X " +
+          colNameX +
+          " has exceeded the recommended 1000 uniques values" +
+          "(" +
+          uniquesValX +
+          ")" +
+          "\n";
+      }
+
+      if (colY.type == String && uniquesValY > 100) {
+        warningMessage +=
+          "The column Y " +
+          colNameY +
+          " has exceeded the recommended 100 uniques values" +
+          "(" +
+          uniquesValY +
+          ")" +
+          "\n";
+      }
+
+      if (warningMessage == "") return true;
+
+      const rep = await swal({
+        title: "Warning",
+        text: warningMessage,
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      });
+
+      return rep;
+    },
+
+    async linePlot() {
+      // Apply selection
       let traces = [];
       let colX = this.data.columns[this.columnXindex];
       let valuesX;
@@ -730,7 +776,7 @@ export default {
       if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
       else valuesY = this.selectedData.map((i) => colY.values[i]);
 
-      // abs checked
+      // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
       let colColor = this.data.columns[this.coloredColumnIndex];
@@ -873,7 +919,7 @@ export default {
       this.currentDrawnColorIndex = this.coloredColumnIndex;
     },
     clearLinePlot() {
-      // remove the last two traces
+      // Remove the last two traces
       if (!this.pointPlotDrawn) Plotly.purge(this.divPointPlot);
       else {
         let tracesToDelete = [];
@@ -922,7 +968,7 @@ export default {
       // Add if y is absolute
       if (this.absolute) layout.yaxis.title.text += " (absolute value)";
 
-      // set y axis label text if string
+      // Set y axis label text if string
       if (colY.type == String) {
         layout.yaxis.tickvals = colY.valuesIndexUniques;
         layout.yaxis.ticktext = colY.uniques;
@@ -1125,15 +1171,23 @@ export default {
       this.$parent.$emit("setExport", null);
     },
 
-    // axis selection
-    xAxisSelect(index) {
+    // Axis selection
+    async xAxisSelect(index) {
+      // Check that columns won't result in a performance issue
+      const userAccept = await this.DoesUserAcceptRisk();
+      if (!userAccept) return;
+
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
       this.setBins();
     },
-    yAxisSelect(index) {
+    async yAxisSelect(index) {
+      // Check that columns won't result in a performance issue
+      const userAccept = await this.DoesUserAcceptRisk();
+      if (!userAccept) return;
+
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.pointPlotDrawn = false;
@@ -1144,13 +1198,22 @@ export default {
       this.sizeAxisSelection = false;
       this.pointPlotDrawn = false;
     },
-    swap() {
+    async swap() {
       let memoryLinePlotDrawn = this.linePlotDrawn;
+      // Swap the columns
       let temp = this.columnYindex;
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
+      // Ask the user if he accepts the risk
+      const userAccept = await this.DoesUserAcceptRisk();
+      if (!userAccept) {
+        // if he does not accept, swap back the columns
+        temp = this.columnXindex;
+        this.columnXindex = this.columnYindex;
+        this.columnYindex = temp;
+        return;
+      }
       this.setBins();
-
       this.linePlotDrawn = memoryLinePlotDrawn;
       this.updateTraces();
     },
