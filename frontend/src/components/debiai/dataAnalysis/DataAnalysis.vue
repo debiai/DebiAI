@@ -442,6 +442,9 @@ export default {
         }
       } else this.$store.commit("setColoredColumnIndex", null);
 
+      // Clear all filters
+      this.$store.commit("clearAllFilters");
+
       layout.forEach((c) => {
         // Get the key (previous layout version saved in cache)
         if (!c.widgetKey) c.widgetKey = c.key;
