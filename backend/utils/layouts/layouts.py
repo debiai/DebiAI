@@ -80,7 +80,7 @@ def add_layout(data):
     # Generate id
     id = str(uuid.uuid1())
 
-    layout_to_add = [] 
+    layout_to_add = []
 
     for widget in data["layout"]:
         widget_position = {
