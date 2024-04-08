@@ -17,11 +17,10 @@
               The current configuration of the widgets will also be saved, it will be used when
               loading the layout back.
               <br />
-              More information about layouts can be found in the
               <a
-                href="https://debiai.irt-systemx.fr/dashboard/widgetConfigSave/"
+                href="https://debiai.irt-systemx.fr/dashboard/layouts/"
                 target="_blank"
-                >documentation</a
+                >Layouts documentation</a
               >.
             </DocumentationBlock>
           </h3>
