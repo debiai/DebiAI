@@ -80,7 +80,8 @@ def add_layout(data):
     # Generate id
     id = str(uuid.uuid1())
 
-    layout_to_add = []
+    layout_to_add = [] 
+
     for widget in data["layout"]:
         widget_position = {
             "x": widget["x"],
@@ -90,20 +91,12 @@ def add_layout(data):
             "widgetKey": widget["widgetKey"],
         }
 
-    # if "config" in widget:
-    #     widget_position["config"] = widget["config"]
+        keys = ["config", "name", "localFilters"]
 
-    # if "name" in widget:
-    #     widget_position["name"] = widget["name"]
+        for key in keys:
+            if key in widget:
+                widget_position[key] = widget[key]
 
-    # if "localFilters" in widget:
-    #     widget_position["localFilters"] = widget["localFilters"]
-
-    keys = ["config", "name", "localFilters"]
-
-    for key in keys:
-        if key in widget:
-            widget_position[key] = widget[key]
         layout_to_add.append(widget_position)
 
     file_to_add = {
