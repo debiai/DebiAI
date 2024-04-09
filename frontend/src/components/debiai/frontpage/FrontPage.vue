@@ -153,7 +153,8 @@
           class="project"
           v-for="project in filteredProject"
           :key="project.dataProviderId + ' / ' + project.id"
-          @click="selectProject(project.dataProviderId, project.id)"
+          @click.middle="selectProject(project.dataProviderId, project.id, true)"
+          @click="selectProject(project.dataProviderId, project.id, false)"
         >
           <!-- Project name -->
           <div class="name">{{ project.name }}</div>
@@ -297,11 +298,19 @@ export default {
           });
         });
     },
-    selectProject(dataProviderId, projectId) {
-      this.$router.push({
-        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-        params: { projectId, dataProviderId },
-      });
+    selectProject(dataProviderId, projectId, newTab = false) {
+      if (newTab) {
+        const route = this.$router.resolve({
+          path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+          params: { projectId, dataProviderId, newTab },
+        });
+        window.open(route.href, "_blank")
+      } else {
+        this.$router.push({
+          path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+          params: { projectId, dataProviderId, newTab },
+        });
+      }
     },
     openDocumentation() {
       window.open("https://debiai.irt-systemx.fr/", "_blank");

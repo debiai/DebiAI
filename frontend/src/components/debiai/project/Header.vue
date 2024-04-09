@@ -18,7 +18,7 @@
           id="projectName"
           v-if="project"
         >
-          <a @click="$emit('backToProjects')"> Projects </a>
+          <router-link :to="'/'">Projects</router-link>
           / {{ project.name }}
         </div>
       </div>
