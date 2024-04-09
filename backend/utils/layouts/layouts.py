@@ -3,17 +3,8 @@ import json
 import utils.utils as utils
 import uuid
 
-# from marshmallow import Schema, fields
 
 LAYOUTS_PATH = "data/layouts.json"
-
-
-# class layoutSchema(Schema):
-#     id = fields.Int()
-#     name, description, projectId, dataProviderId = fields.Str()
-#     creationDate = fields.DateTime(default=utils.timeNow())
-#     layout = fields.Dict()
-#     lastLayoutSaved = fields.Bool()
 
 
 # Layouts file structure

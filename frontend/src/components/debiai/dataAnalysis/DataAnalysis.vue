@@ -581,7 +581,6 @@ export default {
           localFilters: component.localFilters,
         });
       });
-      // Save the body into a json file
       // Send the request
       this.$backendDialog
         .saveLayout(requestBody)
