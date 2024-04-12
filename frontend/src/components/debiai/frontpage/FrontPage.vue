@@ -258,8 +258,6 @@
 import jsonPackage from "../../../../package";
 import DropdownMenu from "../../common/DropdownMenu.vue";
 import dataProviders from "./dataproviders/DataProviders.vue";
-import { backToProjects } from "@/components/debiai/project/Project.vue";
-
 export default {
   name: "FrontPage",
   components: {
@@ -304,7 +302,6 @@ export default {
       const params = { projectId, dataProviderId, newTab };
       const route = this.$router.resolve({ path, params });
       if (newTab) {
-        backToProjects();
         window.open(route.href, "_blank");
       } else this.$router.push({ path, params });
     },
