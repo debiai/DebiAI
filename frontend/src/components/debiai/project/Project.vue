@@ -411,7 +411,7 @@ export default {
       if (dataLoader.isAnalysisLoading()) {
         swal({
           title: "Cancel the analysis?",
-          text: "An analysis is being started. Do you want to cancel it?",
+          text: "Do you really want to cancel the analysis and go back to the projects list?",
           buttons: {
             cancel: "No",
             validate: "Yes",
