@@ -68,6 +68,7 @@ export default {
 
   methods: {
     closeMenu(e) {
+      console.log("Closed the menu");
       this.$emit("close");
     },
   },
