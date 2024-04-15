@@ -153,8 +153,9 @@
           class="project"
           v-for="project in filteredProject"
           :key="project.dataProviderId + ' / ' + project.id"
-          @click.middle="selectProject(project.dataProviderId, project.id, true)"
-          @click="selectProject(project.dataProviderId, project.id, false)"
+          @click.exact="selectProject(project.dataProviderId, project.id, false)"
+          @click.middle.exact="selectProject(project.dataProviderId, project.id, true)"
+          @click.ctrl.exact="selectProject(project.dataProviderId, project.id, true)"
         >
           <!-- Project name -->
           <div class="name">{{ project.name }}</div>
