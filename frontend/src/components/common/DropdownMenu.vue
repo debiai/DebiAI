@@ -1,9 +1,7 @@
 <template>
   <div
     id="menu"
-    :style="{
-      inset: offset.y + 'px ' + offset.x + 'px auto auto',
-    }"
+    :style="getStyles"
   >
     <!-- Dropdown menu -->
     <div
@@ -55,6 +53,15 @@ export default {
         };
       },
     },
+    position: {
+      type: Object,
+      default: () => {
+        return {
+          x: null,
+          y: null,
+        };
+      },
+    },
   },
   data() {
     return {};
@@ -68,7 +75,6 @@ export default {
 
   methods: {
     closeMenu(e) {
-      console.log("Closed the menu");
       this.$emit("close");
     },
   },
@@ -76,6 +82,18 @@ export default {
   computed: {
     availableMenuItems() {
       return this.menu.filter((item) => item.available !== false);
+    },
+    getStyles() {
+      if (this.position.x === null || this.position.y === null) {
+        return {
+          inset: `${this.offset.y}px ${this.offset.x}px auto auto`,
+        };
+      } else {
+        return {
+          top: `${this.position.y}px`,
+          left: `${this.position.x}px`,
+        };
+      }
     },
   },
 

@@ -96,8 +96,10 @@
     </modal>
 
     <!-- Widget -->
-    <div @contextmenu.prevent="handleRightClick($event)"
-    style="height: 100%">
+    <div
+      @contextmenu.prevent="handleRightClick($event)"
+      style="height: 100%"
+    >
       <!-- Widget Header -->
       <div
         id="widgetHeader"
@@ -315,7 +317,7 @@
         />
         <!-- Menu on right click -->
         <dropdown-menu
-        style="transform: translate(100%, 0%);"
+          style="transform: translate(-50%, 0%)"
           v-if="showMenuOnCLick"
           :menu="[
             { name: 'Duplicate', action: copy, icon: 'copy' },
@@ -346,8 +348,11 @@
             { name: 'separator' },
             { name: 'Close', action: remove, icon: 'close' },
           ]"
-          :offset="{ x: this.mousePos.x -6, y: this.mousePos.y-40 }"
-          @close="showMenuOnCLick = false"
+          :position="{ x: this.mousePos.x, y: this.mousePos.y - 40 }"
+          @close="
+            showMenuOnCLick = false;
+            mousePos = { x: null, y: null };
+          "
         />
       </transition>
 
@@ -394,7 +399,7 @@ export default {
       loading: false,
       error_msg: null,
       grabbing: false,
-      mousePos: { x: 0, y: 0 },
+      mousePos: { x: null, y: null },
       showMenuOnCLick: false,
 
       // Widget rename
@@ -524,7 +529,6 @@ export default {
       } else this.$emit("copy");
     },
     handleRightClick(event) {
-      console.log("right clicked works");
       this.mousePos.x = event.clientX;
       this.mousePos.y = event.clientY;
       this.showMenuOnCLick = true;
