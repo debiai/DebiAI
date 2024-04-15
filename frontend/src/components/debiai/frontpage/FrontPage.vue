@@ -302,9 +302,8 @@ export default {
       const path = `/dataprovider/${dataProviderId}/project/${projectId}`;
       const params = { projectId, dataProviderId, newTab };
       const route = this.$router.resolve({ path, params });
-      if (newTab) {
-        window.open(route.href, "_blank");
-      } else this.$router.push({ path, params });
+      if (newTab) window.open(route.href, "_blank");
+      else this.$router.push({ path, params });
     },
     openDocumentation() {
       window.open("https://debiai.irt-systemx.fr/", "_blank");
