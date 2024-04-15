@@ -751,7 +751,6 @@ export default {
 
 /* Grid stack */
 .grid-stack-item {
-  overflow: hidden;
   top: 0px;
 }
 </style>

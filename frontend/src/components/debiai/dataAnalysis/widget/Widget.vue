@@ -95,238 +95,238 @@
       </div>
     </modal>
 
-    <!-- Widget -->
+    <!-- Widget Header -->
     <div
+      id="widgetHeader"
+      :class="widgetHeaderClass"
+      @mousedown="grabbing = true"
+      @mouseup="grabbing = false"
       @contextmenu.prevent="handleRightClick($event)"
-      style="height: 100%"
     >
-      <!-- Widget Header -->
-      <div
-        id="widgetHeader"
-        :class="widgetHeaderClass"
-        @mousedown="grabbing = true"
-        @mouseup="grabbing = false"
-      >
-        <!-- Name, filtering btn, filtering order, ... -->
-        <div id="name">
-          <h2
-            style="cursor: pointer"
-            @dblclick="openRenameModal"
-          >
-            {{ name }}
-          </h2>
+      <!-- Name, filtering btn, filtering order, ... -->
+      <div id="name">
+        <h2
+          style="cursor: pointer"
+          @dblclick="openRenameModal"
+        >
+          {{ name }}
+        </h2>
 
-          <!-- start filtering btn -->
-          <button
-            v-if="canFilterSamples && !startFiltering"
-            :title="'Start filtering samples with the ' + title + ' widget'"
-            @click="startFiltering = !startFiltering"
-            style="height: 28px; margin-left: 15px"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/filter.svg')"
-              width="12"
-              height="12"
-              fill="black"
-            />
-            Start filtering
-          </button>
+        <!-- start filtering btn -->
+        <button
+          v-if="canFilterSamples && !startFiltering"
+          :title="'Start filtering samples with the ' + title + ' widget'"
+          @click="startFiltering = !startFiltering"
+          style="height: 28px; margin-left: 15px"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+            fill="black"
+          />
+          Start filtering
+        </button>
 
-          <!-- filtering ongoing btn -->
-          <button
-            v-if="canFilterSamples && startFiltering"
-            class="highlighted"
-            title="Stop filtering"
-            @click="startFiltering = !startFiltering"
-            style="height: 28px; margin-left: 15px"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/filter.svg')"
-              width="12"
-              height="12"
-            />
-            Filtering
-          </button>
+        <!-- filtering ongoing btn -->
+        <button
+          v-if="canFilterSamples && startFiltering"
+          class="highlighted"
+          title="Stop filtering"
+          @click="startFiltering = !startFiltering"
+          style="height: 28px; margin-left: 15px"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+          />
+          Filtering
+        </button>
 
-          <!-- Clear filters -->
-          <div
-            v-if="canFilterSamples && startFiltering && !clearFiltersAvailable"
-            style="margin-left: 10px"
-          >
-            No filters
-          </div>
-          <button
-            v-if="clearFiltersAvailable"
-            id="clearFiltersBtn"
-            @click="clearFilters"
-            style="height: 28px"
-          >
-            <span class="badge">{{ widgetFilters.length }}</span>
-            Clear filters
-          </button>
-
-          <!-- Widget filter position -->
-          <span
-            v-if="widgetFilterOrder >= 0"
-            title="widget filtering order"
-            id="widgetFilteringOrder"
-            class="filterOrder"
-          >
-            {{ widgetFilterOrder + 1 }}
-          </span>
+        <!-- Clear filters -->
+        <div
+          v-if="canFilterSamples && startFiltering && !clearFiltersAvailable"
+          style="margin-left: 10px"
+        >
+          No filters
         </div>
+        <button
+          v-if="clearFiltersAvailable"
+          id="clearFiltersBtn"
+          @click="clearFilters"
+          style="height: 28px"
+        >
+          <span class="badge">{{ widgetFilters.length }}</span>
+          Clear filters
+        </button>
 
-        <!-- Loading anim, messages, warning -->
-        <div class="center">
-          <!-- Loading animation -->
-          <LoadingAnimation v-if="loading" />
-
-          <!-- Error icon -->
-          <div
-            v-if="error_msg"
-            @click="delete_error"
-            class="dataError"
-          >
-            <b>&#x26A0;</b> {{ error_msg }}
-          </div>
-
-          <!-- Color and selectedDataWarning -->
-          <transition name="fade">
-            <div
-              v-if="colorWarning || selectedDataWarning"
-              class="updateWarning"
-            >
-              <b>&#x26A0;</b>
-              <div v-if="colorWarning && selectedDataWarning">
-                Selected color and data have changed
-              </div>
-              <!-- Color Warning -->
-              <div v-else-if="colorWarning">The color has changed</div>
-              <!-- selectedData Warning -->
-              <div v-else-if="selectedDataWarning">The selected data have changed</div>
-
-              <button
-                class="warning"
-                @click="drawPlot"
-              >
-                Redraw
-              </button>
-            </div>
-          </transition>
-        </div>
-
-        <!-- On right: filters applied, configuration, copy, settings, close btn, ... -->
-        <div class="options">
-          <!-- Filters applied -->
-          <button
-            v-if="localFilters.length > 0"
-            id="filtersApplied"
-            @click="showLocalFilters = true"
-            title="Filters applied to this widget on creation"
-            style="height: 28px"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/filter.svg')"
-              width="12"
-              height="12"
-              fill="black"
-            />
-            Filters applied
-            <span class="badge">{{ localFilters.length }}</span>
-          </button>
-
-          <!-- export btn -->
-          <button
-            v-if="exportData !== null"
-            class="aligned"
-            title="Export widget data"
-            style="width: 75px"
-            @click="startExport"
-          >
-            Export
-            <inline-svg
-              :src="require('@/assets/svg/send.svg')"
-              height="14"
-              width="18"
-            />
-          </button>
-
-          <!-- Settings btn -->
-          <button
-            class="settings"
-            :title="title + ' settings'"
-            @click="settings"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/settings.svg')"
-              width="14"
-              height="14"
-            />
-          </button>
-
-          <!-- Menu btn -->
-          <button
-            @click="
-              showMenu = !showMenu;
-              clearMousePos();
-            "
-            :title="'Open the ' + title + ' widget menu'"
-            style="margin-right: 7px"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/menu.svg')"
-              width="15"
-              height="15"
-            />
-          </button>
-        </div>
+        <!-- Widget filter position -->
+        <span
+          v-if="widgetFilterOrder >= 0"
+          title="widget filtering order"
+          id="widgetFilteringOrder"
+          class="filterOrder"
+        >
+          {{ widgetFilterOrder + 1 }}
+        </span>
       </div>
 
-      <!-- Menu -->
-      <transition name="fade">
-        <dropdown-menu
-          v-if="showMenu"
-          :menu="[
-            { name: 'Duplicate', action: copy, icon: 'copy' },
-            {
-              name: 'Download image',
-              action: downloadImage,
-              icon: 'downloadImage',
-              disabled: loading,
-              available: canExportImage,
-            },
+      <!-- Loading anim, messages, warning -->
+      <div class="center">
+        <!-- Loading animation -->
+        <LoadingAnimation v-if="loading" />
 
-            {
-              name: 'Comment' + (comments.length ? ' (' + comments.length + ')' : ''),
-              action: () => (commentModal = !commentModal),
-              icon: 'comment',
-            },
-            {
-              name: 'Save / load settings',
-              action: saveConfiguration,
-              icon: 'save',
-              available: canSaveConfiguration,
-            },
-            {
-              name: 'Rename',
-              action: openRenameModal,
-              icon: 'rename',
-            },
-            { name: 'separator' },
-            { name: 'Close', action: remove, icon: 'close' },
-          ]"
-          :position="{ x: this.mousePos.x, y: this.mousePos.y }"
-          :offset="{ x: 6, y: 40 }"
-          @close="
-            showMenu = false;
+        <!-- Error icon -->
+        <div
+          v-if="error_msg"
+          @click="delete_error"
+          class="dataError"
+        >
+          <b>&#x26A0;</b> {{ error_msg }}
+        </div>
+
+        <!-- Color and selectedDataWarning -->
+        <transition name="fade">
+          <div
+            v-if="colorWarning || selectedDataWarning"
+            class="updateWarning"
+          >
+            <b>&#x26A0;</b>
+            <div v-if="colorWarning && selectedDataWarning">
+              Selected color and data have changed
+            </div>
+            <!-- Color Warning -->
+            <div v-else-if="colorWarning">The color has changed</div>
+            <!-- selectedData Warning -->
+            <div v-else-if="selectedDataWarning">The selected data have changed</div>
+
+            <button
+              class="warning"
+              @click="drawPlot"
+            >
+              Redraw
+            </button>
+          </div>
+        </transition>
+      </div>
+
+      <!-- On right: filters applied, configuration, copy, settings, close btn, ... -->
+      <div class="options">
+        <!-- Filters applied -->
+        <button
+          v-if="localFilters.length > 0"
+          id="filtersApplied"
+          @click="showLocalFilters = true"
+          title="Filters applied to this widget on creation"
+          style="height: 28px"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/filter.svg')"
+            width="12"
+            height="12"
+            fill="black"
+          />
+          Filters applied
+          <span class="badge">{{ localFilters.length }}</span>
+        </button>
+
+        <!-- export btn -->
+        <button
+          v-if="exportData !== null"
+          class="aligned"
+          title="Export widget data"
+          style="width: 75px"
+          @click="startExport"
+        >
+          Export
+          <inline-svg
+            :src="require('@/assets/svg/send.svg')"
+            height="14"
+            width="18"
+          />
+        </button>
+
+        <!-- Settings btn -->
+        <button
+          class="settings"
+          :title="title + ' settings'"
+          @click="settings"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/settings.svg')"
+            width="14"
+            height="14"
+          />
+        </button>
+
+        <!-- Menu btn -->
+        <button
+          @click="
+            showMenu = !showMenu;
             clearMousePos();
           "
-        />
-      </transition>
+          :title="'Open the ' + title + ' widget menu'"
+          style="margin-right: 7px"
+        >
+          <inline-svg
+            :src="require('@/assets/svg/menu.svg')"
+            width="15"
+            height="15"
+          />
+        </button>
+      </div>
+    </div>
 
-      <!-- Display the Widget content -->
+    <!-- Display the Widget content -->
+    <div
+      @contextmenu.prevent="handleRightClick($event)"
+      id="widgetContent"
+    >
       <slot />
     </div>
+
+    <!-- Menu -->
+    <transition name="fade">
+      <dropdown-menu
+        v-if="showMenu"
+        :menu="[
+          { name: 'Duplicate', action: copy, icon: 'copy' },
+          {
+            name: 'Download image',
+            action: downloadImage,
+            icon: 'downloadImage',
+            disabled: loading,
+            available: canExportImage,
+          },
+
+          {
+            name: 'Comment' + (comments.length ? ' (' + comments.length + ')' : ''),
+            action: () => (commentModal = !commentModal),
+            icon: 'comment',
+          },
+          {
+            name: 'Save / load settings',
+            action: saveConfiguration,
+            icon: 'save',
+            available: canSaveConfiguration,
+          },
+          {
+            name: 'Rename',
+            action: openRenameModal,
+            icon: 'rename',
+          },
+          { name: 'separator' },
+          { name: 'Close', action: remove, icon: 'close' },
+        ]"
+        :position="{ x: this.mousePos.x, y: this.mousePos.y }"
+        :offset="{ x: 6, y: 40 }"
+        @close="
+          showMenu = false;
+          clearMousePos();
+        "
+      />
+    </transition>
 
     <!-- Widget Comments -->
     <Comments
@@ -797,6 +797,11 @@ export default {
         filter: brightness(80%);
       }
     }
+  }
+
+  #widgetContent {
+    overflow: hidden;
+    height: 100%;
   }
 
   #localFilters {
