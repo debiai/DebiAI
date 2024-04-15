@@ -496,8 +496,12 @@ export default {
       } else this.$emit("copy");
     },
     handleRightClick(event) {
-      this.mousePos.x = event.clientX;
-      this.mousePos.y = event.clientY;
+      // Get the widget position x and y on screen
+      let widgetX = this.$el.getBoundingClientRect().x;
+      let widgetY = this.$el.getBoundingClientRect().y;
+
+      this.mousePos.x = event.clientX - widgetX;
+      this.mousePos.y = event.clientY - widgetY;
       this.showMenu = true;
     },
 

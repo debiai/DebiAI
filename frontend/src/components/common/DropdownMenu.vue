@@ -90,8 +90,8 @@ export default {
         };
       } else {
         return {
-          left: `${this.position.x - 60}px`,
-          top: `${this.position.y - 60}px`,
+          left: `${this.position.x}px`,
+          top: `${this.position.y}px`,
         };
       }
     },
