@@ -26,8 +26,7 @@ LAYOUTS_PATH = "data/layouts.json"
 #            "height": 0,
 #            "config": {}, # Widget config (optional)
 #            "name": "", # Name given to the widget (optional)
-#            "localFilters" : [
-#             {}],
+#            "localFilters" : [{}],
 #          },
 #       ],
 #       "selectedColorColumn": "col", # (optional)

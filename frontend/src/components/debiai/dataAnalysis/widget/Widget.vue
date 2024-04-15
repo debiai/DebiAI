@@ -416,9 +416,8 @@ export default {
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
 
         // Apply local filters
-        if (this.localFiltersIn) {
-          this.setLocalFilters(this.localFiltersIn);
-        }
+        if (this.localFiltersIn) this.localFilters = this.localFiltersIn;
+
         this.loading = false;
       } else {
         // No component instance
@@ -553,9 +552,6 @@ export default {
     },
     getLocalFilters() {
       return this.localFilters;
-    },
-    setLocalFilters(filters) {
-      this.localFilters = filters;
     },
 
     // Export
