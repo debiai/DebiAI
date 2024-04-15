@@ -344,6 +344,7 @@ export default {
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     configuration: { type: Object },
+    localFiltersIn: { type: Array },
   },
   data() {
     return {
@@ -413,6 +414,10 @@ export default {
 
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
+
+        // Apply local filters
+        if (this.localFiltersIn) this.localFilters = this.localFiltersIn;
+
         this.loading = false;
       } else {
         // No component instance
@@ -544,6 +549,9 @@ export default {
       // The plot has been drawn, we can save a copy of the local filters
       const storeFilters = this.$store.state.StatisticalAnalysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
+    },
+    getLocalFilters() {
+      return this.localFilters;
     },
 
     // Export

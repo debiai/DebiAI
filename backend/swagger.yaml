@@ -1773,6 +1773,12 @@ definitions:
           type: object
           description: Configuration of the widget
           x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object
 
   # Algo providers
   algoProvider:
