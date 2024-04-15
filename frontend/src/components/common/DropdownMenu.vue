@@ -74,7 +74,7 @@ export default {
   },
 
   methods: {
-    closeMenu(e) {
+    closeMenu() {
       this.$emit("close");
     },
   },
@@ -90,8 +90,8 @@ export default {
         };
       } else {
         return {
-          top: `${this.position.y}px`,
-          left: `${this.position.x}px`,
+          left: `${this.position.x - 60}px`,
+          top: `${this.position.y - 60}px`,
         };
       }
     },
@@ -107,7 +107,7 @@ export default {
 #menu {
   position: absolute;
   min-width: 150px;
-  z-index: 1;
+  z-index: 10000000 !important;
   // inset: 0px 0px auto auto; This property is changed dynamically
 
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);

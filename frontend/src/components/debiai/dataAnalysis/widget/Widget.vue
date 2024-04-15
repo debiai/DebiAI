@@ -266,7 +266,10 @@
 
           <!-- Menu btn -->
           <button
-            @click="showMenu = !showMenu"
+            @click="
+              showMenu = !showMenu;
+              clearMousePos();
+            "
             :title="'Open the ' + title + ' widget menu'"
             style="margin-right: 7px"
           >
@@ -312,46 +315,11 @@
             { name: 'separator' },
             { name: 'Close', action: remove, icon: 'close' },
           ]"
+          :position="{ x: this.mousePos.x, y: this.mousePos.y }"
           :offset="{ x: 6, y: 40 }"
-          @close="showMenu = false"
-        />
-        <!-- Menu on right click -->
-        <dropdown-menu
-          style="transform: translate(-50%, 0%)"
-          v-if="showMenuOnCLick"
-          :menu="[
-            { name: 'Duplicate', action: copy, icon: 'copy' },
-            {
-              name: 'Download image',
-              action: downloadImage,
-              icon: 'downloadImage',
-              disabled: loading,
-              available: canExportImage,
-            },
-
-            {
-              name: 'Comment' + (comments.length ? ' (' + comments.length + ')' : ''),
-              action: () => (commentModal = !commentModal),
-              icon: 'comment',
-            },
-            {
-              name: 'Save / load settings',
-              action: saveConfiguration,
-              icon: 'save',
-              available: canSaveConfiguration,
-            },
-            {
-              name: 'Rename',
-              action: openRenameModal,
-              icon: 'rename',
-            },
-            { name: 'separator' },
-            { name: 'Close', action: remove, icon: 'close' },
-          ]"
-          :position="{ x: this.mousePos.x, y: this.mousePos.y - 40 }"
           @close="
-            showMenuOnCLick = false;
-            mousePos = { x: null, y: null };
+            showMenu = false;
+            clearMousePos();
           "
         />
       </transition>
@@ -400,7 +368,6 @@ export default {
       error_msg: null,
       grabbing: false,
       mousePos: { x: null, y: null },
-      showMenuOnCLick: false,
 
       // Widget rename
       renameModal: false,
@@ -531,7 +498,7 @@ export default {
     handleRightClick(event) {
       this.mousePos.x = event.clientX;
       this.mousePos.y = event.clientY;
-      this.showMenuOnCLick = true;
+      this.showMenu = true;
     },
 
     // Rename
@@ -683,6 +650,9 @@ export default {
       this.error_msg = null;
       clearTimeout(this.timeout);
     },
+    clearMousePos() {
+      this.mousePos = { x: null, y: null };
+    },
   },
   computed: {
     // Css
@@ -720,11 +690,11 @@ export default {
         this.$emit("filterCleared");
       }
     },
-    commentModal(newVal) {
+    commentModal() {
       // Update the plot size when the comment modal is opened or closed
       window.dispatchEvent(new Event("resize"));
     },
-    comments(newVal) {
+    comments() {
       // Update the plot size when the comments are updated
       window.dispatchEvent(new Event("resize"));
     },
