@@ -112,6 +112,9 @@ const StatisticalAnalysis = {
     // AlgoProviders
     experiments: {}, // Format: { algoProviderName: { algoId: [experiment]} }
     nbExperiments: 0, // To help with reactivity
+
+    // Open widget id
+    openedWidgetMenuId: null,
   },
   mutations: {
     setColoredColumnIndex(state, index) {
@@ -238,6 +241,11 @@ const StatisticalAnalysis = {
 
       // Update for reactivity
       state.experiments = { ...state.experiments };
+    },
+
+    // Open widget id
+    setOpenedWidgetMenuId(state, widgetId) {
+      state.openedWidgetMenuId = widgetId;
     },
   },
   getters: {

@@ -636,9 +636,6 @@ export default {
     useAlgorithm() {
       this.algorithmModal = true;
     },
-    clearLayout() {
-      while (this.components.length > 0) this.removeWidget(this.components[0]);
-    },
     layout() {
       this.updateLayoutConfig();
       this.layoutModal = true;
@@ -771,7 +768,6 @@ export default {
 
 /* Grid stack */
 .grid-stack-item {
-  overflow: hidden;
   top: 0px;
 }
 </style>
