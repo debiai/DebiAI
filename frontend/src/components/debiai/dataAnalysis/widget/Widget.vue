@@ -500,9 +500,13 @@ export default {
       let widgetX = this.$el.getBoundingClientRect().x;
       let widgetY = this.$el.getBoundingClientRect().y;
 
+      // Get the mouse position relative to the widget
       this.mousePos.x = event.clientX - widgetX;
       this.mousePos.y = event.clientY - widgetY;
       this.showMenu = true;
+
+      // Store the data for the menu
+      this.$store.commit("setOpenedWidgetMenuId", this.index);
     },
 
     // Rename
@@ -682,6 +686,10 @@ export default {
         (filter) => filter.from.widgetIndex === this.index
       );
     },
+    // Dropdown menu id
+    openedWidgetMenuId() {
+      return this.$store.state.StatisticalAnalysis.openedWidgetMenuId;
+    },
   },
   watch: {
     startFiltering(newVal) {
@@ -693,6 +701,9 @@ export default {
         // When all the filters has been removed, we can clear the filters
         this.$emit("filterCleared");
       }
+    },
+    openedWidgetMenuId(newVal) {
+      if (newVal !== this.index) this.showMenu = false;
     },
     commentModal() {
       // Update the plot size when the comment modal is opened or closed
