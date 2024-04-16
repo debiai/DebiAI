@@ -718,36 +718,28 @@ export default {
     },
 
     // Check columns type and uniques values
-    async DoesUserAcceptRisk() {
-      let colX = this.data.columns[this.columnXindex];
+    async DoesUserAcceptRiskOnY() {
+      // Get the index of both selected columns
       let colY = this.data.columns[this.columnYindex];
-      let colNameX = colX.label;
+
+      // Get the names of both selected columns
       let colNameY = colY.label;
-      let uniquesValX = colX.uniques.length;
+
+      // Get uniques values for Y column selected
       let uniquesValY = colY.uniques.length;
 
       let warningMessage = "";
 
-      if (colX.type == String && uniquesValX > 1000) {
-        warningMessage +=
-          "The column X " +
-          colNameX +
-          " has exceeded the recommended 1000 uniques values" +
-          "(" +
-          uniquesValX +
-          ")" +
-          "\n";
-      }
+      if (colY.type == Number) return true;
 
-      if (colY.type == String && uniquesValY > 100) {
+      // print column Y type
+      if (colY.type === String && uniquesValY > 1000) {
         warningMessage +=
-          "The column Y " +
+          "The column " +
           colNameY +
-          " has exceeded the recommended 100 uniques values" +
-          "(" +
+          " has exceeded the recommended 1000 unique values (" +
           uniquesValY +
-          ")" +
-          "\n";
+          ").\n";
       }
 
       if (warningMessage == "") return true;
@@ -1173,10 +1165,6 @@ export default {
 
     // Axis selection
     async xAxisSelect(index) {
-      // Check that columns won't result in a performance issue
-      const userAccept = await this.DoesUserAcceptRisk();
-      if (!userAccept) return;
-
       this.columnXindex = index;
       this.xAxisSelection = false;
       this.pointPlotDrawn = false;
@@ -1184,14 +1172,19 @@ export default {
       this.setBins();
     },
     async yAxisSelect(index) {
-      // Check that columns won't result in a performance issue
-      const userAccept = await this.DoesUserAcceptRisk();
-      if (!userAccept) return;
-
+      let previousIndex = this.columnYindex;
       this.columnYindex = index;
       this.yAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
+
+      // Check that columns won't result in a performance issue
+      const userAccept = await this.DoesUserAcceptRiskOnY();
+      if (!userAccept) {
+        // if he does not accept get the previous column
+        this.columnYindex = previousIndex;
+        return;
+      }
     },
     sizeAxisSelect(index) {
       this.columnSizeIndex = index;
@@ -1205,7 +1198,7 @@ export default {
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
       // Ask the user if he accepts the risk
-      const userAccept = await this.DoesUserAcceptRisk();
+      const userAccept = await this.DoesUserAcceptRiskOnY();
       if (!userAccept) {
         // if he does not accept, swap back the columns
         temp = this.columnXindex;
