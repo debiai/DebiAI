@@ -107,8 +107,7 @@ export default {
 #menu {
   position: absolute;
   min-width: 150px;
-  z-index: 10000000 !important;
-  // inset: 0px 0px auto auto; This property is changed dynamically
+  z-index: 10000000;
 
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   background-color: #fff;
