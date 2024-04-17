@@ -718,21 +718,20 @@ export default {
     },
 
     // Check columns type and uniques values
-    async DoesUserAcceptRiskOnY() {
-      // Get the index of both selected columns
+    async DoesUserAcceptRisk() {
+      // Get the index of the selected column
       let colY = this.data.columns[this.columnYindex];
 
-      // Get the names of both selected columns
+      // Get the name of rhe selected column
       let colNameY = colY.label;
 
-      // Get uniques values for Y column selected
+      // Get uniques values for selected column
       let uniquesValY = colY.uniques.length;
 
       let warningMessage = "";
 
       if (colY.type == Number) return true;
 
-      // print column Y type
       if (colY.type === String && uniquesValY > 1000) {
         warningMessage +=
           "The column " +
@@ -1179,9 +1178,9 @@ export default {
       this.linePlotDrawn = false;
 
       // Check that columns won't result in a performance issue
-      const userAccept = await this.DoesUserAcceptRiskOnY();
+      const userAccept = await this.DoesUserAcceptRisk();
       if (!userAccept) {
-        // if he does not accept get the previous column
+        // if user doesn't accept get the previous column
         this.columnYindex = previousIndex;
         return;
       }
@@ -1198,7 +1197,7 @@ export default {
       this.columnYindex = this.columnXindex;
       this.columnXindex = temp;
       // Ask the user if he accepts the risk
-      const userAccept = await this.DoesUserAcceptRiskOnY();
+      const userAccept = await this.DoesUserAcceptRisk();
       if (!userAccept) {
         // if he does not accept, swap back the columns
         temp = this.columnXindex;
