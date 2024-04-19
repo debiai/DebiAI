@@ -84,6 +84,20 @@ export default {
     return x.toPrecision(3);
   },
 
+  prettifyJSON(jsonObj) {
+    let prettifiedString = "";
+    for (const key in jsonObj) {
+      if (jsonObj.hasOwnProperty(key)) {
+        prettifiedString += `${key} : ${jsonObj[key]}\n`;
+      }
+    }
+    // Remove trailing newline character if needed
+    if (prettifiedString.endsWith("\n")) {
+      prettifiedString = prettifiedString.slice(0, -1);
+    }
+    return prettifiedString;
+  },
+
   csvToArray(csvString) {
     let delimiter = ",";
     if (!csvString || !csvString.length) return [];

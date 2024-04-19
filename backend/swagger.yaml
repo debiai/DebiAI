@@ -1544,7 +1544,7 @@ definitions:
         format: date-time
       version:
         type: string
-      metaDataList:
+      metadata:
         type: object
         additionalProperties:
           type: string

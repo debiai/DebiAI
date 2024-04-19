@@ -11,6 +11,7 @@
           />
           Models
         </h2>
+
         <span style="display: flex; align-items: center">
           <button @click="selectAll">All</button>
           <button
@@ -43,6 +44,9 @@
         >
           <div class="title">
             <h3 class="name">{{ model.name }}</h3>
+            <DocumentationBlock>
+              {{ $services.prettifyJSON(model.metadata) }}
+            </DocumentationBlock>
             <!-- date -->
             <span
               class="date"
@@ -152,6 +156,7 @@ export default {
       searchBar: "",
       selectedModelIds: [],
       commonModelResults: true,
+      metadata: null,
     };
   },
   mounted() {},
@@ -194,6 +199,7 @@ export default {
         });
       event.stopPropagation();
     },
+    showMetadata(modelId) {},
   },
   computed: {
     filteredModels() {
