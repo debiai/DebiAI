@@ -201,9 +201,9 @@ export default {
     },
     getStyles() {
       return {
-        position: 'relative',
-        left: '150px',
-        bottom: '-20px',
+        position: "relative",
+        left: "150px",
+        bottom: "-20px",
       };
     },
   },
