@@ -43,10 +43,10 @@
           @click="selectModel(model.id)"
         >
           <div class="title">
-            <h3 class="name">{{ model.name }}</h3>
-            <DocumentationBlock>
+            <DocumentationBlock :style="getStyles()">
               {{ $services.prettifyJSON(model.metadata) }}
             </DocumentationBlock>
+            <h3 class="name">{{ model.name }}</h3>
             <!-- date -->
             <span
               class="date"
@@ -199,7 +199,13 @@ export default {
         });
       event.stopPropagation();
     },
-    showMetadata(modelId) {},
+    getStyles() {
+      return {
+        position: 'relative',
+        left: '150px',
+        bottom: '-20px',
+      };
+    },
   },
   computed: {
     filteredModels() {
