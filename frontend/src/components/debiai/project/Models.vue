@@ -43,7 +43,10 @@
           @click="selectModel(model.id)"
         >
           <div class="title">
-            <DocumentationBlock :style="getStyles()">
+            <DocumentationBlock
+              v-if="Object.keys(model.metadata).length > 0"
+              style="position: relative; left: 150px; bottom: -20px; white-space: pre-line"
+            >
               {{ $services.prettifyJSON(model.metadata) }}
             </DocumentationBlock>
             <h3 class="name">{{ model.name }}</h3>
@@ -156,7 +159,6 @@ export default {
       searchBar: "",
       selectedModelIds: [],
       commonModelResults: true,
-      metadata: null,
     };
   },
   mounted() {},
@@ -199,13 +201,13 @@ export default {
         });
       event.stopPropagation();
     },
-    getStyles() {
-      return {
-        position: "relative",
-        left: "150px",
-        bottom: "-20px",
-      };
-    },
+    // getStyles() {
+    //   return {
+    //     position: "relative",
+    //     left: "150px",
+    //     bottom: "-20px",
+    //   };
+    // },
   },
   computed: {
     filteredModels() {

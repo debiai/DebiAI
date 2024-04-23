@@ -91,10 +91,6 @@ export default {
         prettifiedString += `${key} : ${jsonObj[key]}\n`;
       }
     }
-    // Remove trailing newline character if needed
-    if (prettifiedString.endsWith("\n")) {
-      prettifiedString = prettifiedString.slice(0, -1);
-    }
     return prettifiedString;
   },
 
