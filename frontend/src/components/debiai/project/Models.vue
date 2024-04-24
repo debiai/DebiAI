@@ -44,7 +44,7 @@
         >
           <div class="title">
             <DocumentationBlock
-              v-if="Object.keys(model.metadata).length > 0"
+              v-if="model.metadata && Object.keys(model.metadata).length > 0"
               style="position: relative; left: 150px; bottom: -20px; white-space: pre-line"
             >
               {{ $services.prettifyJSON(model.metadata) }}
@@ -201,13 +201,6 @@ export default {
         });
       event.stopPropagation();
     },
-    // getStyles() {
-    //   return {
-    //     position: "relative",
-    //     left: "150px",
-    //     bottom: "-20px",
-    //   };
-    // },
   },
   computed: {
     filteredModels() {

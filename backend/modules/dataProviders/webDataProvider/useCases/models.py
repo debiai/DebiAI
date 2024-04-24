@@ -22,6 +22,12 @@ def get_models_info(url, project_id):
             if "nbResults" in model_in:
                 model["nbResults"] = model_in["nbResults"]
 
+            # Adding metadata
+            if "metadata" not in model_in:
+                model["metadata"] = None
+            else:
+                model["metadata"] = model_in["metadata"]
+
             debiai_models.append(model)
 
         return debiai_models
