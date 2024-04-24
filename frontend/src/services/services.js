@@ -84,11 +84,22 @@ export default {
     return x.toPrecision(3);
   },
 
-  prettifyJSON(jsonObj) {
+  prettifyJSON(jsonObj, indentation = 0) {
     let prettifiedString = "";
+    const indent = " ".repeat(indentation); 
+
     for (const key in jsonObj) {
       if (jsonObj.hasOwnProperty(key)) {
-        prettifiedString += `${key} : ${jsonObj[key]}\n`;
+        if (Array.isArray(jsonObj[key])) {
+          prettifiedString += `${indent}${key}: ${jsonObj[key].join(", ")}\n`;
+        } else if (typeof jsonObj[key] === "object") {
+          prettifiedString += `${indent}${key}: \n${this.prettifyJSON(
+            jsonObj[key],
+            indentation + 1
+          )}`;
+        } else {
+          prettifiedString += `${indent}${key}: ${jsonObj[key]}\n`;
+        }
       }
     }
     return prettifiedString;
