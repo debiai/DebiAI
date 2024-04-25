@@ -86,19 +86,23 @@ export default {
 
   prettifyJSON(jsonObj, indentation = 0) {
     let prettifiedString = "";
-    const indent = " ".repeat(indentation); 
+    const indent = " ".repeat(indentation);
 
     for (const key in jsonObj) {
       if (jsonObj.hasOwnProperty(key)) {
+        const formattedKey = `<b>${key}</b>`;
         if (Array.isArray(jsonObj[key])) {
-          prettifiedString += `${indent}${key}: ${jsonObj[key].join(", ")}\n`;
+          prettifiedString += `${indent}${formattedKey}:\n`;
+          jsonObj[key].forEach((item) => {
+            prettifiedString += `${this.prettifyJSON(item, indentation + 1)}`;
+          });
         } else if (typeof jsonObj[key] === "object") {
-          prettifiedString += `${indent}${key}: \n${this.prettifyJSON(
+          prettifiedString += `${indent}${formattedKey}:\n${this.prettifyJSON(
             jsonObj[key],
             indentation + 1
           )}`;
         } else {
-          prettifiedString += `${indent}${key}: ${jsonObj[key]}\n`;
+          prettifiedString += `${indent}${formattedKey}: ${jsonObj[key]}\n`;
         }
       }
     }

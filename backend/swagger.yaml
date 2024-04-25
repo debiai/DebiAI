@@ -524,7 +524,7 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getResults:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
     post:
       summary: Get the model results from a sample list
       tags: [Model]

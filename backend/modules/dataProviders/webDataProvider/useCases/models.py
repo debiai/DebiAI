@@ -12,7 +12,6 @@ def get_models_info(url, project_id):
                 continue
             model = {
                 "id": model_in["id"],
-                "metadata": {},
                 # "creationDate": TODO,
                 # "updateDate": TODO
             }

@@ -47,7 +47,11 @@
               v-if="model.metadata && Object.keys(model.metadata).length > 0"
               style="position: relative; left: 150px; bottom: -20px; white-space: pre-line"
             >
-              <pre>{{ $services.prettifyJSON(model.metadata) }}</pre>
+              <h4>Model Metadata</h4>
+              <br />
+              <div style="white-space: pre-wrap">
+                <span v-html="$services.prettifyJSON(model.metadata)"></span>
+              </div>
             </DocumentationBlock>
             <h3 class="name">{{ model.name }}</h3>
             <!-- date -->
