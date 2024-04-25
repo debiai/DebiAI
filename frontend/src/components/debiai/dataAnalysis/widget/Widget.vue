@@ -101,6 +101,7 @@
       :class="widgetHeaderClass"
       @mousedown="grabbing = true"
       @mouseup="grabbing = false"
+      @contextmenu.prevent="handleRightClick($event)"
     >
       <!-- Name, filtering btn, filtering order, ... -->
       <div id="name">
@@ -261,7 +262,10 @@
 
         <!-- Menu btn -->
         <button
-          @click="showMenu = !showMenu"
+          @click="
+            showMenu = !showMenu;
+            clearMousePos();
+          "
           :title="'Open the ' + title + ' widget menu'"
           style="margin-right: 7px"
         >
@@ -272,6 +276,14 @@
           />
         </button>
       </div>
+    </div>
+
+    <!-- Display the Widget content -->
+    <div
+      @contextmenu.prevent="handleRightClick($event)"
+      id="widgetContent"
+    >
+      <slot />
     </div>
 
     <!-- Menu -->
@@ -307,13 +319,14 @@
           { name: 'separator' },
           { name: 'Close', action: remove, icon: 'close' },
         ]"
+        :position="{ x: this.mousePos.x, y: this.mousePos.y }"
         :offset="{ x: 6, y: 40 }"
-        @close="showMenu = false"
+        @close="
+          showMenu = false;
+          clearMousePos();
+        "
       />
     </transition>
-
-    <!-- Display the Widget content -->
-    <slot />
 
     <!-- Widget Comments -->
     <Comments
@@ -344,6 +357,7 @@ export default {
     title: { type: String, default: "Widget" },
     index: { type: String, required: true },
     configuration: { type: Object },
+    localFiltersIn: { type: Array },
   },
   data() {
     return {
@@ -354,6 +368,7 @@ export default {
       loading: false,
       error_msg: null,
       grabbing: false,
+      mousePos: { x: null, y: null },
 
       // Widget rename
       renameModal: false,
@@ -413,6 +428,10 @@ export default {
 
         // Apply given configuration
         if (this.canSaveConfiguration && this.configuration) this.setConf(this.configuration, true);
+
+        // Apply local filters
+        if (this.localFiltersIn) this.localFilters = this.localFiltersIn;
+
         this.loading = false;
       } else {
         // No component instance
@@ -481,6 +500,19 @@ export default {
         this.$emit("copy", { configuration, name: this.name });
       } else this.$emit("copy");
     },
+    handleRightClick(event) {
+      // Get the widget position x and y on screen
+      let widgetX = this.$el.getBoundingClientRect().x;
+      let widgetY = this.$el.getBoundingClientRect().y;
+
+      // Get the mouse position relative to the widget
+      this.mousePos.x = event.clientX - widgetX;
+      this.mousePos.y = event.clientY - widgetY;
+      this.showMenu = true;
+
+      // Store the data for the menu
+      this.$store.commit("setOpenedWidgetMenuId", this.index);
+    },
 
     // Rename
     openRenameModal() {
@@ -544,6 +576,9 @@ export default {
       // The plot has been drawn, we can save a copy of the local filters
       const storeFilters = this.$store.state.StatisticalAnalysis.filters;
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
+    },
+    getLocalFilters() {
+      return this.localFilters;
     },
 
     // Export
@@ -631,6 +666,9 @@ export default {
       this.error_msg = null;
       clearTimeout(this.timeout);
     },
+    clearMousePos() {
+      this.mousePos = { x: null, y: null };
+    },
   },
   computed: {
     // Css
@@ -656,6 +694,10 @@ export default {
         (filter) => filter.from.widgetIndex === this.index
       );
     },
+    // Dropdown menu id
+    openedWidgetMenuId() {
+      return this.$store.state.StatisticalAnalysis.openedWidgetMenuId;
+    },
   },
   watch: {
     startFiltering(newVal) {
@@ -668,11 +710,14 @@ export default {
         this.$emit("filterCleared");
       }
     },
-    commentModal(newVal) {
+    openedWidgetMenuId(newVal) {
+      if (newVal !== this.index) this.showMenu = false;
+    },
+    commentModal() {
       // Update the plot size when the comment modal is opened or closed
       window.dispatchEvent(new Event("resize"));
     },
-    comments(newVal) {
+    comments() {
       // Update the plot size when the comments are updated
       window.dispatchEvent(new Event("resize"));
     },
@@ -775,6 +820,11 @@ export default {
         filter: brightness(80%);
       }
     }
+  }
+
+  #widgetContent {
+    overflow: hidden;
+    height: 100%;
   }
 
   #localFilters {

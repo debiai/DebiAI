@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.27.0-beta1
+  version: 0.27.0-beta2
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -1773,6 +1773,12 @@ definitions:
           type: object
           description: Configuration of the widget
           x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object
 
   # Algo providers
   algoProvider:

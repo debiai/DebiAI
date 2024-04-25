@@ -407,11 +407,14 @@ export default {
     modelDeleted(modelId) {
       this.project.models = this.project.models.filter((m) => m.id !== modelId);
     },
-    backToProjects() {
-      if (dataLoader.isAnalysisLoading()) {
+    backToProjects(newTab = false) {
+      if (newTab) {
+        const routeData = this.$router.resolve({ name: "projects" });
+        window.open(routeData.href, "_blank");
+      } else if (dataLoader.isAnalysisLoading()) {
         swal({
           title: "Cancel the analysis?",
-          text: "An analysis is being started. Do you want to cancel it?",
+          text: "Do you really want to cancel the analysis and go back to the projects list?",
           buttons: {
             cancel: "No",
             validate: "Yes",

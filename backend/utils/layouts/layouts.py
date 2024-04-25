@@ -3,7 +3,9 @@ import json
 import utils.utils as utils
 import uuid
 
+
 LAYOUTS_PATH = "data/layouts.json"
+
 
 # Layouts file structure
 # [
@@ -24,6 +26,7 @@ LAYOUTS_PATH = "data/layouts.json"
 #            "height": 0,
 #            "config": {}, # Widget config (optional)
 #            "name": "", # Name given to the widget (optional)
+#            "localFilters" : [{}],
 #          },
 #       ],
 #       "selectedColorColumn": "col", # (optional)
@@ -68,6 +71,7 @@ def add_layout(data):
     id = str(uuid.uuid1())
 
     layout_to_add = []
+
     for widget in data["layout"]:
         widget_position = {
             "x": widget["x"],
@@ -77,11 +81,11 @@ def add_layout(data):
             "widgetKey": widget["widgetKey"],
         }
 
-        if "config" in widget:
-            widget_position["config"] = widget["config"]
+        keys = ["config", "name", "localFilters"]
 
-        if "name" in widget:
-            widget_position["name"] = widget["name"]
+        for key in keys:
+            if key in widget:
+                widget_position[key] = widget[key]
 
         layout_to_add.append(widget_position)
 

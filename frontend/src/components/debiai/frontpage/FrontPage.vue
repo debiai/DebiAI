@@ -238,7 +238,9 @@
           class="project"
           v-for="project in filteredProject"
           :key="project.dataProviderId + ' / ' + project.id"
-          @click="selectProject(project.dataProviderId, project.id)"
+          @click.exact="selectProject(project.dataProviderId, project.id, false)"
+          @click.middle.exact="selectProject(project.dataProviderId, project.id, true)"
+          @click.ctrl.exact="selectProject(project.dataProviderId, project.id, true)"
         >
           <!-- Project name -->
           <div class="name">{{ project.name }}</div>
@@ -375,7 +377,6 @@
 import jsonPackage from "../../../../package";
 import DropdownMenu from "../../common/DropdownMenu.vue";
 import dataProviders from "./dataproviders/DataProviders.vue";
-
 export default {
   name: "FrontPage",
   components: {
@@ -415,11 +416,12 @@ export default {
           });
         });
     },
-    selectProject(dataProviderId, projectId) {
-      this.$router.push({
-        path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-        params: { projectId, dataProviderId },
-      });
+    selectProject(dataProviderId, projectId, newTab = false) {
+      const path = `/dataprovider/${dataProviderId}/project/${projectId}`;
+      const params = { projectId, dataProviderId, newTab };
+      const route = this.$router.resolve({ path, params });
+      if (newTab) window.open(route.href, "_blank");
+      else this.$router.push({ path, params });
     },
     openDocumentation() {
       window.open("https://debiai.irt-systemx.fr/", "_blank");

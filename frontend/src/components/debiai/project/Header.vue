@@ -4,7 +4,11 @@
       <!-- DebiAI Logo and project name -->
       <div id="logoAndName">
         <!-- DebiAI Logo -->
-        <a @click="$emit('backToProjects')">
+        <a
+          @click.exact="$emit('backToProjects')"
+          @click.middle.exact="$emit('backToProjects', true)"
+          @click.ctrl.exact="$emit('backToProjects', true)"
+        >
           <img
             src="@/assets/images/DebiAI_black.png"
             alt="DebiAI"
@@ -18,7 +22,13 @@
           id="projectName"
           v-if="project"
         >
-          <a @click="$emit('backToProjects')"> Projects </a>
+          <a
+            @click.exact="$emit('backToProjects')"
+            @click.middle.exact="$emit('backToProjects', true)"
+            @click.ctrl.exact="$emit('backToProjects', true)"
+          >
+            Projects
+          </a>
           / {{ project.name }}
         </div>
       </div>
