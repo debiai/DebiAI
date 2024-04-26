@@ -92,10 +92,20 @@ export default {
       if (jsonObj.hasOwnProperty(key)) {
         const formattedKey = `<b>${key}</b>`;
         if (Array.isArray(jsonObj[key])) {
-          prettifiedString += `${indent}${formattedKey}:\n`;
-          jsonObj[key].forEach((item) => {
-            prettifiedString += `${this.prettifyJSON(item, indentation + 1)}`;
-          });
+          if (jsonObj[key].every((item) => typeof item === "string")) {
+            prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
+          } else if (jsonObj[key].every((item) => typeof item === "number")) {
+            prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
+          } else {
+            prettifiedString += `${indent}${formattedKey}: \n`;
+            jsonObj[key].forEach((item, index) => {
+              prettifiedString += `${indent}  ${index}: \n${this.prettifyJSON(
+                item,
+                indentation + 1
+              )}`;
+            });
+            prettifiedString += `${indent}`;
+          }
         } else if (typeof jsonObj[key] === "object") {
           prettifiedString += `${indent}${formattedKey}:\n${this.prettifyJSON(
             jsonObj[key],
