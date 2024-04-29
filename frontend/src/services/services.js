@@ -92,9 +92,7 @@ export default {
       if (jsonObj.hasOwnProperty(key)) {
         const formattedKey = `<b>${key}</b>`;
         if (Array.isArray(jsonObj[key])) {
-          if (jsonObj[key].every((item) => typeof item === "string")) {
-            prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
-          } else if (jsonObj[key].every((item) => typeof item === "number")) {
+          if (jsonObj[key].every((item) => typeof item === "string" || typeof item === "number")) {
             prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
           } else {
             prettifiedString += `${indent}${formattedKey}:\n`;
@@ -102,13 +100,9 @@ export default {
               if (
                 typeof item === "object" &&
                 Array.isArray(item) &&
-                item.every((nestedItem) => typeof nestedItem === "string")
-              ) {
-                prettifiedString += `${indent}  ${index}: [${item.join(", ")}]\n`;
-              } else if (
-                typeof item === "object" &&
-                Array.isArray(item) &&
-                item.every((nestedItem) => typeof nestedItem === "number")
+                item.every(
+                  (nestedItem) => typeof nestedItem === "string" || typeof nestedItem === "number"
+                )
               ) {
                 prettifiedString += `${indent}  ${index}: [${item.join(", ")}]\n`;
               } else if (typeof item === "object") {
