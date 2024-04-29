@@ -86,7 +86,7 @@ export default {
 
   prettifyJSON(jsonObj, indentation = 0) {
     let prettifiedString = "";
-    const indent = " ".repeat(indentation);
+    const indent = "  ".repeat(indentation);
 
     for (const key in jsonObj) {
       if (jsonObj.hasOwnProperty(key)) {
@@ -97,14 +97,27 @@ export default {
           } else if (jsonObj[key].every((item) => typeof item === "number")) {
             prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
           } else {
-            prettifiedString += `${indent}${formattedKey}: \n`;
+            prettifiedString += `${indent}${formattedKey}:\n`;
             jsonObj[key].forEach((item, index) => {
-              prettifiedString += `${indent}  ${index}: \n${this.prettifyJSON(
-                item,
-                indentation + 1
-              )}`;
+              if (
+                typeof item === "object" &&
+                Array.isArray(item) &&
+                item.every((nestedItem) => typeof nestedItem === "string")
+              ) {
+                prettifiedString += `${indent}  ${index}: [${item.join(", ")}]\n`;
+              } else if (
+                typeof item === "object" &&
+                Array.isArray(item) &&
+                item.every((nestedItem) => typeof nestedItem === "number")
+              ) {
+                prettifiedString += `${indent}  ${index}: [${item.join(", ")}]\n`;
+              } else if (typeof item === "object") {
+                prettifiedString += `${indent}  ${index}: `;
+                prettifiedString += `\n${this.prettifyJSON(item, indentation + 3)}`;
+              } else {
+                prettifiedString += `${indent}  ${index}: ${item}\n`;
+              }
             });
-            prettifiedString += `${indent}`;
           }
         } else if (typeof jsonObj[key] === "object") {
           prettifiedString += `${indent}${formattedKey}:\n${this.prettifyJSON(
