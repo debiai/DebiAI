@@ -11,6 +11,7 @@
           />
           Models
         </h2>
+
         <span style="display: flex; align-items: center">
           <button @click="selectAll">All</button>
           <button
@@ -42,6 +43,7 @@
           @click="selectModel(model.id)"
         >
           <div class="title">
+            <!-- Model name -->
             <h3 class="name">{{ model.name }}</h3>
             <!-- date -->
             <span
@@ -58,6 +60,14 @@
               No creation date
             </span>
           </div>
+          <!-- Model Metadata -->
+          <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata).length > 0">
+            <h4>Model Metadata</h4>
+            <br />
+            <div style="white-space: pre-wrap">
+              <span v-html="$services.prettifyJSON(model.metadata)"></span>
+            </div>
+          </DocumentationBlock>
 
           <!-- sample number -->
           <div

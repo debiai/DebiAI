@@ -84,6 +84,48 @@ export default {
     return x.toPrecision(3);
   },
 
+  prettifyJSON(jsonObj, indentation = 0) {
+    let prettifiedString = "";
+    const indent = "  ".repeat(indentation);
+
+    for (const key in jsonObj) {
+      if (jsonObj.hasOwnProperty(key)) {
+        const formattedKey = `<b>${key}</b>`;
+        if (Array.isArray(jsonObj[key])) {
+          if (jsonObj[key].every((item) => typeof item === "string" || typeof item === "number")) {
+            prettifiedString += `${indent}${formattedKey}: [${jsonObj[key].join(", ")}]\n`;
+          } else {
+            prettifiedString += `${indent}${formattedKey}:\n`;
+            jsonObj[key].forEach((item, index) => {
+              if (
+                typeof item === "object" &&
+                Array.isArray(item) &&
+                item.every(
+                  (nestedItem) => typeof nestedItem === "string" || typeof nestedItem === "number"
+                )
+              ) {
+                prettifiedString += `${indent}  ${index}: [${item.join(", ")}]\n`;
+              } else if (typeof item === "object") {
+                prettifiedString += `${indent}  ${index}: `;
+                prettifiedString += `\n${this.prettifyJSON(item, indentation + 3)}`;
+              } else {
+                prettifiedString += `${indent}  ${index}: ${item}\n`;
+              }
+            });
+          }
+        } else if (typeof jsonObj[key] === "object") {
+          prettifiedString += `${indent}${formattedKey}:\n${this.prettifyJSON(
+            jsonObj[key],
+            indentation + 1
+          )}`;
+        } else {
+          prettifiedString += `${indent}${formattedKey}: ${jsonObj[key]}\n`;
+        }
+      }
+    }
+    return prettifiedString;
+  },
+
   csvToArray(csvString) {
     let delimiter = ",";
     if (!csvString || !csvString.length) return [];

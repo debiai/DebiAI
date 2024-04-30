@@ -29,7 +29,7 @@ def get_models(project_id):
                     "creationDate": info["creationDate"],
                     "updateDate": info["updateDate"],
                     "version": "0.0.0",
-                    "metaDataList": info["metadata"],
+                    "metadata": info["metadata"],
                     "nbResults": info["nbResults"],
                 }
             )
