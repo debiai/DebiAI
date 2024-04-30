@@ -12,8 +12,8 @@ def get_models_info(url, project_id):
                 continue
             model = {
                 "id": model_in["id"],
-                # "creationDate": TODO,
-                # "updateDate": TODO
+                "metadata": None,
+                "creationDate": None,
             }
 
             # Adding name and nbResults
@@ -22,10 +22,12 @@ def get_models_info(url, project_id):
                 model["nbResults"] = model_in["nbResults"]
 
             # Adding metadata
-            if "metadata" not in model_in:
-                model["metadata"] = None
-            else:
+            if "metadata" in model_in:
                 model["metadata"] = model_in["metadata"]
+
+            # Adding creationDate
+            if "creationDate" in model_in:
+                model["creationDate"] = model_in["creationDate"]
 
             debiai_models.append(model)
 
