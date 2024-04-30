@@ -61,7 +61,7 @@
             </span>
           </div>
           <!-- Model Metadata -->
-          <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata).length > 0">
+          <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata)">
             <h4>Model Metadata</h4>
             <br />
             <div style="white-space: pre-wrap">
