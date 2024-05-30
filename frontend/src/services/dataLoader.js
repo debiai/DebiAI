@@ -498,6 +498,7 @@ async function loadDataAndModelResults(
       sampleIdList: samplesToPullFull,
     };
   } catch (error) {
+    console.error(error);
     throw error;
   } finally {
     services.endRequest(requestCode);
@@ -520,7 +521,6 @@ function createColumn(label, values, category, type = null, group = null) {
   // Creating the column object
   const col = {
     label,
-    index: i,
     values: values,
     type: null,
     typeText: "",
@@ -541,6 +541,14 @@ function createColumn(label, values, category, type = null, group = null) {
     console.warn("Undefined values : " + label);
     console.warn(col.uniques);
     console.warn(col.values);
+  } else if (!(col.uniques.findIndex((v) => !Array.isArray(v)) >= 0)) {
+    // If all the values are arrays
+    col.type = Array;
+    col.typeText = "Array";
+  } else if (col.uniques.findIndex((v) => typeof v !== "object")) {
+    // If all the values are dictionaries
+    col.type = Object;
+    col.typeText = "Dict";
   } else if (type === "text" || col.uniques.find((v) => isNaN(v))) {
     // String Values
     col.type = String;
@@ -581,7 +589,7 @@ async function arrayToJson(array, metaData) {
     labels: [],
     nbLines: 0,
     nbColumns: 0,
-    columns: new Array(metaData.labels.length).fill([]),
+    columns: new Array(metaData.labels.length).fill(null),
     categories: [...CATEGORIES.map((c) => c.singleName), "results"],
   };
 
