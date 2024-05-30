@@ -49,6 +49,7 @@
                   :column="col"
                   :selected="selectedColumns.includes(col.index)"
                   :colorSelection="colorSelection"
+                  :validColumnsProperties="validColumnsProperties"
                   v-on:selected="columnSelect"
                 />
               </div>
@@ -66,6 +67,7 @@
             :column="col"
             :selected="selectedColumns.includes(col.index)"
             :colorSelection="colorSelection"
+            :validColumnsProperties="validColumnsProperties"
             v-on:selected="columnSelect"
           />
         </div>
@@ -86,6 +88,7 @@ export default {
     selectedColumns: { type: Array },
     multipleSelection: { type: Boolean, default: true },
     colorSelection: { type: Boolean, default: false },
+    validColumnsProperties: { type: Object, default: () => ({}) },
   },
   methods: {
     columnSelect(colIndex) {

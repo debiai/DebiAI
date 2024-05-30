@@ -72,6 +72,7 @@
         :name="i"
         :multipleSelection="validateRequired"
         :colorSelection="colorSelection"
+        :validColumnsProperties="validColumnsProperties"
         v-on:columnSelected="columnSelected"
         v-on:all="all"
         v-on:none="none"
@@ -101,6 +102,7 @@ export default {
     cancelAvailable: { type: Boolean, default: true },
     colorSelection: { type: Boolean, default: false },
     defaultSelected: { type: Array, default: undefined },
+    validColumnsProperties: { type: Object, default: () => ({}) },
   },
   created() {
     if (this.defaultSelected == undefined) {
@@ -223,8 +225,6 @@ export default {
 
 <style lang="scss" scoped>
 #ColumnSelection {
-  height: 95%;
-  width: 98%;
   .title {
     justify-content: space-between;
   }
