@@ -1,43 +1,54 @@
 <template>
   <div id="column">
-    <!-- Label display -->
+    <!-- Label -->
     <button
-      v-if="column.type !== undefined && !disabled"
-      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 20 ? 'long' : '')"
+      v-if="columnValidStatus['status'] !== 'invalid'"
+      :class="getColumnClass()"
       @click="select"
-      :title="selected ? 'Unselect ' + column.label : 'Select ' + column.label"
+      :title="getColumnLabelTitle()"
     >
       {{ column.label }}
     </button>
-    <div
-      v-else-if="column.type == undefined"
-      class="label disabled"
-    >
-      {{ column.label }}
-    </div>
-    <div
-      v-else
-      class="label"
-    >
-      {{ column.label }}
-    </div>
-
-    <!-- Number of uniques values display -->
-    <div
-      v-if="disabled || (!reduced && (!colorSelection || column.type == undefined))"
-      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
-      title="Number of uniques values"
-    >
-      {{ column.nbOccurrence }}
-    </div>
     <button
-      v-else-if="!reduced"
+      v-else
+      class="label disabled"
+      :title="columnValidStatus['reason']"
+    >
+      {{ column.label }}
+    </button>
+
+    <!-- Number of uniques values -->
+    <!-- Clickable -->
+    <button
+      v-if="canDisplayNbOccurrence && colorSelection"
       :class="selectedAsColor ? 'nbOccurrence color btn' : 'nbOccurrence btn'"
       title="Number of uniques values
 Click to set column as the main color"
       @click="selectAsColor"
     >
       {{ column.nbOccurrence }}
+    </button>
+
+    <!-- Un-clickable -->
+    <div
+      v-else-if="canDisplayNbOccurrence"
+      class="nbOccurrence"
+      title="Number of uniques values"
+    >
+      {{ column.nbOccurrence }}
+    </div>
+    <!-- Expand column button -->
+    <button
+      v-else
+      class="nbOccurrence btn"
+      title="Unfold the column"
+      @click="unfoldColumn"
+    >
+      <inline-svg
+        :src="require('@/assets/svg/expand.svg')"
+        height="14"
+        width="14"
+      />
     </button>
 
     <!-- Type display -->
@@ -55,21 +66,113 @@ export default {
   props: {
     column: { type: Object, required: true },
     selected: { type: Boolean, default: true },
-    reduced: { type: Boolean, default: false },
     colorSelection: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
+    validColumnsProperties: { type: Object, default: () => ({}) }, // Valid properties for the column
+  },
+  data() {
+    return {
+      columnTypesWithNoNbOccurrence: ["undefined", "Dict", "Array"],
+    };
   },
   methods: {
+    getColumnClass() {
+      return {
+        warning: this.columnValidStatus["status"] === "warning",
+        label: true,
+        selected: this.selected,
+        long: this.column.label.length > 20,
+      };
+    },
+    getColumnLabelTitle() {
+      if (this.columnValidStatus["status"] === "warning") return this.columnValidStatus["reason"];
+      else if (this.selected) return "Unselect " + this.column.label;
+      else return "Select " + this.column.label;
+    },
     select() {
       this.$emit("selected", this.column.index);
     },
     selectAsColor() {
       this.$store.commit("setColoredColumnIndex", this.column.index);
     },
+    unfoldColumn() {
+      this.$emit("unfold", this.column.index);
+    },
   },
   computed: {
     selectedAsColor: function () {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex == this.column.index;
+    },
+    canDisplayNbOccurrence: function () {
+      return !this.columnTypesWithNoNbOccurrence.includes(this.column.typeText);
+    },
+    columnValidStatus: function () {
+      // Verify if the column is valid from the validColumnsProperties
+      // Example of validColoredColumnProperties: {
+      //   // Valid properties details
+      //   types: [String, Number, Boolean],
+      //   maxUniqueValues: 10,
+      //   // Warning properties details
+      //   warningTypes: ["Dict", "Array"]
+      //   warningMaxUniqueValues: 5,
+      //   // Everything else is invalid
+      // },
+      // Return "valid", "warning" or "invalid" and the reason
+
+      // If validColumnsProperties is empty, return valid
+      if (Object.keys(this.validColumnsProperties).length === 0)
+        return { status: "valid", reason: "" };
+
+      // Errors
+      // Check if the column type is valid
+      if (
+        this.validColumnsProperties.types &&
+        !this.validColumnsProperties.types.includes(this.column.typeText)
+      ) {
+        return {
+          status: "invalid",
+          reason:
+            "The column type is not supported for the action that you want to perform, valid column types are: " +
+            this.validColumnsProperties.types.join(", "),
+        };
+      }
+      // Check if the number of unique values is valid
+      if (
+        this.validColumnsProperties.maxUniqueValues &&
+        this.column.nbOccurrence > this.validColumnsProperties.maxUniqueValues
+      )
+        return {
+          status: "invalid",
+          reason:
+            "The number of unique values of the column is too high, it should be bellow " +
+            this.validColumnsProperties.maxUniqueValues,
+        };
+
+      // Warnings
+      // Check if the type is a warning
+      if (
+        this.validColumnsProperties.warningTypes &&
+        this.validColumnsProperties.warningTypes.includes(this.column.typeText)
+      )
+        return {
+          status: "warning",
+          reason:
+            "The column type may not be supported, recommended types are: " +
+            this.validColumnsProperties.types.join(", "),
+        };
+
+      // Check if the number of unique values is a warning
+      if (
+        this.validColumnsProperties.warningMaxUniqueValues &&
+        this.column.nbOccurrence > this.validColumnsProperties.warningMaxUniqueValues
+      )
+        return {
+          status: "warning",
+          reason:
+            "The number of unique values of the column may be too high, it should be bellow " +
+            this.validColumnsProperties.warningMaxUniqueValues,
+        };
+
+      return { status: "valid", reason: "" };
     },
   },
 };
@@ -94,8 +197,7 @@ export default {
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: "...";
-
+    text-overflow: ellipsis;
     color: var(--fontColorLight);
   }
 
@@ -103,20 +205,24 @@ export default {
     font-size: 0.75em;
   }
 
-  button.selected {
-    background-color: var(--secondary);
-    color: white;
+  button {
+    &.selected {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    &.warning {
+      // Striped background
+      background: repeating-linear-gradient(
+        125deg,
+        var(--greyLight),
+        var(--greyLight) 10px,
+        white 10px,
+        white 20px
+      );
+    }
   }
 
-  .disabled {
-    cursor: not-allowed;
-    width: 120px;
-
-    background-color: var(--undefined);
-    color: rgb(27, 27, 27);
-  }
-
-  /* Occurrence */
   .nbOccurrence {
     min-width: 40px;
     padding: 4px;
@@ -150,10 +256,22 @@ export default {
       border: solid var(--number) 2px;
       color: var(--number);
     }
+
     &.Class {
       border: solid var(--class) 2px;
       color: var(--class);
     }
+
+    &.Array {
+      border: solid var(--array) 2px;
+      color: var(--array);
+    }
+
+    &.Dict {
+      border: solid var(--dict) 2px;
+      color: var(--dict);
+    }
+
     &.undefined {
       border: solid var(--undefined) 2px;
       color: var(--undefined);

@@ -26,8 +26,10 @@
   --dangerDark: #a82734;
 
   /* Data Type */
-  --number: #92cee6;
-  --class: #ffc107;
+  --number: #1ea5ff;
+  --class: #ffa500;
+  --array: #8455e0;
+  --dict: #32cd32;
 
   /* Categories */
   --undefined: #e0a9ae;
@@ -148,6 +150,15 @@ button {
 
     svg {
       fill: var(--fontColorLight);
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &:hover {
+      filter: brightness(1);
     }
   }
 

@@ -7,6 +7,7 @@
     >
       <ColumnSelection
         title="Select the workspace colored column"
+        :validColumnsProperties="validColoredColumnProperties"
         :data="data"
         :validateRequired="false"
         :colorSelection="false"
@@ -92,11 +93,6 @@
       >
         {{ data.columns.find((c) => c.index == coloredColumnIndex).label }}
       </button>
-      <!-- <Column
-        :column="data.columns.find((c) => c.index == coloredColumnIndex)"
-        :colorSelection="false"
-        v-on:selected="selectColoredCol = true"
-      /> -->
     </div>
     <div
       id="coloredColumn"
@@ -153,14 +149,12 @@
 
 <script>
 import SelectedDataInfo from "./dataNavigation/SelectedDataInfo";
-import Column from "./common/Column";
 import ColumnSelection from "./common/ColumnSelection";
 import GlobalFilters from "./dataFilters/GlobalFilters";
 
 export default {
   components: {
     SelectedDataInfo,
-    Column,
     ColumnSelection,
     GlobalFilters,
   },
@@ -174,6 +168,9 @@ export default {
       selectColoredCol: false,
       selectDataset: false,
       filtersMenu: false,
+      validColoredColumnProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   created() {
@@ -290,6 +287,7 @@ export default {
     padding-left: 15px;
     padding-right: 15px;
     min-width: 50px;
+
     svg {
       // Rotate
       transform: rotate(45deg);
