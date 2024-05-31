@@ -193,9 +193,7 @@ export default {
   },
   mounted() {
     this.divPointPlot = document.getElementById("PP3DDiv" + this.index);
-    if (this.data.columns.length >= 3) {
-      this.setPointOpacity();
-    }
+    if (this.data.columns.length >= 3) this.setPointOpacity();
   },
   methods: {
     getConf() {
