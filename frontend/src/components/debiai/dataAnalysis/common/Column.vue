@@ -1,19 +1,20 @@
 <template>
   <div id="column">
-    <!-- Label -->
+    <!-- Label button -->
+
     <button
-      v-if="columnValidStatus['status'] !== 'invalid'"
+      id="labelButton"
       :class="getColumnClass()"
       @click="select"
       :title="getColumnLabelTitle()"
     >
-      {{ column.label }}
-    </button>
-    <button
-      v-else
-      class="label disabled"
-      :title="columnValidStatus['reason']"
-    >
+      <span
+        followCursor
+        v-if="columnValidStatus.status === 'warning'"
+      >
+        ⚠️
+      </span>
+
       {{ column.label }}
     </button>
 
@@ -21,7 +22,7 @@
     <!-- Clickable -->
     <button
       v-if="canDisplayNbOccurrence && colorSelection"
-      :class="selectedAsColor ? 'nbOccurrence color btn' : 'nbOccurrence btn'"
+      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
       title="Number of uniques values
 Click to set column as the main color"
       @click="selectAsColor"
@@ -32,6 +33,7 @@ Click to set column as the main color"
     <!-- Un-clickable -->
     <div
       v-else-if="canDisplayNbOccurrence"
+      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
       class="nbOccurrence"
       title="Number of uniques values"
     >
@@ -40,7 +42,7 @@ Click to set column as the main color"
     <!-- Expand column button -->
     <button
       v-else
-      class="nbOccurrence btn"
+      class="nbOccurrence"
       title="Unfold the column"
       @click="unfoldColumn"
     >
@@ -62,6 +64,8 @@ Click to set column as the main color"
 </template>
 
 <script>
+import columnsFiltering from "@/services/statistics/columnsFiltering";
+
 export default {
   props: {
     column: { type: Object, required: true },
@@ -78,18 +82,22 @@ export default {
     getColumnClass() {
       return {
         warning: this.columnValidStatus["status"] === "warning",
-        label: true,
         selected: this.selected,
         long: this.column.label.length > 20,
+        disabled: this.columnValidStatus["status"] === "invalid",
       };
     },
     getColumnLabelTitle() {
-      if (this.columnValidStatus["status"] === "warning") return this.columnValidStatus["reason"];
+      if (
+        this.columnValidStatus["status"] === "warning" ||
+        this.columnValidStatus["status"] === "invalid"
+      )
+        return this.columnValidStatus["reason"];
       else if (this.selected) return "Unselect " + this.column.label;
       else return "Select " + this.column.label;
     },
     select() {
-      this.$emit("selected", this.column.index);
+      if (this.columnValidStatus["status"] !== "invalid") this.$emit("selected", this.column.index);
     },
     selectAsColor() {
       this.$store.commit("setColoredColumnIndex", this.column.index);
@@ -106,73 +114,7 @@ export default {
       return !this.columnTypesWithNoNbOccurrence.includes(this.column.typeText);
     },
     columnValidStatus: function () {
-      // Verify if the column is valid from the validColumnsProperties
-      // Example of validColoredColumnProperties: {
-      //   // Valid properties details
-      //   types: [String, Number, Boolean],
-      //   maxUniqueValues: 10,
-      //   // Warning properties details
-      //   warningTypes: ["Dict", "Array"]
-      //   warningMaxUniqueValues: 5,
-      //   // Everything else is invalid
-      // },
-      // Return "valid", "warning" or "invalid" and the reason
-
-      // If validColumnsProperties is empty, return valid
-      if (Object.keys(this.validColumnsProperties).length === 0)
-        return { status: "valid", reason: "" };
-
-      // Errors
-      // Check if the column type is valid
-      if (
-        this.validColumnsProperties.types &&
-        !this.validColumnsProperties.types.includes(this.column.typeText)
-      ) {
-        return {
-          status: "invalid",
-          reason:
-            "The column type is not supported for the action that you want to perform, valid column types are: " +
-            this.validColumnsProperties.types.join(", "),
-        };
-      }
-      // Check if the number of unique values is valid
-      if (
-        this.validColumnsProperties.maxUniqueValues &&
-        this.column.nbOccurrence > this.validColumnsProperties.maxUniqueValues
-      )
-        return {
-          status: "invalid",
-          reason:
-            "The number of unique values of the column is too high, it should be bellow " +
-            this.validColumnsProperties.maxUniqueValues,
-        };
-
-      // Warnings
-      // Check if the type is a warning
-      if (
-        this.validColumnsProperties.warningTypes &&
-        this.validColumnsProperties.warningTypes.includes(this.column.typeText)
-      )
-        return {
-          status: "warning",
-          reason:
-            "The column type may not be supported, recommended types are: " +
-            this.validColumnsProperties.types.join(", "),
-        };
-
-      // Check if the number of unique values is a warning
-      if (
-        this.validColumnsProperties.warningMaxUniqueValues &&
-        this.column.nbOccurrence > this.validColumnsProperties.warningMaxUniqueValues
-      )
-        return {
-          status: "warning",
-          reason:
-            "The number of unique values of the column may be too high, it should be bellow " +
-            this.validColumnsProperties.warningMaxUniqueValues,
-        };
-
-      return { status: "valid", reason: "" };
+      return columnsFiltering.getColumnStatus(this.column, this.validColumnsProperties);
     },
   },
 };
@@ -188,24 +130,25 @@ export default {
   border-radius: 4px;
 
   /* Label  */
-  .label {
-    width: 200px;
+
+  #labelButton {
+    display: flex;
+    gap: 5px;
     justify-content: center;
     align-items: center;
-
     border: none;
     font-weight: bold;
     white-space: nowrap;
-    overflow: hidden;
+    width: 180px;
     text-overflow: ellipsis;
     color: var(--fontColorLight);
-  }
 
-  .long {
-    font-size: 0.75em;
-  }
+    &.long {
+      .label {
+        font-size: 0.75em;
+      }
+    }
 
-  button {
     &.selected {
       background-color: var(--secondary);
       color: white;
@@ -217,9 +160,10 @@ export default {
         125deg,
         var(--greyLight),
         var(--greyLight) 10px,
-        white 10px,
-        white 20px
+        #f6f6f6 10px,
+        #f6f6f6 20px
       );
+      color: var(--fontColorLight);
     }
   }
 
@@ -248,32 +192,26 @@ export default {
     margin: 5px;
     padding-left: 7px;
     padding-right: 7px;
-    border-radius: 5px;
 
     color: black;
 
     &.Num {
-      border: solid var(--number) 2px;
       color: var(--number);
     }
 
     &.Class {
-      border: solid var(--class) 2px;
       color: var(--class);
     }
 
     &.Array {
-      border: solid var(--array) 2px;
       color: var(--array);
     }
 
     &.Dict {
-      border: solid var(--dict) 2px;
       color: var(--dict);
     }
 
     &.undefined {
-      border: solid var(--undefined) 2px;
       color: var(--undefined);
     }
   }
