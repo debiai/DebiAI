@@ -9,30 +9,11 @@
         title="Select a column to filter"
         :data="data"
         :validateRequired="false"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="filterColumnSelection = false"
         v-on:colSelect="selectFilterColumn"
       />
     </modal>
-
-    <!-- request creation modal -->
-    <!-- <modal
-      v-if="requestCreation"
-      @close="requestCreation = false"
-    >
-      <RequestCreation @cancel="requestCreation = false" />
-    </modal> -->
-
-    <!-- Request selection modal -->
-    <!-- <modal
-      v-if="requestSelection"
-      @close="requestSelection = false"
-    >
-      <Requests
-        @close="requestSelection = false"
-        :selectionMode="true"
-        @requestSelected="requestSelected"
-      />
-    </modal> -->
 
     <!-- Header -->
     <div
@@ -49,36 +30,6 @@
         Filters
       </h2>
       <span style="flex: 1"></span>
-      <!-- Load filters btn -->
-      <!-- TODO, revert in the filters update -->
-      <!-- <button
-        @click="requestSelection = true"
-        title="Available in a future update"
-      >
-        <inline-svg
-          :src="require('@/assets/svg/import.svg')"
-          width="10"
-          height="10"
-          fill="lightgrey"
-        />
-        Load filters from a request
-      </button> -->
-      <!-- Save request btn -->
-      <!-- TODO, revert the always displayed in the filters update -->
-      <!-- <button
-        class="green"
-        :disabled="filters.length == 0"
-        @click="requestCreation = true"
-        title="Available in a future update"
-      >
-        <inline-svg
-          :src="require('@/assets/svg/save.svg')"
-          width="13"
-          height="13"
-          fill="white"
-        />
-        Save as a request
-      </button> -->
 
       <!-- Clear filters btn -->
       <button
@@ -137,14 +88,11 @@
 <script>
 // Component
 import ColumnSelection from "../common/ColumnSelection";
-import RequestCreation from "./RequestCreation";
 import FilterList from "./FilterList.vue";
 
 export default {
   components: {
     ColumnSelection,
-    RequestCreation,
-    // Requests,
     FilterList,
   },
   props: {
@@ -154,8 +102,10 @@ export default {
     return {
       filterColumnSelection: false,
       filterSelectionType: null,
-      // requestCreation: false,
-      // requestSelection: false,
+
+      validColumnsProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   methods: {

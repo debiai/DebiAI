@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
+        :validColumnsProperties="validXColumnsProperties"
         v-on:cancel="xAxisSelection = false"
         v-on:colSelect="xAxisSelect"
       />
@@ -28,6 +29,7 @@
         :data="data"
         :colorSelection="true"
         :defaultSelected="[...selectedY1ColumnsIds]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="y1AxisSelection = false"
         v-on:validate="y1AxisSelect"
       />
@@ -42,6 +44,7 @@
         :data="data"
         :colorSelection="true"
         :defaultSelected="[...selectedY2ColumnsIds]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="y2AxisSelection = false"
         v-on:validate="y2AxisSelect"
       />
@@ -57,6 +60,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnTagIndex === null ? undefined : [columnTagIndex]"
+        :validColumnsProperties="validTagColumnsProperties"
         v-on:cancel="tagAxisSelection = false"
         v-on:colSelect="tagAxisSelect"
       />
@@ -257,6 +261,16 @@ export default {
       // Other
       currentDrawnColorIndex: null,
       plotDrawn: false,
+
+      validXColumnsProperties: {
+        types: ["Num", "Class"],
+      },
+      validYColumnsProperties: {
+        types: ["Num", "Bool"],
+      },
+      validTagColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   props: {

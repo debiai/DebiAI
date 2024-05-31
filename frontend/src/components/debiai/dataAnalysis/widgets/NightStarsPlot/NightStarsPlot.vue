@@ -110,6 +110,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXIndex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="xAxisSelection = false"
         v-on:colSelect="xAxisSelect"
       />
@@ -123,8 +124,9 @@
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="yAxisSelection = false"
         :defaultSelected="[columnYIndex]"
+        :validColumnsProperties="validColumnsProperties"
+        v-on:cancel="yAxisSelection = false"
         v-on:colSelect="yAxisSelect"
       />
     </modal>
@@ -139,6 +141,7 @@
 <script>
 import Plotly from "plotly.js/dist/plotly";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
+import swal from "sweetalert";
 
 // components
 import ColumnSelection from "../../common/ColumnSelection";
@@ -168,6 +171,10 @@ export default {
 
       // Other
       currentDrawnColorIndex: null,
+      validColumnsProperties: {
+        types: ["Num"],
+        warningTypes: ["Class"],
+      },
     };
   },
   props: {

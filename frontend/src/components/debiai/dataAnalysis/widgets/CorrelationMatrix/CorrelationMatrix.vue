@@ -15,6 +15,7 @@
         :cancelAvailable="true"
         :colorSelection="true"
         :defaultSelected="selectedColumns.map((c) => c.index)"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="cancelAxisSettings"
         v-on:validate="AxisSelect"
       />
@@ -121,6 +122,10 @@ export default {
       selectedMatrixType: "pearson",
       error: false,
       loading: false,
+
+      validColumnsProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   props: {

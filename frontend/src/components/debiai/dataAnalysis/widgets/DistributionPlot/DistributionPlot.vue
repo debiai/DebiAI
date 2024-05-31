@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="cancelXaxisSettings"
         v-on:colSelect="xAxisSelect"
       />
@@ -29,6 +30,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[secondColumnIndex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="secondAxisSelection = false"
         v-on:colSelect="secondAxisSelect"
       />
@@ -251,6 +253,10 @@ export default {
       xAxisSelection: false,
       secondAxisSelection: false,
       currentDrawnColorIndex: null,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   props: {

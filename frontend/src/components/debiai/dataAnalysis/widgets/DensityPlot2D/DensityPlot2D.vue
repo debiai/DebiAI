@@ -163,6 +163,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXIndex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="xAxisSelection = false"
         v-on:colSelect="xAxisSelect"
       />
@@ -176,8 +177,9 @@
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="yAxisSelection = false"
+        :validColumnsProperties="validColumnsProperties"
         :defaultSelected="[columnYIndex]"
+        v-on:cancel="yAxisSelection = false"
         v-on:colSelect="yAxisSelect"
       />
     </modal>
@@ -196,9 +198,6 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 // components
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
-
-// services
-import dataOperations from "@/services/statistics/dataOperations";
 
 export default {
   components: {
@@ -243,6 +242,11 @@ export default {
         "Viridis",
         "Cividis",
       ],
+
+      validColumnsProperties: {
+        types: ["Num"],
+        warningTypes: ["Class"],
+      },
     };
   },
   props: {
@@ -307,7 +311,7 @@ export default {
       if ("contourNumber" in conf) this.contourNumber = conf.contourNumber;
 
       // Draw plot
-      this.checkPlot(true);
+      this.checkPlot();
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -336,7 +340,7 @@ export default {
       return confName;
     },
     // Plot
-    checkPlot(failFast = false) {
+    checkPlot() {
       this.drawPlot();
     },
 
@@ -555,9 +559,6 @@ export default {
       if (this.autoPointOpacity) this.setPointOpacity();
     },
     coloredColumnIndex: function () {},
-    redrawRequired(o, n) {
-      // this.$parent.colorWarning = n;
-    },
   },
 };
 </script>

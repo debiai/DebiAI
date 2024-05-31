@@ -276,7 +276,8 @@ export default {
           // we don't need to convert the values
           return this.value;
         }
-      } else return this.value;
+      }
+      return this.value;
     },
     isIdList: function () {
       return this.input.type === "array" && this.input.name === "idList";

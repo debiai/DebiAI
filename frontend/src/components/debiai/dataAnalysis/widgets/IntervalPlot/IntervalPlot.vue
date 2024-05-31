@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
+        :validColumnsProperties="validXColumnsProperties"
         v-on:cancel="xAxisSelection = false"
         v-on:colSelect="xAxisSelect"
       />
@@ -28,6 +29,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnYindex]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="yAxisSelection = false"
         v-on:colSelect="yAxisSelect"
       />
@@ -42,6 +44,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnUpperIndex === null ? undefined : [columnUpperIndex]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="upperAxisSelection = false"
         v-on:colSelect="upperAxisSelect"
       />
@@ -56,6 +59,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="columnLowerIndex === null ? undefined : [columnLowerIndex]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="lowerAxisSelection = false"
         v-on:colSelect="lowerAxisSelect"
       />
@@ -189,6 +193,13 @@ export default {
 
       // === Other ===
       intervalPlotDrawn: false,
+      validXColumnsProperties: {
+        types: ["Class", "Num"],
+      },
+      validYColumnsProperties: {
+        types: ["Num", "Bool"],
+        warningTypes: ["Class"],
+      },
     };
   },
   props: {

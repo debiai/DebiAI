@@ -12,6 +12,7 @@
         :defaultSelected="[
           selectedColToChange == 0 ? firstColumn : rules[selectedColToChange - 1].colIndex,
         ]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="selectedColToChange = null"
         v-on:colSelect="selectCol"
       />
@@ -161,6 +162,10 @@ export default {
         sup: { code: ">", display: ">" },
         inf: { code: "<", display: "<" },
         equal: { code: "==", display: "equal" },
+      },
+
+      validColumnsProperties: {
+        types: ["Class", "Num", "Bool"],
       },
     };
   },

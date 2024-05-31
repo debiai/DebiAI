@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[selectedColumnIndex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="colSelection = false"
         v-on:colSelect="colSelect"
       />
@@ -160,6 +161,29 @@ export default {
       colSelection: false,
       multipleColSelection: false,
       displayedData: null,
+
+      // You can add rules on what columns can be selected
+      // None of the following properties are required
+      validColumnsProperties: {
+        // Precise what properties are valid
+        // Any column with a property not in the list will be disabled
+        // in the column selection modal
+        // Except if they are in the `warningTypes` list
+        types: ["Class", "Num", "Bool"],
+
+        // Precise what maximum unique values are allowed
+        // Any column with more unique values will be disabled
+        // in the column selection modal
+        maxUniqueValues: 10,
+
+        // Warning types are valid but will be displayed with a warning
+        warningTypes: ["Dict", "Array"],
+
+        // Warning maximum unique values
+        // Columns with more unique values than this will be displayed with a warning
+        // But they will still be selectable
+        warningMaxUniqueValues: 5,
+      },
     };
   },
   props: {

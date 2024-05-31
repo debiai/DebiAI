@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[columnXindex]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="cancelXAxisSettings"
         v-on:colSelect="xAxisSelect"
       />
@@ -27,8 +28,9 @@
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="cancelYAxisSettings"
         :defaultSelected="[columnYindex]"
+        :validColumnsProperties="validColumnsProperties"
+        v-on:cancel="cancelYAxisSettings"
         v-on:colSelect="yAxisSelect"
       />
     </modal>
@@ -41,8 +43,9 @@
         :data="data"
         :validateRequired="false"
         :colorSelection="true"
-        v-on:cancel="cancelZAxisSettings"
         :defaultSelected="[columnZindex]"
+        :validColumnsProperties="validColumnsProperties"
+        v-on:cancel="cancelZAxisSettings"
         v-on:colSelect="zAxisSelect"
       />
     </modal>
@@ -170,6 +173,10 @@ export default {
       // Other
       currentDrawnColorIndex: null,
       plotDrawn: false,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   props: {
@@ -187,9 +194,6 @@ export default {
   mounted() {
     this.divPointPlot = document.getElementById("PP3DDiv" + this.index);
     if (this.data.columns.length >= 3) {
-      this.xAxisSelect(0);
-      this.yAxisSelect(1);
-      this.zAxisSelect(2);
       this.setPointOpacity();
     }
   },

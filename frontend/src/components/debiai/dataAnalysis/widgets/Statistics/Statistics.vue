@@ -14,6 +14,7 @@
         :validateRequired="false"
         :colorSelection="true"
         :defaultSelected="[selectedColumn.index]"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="columnSelection = false"
         v-on:colSelect="selectCol"
       />
@@ -245,6 +246,10 @@ export default {
       toMuchUniqueValues: false,
       colColorName: null,
       colColorDisplayed: null,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   created() {

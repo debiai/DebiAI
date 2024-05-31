@@ -11,6 +11,7 @@
       :cancelAvailable="selectedColumnsIds.length > 0"
       :colorSelection="true"
       :defaultSelected="selectedColumnsIds"
+      :validColumnsProperties="validColumnsProperties"
       v-on:cancel="settings = false"
       v-on:validate="validateSettings"
     />
@@ -42,6 +43,9 @@ export default {
       settings: true,
       selectedColumnsIds: [],
       currentDrawnColorIndex: null,
+      validColumnsProperties: {
+        types: ["Num", "Bool", "Class"],
+      },
     };
   },
   props: {
@@ -60,7 +64,7 @@ export default {
 
     // Select default columns
     this.selectedColumnsIds = this.data.columns
-      .filter((c) => c.nbOccurrence > 1)
+      .filter((c) => c.nbOccurrence > 1 && this.validColumnsProperties.types.includes(c.typeText))
       .map((c) => c.index);
   },
   mounted() {
