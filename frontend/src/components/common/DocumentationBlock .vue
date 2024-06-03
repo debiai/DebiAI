@@ -98,7 +98,7 @@ export default {
 }
 
 #docBlock.top {
-  transform: translateY(-100%);
+  transform: translateY(100%);
 }
 </style>
 
