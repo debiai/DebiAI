@@ -100,7 +100,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$backendDialog.getSelections().then((selections) => {
@@ -137,7 +136,7 @@ export default {
     },
 
     saveSelection(requestId = null) {
-      let selectedIds = this.selectedData.map(
+      let selectedIds = this.data.selectedData.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
       this.$backendDialog

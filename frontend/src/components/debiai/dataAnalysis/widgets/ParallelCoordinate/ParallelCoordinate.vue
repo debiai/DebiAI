@@ -51,7 +51,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -98,7 +97,7 @@ export default {
       // Filter selected columns
       let columns = this.selectedColumnsIds.map((cId) => this.data.columns[cId]);
 
-      let plotlyColumns = dataOperations.columnsCreation(columns, this.selectedData);
+      let plotlyColumns = dataOperations.columnsCreation(columns, this.data.selectedData);
 
       // Color
       let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
@@ -111,9 +110,9 @@ export default {
       let color;
       if (colColor) {
         if (colColor.type == String) {
-          color = this.selectedData.map((sId) => colColor.valuesIndex[sId]);
+          color = this.data.selectedData.map((sId) => colColor.valuesIndex[sId]);
         } else {
-          color = this.selectedData.map((sId) => colColor.values[sId]);
+          color = this.data.selectedData.map((sId) => colColor.values[sId]);
           showscale = true;
         }
       }
@@ -231,12 +230,15 @@ export default {
     startFiltering() {
       return !this.$parent.startFiltering;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     startFiltering(o, n) {

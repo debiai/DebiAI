@@ -105,7 +105,7 @@ export default {
       this.$store.commit("setColoredColumnIndex", this.column.index);
     },
     unfoldColumn() {
-      this.$emit("unfold", this.column.index);
+      this.$store.commit("unfoldColumn", this.column.index);
     },
   },
   computed: {

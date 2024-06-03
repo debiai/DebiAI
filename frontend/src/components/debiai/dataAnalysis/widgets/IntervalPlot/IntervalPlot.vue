@@ -205,7 +205,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget setting btn
@@ -308,10 +307,10 @@ export default {
       let colLower = this.data.columns[this.columnLowerIndex];
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
-      let valuesUpper = this.selectedData.map((i) => colUpper.values[i]);
-      let valuesLower = this.selectedData.map((i) => colLower.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.data.selectedData.map((i) => colY.values[i]);
+      let valuesUpper = this.data.selectedData.map((i) => colUpper.values[i]);
+      let valuesLower = this.data.selectedData.map((i) => colLower.values[i]);
 
       // Reorganize data to sort by the x axis
       let data = [];
@@ -333,7 +332,7 @@ export default {
       valuesLower = data.map((i) => i.lower);
 
       // Plot
-      let color = this.selectedData.map((i, j) =>
+      let color = this.data.selectedData.map((i, j) =>
         valuesLower[j] <= valuesY[j] && valuesY[j] <= valuesUpper[j] ? "rgb(0,225,0)" : "red"
       );
 
@@ -459,9 +458,12 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    selectedData() {
+    selectedDataUpdate() {
       if (this.intervalPlotDrawn) this.$parent.selectedDataWarning = true;
     },
   },

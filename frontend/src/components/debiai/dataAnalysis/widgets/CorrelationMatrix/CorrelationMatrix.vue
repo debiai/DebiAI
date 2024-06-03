@@ -131,7 +131,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -168,8 +167,8 @@ export default {
       // Creating data to send
       var columnsData = [];
       this.selectedColumns.forEach((c) => {
-        if (c.type == String) columnsData.push(this.selectedData.map((i) => c.valuesIndex[i]));
-        else columnsData.push(this.selectedData.map((i) => c.values[i]));
+        if (c.type == String) columnsData.push(this.data.selectedData.map((i) => c.valuesIndex[i]));
+        else columnsData.push(this.data.selectedData.map((i) => c.values[i]));
       });
 
       // Sending request
@@ -316,11 +315,16 @@ export default {
       return await plotlyToImage(this.divHeatMapPlot);
     },
   },
+  computed: {
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
+  },
   watch: {
     loading() {
       this.$parent.$emit("loading", this.loading);
     },
-    selectedData() {
+    selectedDataUpdate() {
       this.matrixDrawn = false;
       this.$parent.selectedDataWarning = true;
     },

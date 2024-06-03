@@ -182,7 +182,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -249,9 +248,9 @@ export default {
       var colZ = this.data.columns[this.columnZindex];
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
-      let valuesZ = this.selectedData.map((i) => colZ.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.data.selectedData.map((i) => colY.values[i]);
+      let valuesZ = this.data.selectedData.map((i) => colZ.values[i]);
 
       // Color
       let colorscale = "Portland";
@@ -263,7 +262,7 @@ export default {
       var colColor;
       if (this.coloredColumnIndex !== null) {
         colColor = this.data.columns[this.coloredColumnIndex];
-        color = this.selectedData.map((i) =>
+        color = this.data.selectedData.map((i) =>
           colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
         );
         // Deal with color if string
@@ -371,7 +370,7 @@ export default {
       this.plotDrawn = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+      this.pointOpacity = parseFloat((1 / Math.pow(this.data.selectedData.length, 0.2)).toFixed(2));
     },
     // Export
     async getImage() {
@@ -386,23 +385,26 @@ export default {
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    autoPointOpacity: function (newVal) {
+    autoPointOpacity(newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {
+    pointOpacity() {
       this.plotDrawn = false;
     },
-    pointSize: function () {
+    pointSize() {
       this.plotDrawn = false;
     },
-    selectedData: function () {
+    selectedDataUpdate() {
       this.plotDrawn = false;
       this.$parent.selectedDataWarning = true;
       if (this.autoPointOpacity) this.setPointOpacity();
     },
-    coloredColumnIndex: function () {
+    coloredColumnIndex() {
       this.plotDrawn = false;
     },
     redrawRequired(o, n) {

@@ -33,9 +33,9 @@ async function getDataProviderLimit() {
   try {
     const dataProviderInfo = store.state.ProjectPage.dataProviderInfo;
     const dataProviderLimit = {
-      maxIdLimit: dataProviderInfo.maxSampleIdByRequest || 10000,
-      maxDataLimit: dataProviderInfo.maxSampleDataByRequest || 2000,
-      maxResultLimit: dataProviderInfo.maxResultByRequest || 5000,
+      maxIdLimit: dataProviderInfo?.maxSampleIdByRequest || 10000,
+      maxDataLimit: dataProviderInfo?.maxSampleDataByRequest || 2000,
+      maxResultLimit: dataProviderInfo?.maxResultByRequest || 5000,
     };
 
     return dataProviderLimit;

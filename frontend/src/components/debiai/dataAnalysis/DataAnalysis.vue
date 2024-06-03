@@ -19,7 +19,6 @@
     <SelectionCreator
       v-if="saveSelectionWidget"
       :data="data"
-      :selectedData="selectedData"
       @cancel="saveSelectionWidget = false"
       @done="saveSelectionWidget = false"
     />
@@ -30,7 +29,6 @@
     >
       <TagCreator
         :data="data"
-        :selectedData="selectedData"
         @cancel="tagCreationWidget = false"
         @created="tagCreationWidget = false"
       />
@@ -49,7 +47,6 @@
     >
       <SelectionExportMenu
         :data="data"
-        :selectedData="selectedData"
         @cancel="selectionExport = false"
         @exported="selectionExport = false"
       />
@@ -76,7 +73,6 @@
       <Algorithms
         @cancel="algorithmModal = false"
         :data="data"
-        :selectedData="selectedData"
       />
     </modal>
     <!-- WidgetCatalog -->
@@ -125,7 +121,6 @@
             :is="component.widgetKey"
             :component="component"
             :data="data"
-            :selectedData="selectedData"
             :index="component.id"
           />
         </Widget>
@@ -141,7 +136,6 @@
     -->
     <Header
       :data="data"
-      :selectedData="selectedData"
       @addWidget="widgetCatalog = !widgetCatalog"
     />
 
@@ -171,6 +165,7 @@ import Layouts from "./widget/layouts/Layouts";
 import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 
 // Services
+import Data from "@/services/statistics/data";
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
 import samplesFiltering from "@/services/statistics/samplesFiltering";
 import { getAnalysisExport } from "@/services/statistics/analysisExport";
@@ -196,7 +191,6 @@ export default {
     return {
       // Analysis data
       data: null, // Contain all the data that the widget will read
-      selectedData: null, // Index of the selected samples or results
 
       // Workspace
       components: [],
@@ -328,8 +322,7 @@ export default {
       } else this.$router.push("/");
     } else {
       // Load provided data and set selected data to 100%
-      this.data = this.$route.params.data;
-      this.selectedData = [...Array(this.data.nbLines).keys()];
+      this.data = new Data.Data(this.$route.params.data);
 
       // Load available Widgets from the widget folder
       this.loadWidgets();
@@ -598,6 +591,9 @@ export default {
           });
         });
     },
+    unfoldColumn(columnIndex) {
+      this.data.unfoldColumn(columnIndex);
+    },
 
     // Buttons
     restoreDefaultLayout() {
@@ -720,6 +716,9 @@ export default {
       // Get the filters form the store
       return this.$store.state.StatisticalAnalysis.filters;
     },
+    unfoldCounter() {
+      return this.$store.state.StatisticalAnalysis.unfoldCounter;
+    },
   },
   watch: {
     filters() {
@@ -730,7 +729,7 @@ export default {
           this.data
         );
         this.$store.commit("setFiltersEffects", filtersEffects);
-        this.selectedData = selectedSampleIds;
+        this.data.selectedData = selectedSampleIds;
       } catch (error) {
         console.error(error);
         this.$store.commit("sendMessage", {
@@ -738,6 +737,11 @@ export default {
           msg: "Error while filtering the samples",
         });
       }
+    },
+    unfoldCounter() {
+      // Update the unfolded column
+      const columnIndex = this.$store.state.StatisticalAnalysis.unfoldedColumnIndex;
+      this.unfoldColumn(columnIndex);
     },
   },
   beforeDestroy() {

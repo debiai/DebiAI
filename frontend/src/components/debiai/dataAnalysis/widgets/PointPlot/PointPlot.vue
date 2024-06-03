@@ -429,7 +429,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget setting btn
@@ -602,10 +601,10 @@ export default {
       let colY = this.data.columns[this.columnYindex];
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
       let valuesY;
-      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
-      else valuesY = this.selectedData.map((i) => colY.values[i]);
+      if (colY.type == String) valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
+      else valuesY = this.data.selectedData.map((i) => colY.values[i]);
 
       // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
@@ -620,7 +619,7 @@ export default {
       let colColor;
       if (this.coloredColumnIndex !== null && this.dividePerColor) {
         colColor = this.data.columns[this.coloredColumnIndex];
-        color = this.selectedData.map((i) =>
+        color = this.data.selectedData.map((i) =>
           colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
         );
         // Deal with color if string
@@ -642,7 +641,7 @@ export default {
       let colSize;
       if (this.columnSizeIndex !== null) {
         colSize = this.data.columns[this.columnSizeIndex];
-        size = this.selectedData.map((i) =>
+        size = this.data.selectedData.map((i) =>
           colSize.type == String ? colSize.valuesIndex[i] : colSize.values[i]
         );
         if (colSize.type === String) {
@@ -774,13 +773,13 @@ export default {
       let traces = [];
       let colX = this.data.columns[this.columnXindex];
       let valuesX;
-      if (colX.type == String) valuesX = this.selectedData.map((i) => colX.valuesIndex[i]);
-      else valuesX = this.selectedData.map((i) => colX.values[i]);
+      if (colX.type == String) valuesX = this.data.selectedData.map((i) => colX.valuesIndex[i]);
+      else valuesX = this.data.selectedData.map((i) => colX.values[i]);
 
       let colY = this.data.columns[this.columnYindex];
       let valuesY;
-      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
-      else valuesY = this.selectedData.map((i) => colY.values[i]);
+      if (colY.type == String) valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
+      else valuesY = this.data.selectedData.map((i) => colY.values[i]);
 
       // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
@@ -790,8 +789,8 @@ export default {
         // === Divide lines per color ===
         let selectedColorsValues =
           colColor.type == String
-            ? this.selectedData.map((i) => colColor.valuesIndex[i])
-            : this.selectedData.map((i) => colColor.values[i]);
+            ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+            : this.data.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
           colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -837,7 +836,8 @@ export default {
         });
       } else {
         let colY = this.data.columns[this.columnYindex];
-        if (colY.type == String) this.valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
+        if (colY.type == String)
+          this.valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
 
         let stats = dataOperations.getStats(valuesX, valuesY, this.bins - 1, {
           displayNull: this.displayNull,
@@ -1231,7 +1231,7 @@ export default {
       this.linePlotDrawn = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+      this.pointOpacity = parseFloat((1 / Math.pow(this.data.selectedData.length, 0.2)).toFixed(2));
     },
     axisRangeSelect({ axisXAuto, axisXMin, axisXMax, axisYAuto, axisYMin, axisYMax }) {
       this.axisRangeModal = false;
@@ -1258,27 +1258,30 @@ export default {
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    dividePerColor: function () {
+    dividePerColor() {
       this.updateTraces();
     },
-    autoPointOpacity: function (newVal) {
+    autoPointOpacity(newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {
+    pointOpacity() {
       this.pointPlotDrawn = false;
     },
-    absolute: function () {
+    absolute() {
       this.updateTraces();
     },
-    displayNull: function () {
+    displayNull() {
       if (this.linePlotDrawn) this.checkLinePlot();
     },
-    averageAsBar: function () {
+    averageAsBar() {
       if (this.linePlotDrawn) this.checkLinePlot();
     },
-    selectedData: function () {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering && (this.pointPlotDrawn || this.linePlotDrawn))
         this.$parent.selectedDataWarning = true;
     },

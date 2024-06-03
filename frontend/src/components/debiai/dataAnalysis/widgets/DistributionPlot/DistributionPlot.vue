@@ -262,7 +262,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -400,16 +399,16 @@ export default {
       // === Apply selection ===
       // on x axis
       let selectedX;
-      if (colX.type == String) selectedX = this.selectedData.map((i) => colX.valuesIndex[i]);
-      else selectedX = this.selectedData.map((i) => colX.values[i]);
+      if (colX.type == String) selectedX = this.data.selectedData.map((i) => colX.valuesIndex[i]);
+      else selectedX = this.data.selectedData.map((i) => colX.values[i]);
       // on x axis
       let colSecondX;
       let secondSelectedX;
       if (this.secondColumnIndex !== null) {
         colSecondX = this.data.columns[this.secondColumnIndex];
         if (colSecondX.type == String)
-          secondSelectedX = this.selectedData.map((i) => colSecondX.valuesIndex[i]);
-        else secondSelectedX = this.selectedData.map((i) => colSecondX.values[i]);
+          secondSelectedX = this.data.selectedData.map((i) => colSecondX.valuesIndex[i]);
+        else secondSelectedX = this.data.selectedData.map((i) => colSecondX.values[i]);
       }
 
       let colColor;
@@ -420,8 +419,8 @@ export default {
         colColor = this.data.columns[this.coloredColumnIndex];
         let selectedColors;
         if (colColor.type == String)
-          selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
-        else selectedColors = this.selectedData.map((i) => colColor.values[i]);
+          selectedColors = this.data.selectedData.map((i) => colColor.valuesIndex[i]);
+        else selectedColors = this.data.selectedData.map((i) => colColor.values[i]);
 
         // === Divide bar per color ===
         let groupedValues = dataOperations.groupBy(
@@ -443,7 +442,7 @@ export default {
             type: this.plotType,
             mode: "lines",
             x: xSections,
-            y: repartition.map((v) => (v * 100) / this.selectedData.length),
+            y: repartition.map((v) => (v * 100) / this.data.selectedData.length),
           };
 
           // Display more values in the bars
@@ -484,7 +483,7 @@ export default {
             mode: "lines",
             type: this.plotType,
             x: xSections,
-            y: repartition.map((v) => (v * 100) / this.selectedData.length),
+            y: repartition.map((v) => (v * 100) / this.data.selectedData.length),
             marker: {
               color: "rgb(0,157,223)",
               line: {
@@ -511,7 +510,7 @@ export default {
             mode: "lines",
             type: this.plotType,
             x: xSections2,
-            y: repartition2.map((v) => (v * 100) / this.selectedData.length),
+            y: repartition2.map((v) => (v * 100) / this.data.selectedData.length),
             marker: {
               color: "rgb(223,17,10)",
               line: {
@@ -522,14 +521,14 @@ export default {
           });
           if (this.displayDetails)
             plotlyData[1].text = repartition2.map(
-              (v) => "<b>" + v + "</b> / " + this.selectedData.length
+              (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
             );
         }
 
         // Display more values in the bars
         if (this.displayDetails)
           plotlyData[0].text = repartition.map(
-            (v) => "<b>" + v + "</b> / " + this.selectedData.length
+            (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
           );
       }
 
@@ -679,21 +678,24 @@ export default {
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    dividePerColor: function () {
+    dividePerColor() {
       this.checkPlot();
     },
-    displayLegends: function () {
+    displayLegends() {
       this.checkPlot();
     },
-    displayDetails: function () {
+    displayDetails() {
       this.checkPlot();
     },
-    selectedData: function () {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering && this.plotDrawn) this.$parent.selectedDataWarning = true;
     },
-    coloredColumnIndex: function () {
+    coloredColumnIndex() {
       this.plotDrawn = false;
     },
     redrawRequired(o, n) {

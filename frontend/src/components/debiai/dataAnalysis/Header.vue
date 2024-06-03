@@ -120,7 +120,6 @@
       <!-- Selected data info -->
       <SelectedDataInfo
         :data="data"
-        :selectedData="selectedData"
         v-on:dataSelection="dataSelection"
       />
 
@@ -160,7 +159,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data() {
     return {

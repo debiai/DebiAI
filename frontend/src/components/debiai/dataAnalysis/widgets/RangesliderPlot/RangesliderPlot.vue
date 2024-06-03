@@ -276,7 +276,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget events
@@ -427,9 +426,9 @@ export default {
       const colY2 = this.selectedY2ColumnsIds.map((index) => this.data.columns[index]);
 
       // Apply selection filters
-      const valuesX = this.selectedData.map((i) => colX.values[i]);
-      const valuesY1 = colY1.map((col) => this.selectedData.map((i) => col.values[i]));
-      const valuesY2 = colY2.map((col) => this.selectedData.map((i) => col.values[i]));
+      const valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      const valuesY1 = colY1.map((col) => this.data.selectedData.map((i) => col.values[i]));
+      const valuesY2 = colY2.map((col) => this.data.selectedData.map((i) => col.values[i]));
 
       // Generate the plot traces
       let tracesY1;
@@ -537,8 +536,8 @@ export default {
       // Get the colored column values
       const selectedColorsValues =
         colColor.type == String
-          ? this.selectedData.map((i) => colColor.valuesIndex[i])
-          : this.selectedData.map((i) => colColor.values[i]);
+          ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+          : this.data.selectedData.map((i) => colColor.values[i]);
       const selectorUniques =
         colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -692,8 +691,9 @@ export default {
 
       // Get the tag values with selection
       let valuesTag = [];
-      if (colTag.type === String) valuesTag = this.selectedData.map((i) => colTag.valuesIndex[i]);
-      else valuesTag = this.selectedData.map((i) => colTag.values[i]);
+      if (colTag.type === String)
+        valuesTag = this.data.selectedData.map((i) => colTag.valuesIndex[i]);
+      else valuesTag = this.data.selectedData.map((i) => colTag.values[i]);
 
       // Construct a text array for the hover
       const textTag = valuesTag.map((v) => colTag.uniques[v] || v);
@@ -900,12 +900,15 @@ export default {
     redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     dividePerColor() {
       this.plotDrawn = false;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     redrawRequired(o, n) {

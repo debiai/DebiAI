@@ -3,18 +3,18 @@
     <!-- <div>Selected samples :</div> -->
     <div
       id="selectedSamples"
-      :title="'Selected samples: ' + (selectedData.length / data.nbLines) * 100 + '%'"
+      :title="'Selected samples: ' + (data.selectedData.length / data.nbLines) * 100 + '%'"
     >
       <div id="selectedBar">
         <div
           id="selectedBarValue"
-          :style="'width:' + (selectedData.length / data.nbLines) * 100 + '%'"
+          :style="'width:' + (data.selectedData.length / data.nbLines) * 100 + '%'"
         ></div>
       </div>
       <div id="bottom">
-        <div id="nbSelected">{{ selectedData.length }} / {{ data.nbLines }}</div>
+        <div id="nbSelected">{{ data.selectedData.length }} / {{ data.nbLines }}</div>
         <div id="percentSelect">
-          {{ Math.round((selectedData.length / data.nbLines) * 10000) / 100 }} %
+          {{ Math.round((data.selectedData.length / data.nbLines) * 10000) / 100 }} %
         </div>
       </div>
     </div>
@@ -25,7 +25,6 @@
 export default {
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
 };
 </script>

@@ -44,7 +44,6 @@
           :key="index"
           :input="input"
           :data="data"
-          :selectedData="selectedData"
           v-on:inputValueUpdate="
             (val) => {
               input.value = val;
@@ -83,7 +82,6 @@ export default {
     algorithm: { type: Object, required: true },
     algoProvider: { type: Object, required: true },
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {

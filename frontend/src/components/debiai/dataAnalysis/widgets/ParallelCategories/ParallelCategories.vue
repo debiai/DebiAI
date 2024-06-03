@@ -52,7 +52,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -135,9 +134,9 @@ export default {
       let color;
       if (colColor) {
         if (colColor.type == String) {
-          color = this.selectedData.map((sId) => colColor.valuesIndex[sId]);
+          color = this.data.selectedData.map((sId) => colColor.valuesIndex[sId]);
         } else {
-          color = this.selectedData.map((sId) => colColor.values[sId]);
+          color = this.data.selectedData.map((sId) => colColor.values[sId]);
           showscale = true;
         }
       }
@@ -145,7 +144,7 @@ export default {
       let colWithSelectedSamples = [];
       selectedColumns.forEach((c, i) => {
         colWithSelectedSamples.push({ label: c.label, values: [] });
-        this.selectedData.map((j) => colWithSelectedSamples[i].values.push(c.values[j]));
+        this.data.selectedData.map((j) => colWithSelectedSamples[i].values.push(c.values[j]));
       });
 
       let trace = {
@@ -240,12 +239,15 @@ export default {
         this.selectedColumnsIds.length > 0
       );
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
   },

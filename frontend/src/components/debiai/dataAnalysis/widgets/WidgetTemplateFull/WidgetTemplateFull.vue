@@ -189,7 +189,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Watching for changes from the parent widget
@@ -240,7 +239,7 @@ export default {
     display() {
       // Do something with the data
       const selectedColumn = this.data.columns[this.selectedColumnIndex];
-      const columnData = this.selectedData.map((d) => selectedColumn.values[d]);
+      const columnData = this.data.selectedData.map((d) => selectedColumn.values[d]);
       this.displayedData =
         "The first 30 selected values of the chosen column are : " +
         columnData.slice(0, 30).join(", ");
@@ -434,16 +433,19 @@ export default {
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    selectedData: function () {
+    selectedDataUpdate () {
       // The selected data have changed
       // We might want to warn the user that an update is required
       this.$parent.selectedDataWarning = true;
       // A redraw btn will be displayed, pressing it will send redraw
       // that can watched and used to redraw a plot (see created())
     },
-    redrawRequired: function () {
+    redrawRequired () {
       // The colored colum has changed
       // We cat tell the parent widget that an update is required
       this.$parent.colorWarning = true;

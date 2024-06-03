@@ -180,7 +180,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -277,8 +276,8 @@ export default {
       const maxY = colY.type == Number ? colY.max : colY.uniques.length - 1;
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.data.selectedData.map((i) => colY.values[i]);
 
       // Apply abs
       if (this.absX) valuesX = valuesX.map((v) => Math.abs(v));
@@ -297,8 +296,8 @@ export default {
 
         let selectedColors;
         if (colColor.type == String)
-          selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
-        else selectedColors = this.selectedData.map((i) => colColor.values[i]);
+          selectedColors = this.data.selectedData.map((i) => colColor.valuesIndex[i]);
+        else selectedColors = this.data.selectedData.map((i) => colColor.values[i]);
 
         // === Divide bar per color ===
         const groupedValues = dataOperations.groupBy(
@@ -430,7 +429,7 @@ export default {
       this.yAxisSelection = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+      this.pointOpacity = parseFloat((1 / Math.pow(this.data.selectedData.length, 0.2)).toFixed(2));
     },
     // Export
     async getImage() {
@@ -445,18 +444,21 @@ export default {
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    autoPointOpacity: function (newVal) {
+    autoPointOpacity(newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {},
-    pointSize: function () {},
-    selectedData: function () {
+    pointOpacity() {},
+    pointSize() {},
+    selectedDataUpdate() {
       this.$parent.selectedDataWarning = true;
       if (this.autoPointOpacity) this.setPointOpacity();
     },
-    coloredColumnIndex: function () {},
+    coloredColumnIndex() {},
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },

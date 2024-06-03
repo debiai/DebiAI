@@ -153,7 +153,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -232,8 +231,8 @@ export default {
       // Load values
       let truthColumnValues = this.data.columns[this.columnTIndex].values;
       let predictedColumnValues = this.data.columns[this.columnPIndex].values;
-      let selectedTruth = this.selectedData.map((i) => truthColumnValues[i]);
-      let selectedPred = this.selectedData.map((i) => predictedColumnValues[i]);
+      let selectedTruth = this.data.selectedData.map((i) => truthColumnValues[i]);
+      let selectedPred = this.data.selectedData.map((i) => predictedColumnValues[i]);
 
       // Find all the unique values in the selected columns
       let allUniques = [
@@ -252,8 +251,8 @@ export default {
 
         let selectedColorsValues =
           colColor.type == String
-            ? this.selectedData.map((i) => colColor.valuesIndex[i])
-            : this.selectedData.map((i) => colColor.values[i]);
+            ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+            : this.data.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
           colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -570,12 +569,15 @@ export default {
     redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     dividePerColor() {
       this.checkMatrix();
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     redrawRequired(o, n) {

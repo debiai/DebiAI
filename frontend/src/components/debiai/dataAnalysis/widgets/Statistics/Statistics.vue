@@ -215,7 +215,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   data() {
     return {
@@ -275,10 +274,10 @@ export default {
       let values;
       let valuesText;
       if (this.selectedColumn.type === String) {
-        values = this.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
-        valuesText = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        values = this.data.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
+        valuesText = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
       } else {
-        values = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        values = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
         if (this.absolute) values = values.map((v) => Math.abs(v));
       }
       this.nbSelectedSamplesAtUpdate = values.length;
@@ -322,8 +321,8 @@ export default {
           this.toMuchUniqueValues = false;
           let selectedColors;
           if (colColor.type === String)
-            selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
-          else selectedColors = this.selectedData.map((i) => colColor.values[i]);
+            selectedColors = this.data.selectedData.map((i) => colColor.valuesIndex[i]);
+          else selectedColors = this.data.selectedData.map((i) => colColor.values[i]);
 
           let groupedValues = dataOperations.groupBy(
             selectedColors,
@@ -390,9 +389,12 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    selectedData() {
+    selectedDataUpdate() {
       this.$parent.selectedDataWarning = true;
     },
     coloredColumnIndex(n) {

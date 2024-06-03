@@ -69,7 +69,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Load the tagged columns name
@@ -85,7 +84,7 @@ export default {
       if (column) {
         // Update tag values
         values = column.values;
-        this.selectedData.forEach((i) => (values[i] = tagValue));
+        this.data.selectedData.forEach((i) => (values[i] = tagValue));
         let uniques = [...new Set(values)].sort((a, b) => a - b);
         column.values = values;
         column.uniques = uniques;
@@ -100,7 +99,7 @@ export default {
       } else {
         // Create new tag
         values = new Array(this.data.nbLines).fill(0);
-        this.selectedData.forEach((i) => (values[i] = tagValue));
+        this.data.selectedData.forEach((i) => (values[i] = tagValue));
         let uniques = [...new Set(values)].sort((a, b) => a - b);
         let nbOccurrence = uniques.length;
         this.data.columns.push({

@@ -3,6 +3,7 @@
     id="ColumnSelection"
     class="card"
   >
+    <!-- Header -->
     <div class="title">
       <h3>{{ title }}</h3>
       <div
@@ -53,6 +54,7 @@
         width="14"
       />
     </div>
+    <!-- Columns -->
     <div
       id="columns"
       v-if="selectedColumns"

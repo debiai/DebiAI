@@ -202,7 +202,6 @@ export default {
   props: {
     input: { type: Object, required: true },
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -236,7 +235,7 @@ export default {
       this.columnSelection = false;
       this.columnIndex = index;
       if (this.selectedArrayInputOption === "columnSelectedData") {
-        this.value = this.selectedData.map((id) => {
+        this.value = this.data.selectedData.map((id) => {
           return this.data.columns[index].values[id];
         });
       } else {
@@ -248,7 +247,7 @@ export default {
       if (type == "column") {
         this.value = this.data.columns[this.idColumnsIndex].values;
       } else {
-        const selectedValues = this.selectedData.map((id) => {
+        const selectedValues = this.data.selectedData.map((id) => {
           return this.data.columns[this.idColumnsIndex].values[id];
         });
         this.value = selectedValues;
