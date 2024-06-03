@@ -91,7 +91,7 @@ export default {
 </script>
 
 <style scoped>
-.Selection{
+.Selection {
   justify-content: space-between;
 }
 
@@ -122,12 +122,14 @@ export default {
   gap: 10px;
 }
 
-.Selection .allButtons {
+.allButtons {
   display: flex;
-  /* justify-content: flex-end; */
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-.Selection .allButtons button {
-  margin-left: 10px;
+.allButtons button {
+  margin-left: auto;
 }
 </style>

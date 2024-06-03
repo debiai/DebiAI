@@ -60,39 +60,41 @@
               No creation date
             </span>
           </div>
-          <!-- Model Metadata -->
-          <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata)">
-            <h4>Model Metadata</h4>
-            <br />
-            <div style="white-space: pre-wrap">
-              <span v-html="$services.prettifyJSON(model.metadata)"></span>
+          <div class="allButtons">
+            <!-- Model Metadata -->
+            <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata)">
+              <h4>Model Metadata</h4>
+              <br />
+              <div style="white-space: pre-wrap">
+                <span v-html="$services.prettifyJSON(model.metadata)"></span>
+              </div>
+            </DocumentationBlock>
+
+            <!-- Sample number -->
+            <div
+              class="sampleNumber"
+              title="Number of samples for which we have model results "
+            >
+              <inline-svg
+                :src="require('../../../assets/svg/data.svg')"
+                width="20"
+                height="20"
+              />{{ "nbResults" in model && model.nbResults !== null ? model.nbResults : "?" }}
             </div>
-          </DocumentationBlock>
 
-          <!-- sample number -->
-          <div
-            class="sampleNumber"
-            title="Number of samples for which we have model results "
-          >
-            <inline-svg
-              :src="require('../../../assets/svg/data.svg')"
-              width="20"
-              height="20"
-            />{{ "nbResults" in model && model.nbResults !== null ? model.nbResults : "?" }}
+            <!-- Delete -->
+            <button
+              class="red"
+              @click="(event) => deleteModel(model.id, event)"
+              v-if="
+                $store.state.ProjectPage.dataProviderInfo &&
+                $store.state.ProjectPage.dataProviderInfo.canDelete &&
+                $store.state.ProjectPage.dataProviderInfo.canDelete.models
+              "
+            >
+              Delete
+            </button>
           </div>
-
-          <!-- options -->
-          <button
-            class="red"
-            @click="(event) => deleteModel(model.id, event)"
-            v-if="
-              $store.state.ProjectPage.dataProviderInfo &&
-              $store.state.ProjectPage.dataProviderInfo.canDelete &&
-              $store.state.ProjectPage.dataProviderInfo.canDelete.models
-            "
-          >
-            Delete
-          </button>
         </div>
       </div>
       <div
@@ -257,7 +259,6 @@ export default {
 }
 
 /* Model  */
-
 .model .title {
   flex: 1;
   display: flex;
@@ -274,6 +275,17 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+.allButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.allButtons button {
+  margin-left: auto;
 }
 
 /* modelsControls */
