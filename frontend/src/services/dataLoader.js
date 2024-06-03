@@ -502,81 +502,6 @@ async function loadDataAndModelResults(
 }
 
 // array to DebiAI analysis main data object
-const min = (arr) => {
-  let min = Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
-  return min;
-};
-const max = (arr) => {
-  let max = -Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
-  return max;
-};
-
-function createColumn(label, values, category, type = null, group = null) {
-  // Creating the column object
-  const col = {
-    label,
-    values: values,
-    type: null,
-    typeText: "",
-    category: category,
-  };
-
-  col.uniques = [...new Set(col.values)];
-  col.nbOccurrence = col.uniques.length;
-
-  // Checking if the column is type text, number or got undefined values
-  if (col.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
-    // undefined Values
-    col.type = undefined;
-    col.typeText = "undefined";
-    col.undefinedIndexes = col.values
-      .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
-      .filter((v) => v >= 0);
-    console.warn("Undefined values : " + label);
-    console.warn(col.uniques);
-    console.warn(col.values);
-  } else if (!(col.uniques.findIndex((v) => !Array.isArray(v)) >= 0)) {
-    // If all the values are arrays
-    col.type = Array;
-    col.typeText = "Array";
-  } else if (col.uniques.findIndex((v) => typeof v !== "object")) {
-    // If all the values are dictionaries
-    col.type = Object;
-    col.typeText = "Dict";
-  } else if (type === "text" || col.uniques.find((v) => isNaN(v))) {
-    // String Values
-    col.type = String;
-    col.typeText = "Class";
-    let tmpUniqMap = {};
-    col.valuesIndexUniques = col.uniques.map((str, i) => {
-      tmpUniqMap[str] = i;
-      return i;
-    });
-
-    col.valuesIndex = col.values.map((str) => tmpUniqMap[str]);
-    col.min = min(col.valuesIndexUniques);
-    col.max = max(col.valuesIndexUniques);
-  } else {
-    // Default Type
-    col.type = Number;
-    col.typeText = "Num";
-    col.values = col.values.map((v) => +v);
-    col.uniques = col.uniques.map((v) => +v);
-    col.nbOccurrence = col.uniques.length;
-    col.min = min(col.uniques);
-    col.max = max(col.uniques);
-    col.average = col.values.reduce((a, b) => a + b, 0) / col.values.length || 0;
-    if (col.uniques.length < 100) col.uniques.sort((a, b) => a - b);
-  }
-
-  // Adding the group
-  if (group) col.group = group;
-
-  return col;
-}
-
 async function arrayToJson(array, metaData) {
   let requestCode = services.startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
@@ -611,10 +536,14 @@ async function arrayToJson(array, metaData) {
     const type = metaData.type[i];
     const group = metaData.groups[i];
 
-    const col = createColumn(label, values, category, type, group);
-
-    col.index = i;
-    ret.columns[i] = col;
+    ret.columns[i] = {
+      index: i,
+      label,
+      values,
+      category,
+      type,
+      group,
+    };
 
     services.updateRequestProgress(requestCode, (i + 1) / ret.nbColumns);
     console.timeLog(
@@ -704,5 +633,4 @@ export default {
   loadProjectSamples,
   cancelAnalysis: cancelCallback,
   isAnalysisLoading,
-  createColumn,
 };

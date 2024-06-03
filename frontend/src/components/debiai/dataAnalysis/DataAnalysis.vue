@@ -493,6 +493,9 @@ export default {
       this.components = this.components.filter((c) => c.id !== component.id);
     },
     copyWidget({ component, configuration }) {
+      if (!component) return;
+      if (!configuration) configuration = { name: component.name };
+
       // Add something to the name
       // Check if their is a (x) at the end of the name
       const widgetCopyText = configuration.name.match(/\(\d+\)$/);
