@@ -1,19 +1,14 @@
 <template>
   <div id="column">
     <!-- Label button -->
-
+    <!-- TODO: have a 'select column' if index is null -->
     <button
       id="labelButton"
       :class="getColumnClass()"
       @click="select"
       :title="getColumnLabelTitle()"
     >
-      <span
-        followCursor
-        v-if="columnValidStatus.status === 'warning'"
-      >
-        ⚠️
-      </span>
+      <span v-if="columnValidStatus.status === 'warning'"> ⚠️ </span>
 
       {{ column.label }}
     </button>
@@ -41,15 +36,22 @@ Click to set column as the main color"
     </div>
     <!-- Expand column button -->
     <button
-      v-else
+      v-else-if="column.typeText === 'Dict' || column.typeText === 'Array'"
       class="nbOccurrence"
-      title="Unfold the column"
+      :title="'Unfold the ' + column.typeText + ' column'"
       @click="unfoldColumn"
     >
       <inline-svg
-        :src="require('@/assets/svg/expand.svg')"
-        height="14"
-        width="14"
+        v-if="column.typeText === 'Dict'"
+        :src="require('@/assets/svg/expandSide.svg')"
+        height="18"
+        width="18"
+      />
+      <inline-svg
+        v-else
+        :src="require('@/assets/svg/expandUp.svg')"
+        height="18"
+        width="18"
       />
     </button>
 
