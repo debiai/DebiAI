@@ -31,6 +31,11 @@ class Data {
     this.columns = this.columns.filter((column) => column.unfoldedLevel === 0);
   }
 
+  currentlyUnfoldedVertically() {
+    // Return true if at least one column is unfolded
+    return this.verticallyUnfoldedColumnsIndexes?.length > 0;
+  }
+
   // Column unfold
   unfoldColumn(columnIndex) {
     if (this.columns[columnIndex].typeText === "Dict") this.unfoldHorizontally(columnIndex);
@@ -45,19 +50,17 @@ class Data {
       );
     } else this.verticallyUnfoldedColumnsIndexes.push(columnIndex);
 
-    this.updateDataBasedOnVerticalUnfold();
-  }
+    // Set the unfolded column to unfolded
+    this.columns.forEach(
+      (column) => (column.unfolded = this.verticallyUnfoldedColumnsIndexes.includes(column.index))
+    );
 
-  currentlyUnfoldedVertically() {
-    // Return true if at least one column is unfolded
-    return this.verticallyUnfoldedColumnsIndexes?.length > 0;
-  }
-
-  updateDataBasedOnVerticalUnfold() {
+    // Update data based on vertical unfold
     if (!this.currentlyUnfoldedVertically()) {
       this.resetData();
       return;
     }
+
     // Compute the new number of lines and link the virtual index to the original index
     const unfoldedColumn = this.columns[this.verticallyUnfoldedColumnsIndexes[0]];
     const virtualIndexMapping = {};
@@ -92,8 +95,7 @@ class Data {
       return unfoldedColumn.originalValues[originalIndex][valueIndex];
     });
     const new_label = unfoldedColumn.label + " (unfolded)";
-    console.log("column_values");
-    console.log(column_values);
+
     this.columns.push(
       new Column(
         this,
@@ -121,6 +123,7 @@ class Column {
     this.category = category;
     this.group = group;
     this.unfoldedLevel = unfoldedLevel;
+    this.unfolded = false;
 
     // this.min = column.min;
     // this.max = column.max;
@@ -138,6 +141,7 @@ class Column {
           if (prop === "length") return this.data.nbLines;
           if (prop === "map") return target.map;
           if (prop === "reduce") return target.reduce;
+          console.log(prop, this.originalValues[prop]);
           return this.originalValues[prop];
         }
 
@@ -162,7 +166,7 @@ class Column {
         else if (prop === "__ob__") return { dep: { id: 0 } };
 
         console.log(this.data.virtualIndexMapping);
-        console.log(prop);
+        console.log(prop, target[this.data.virtualIndexMapping[prop].originalIndex]);
 
         return target[this.data.virtualIndexMapping[prop].originalIndex];
       },

@@ -37,7 +37,7 @@ Click to set column as the main color"
     <!-- Expand column button -->
     <button
       v-else-if="column.typeText === 'Dict' || column.typeText === 'Array'"
-      class="nbOccurrence"
+      :class="'nbOccurrence ' + (column.unfolded ? 'color' : '')"
       :title="'Unfold the ' + column.typeText + ' column'"
       @click="unfoldColumn"
     >
@@ -181,8 +181,12 @@ export default {
   /* Colored column */
   .nbOccurrence.color {
     border: solid 2px var(--secondary);
-    color: var(--secondary);
+    color: white;
+    background-color: var(--secondary);
     font-weight: bold;
+    svg {
+      stroke: white;
+    }
   }
 
   /* Type  */

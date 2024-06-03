@@ -4,6 +4,7 @@
     id="category"
     class="card"
   >
+    <!-- Title -->
     <div
       class="title"
       :id="name"
@@ -18,6 +19,7 @@
         <button @click="all">All</button>
       </div>
     </div>
+    <!-- Column list -->
     <div class="content">
       <div
         class="group"
@@ -29,7 +31,7 @@
           v-if="group"
           class="group-title"
         >
-          <Collapsible style="margin: 3px; width: 320px">
+          <Collapsible style="margin: 3px; width: 300px">
             <template v-slot:header>
               <h4>
                 {{ group }}
