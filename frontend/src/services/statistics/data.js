@@ -1,3 +1,5 @@
+import { re } from "mathjs/lib/entry/pureFunctionsAny.generated";
+
 class Data {
   constructor(data) {
     this.categories = data.categories;
@@ -165,9 +167,7 @@ class Column {
         else if (prop === "_isVue") return true;
         else if (prop === "__ob__") return { dep: { id: 0 } };
 
-        console.log(this.data.virtualIndexMapping);
-        console.log(prop, target[this.data.virtualIndexMapping[prop].originalIndex]);
-
+        if (this.unfoldedLevel > 0) return target[prop];
         return target[this.data.virtualIndexMapping[prop].originalIndex];
       },
     });
