@@ -5,6 +5,7 @@
         id="i"
         @mouseenter="show = true"
         @mouseleave="show = false"
+        @mousemove="positionDocBlock"
         >i</b
       >
       <transition name="fade">
@@ -40,13 +41,27 @@ export default {
       show: false,
     };
   },
-  mounted() {
-    if (this.followCursor) {
-      this.$el.addEventListener("mousemove", (e) => {
-        this.$el.querySelector("#docBlock").style.left = e.clientX + 10 + "px";
-        this.$el.querySelector("#docBlock").style.top = e.clientY + 10 + "px";
-      });
-    }
+  methods: {
+    positionDocBlock() {
+      const tooltip = this.$el.querySelector("#docBlock");
+      const questionMark = this.$el.querySelector("#i");
+
+      const questionMarkRect = questionMark.getBoundingClientRect();
+      const tooltipWidth = tooltip.offsetWidth;
+      const tooltipHeight = tooltip.offsetHeight;
+
+      // Calculate the position
+      let tooltipX = questionMarkRect.left - tooltipWidth - 10;
+      let tooltipY = questionMarkRect.top + questionMarkRect.height / 2 - tooltipHeight / 2 + 100;
+
+      // Check if the tooltip is outside the screen
+      if (tooltipX < 0) {
+        tooltipX = questionMarkRect.right + 10;
+      }
+
+      tooltip.style.left = `${tooltipX}px`;
+      tooltip.style.top = `${tooltipY}px`;
+    },
   },
 };
 </script>
