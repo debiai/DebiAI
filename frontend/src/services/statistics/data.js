@@ -1,5 +1,3 @@
-import { re } from "mathjs/lib/entry/pureFunctionsAny.generated";
-
 class Data {
   constructor(data) {
     this.categories = data.categories;
