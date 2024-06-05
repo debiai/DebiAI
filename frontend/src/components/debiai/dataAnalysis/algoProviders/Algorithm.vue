@@ -91,10 +91,7 @@
                 v-else
                 >{{ input.type }}</span
               >
-              <DocumentationBlock
-                :followCursor="true"
-                v-if="inputDetail(input)"
-              >
+              <DocumentationBlock v-if="inputDetail(input)">
                 <div v-html="inputDetail(input)"></div>
               </DocumentationBlock>
             </div>
