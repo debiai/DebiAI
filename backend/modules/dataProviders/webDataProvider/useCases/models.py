@@ -8,18 +8,26 @@ def get_models_info(url, project_id):
         models = api.get_models(url, project_id)
         debiai_models = []
         for model_in in models:
-            # TODO: Deal with error if no model or no id
+            if "id" not in model_in:
+                continue
             model = {
                 "id": model_in["id"],
-                # "creationDate": TODO,
-                # "updateDate": TODO
-                # "metadata": { TODO },
+                "metadata": None,
+                "creationDate": None,
             }
 
             # Adding name and nbResults
             model["name"] = model_in["name"] if "name" in model_in else model_in["id"]
             if "nbResults" in model_in:
                 model["nbResults"] = model_in["nbResults"]
+
+            # Adding metadata
+            if "metadata" in model_in:
+                model["metadata"] = model_in["metadata"]
+
+            # Adding creationDate
+            if "creationDate" in model_in:
+                model["creationDate"] = model_in["creationDate"]
 
             debiai_models.append(model)
 

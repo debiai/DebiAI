@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.27.0-beta2
+  version: 0.27.1
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -1544,7 +1544,7 @@ definitions:
         format: date-time
       version:
         type: string
-      metaDataList:
+      metadata:
         type: object
         additionalProperties:
           type: string

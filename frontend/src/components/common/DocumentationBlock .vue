@@ -93,6 +93,8 @@ export default {
   font-weight: normal;
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
   max-width: 500px;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 #docBlock.top {
