@@ -81,84 +81,67 @@
     </div>
 
     <!-- Demo message -->
-    <transition name="fade">
-      <div
-        id="demo"
-        class="tip"
-        v-if="projects !== null && projects.length"
-      >
-        <h1>Welcome to the DebiAI demonstration instance</h1>
-        <div>
-          Explore the capabilities of
+    <div
+      id="demo"
+      class="tip"
+    >
+      <h1>Welcome to the DebiAI demonstration instance</h1>
+      <div>
+        Explore the capabilities of
+        <a
+          href="https://debiai.irt-systemx.fr/"
+          target="_blank"
+          >DebiAI</a
+        >, a web application designed to help data-scientists:
+
+        <ul>
+          <li>Detect anomalies and bias in their datasets faster</li>
+          <li>
+            Analyze the results of their models according to the contexts that matter the most for
+            the problem they are trying to solve.
+          </li>
+        </ul>
+
+        This READ ONLY demonstration instance is a great starting point to experience DebiAI's
+        functionalities. It features two projects made from the
+        <a
+          href="https://woodscape.valeo.com/woodscape/"
+          target="_blank"
+          >WoodScape dataset</a
+        >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
+        <br />
+        If you're interested in following specific use cases and learning through practical
+        examples, check out our
+        <a
+          href="https://debiai.irt-systemx.fr/tutorials/woodscapeTutorial/"
+          target="_blank"
+          >Complete step by step guide</a
+        >.
+        <br />
+        <br />
+
+        <div style="display: flex; gap: 30px; justify-content: center">
           <a
             href="https://debiai.irt-systemx.fr/"
             target="_blank"
-            >DebiAI</a
-          >, a web application designed to help data-scientists:
-
-          <ul>
-            <li>Detect anomalies and bias in their datasets faster</li>
-            <li>
-              Analyze the results of their models according to the contexts that matter the most for
-              the problem they are trying to solve.
-            </li>
-          </ul>
-
-          This demonstration instance is a great starting point to experience our app's features and
-          functionalities. It features two projects made from the
+            id="guideLink"
+            >Learn more about DebiAI</a
+          >
           <a
-            href="https://woodscape.valeo.com/woodscape/"
+            href="https://debiai.irt-systemx.fr/introduction/gettingStarted/installation/"
             target="_blank"
-            >WoodScape dataset</a
-          >, a dataset of fish-eye images of urban scenes made for autonomous driving applications.
-          <br />
-          If you're interested in following specific use cases and learning through practical
-          examples, check out our
+            id="guideLink"
+            >Installation guide</a
+          >
           <a
             href="https://debiai.irt-systemx.fr/tutorials/woodscapeTutorial/"
             target="_blank"
+            id="guideLink"
             >Complete step by step guide</a
-          >.
-          <br />
-          <br />
-
-          <div style="display: flex; gap: 30px; justify-content: center">
-            <a
-              href="https://debiai.irt-systemx.fr/"
-              target="_blank"
-              id="guideLink"
-              >Learn more about DebiAI</a
-            >
-            <a
-              href="https://debiai.irt-systemx.fr/introduction/gettingStarted/installation/"
-              target="_blank"
-              id="guideLink"
-              >Installation guide</a
-            >
-            <a
-              href="https://debiai.irt-systemx.fr/useCases/woodscape/"
-              target="_blank"
-              id="guideLink"
-              >Complete step by step guide</a
-            >
-          </div>
-          <!-- <br />
-          This demonstration instance is powered by the
-          <a
-            target="_blank"
-            href="https://www.irt-systemx.fr/en/"
-            >IRT SystemX</a
           >
-          technological research institute and the
-          <a
-            target="_blank"
-            href="https://www.confiance.ai/en/"
-            >Confiance.ai</a
-          >
-          research program. -->
         </div>
       </div>
-    </transition>
+    </div>
 
     <!-- Title, name of the columns -->
     <div id="projectTitle">
