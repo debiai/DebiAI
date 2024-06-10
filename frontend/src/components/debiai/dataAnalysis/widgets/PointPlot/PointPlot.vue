@@ -17,10 +17,12 @@
         <div class="data">
           <span class="name">X axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="xAxisSelection = true"
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validXColumnsProperties"
+              :defaultColumnIndex="columnXindex"
+              title="Select the X axis"
+              v-on:selected="xAxisSelect"
             />
           </div>
         </div>
@@ -36,16 +38,18 @@
         <div class="data">
           <span class="name">Y axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnYindex)"
-              :colorSelection="true"
-              v-on:selected="yAxisSelection = true"
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validYColumnsProperties"
+              :defaultColumnIndex="columnYindex"
+              title="Select the Y axis"
+              v-on:selected="yAxisSelect"
             />
           </div>
         </div>
       </div>
 
-      <!-- 2D points & lite plot specific controls -->
+      <!-- 2D points & line plot specific controls -->
       <div id="plotControls">
         <!-- 2D Point Plot Controls -->
         <div
@@ -70,30 +74,19 @@
           <!-- Point size axis -->
           <div class="data">
             <span class="name">Point size axis</span>
-            <div
-              class="value"
-              v-if="columnSizeIndex !== null"
-            >
-              <Column
-                :column="data.columns.find((c) => c.index == columnSizeIndex)"
-                :colorSelection="true"
-                v-on:selected="sizeAxisSelection = true"
-              />
-              <button
-                class="red"
-                @click="
+            <div class="value">
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validSizeColumnsProperties"
+                :defaultColumnIndex="columnSizeIndex"
+                title="Select point size column"
+                canBeRemoved
+                v-on:selected="sizeAxisSelect"
+                v-on:removed="
                   columnSizeIndex = null;
                   pointPlotDrawn = false;
                 "
-              >
-                Remove
-              </button>
-            </div>
-            <div
-              class="value"
-              v-else
-            >
-              <button @click="sizeAxisSelection = true">Select an axis</button>
+              />
             </div>
           </div>
           <!-- Max point Size -->
@@ -216,7 +209,7 @@
         </div>
       </div>
 
-      <!-- 2D points & lite plot common controls -->
+      <!-- 2D points & line plot common controls -->
       <div
         id="commonControls"
         class="dataGroup"
@@ -282,54 +275,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Xcol selection -->
-    <modal
-      v-if="xAxisSelection"
-      @close="xAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        :validColumnsProperties="validXColumnsProperties"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <!-- Ycol selection -->
-    <modal
-      v-if="yAxisSelection"
-      @close="yAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnYindex]"
-        :validColumnsProperties="validYColumnsProperties"
-        v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-    <!-- Size axis selection -->
-    <modal
-      v-if="sizeAxisSelection"
-      @close="sizeAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the point size axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
-        :validColumnsProperties="validSizeColumnsProperties"
-        v-on:cancel="sizeAxisSelection = false"
-        v-on:colSelect="sizeAxisSelect"
-      />
-    </modal>
     <!-- Axis range selection -->
     <modal
       @close="axisRangeModal = false"
@@ -348,7 +293,7 @@
       />
     </modal>
 
-    <!-- The plotly plot -->
+    <!-- Plot -->
     <div
       class="plot"
       :id="'PPDiv' + index"
@@ -361,8 +306,7 @@ import Plotly from "plotly.js/dist/plotly";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 import AxisRangeSelection from "../../common/AxisRangeSelection";
 
 // services
@@ -371,9 +315,8 @@ import swal from "sweetalert";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
     AxisRangeSelection,
+    ColumnSelectionButton,
   },
   data() {
     return {
@@ -386,8 +329,8 @@ export default {
 
       // === Configuration ===
       // Axis
-      columnXindex: 0,
-      columnYindex: 1,
+      columnXindex: null,
+      columnYindex: null,
       // Shared settings
       dividePerColor: true,
       absolute: false,
@@ -457,8 +400,8 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex].label,
-        columnY: this.data.columns[this.columnYindex].label,
+        columnX: this.data.columns[this.columnXindex]?.label,
+        columnY: this.data.columns[this.columnYindex]?.label,
         // Shared settings
         dividePerColor: this.dividePerColor,
         absolute: this.absolute,
@@ -517,11 +460,10 @@ export default {
             title: "warning",
             msg: "The column " + conf.columnSized + " hasn't been found",
           });
-      }
+      } else this.columnSizeIndex = null;
       if ("absolute" in conf) this.absolute = conf.absolute;
       if ("autoPointOpacity" in conf) this.autoPointOpacity = conf.autoPointOpacity;
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
-      if ("columnSizeIndex" in conf) this.columnSizeIndex = conf.columnSizeIndex;
       if ("maxPointSize" in conf) this.maxPointSize = conf.maxPointSize;
       if ("averageAsBar" in conf) this.averageAsBar = conf.averageAsBar;
       if ("displayNull" in conf) this.displayNull = conf.displayNull;
@@ -575,12 +517,12 @@ export default {
     },
     getConfNameSuggestion() {
       let confName =
-        this.data.columns[this.columnXindex].label +
+        this.data.columns[this.columnXindex]?.label +
         " / " +
-        this.data.columns[this.columnYindex].label;
+        this.data.columns[this.columnYindex]?.label;
 
       // Add the sized column to the legend name
-      if (this.columnSizeIndex !== null)
+      if (this.columnSizeIndex !== null && this.data.columnExists(this.columnSizeIndex))
         confName += " Sized by " + this.data.columns[this.columnSizeIndex].label;
 
       // Add if y is absolute
@@ -1225,6 +1167,7 @@ export default {
       this.updateTraces();
     },
     setBins() {
+      if (this.columnXindex === null) return;
       let colX = this.data.columns[this.columnXindex];
       if (colX.type == String) this.bins = Math.min(colX.nbOccurrence, 300);
       else this.bins = Math.min(colX.nbOccurrence, 30);

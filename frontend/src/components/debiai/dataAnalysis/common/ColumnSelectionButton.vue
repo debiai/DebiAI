@@ -1,0 +1,125 @@
+<template>
+  <div id="ColumnSelectionButton">
+    <!-- Column selected -->
+    <Column
+      v-if="selectedColumnIndex !== null"
+      :column="data.columns.find((c) => c.index == selectedColumnIndex)"
+      :colorSelection="true"
+      v-on:selected="columnSelectionModal = true"
+    />
+
+    <!-- No column selected, click to select -->
+    <button
+      v-else
+      @click="columnSelectionModal = true"
+    >
+      {{ title }}
+    </button>
+
+    <!-- Remove button -->
+    <button
+      v-if="canBeRemoved && selectedColumnIndex !== null"
+      class="red"
+      @click="columnRemoved"
+    >
+      Remove
+    </button>
+
+    <!-- Column selection modal -->
+    <modal
+      v-if="columnSelectionModal"
+      @close="columnSelectionModal = false"
+    >
+      <ColumnSelection
+        :title="title"
+        :data="data"
+        :defaultSelected="defaultSelectedColumns"
+        :validColumnsProperties="validColumnsProperties"
+        :validateRequired="false"
+        :colorSelection="true"
+        v-on:cancel="columnSelectionModal = false"
+        v-on:colSelect="columnSelected"
+      />
+    </modal>
+  </div>
+</template>
+
+<script>
+import ColumnSelection from "./ColumnSelection";
+import Column from "./Column";
+
+export default {
+  components: {
+    ColumnSelection,
+    Column,
+  },
+  props: {
+    data: { type: Object, required: true },
+    title: { type: String, default: "Select a column" },
+    defaultColumnIndex: { type: String, default: null },
+    validColumnsProperties: { type: Object, default: () => ({}) },
+    canBeRemoved: { type: Boolean, default: false },
+  },
+  data() {
+    return {
+      selectedColumnIndex: null,
+      columnSelectionModal: false,
+    };
+  },
+  created() {
+    // Set the default column index
+    if (this.defaultColumnIndex !== null) {
+      // Check if the default column index is valid
+      if (!this.data.columnExists(this.defaultColumnIndex)) {
+        this.defaultColumnIndex = null;
+      } else {
+        this.selectedColumnIndex = this.defaultColumnIndex;
+      }
+    }
+  },
+  mounted() {},
+  methods: {
+    columnSelected(columnIndex) {
+      this.selectedColumnIndex = columnIndex;
+      this.columnSelectionModal = false;
+      this.$emit("selected", columnIndex);
+    },
+    columnRemoved() {
+      this.$emit("removed");
+    },
+  },
+  computed: {
+    defaultSelectedColumns() {
+      return this.defaultColumnIndex !== null ? [this.defaultColumnIndex] : [];
+    },
+    dataColumns() {
+      return this.data.columns;
+    },
+  },
+  watch: {
+    defaultColumnIndex() {
+      // Check if the default column index is valid
+      if (this.defaultColumnIndex !== null && this.data.columnExists(this.defaultColumnIndex)) {
+        // Set the column as the new selected column
+        this.selectedColumnIndex = this.defaultColumnIndex;
+      } else {
+        this.selectedColumnIndex = null;
+      }
+    },
+    dataColumns() {
+      console.log("Data Column update");
+      // Check if the selected column still exists
+      if (this.selectedColumnIndex !== null && !this.data.columnExists(this.selectedColumnIndex)) {
+        this.selectedColumnIndex = null;
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+#ColumnSelectionButton {
+  display: flex;
+  align-items: center;
+}
+</style>
