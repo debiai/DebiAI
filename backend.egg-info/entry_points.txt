@@ -1,0 +1,2 @@
+[console_scripts]
+debiai-start = backend.server:run

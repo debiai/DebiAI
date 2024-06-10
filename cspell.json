@@ -54,7 +54,8 @@
     "Valeo",
     "vuejs",
     "Vuex",
-    "websrv"
+    "websrv",
+    "werkzeug"
   ],
   "flagWords": [],
   "ignorePaths": [
