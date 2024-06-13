@@ -77,11 +77,12 @@
     </modal>
     <!-- WidgetCatalog -->
     <modal
-      v-if="widgetCatalog"
+      v-show="widgetCatalog"
       @close="widgetCatalog = false"
       :preventBodyScroll="false"
     >
       <WidgetCatalog
+        ref="widgetCatalog"
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
@@ -745,6 +746,13 @@ export default {
       // Update the unfolded column
       const columnIndex = this.$store.state.StatisticalAnalysis.unfoldedColumnIndex;
       this.unfoldColumn(columnIndex);
+    },
+    widgetCatalog() {
+      // Emit the showCatalog event to the widgetCatalog component
+      if (this.widgetCatalog) {
+        const widgetCatalog = this.$refs.widgetCatalog;
+        if (widgetCatalog) widgetCatalog.loadWidgetConfigurationsOverview();
+      }
     },
   },
   beforeDestroy() {
