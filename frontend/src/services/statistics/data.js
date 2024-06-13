@@ -7,36 +7,11 @@ class Data {
     this.nbColumns = data.nbColumns;
     this.nbLinesOriginal = data.nbLines;
     this.sampleIdList = data.sampleIdList;
-    this._columns = {};
+    this.columns = [];
 
     // Register the columns
     data.columns.forEach((column) => {
       this.addColumn(column.label, column.values, column.category, column.type, column.group);
-    });
-
-    // Overwrite the columns filter and map methods
-    this.columns = new Proxy(this._columns, {
-      get: (target, prop) => {
-        console.log("Columns proxy", prop);
-        if (prop === "filter")
-          return (callback) => {
-            return Object.values(target).filter(callback);
-          };
-        if (prop === "map")
-          return (callback) => {
-            return Object.values(target).map(callback);
-          };
-        if (prop === "find")
-          return (callback) => {
-            return Object.values(target).find(callback);
-          };
-        if (prop === "forEach")
-          return (callback) => {
-            return Object.values(target).forEach(callback);
-          };
-        if (prop === "length") return Object.keys(target).length;
-        return target[prop];
-      },
     });
 
     this.resetData();
@@ -55,36 +30,45 @@ class Data {
   }
 
   columnExists(columnIndex) {
-    return this.columns[columnIndex] !== undefined;
+    return this.getColumn(columnIndex) !== undefined;
   }
-
   currentlyUnfoldedVertically() {
     // Return true if at least one column is unfolded
     return this.verticallyUnfoldedColumnsIndexes?.length > 0;
   }
 
   // column utils
+  getColumn(columnIndex) {
+    return this.columns.find((column) => column.index === columnIndex);
+  }
+  getColumnExistingColumns(columnIndexes) {
+    return columnIndexes.map((index) => this.getColumn(index)).filter((column) => column);
+  }
+  getColumnExistingColumnsLabels(columnIndexes) {
+    return this.getColumnExistingColumns(columnIndexes).map((column) => column.label);
+  }
+  getColumnByLabel(label) {
+    return this.columns.find((column) => column.label === label);
+  }
+  getColumnByLabelAndCategory(label, category) {
+    return this.columns.find((column) => column.label === label && column.category === category);
+  }
+
   addColumn(label, values, category, typeIn, group, unfoldedLevel = 0) {
     const columnId = services.uuid();
-    this._columns[columnId] = new Column(
-      this,
-      columnId,
-      label,
-      values,
-      category,
-      typeIn,
-      group,
-      unfoldedLevel
+    this.columns.push(
+      new Column(this, columnId, label, values, category, typeIn, group, unfoldedLevel)
     );
   }
   removeColumn(columnIndex) {
-    delete this._columns[columnIndex];
+    this.columns = this.columns.filter((column) => column.index !== columnIndex);
   }
 
   // Column unfold
   unfoldColumn(columnIndex) {
-    if (this.columns[columnIndex].typeText === "Dict") this.unfoldHorizontally(columnIndex);
-    else if (this.columns[columnIndex].typeText === "Array") this.unfoldVertically(columnIndex);
+    if (!this.columnExists(columnIndex)) return;
+    if (this.getColumn(columnIndex).typeText === "Dict") this.unfoldHorizontally(columnIndex);
+    else if (this.getColumn(columnIndex).typeText === "Array") this.unfoldVertically(columnIndex);
   }
   unfoldVertically(columnIndex) {
     // Add column to the unfolded list
@@ -107,7 +91,7 @@ class Data {
     }
 
     // Compute the new number of lines and link the virtual index to the original index
-    const unfoldedColumn = this.columns[this.verticallyUnfoldedColumnsIndexes[0]];
+    const unfoldedColumn = this.getColumn(this.verticallyUnfoldedColumnsIndexes[0]);
     const virtualIndexMapping = {};
     let nbLines = 0;
     for (let i = 0; i < this.nbLinesOriginal; i++) {
@@ -165,15 +149,7 @@ class Column {
     this.unfoldedLevel = unfoldedLevel;
     this.unfolded = false;
 
-    // this.min = column.min;
-    // this.max = column.max;
-    // this.nbOccurrence = column.nbOccurrence;
-    // this.type = column.type;
-    // this.typeText = column.typeText;
-    // this.valuesIndex = column.valuesIndex;
-    // this.valuesIndexUniques = column.valuesIndexUniques;
-    // this.uniques = column.uniques;
-
+    // Override the values with a proxy to handle the unfolding
     this.values = new Proxy(this.originalValues, {
       get: (target, prop) => {
         // Return the value based on the original index
@@ -258,7 +234,41 @@ class Column {
         return i;
       });
 
-      this.valuesIndex = this.values.map((str) => tmpUniqMap[str]);
+      const _valuesIndex = this.originalValues.map((str) => tmpUniqMap[str]);
+
+      this.valuesIndex = new Proxy(_valuesIndex, {
+        get: (target, prop) => {
+          // Without unfolding
+          if (!this.data.currentlyUnfoldedVertically()) {
+            if (prop === "length") return this.data.nbLines;
+            if (prop === "map") return target.map;
+            if (prop === "reduce") return target.reduce;
+            return target[prop];
+          }
+
+          // With unfolding
+          if (prop === "length") return this.data.nbLines;
+          else if (prop === "map")
+            return (callback) => {
+              return this.data.selectedData.map((virtualIndex) => {
+                return callback(target[this.data.virtualIndexMapping[virtualIndex]].originalIndex);
+              });
+            };
+          else if (prop === "reduce")
+            return (callback, initialValue) => {
+              return this.data.selectedData.reduce((acc, virtualIndex) => {
+                return callback(
+                  acc,
+                  target[this.data.virtualIndexMapping[virtualIndex]].originalIndex
+                );
+              }, initialValue);
+            };
+          else if (prop === "_isVue") return true;
+          else if (prop === "__ob__") return { dep: { id: 0 } };
+          return target[this.data.virtualIndexMapping[prop].originalIndex];
+        },
+      });
+
       this.min = this.min(this.valuesIndexUniques);
       this.max = this.max(this.valuesIndexUniques);
     } else {
@@ -270,7 +280,8 @@ class Column {
       this.nbOccurrence = this.uniques.length;
       this.min = this.min(this.uniques);
       this.max = this.max(this.uniques);
-      this.average = this.originalValues.reduce((a, b) => a + b, 0) / this.values.length || 0;
+      this.average =
+        this.originalValues.reduce((a, b) => a + b, 0) / this.originalValues.length || 0;
       if (this.uniques.length < 100) this.uniques.sort((a, b) => a - b);
     }
   }

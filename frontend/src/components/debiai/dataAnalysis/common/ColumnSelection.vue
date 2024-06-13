@@ -243,6 +243,7 @@ export default {
   .title {
     justify-content: space-between;
     background-color: var(--greyLight);
+    gap: 10px;
 
     .selectedColumns > div {
       display: flex;

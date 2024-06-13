@@ -79,7 +79,7 @@ export default {
       let tagValue = parseInt(this.tagValue);
 
       // Check if tag already exist
-      let column = this.data.columns.find((c) => c.label === this.tagName && c.category === "tag");
+      let column = this.data.getColumnByLabel(this.tagName, "tag");
       let values;
       if (column) {
         // Update tag values

@@ -3,39 +3,6 @@
     id="repartitionPlot"
     class="dataVisualizationWidget"
   >
-    <!-- Axis selection Modal -->
-    <modal
-      v-if="xAxisSelection"
-      @close="cancelXaxisSettings"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="cancelXaxisSettings"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <!-- Second column selection Modal -->
-    <modal
-      v-if="secondAxisSelection"
-      @close="secondAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select a second column"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[secondColumnIndex]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="secondAxisSelection = false"
-        v-on:colSelect="secondAxisSelect"
-      />
-    </modal>
-
     <!-- Controls -->
     <div
       id="axisControls"
@@ -48,45 +15,28 @@
       >
         <div class="data">
           <div class="name">X axis</div>
-          <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="selectXaxis"
+          <div class="value gapped">
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validColumnsProperties"
+              :defaultColumnIndex="columnXindex"
+              title="Select the X axis"
+              v-on:selected="xAxisSelect"
             />
-            <button
-              id="addColumnBtn"
-              v-if="secondColumnIndex === null"
-              title="Share the distribution with another column"
-              @click="secondAxisSelection = true"
-              class="blue"
-            >
-              +
-            </button>
-            <div
-              style="background: white; padding-right: 4px"
-              class="aligned rounded"
-            >
-              <Column
-                v-if="secondColumnIndex !== null"
-                :column="data.columns.find((c) => c.index == secondColumnIndex)"
-                :colorSelection="true"
-                v-on:selected="secondAxisSelection = true"
-              />
-
-              <button
-                id="addColumnBtn"
-                v-if="secondColumnIndex !== null"
-                class="red"
-                title="Remove the second axis"
-                @click="
-                  secondColumnIndex = null;
-                  checkPlot();
-                "
-              >
-                x
-              </button>
-            </div>
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validColumnsProperties"
+              :defaultColumnIndex="secondColumnIndex"
+              title="+"
+              modalTitle="Select the second axis"
+              tooltip="Share the distribution with another column"
+              canBeRemoved
+              v-on:selected="secondAxisSelect"
+              v-on:removed="
+                secondColumnIndex = null;
+                checkPlot();
+              "
+            />
           </div>
         </div>
         <!-- Options -->
@@ -206,6 +156,7 @@
         type="submit"
         class="blue"
         @click="checkPlot"
+        :disabled="!canDraw"
       >
         Draw
       </button>
@@ -221,8 +172,7 @@
 import Plotly from "plotly.js/dist/plotly";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 // services
 import dataOperations from "@/services/statistics/dataOperations";
@@ -231,8 +181,7 @@ import swal from "sweetalert";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   data() {
     return {
@@ -240,7 +189,7 @@ export default {
       settings: true,
 
       // Conf
-      columnXindex: 0,
+      columnXindex: null,
       secondColumnIndex: null,
       dividePerColor: true,
       displayLegends: false,
@@ -250,8 +199,6 @@ export default {
 
       // Other
       plotDrawn: false,
-      xAxisSelection: false,
-      secondAxisSelection: false,
       currentDrawnColorIndex: null,
 
       validColumnsProperties: {
@@ -281,7 +228,7 @@ export default {
     // Conf
     getConf() {
       let conf = {
-        columnX: this.data.columns[this.columnXindex].label,
+        columnX: this.data.getColumn(this.columnXindex)?.label,
         plotType: this.plotType,
         bins: this.bins,
       };
@@ -293,12 +240,12 @@ export default {
       }
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options) {
       if (!conf) return;
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        let c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
@@ -329,12 +276,13 @@ export default {
       );
     },
     getConfNameSuggestion() {
-      return this.data.columns[this.columnXindex].label;
+      return this.data.getColumn(this.columnXindex)?.label;
     },
 
     // Plot
     async checkPlot(askConfirmation = true) {
-      let colX = this.data.columns[this.columnXindex];
+      let colX = this.data.getColumn(this.columnXindex);
+      if (!colX) return;
 
       // // Check synchronously if the selected column type is string and if their is more than 100 uniques values
       // if (colX.type == String && colX.uniques.length > 100) {
@@ -369,7 +317,8 @@ export default {
       }
 
       if (this.coloredColumnIndex !== null) {
-        const colColor = this.data.columns[this.coloredColumnIndex];
+        const colColor = this.data.getColumn(this.coloredColumnIndex);
+        if (!colColor) return;
 
         if (this.dividePerColor && colColor.uniques.length > 100) {
           if (!askConfirmation) return;
@@ -392,7 +341,8 @@ export default {
     },
 
     drawPlot() {
-      let colX = this.data.columns[this.columnXindex];
+      let colX = this.data.getColumn(this.columnXindex);
+      if (!colX) return;
 
       let plotlyData = [];
 
@@ -404,8 +354,8 @@ export default {
       // on x axis
       let colSecondX;
       let secondSelectedX;
-      if (this.secondColumnIndex !== null) {
-        colSecondX = this.data.columns[this.secondColumnIndex];
+      if (this.data.columnExists(this.secondColumnIndex)) {
+        colSecondX = this.data.getColumn(this.secondColumnIndex);
         if (colSecondX.type == String)
           secondSelectedX = this.data.selectedData.map((i) => colSecondX.valuesIndex[i]);
         else secondSelectedX = this.data.selectedData.map((i) => colSecondX.values[i]);
@@ -414,9 +364,9 @@ export default {
       let colColor;
       let xSections;
       let xSectionsText;
-      if (this.coloredColumnIndex != null && this.dividePerColor) {
+      if (this.data.columnExists(this.coloredColumnIndex) && this.dividePerColor) {
         // on color axis
-        colColor = this.data.columns[this.coloredColumnIndex];
+        colColor = this.data.getColumn(this.coloredColumnIndex);
         let selectedColors;
         if (colColor.type == String)
           selectedColors = this.data.selectedData.map((i) => colColor.valuesIndex[i]);
@@ -595,7 +545,7 @@ export default {
         this.bins > 0
       ) {
         let selectionPoint = selection.points[0];
-        let col = this.data.columns[this.columnXindex];
+        let col = this.data.getColumn(this.columnXindex);
         let filters = [];
 
         if (col.type == String) {
@@ -617,13 +567,15 @@ export default {
           });
         }
         // apply filters on the color
-        if (this.coloredColumnIndex != null && this.dividePerColor) {
+        if (this.data.columnExists(this.coloredColumnIndex) && this.dividePerColor) {
           filters.push({
             type: "values",
             columnIndex: this.currentDrawnColorIndex,
             values: [
               "" +
-                this.data.columns[this.currentDrawnColorIndex].uniques[selectionPoint.curveNumber],
+                this.data.getColumn(this.currentDrawnColorIndex).uniques[
+                  selectionPoint.curveNumber
+                ],
             ],
           });
         }
@@ -646,32 +598,28 @@ export default {
     },
 
     // axis selection
-    selectXaxis() {
-      this.xAxisSelection = true;
-    },
-    cancelXaxisSettings() {
-      this.xAxisSelection = false;
-    },
     xAxisSelect(index) {
       this.columnXindex = index;
-      this.xAxisSelection = false;
       this.setBins();
       if (this.bins < 100) this.checkPlot(false);
       else this.clearPlot();
     },
     secondAxisSelect(index) {
       this.secondColumnIndex = index;
-      this.secondAxisSelection = false;
       this.dividePerColor = false;
       this.checkPlot(false);
     },
     setBins() {
-      let colX = this.data.columns[this.columnXindex];
+      let colX = this.data.getColumn(this.columnXindex);
+      if (!colX) return;
       this.bins =
         colX.type == String ? colX.nbOccurrence : colX.nbOccurrence > 100 ? 100 : colX.nbOccurrence;
     },
   },
   computed: {
+    canDraw() {
+      return this.columnXindex !== null && this.bins > 0;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
@@ -705,51 +653,56 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #repartitionPlot {
   display: flex;
   flex-direction: column;
-}
 
-/* Controls */
-#axisControls {
-  display: flex;
-}
-#axisControls #columnAxisSelection {
-  position: relative;
-}
-#axisControls #addColumnBtn {
-  width: 40px;
-}
-#statisticalControls {
-  display: flex;
-}
-.dataGroup {
-  flex-wrap: wrap;
-}
-#columnAxisSelection.data + .data {
-  margin-left: 0px;
-  margin-top: 10px;
-}
-/* Axis Selection */
+  /* Controls */
+  #axisControls {
+    display: flex;
 
-#columnAxisSelection {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-#columnAxisSelection .dataGroup {
-  justify-content: space-evenly;
-}
-.value {
-  flex: 1;
-}
+    #columnAxisSelection {
+      position: relative;
+    }
 
-#drawBtn {
-  margin: 3px;
-  width: 80px;
-}
-input {
-  width: 70px;
+    #statisticalControls {
+      display: flex;
+    }
+
+    .dataGroup {
+      flex-wrap: wrap;
+    }
+
+    #columnAxisSelection.data + .data {
+      margin-left: 0px;
+      margin-top: 10px;
+    }
+  }
+
+  /* Axis Selection */
+  #columnAxisSelection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .dataGroup {
+      justify-content: space-evenly;
+    }
+
+    .value {
+      flex: 1;
+      display: flex;
+    }
+  }
+
+  #drawBtn {
+    margin: 3px;
+    width: 80px;
+  }
+
+  input {
+    width: 70px;
+  }
 }
 </style>

@@ -73,7 +73,7 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
     setConf(conf) {
@@ -81,7 +81,7 @@ export default {
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];
         conf.selectedColumns.forEach((cLabel) => {
-          let c = this.data.columns.find((c) => c.label == cLabel);
+          const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIds.push(c.index);
           else
             this.$store.commit("sendMessage", {
@@ -95,13 +95,13 @@ export default {
     // Plot
     drawPlot() {
       // Filter selected columns
-      let columns = this.selectedColumnsIds.map((cId) => this.data.columns[cId]);
+      let columns = this.data.getColumnExistingColumns(this.selectedColumnsIds);
 
       let plotlyColumns = dataOperations.columnsCreation(columns, this.data.selectedData);
 
       // Color
       let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
-      let colColor = this.data.columns[coloredColIndex];
+      let colColor = this.data.getColumn(coloredColIndex);
       this.currentDrawnColorIndex = coloredColIndex;
 
       let colorscale = "Portland";

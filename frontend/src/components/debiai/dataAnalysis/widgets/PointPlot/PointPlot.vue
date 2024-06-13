@@ -61,6 +61,7 @@
             class="drawBtn blue"
             @click="pointPlot"
             v-if="!pointPlotDrawn"
+            :disabled="!canDrawPointPlot"
           >
             Draw 2D points
           </button>
@@ -142,6 +143,7 @@
             class="drawBtn blue"
             @click="checkLinePlot"
             v-if="!linePlotDrawn"
+            :disabled="!canDrawPointPlot"
           >
             Draw statistics
           </button>
@@ -322,8 +324,6 @@ export default {
     return {
       // === Setting ===
       settings: true,
-      xAxisSelection: false,
-      yAxisSelection: false,
       sizeAxisSelection: false,
       axisRangeModal: false,
 
@@ -400,8 +400,8 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex]?.label,
-        columnY: this.data.columns[this.columnYindex]?.label,
+        columnX: this.data.getColumn(this.columnXindex)?.label,
+        columnY: this.data.getColumn(this.columnYindex)?.label,
         // Shared settings
         dividePerColor: this.dividePerColor,
         absolute: this.absolute,
@@ -414,9 +414,9 @@ export default {
 
       if (!this.averageAsBar) conf.displayNull = this.displayNull;
       if (!this.autoPointOpacity) conf.pointOpacity = this.pointOpacity;
-      if (this.columnSizeIndex !== null) {
+      if (this.columnSizeIndex !== null && this.data.columnExists(this.columnSizeIndex)) {
         conf.maxPointSize = this.maxPointSize;
-        conf.columnSized = this.data.columns[this.columnSizeIndex].label;
+        conf.columnSized = this.data.getColumn(this.columnSizeIndex).label;
       }
 
       // Set axis range
@@ -435,7 +435,7 @@ export default {
       if (!conf) return;
 
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
         else
           this.$store.commit("sendMessage", {
@@ -444,7 +444,7 @@ export default {
           });
       }
       if ("columnY" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnY);
+        const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYindex = c.index;
         else
           this.$store.commit("sendMessage", {
@@ -453,7 +453,7 @@ export default {
           });
       }
       if ("columnSized" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnSized);
+        const c = this.data.getColumnByLabel(conf.columnSized);
         if (c) this.columnSizeIndex = c.index;
         else
           this.$store.commit("sendMessage", {
@@ -517,13 +517,13 @@ export default {
     },
     getConfNameSuggestion() {
       let confName =
-        this.data.columns[this.columnXindex]?.label +
+        this.data.getColumn(this.columnXindex)?.label +
         " / " +
-        this.data.columns[this.columnYindex]?.label;
+        this.data.getColumn(this.columnYindex)?.label;
 
       // Add the sized column to the legend name
       if (this.columnSizeIndex !== null && this.data.columnExists(this.columnSizeIndex))
-        confName += " Sized by " + this.data.columns[this.columnSizeIndex].label;
+        confName += " Sized by " + this.data.getColumn(this.columnSizeIndex).label;
 
       // Add if y is absolute
       if (this.absolute) confName += " (abs)";
@@ -539,8 +539,10 @@ export default {
 
     // Point plot
     pointPlot() {
-      let colX = this.data.columns[this.columnXindex];
-      let colY = this.data.columns[this.columnYindex];
+      let colX = this.data.getColumn(this.columnXindex);
+      let colY = this.data.getColumn(this.columnYindex);
+
+      if (!colX || !colY) return;
 
       // Apply selection
       let valuesX = this.data.selectedData.map((i) => colX.values[i]);
@@ -560,7 +562,7 @@ export default {
 
       let colColor;
       if (this.coloredColumnIndex !== null && this.dividePerColor) {
-        colColor = this.data.columns[this.coloredColumnIndex];
+        colColor = this.data.getColumn(this.coloredColumnIndex);
         color = this.data.selectedData.map((i) =>
           colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
         );
@@ -582,7 +584,7 @@ export default {
       const MIN_POINT_SIZE = 3;
       let colSize;
       if (this.columnSizeIndex !== null) {
-        colSize = this.data.columns[this.columnSizeIndex];
+        colSize = this.data.getColumn(this.columnSizeIndex);
         size = this.data.selectedData.map((i) =>
           colSize.type == String ? colSize.valuesIndex[i] : colSize.values[i]
         );
@@ -654,7 +656,7 @@ export default {
       }
 
       // Check that the group by color is not to performance intensive
-      let colColor = this.data.columns[this.coloredColumnIndex];
+      let colColor = this.data.getColumn(this.coloredColumnIndex);
 
       if (colColor.uniques.length <= 100) {
         this.linePlot();
@@ -676,7 +678,7 @@ export default {
     // Check columns type and uniques values
     async DoesUserAcceptRisk() {
       // Get the index of the selected column
-      let colY = this.data.columns[this.columnYindex];
+      let colY = this.data.getColumn(this.columnYindex);
 
       // Get the name of rhe selected column
       let colNameY = colY.label;
@@ -711,14 +713,17 @@ export default {
     },
 
     async linePlot() {
+      let colX = this.data.getColumn(this.columnXindex);
+      let colY = this.data.getColumn(this.columnYindex);
+
+      if (!colX || !colY) return;
+
       // Apply selection
       let traces = [];
-      let colX = this.data.columns[this.columnXindex];
       let valuesX;
       if (colX.type == String) valuesX = this.data.selectedData.map((i) => colX.valuesIndex[i]);
       else valuesX = this.data.selectedData.map((i) => colX.values[i]);
 
-      let colY = this.data.columns[this.columnYindex];
       let valuesY;
       if (colY.type == String) valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
       else valuesY = this.data.selectedData.map((i) => colY.values[i]);
@@ -726,7 +731,7 @@ export default {
       // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
-      let colColor = this.data.columns[this.coloredColumnIndex];
+      let colColor = this.data.getColumn(this.coloredColumnIndex);
       if (colColor && this.dividePerColor) {
         // === Divide lines per color ===
         let selectedColorsValues =
@@ -777,7 +782,7 @@ export default {
           });
         });
       } else {
-        let colY = this.data.columns[this.columnYindex];
+        let colY = this.data.getColumn(this.columnYindex);
         if (colY.type == String)
           this.valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
 
@@ -983,8 +988,10 @@ export default {
       }
 
       // Create the filters
-      let colx = this.data.columns[this.columnXindex];
-      let coly = this.data.columns[this.columnYindex];
+      let colx = this.data.getColumn(this.columnXindex);
+      let coly = this.data.getColumn(this.columnYindex);
+
+      if (!colx || !coly) return;
 
       // Create the first filter
       const selections = event.selections;
@@ -1122,7 +1129,6 @@ export default {
     // Axis selection
     async xAxisSelect(index) {
       this.columnXindex = index;
-      this.xAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
       this.setBins();
@@ -1130,7 +1136,6 @@ export default {
     async yAxisSelect(index) {
       let previousIndex = this.columnYindex;
       this.columnYindex = index;
-      this.yAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
 
@@ -1168,7 +1173,7 @@ export default {
     },
     setBins() {
       if (this.columnXindex === null) return;
-      let colX = this.data.columns[this.columnXindex];
+      let colX = this.data.getColumn(this.columnXindex);
       if (colX.type == String) this.bins = Math.min(colX.nbOccurrence, 300);
       else this.bins = Math.min(colX.nbOccurrence, 30);
       this.linePlotDrawn = false;
@@ -1195,6 +1200,9 @@ export default {
     },
   },
   computed: {
+    canDrawPointPlot() {
+      return this.columnXindex !== null && this.columnYindex !== null;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },

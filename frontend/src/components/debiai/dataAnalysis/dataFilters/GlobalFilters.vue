@@ -140,39 +140,6 @@ export default {
 
       this.filterColumnSelection = false;
     },
-    // Filter import
-    // requestSelected(request) {
-    //   // Add the column to the request filters
-    //   request.filters.forEach((filter) => {
-    //     filter.column = this.data.columns.find((c) => c.label === filter.columnLabel);
-    //     if (filter.column) filter.columnIndex = filter.column.index;
-    //   });
-
-    //   // Check if all the filters have found a column
-    //   let filtersWithNoColumns = request.filters.filter((filter) => filter.columnIndex == null);
-    //   if (filtersWithNoColumns.length > 0) {
-    //     this.$store.commit("sendMessage", {
-    //       title: "error",
-    //       msg:
-    //         "No column found for the filter(s) : " +
-    //         filtersWithNoColumns.map((f) => f.columnLabel).join(", "),
-    //     });
-    //   }
-    //   // Remove the filters with no column index
-    //   request.filters = request.filters.filter((filter) => filter.columnIndex !== undefined);
-
-    //   // Add the filter to the store
-    //   this.$store.commit("addFilters", {
-    //     filters: request.filters,
-    //     from: {
-    //       widgetType: "Imported",
-    //       widgetName: request.name,
-    //       widgetIndex: request.id,
-    //     },
-    //   });
-
-    //   // this.requestSelection = false;
-    // },
   },
   computed: {
     filters() {

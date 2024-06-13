@@ -414,22 +414,22 @@ export default {
     },
     loadLayout(layout_full) {
       const layout = layout_full.layout;
-      const selectedColorColumn = layout_full.selectedColorColumn;
+      const savedSelectedColorColumn = layout_full.savedSelectedColorColumn;
 
       this.clearLayout();
       this.layoutModal = false;
 
-      // Set selectedColorColumn
-      if (selectedColorColumn) {
+      // Set the colored column
+      if (savedSelectedColorColumn) {
         // Get the column index
-        const column = this.data.columns.find((c) => c.label == selectedColorColumn);
+        const column = this.data.getColumnByLabel(savedSelectedColorColumn);
         const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
 
         // Set the column index
         if (column == null) {
           this.$store.commit("sendMessage", {
             title: "warning",
-            msg: "The column " + selectedColorColumn + " hasn't been found",
+            msg: "The column " + savedSelectedColorColumn + " hasn't been found",
           });
         } else if (coloredColumnIndex != column.index) {
           this.$store.commit("setColoredColumnIndex", column.index);
@@ -559,8 +559,8 @@ export default {
 
       // Add the selectedColorColumn
       const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
-      if (coloredColumnIndex !== null) {
-        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
+      if (coloredColumnIndex !== null && this.data.columnExists(coloredColumnIndex)) {
+        requestBody.selectedColorColumn = this.data.getColumn(coloredColumnIndex).label;
       }
 
       // We remove some properties from the layout

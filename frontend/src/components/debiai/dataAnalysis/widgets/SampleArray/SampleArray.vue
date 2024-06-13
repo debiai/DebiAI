@@ -97,14 +97,15 @@ export default {
       }
     },
     _updateArray() {
-      let labels = this.selectedColumnsIds.map((i) => this.data.columns[i].label);
+      this.selectedColumnsIds = this.selectedColumnsIds.filter((i) => this.data.columnExists(i));
+      const labels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
       var data = new Array(this.data.selectedData.length + 1); // Number of rows
       data[0] = labels;
 
       for (var i = 1; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
 
       this.selectedColumnsIds.forEach((columnIndex, i) => {
-        let col = this.data.columns.find((c) => c.index == columnIndex);
+        const col = this.data.getColumn(columnIndex);
         this.data.selectedData.map((j, indRow) => (data[indRow + 1][i] = col.values[j]));
       });
 
@@ -128,7 +129,7 @@ export default {
     },
   },
   watch: {
-    selectedDataUpdate () {
+    selectedDataUpdate() {
       this.$parent.selectedDataWarning = true;
     },
   },

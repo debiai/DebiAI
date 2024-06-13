@@ -77,7 +77,7 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
     setConf(conf) {
@@ -85,7 +85,7 @@ export default {
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];
         conf.selectedColumns.forEach((cLabel) => {
-          let c = this.data.columns.find((c) => c.label == cLabel);
+          const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIds.push(c.index);
           else
             this.$store.commit("sendMessage", {
@@ -104,14 +104,14 @@ export default {
       let colColor;
       let nbColor;
       if (coloredColIndex !== null) {
-        colColor = this.data.columns[coloredColIndex];
+        colColor = this.data.getColumn(coloredColIndex);
         nbColor = colColor.nbOccurrence;
       }
 
       // Get columns
-      let selectedColumns = this.selectedColumnsIds.map((cIdx) =>
-        this.data.columns.find((c) => c.index == cIdx)
-      );
+      let selectedColumns = this.selectedColumnsIds
+        .map((cIdx) => this.data.getColumn(cIdx))
+        .filter((c) => c !== undefined);
 
       // Check that columns are not too numerous
       if (selectedColumns.some((c) => c.nbOccurrence > 20) || (nbColor && nbColor > 20)) {
@@ -203,7 +203,9 @@ export default {
                 columnIndex: this.currentDrawnColorIndex,
                 values: [
                   "" +
-                    this.data.columns[this.currentDrawnColorIndex].uniques[parCatSelections.color],
+                    this.data.getColumn(this.currentDrawnColorIndex).uniques[
+                      parCatSelections.color
+                    ],
                 ],
               });
             }

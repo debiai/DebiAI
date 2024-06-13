@@ -3,69 +3,53 @@
     :id="'SimpleStatistics' + index"
     class="dataVisualizationWidget"
   >
-    <!-- Column selection Modal -->
-    <modal
-      v-if="columnSelection"
-      @close="columnSelection = false"
-    >
-      <ColumnSelection
-        title="Select a column"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[selectedColumn.index]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="columnSelection = false"
-        v-on:colSelect="selectCol"
-      />
-    </modal>
-
     <!-- Column & settings -->
     <div
       id="settings"
+      class="dataGroup gapped"
+      style="align-items: center; justify-content: space-evenly"
       v-if="settings"
     >
-      <div style="display: flex">
-        <Column
-          :column="selectedColumn"
-          :colorSelection="true"
-          v-on:selected="columnSelection = true"
-        />
-        <!-- abs value option -->
-        <div
-          class="dataGroup"
-          style="flex: 1"
-          v-if="absoluteOption"
-        >
-          <div
-            class="data"
-            style="width: 100%"
-          >
-            <span class="name"> Absolute value </span>
-            <span
-              class="value"
-              style="width: 100%"
-            >
-              <input
-                type="checkbox"
-                :id="'absolute' + index"
-                class="customCbx"
-                v-model="absolute"
-                style="display: none"
-              />
-              <label
-                :for="'absolute' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </span>
-          </div>
+      <div class="data">
+        <div class="name">Select the column to display statistics</div>
+        <div class="value">
+          <ColumnSelectionButton
+            :data="data"
+            :validColumnsProperties="validColumnsProperties"
+            :defaultColumnIndex="selectedColumn ? selectedColumn.index : null"
+            title="Select a column"
+            v-on:selected="selectCol"
+          />
         </div>
+        <!-- abs value option -->
+      </div>
+      <div
+        class="data"
+        v-if="absoluteOption"
+      >
+        <span class="name"> Absolute value </span>
+        <span class="value">
+          <input
+            type="checkbox"
+            :id="'absolute' + index"
+            class="customCbx"
+            v-model="absolute"
+            style="display: none"
+          />
+          <label
+            :for="'absolute' + index"
+            class="toggle"
+          >
+            <span></span>
+          </label>
+        </span>
       </div>
     </div>
 
-    <div id="columnStat">
+    <div
+      id="columnStat"
+      v-if="selectedColumn !== null"
+    >
       <!-- Title -->
       <span>
         <b>
@@ -113,7 +97,7 @@
     <div v-if="toMuchUniqueValues">To much unique values in the selected colored column</div>
     <div
       id="groupStat"
-      v-else-if="statByColor !== null"
+      v-else-if="statByColor !== null && selectedColumn !== null"
     >
       <!-- Title 2 -->
       <b>
@@ -200,8 +184,7 @@
 
 <script>
 // Components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 // Services
 import dataOperations from "@/services/statistics/dataOperations";
@@ -209,8 +192,7 @@ import { std, variance } from "mathjs";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   props: {
     data: { type: Object, required: true },
@@ -221,7 +203,6 @@ export default {
       // Settings
       settings: true,
       selectedColumn: null,
-      columnSelection: false,
       absoluteOption: false,
       absolute: false,
 
@@ -252,8 +233,6 @@ export default {
     };
   },
   created() {
-    // Select the 3 firsts columns
-    if (this.data.nbColumns > 0) this.selectCol(0);
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
     });
@@ -263,8 +242,7 @@ export default {
   },
   methods: {
     selectCol(index) {
-      this.selectedColumn = this.data.columns.find((c) => c.index === index);
-      this.columnSelection = false;
+      this.selectedColumn = this.data.getColumn(index);
       this.absoluteOption = this.selectedColumn.type !== String && this.selectedColumn.min < 0;
       this.absolute = false;
 
@@ -315,8 +293,8 @@ export default {
       }
 
       // Average by color
-      if (this.coloredColumnIndex != null) {
-        let colColor = this.data.columns[this.coloredColumnIndex];
+      if (this.data.columnExists(this.coloredColumnIndex)) {
+        let colColor = this.data.getColumn(this.coloredColumnIndex);
         if (colColor.nbOccurrence <= 100) {
           this.toMuchUniqueValues = false;
           let selectedColors;

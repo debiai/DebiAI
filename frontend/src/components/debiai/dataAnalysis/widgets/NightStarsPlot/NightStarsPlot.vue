@@ -10,18 +10,24 @@
     >
       <div id="axisControls">
         <!-- Axis buttons -->
+        <!-- X axis -->
         <div class="dataGroup axis">
-          <!-- X axis -->
           <div class="data">
             <div class="name">X axis</div>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnXIndex)"
-                :colorSelection="true"
-                v-on:selected="xAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="columnXIndex"
+                title="Select the X axis"
+                v-on:selected="xAxisSelect"
               />
-              <!-- AbsX -->
-              Absolute value :
+            </div>
+          </div>
+          <!-- AbsX -->
+          <div class="data">
+            <div class="name">X absolute value</div>
+            <div class="value">
               <input
                 type="checkbox"
                 :id="'absX' + index"
@@ -37,17 +43,26 @@
               </label>
             </div>
           </div>
-          <!-- Y axis -->
+        </div>
+
+        <!-- Y axis -->
+        <div class="dataGroup axis">
           <div class="data">
             <div class="name">Y axis</div>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnYIndex)"
-                :colorSelection="true"
-                v-on:selected="yAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="columnYIndex"
+                title="Select the Y axis"
+                v-on:selected="yAxisSelect"
               />
-              <!-- AbsY -->
-              Absolute value :
+            </div>
+          </div>
+          <!-- AbsY -->
+          <div class="data">
+            <div class="name">Y absolute value</div>
+            <div class="value">
               <input
                 type="checkbox"
                 :id="'absY' + index"
@@ -63,29 +78,6 @@
               </label>
             </div>
           </div>
-          <!-- Divided per color -->
-          <div
-            class="data"
-            id="dividePerColor"
-            v-if="coloredColumnIndex !== null"
-          >
-            <div class="name">Divided per color</div>
-            <div class="value">
-              <input
-                type="checkbox"
-                :id="'dividePerColor' + index"
-                class="customCbx"
-                v-model="dividePerColor"
-                style="display: none"
-              />
-              <label
-                :for="'dividePerColor' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </div>
-          </div>
         </div>
 
         <!-- Draw -->
@@ -93,44 +85,13 @@
           id="drawBtn"
           @click="checkPlot"
           class="blue"
+          :disabled="!canDraw"
         >
           Draw
         </button>
       </div>
     </div>
-
-    <!-- Axis selection Modals -->
-    <modal
-      v-if="xAxisSelection"
-      @close="xAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXIndex]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="yAxisSelection"
-      @close="yAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnYIndex]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-
+    <!-- Plot -->
     <div
       class="plot"
       :id="'NightStarPlot' + index"
@@ -144,16 +105,14 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 import swal from "sweetalert";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 // services
 import dataOperations from "@/services/statistics/dataOperations";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   data() {
     return {
@@ -163,8 +122,8 @@ export default {
       yAxisSelection: false,
 
       // Conf
-      columnXIndex: 0,
-      columnYIndex: 0,
+      columnXIndex: null,
+      columnYIndex: null,
       dividePerColor: true,
       absX: false,
       absY: false,
@@ -191,8 +150,6 @@ export default {
   mounted() {
     this.divPointPlot = document.getElementById("NightStarPlot" + this.index);
     if (this.data.columns.length >= 3) {
-      this.xAxisSelect(0);
-      this.yAxisSelect(1);
       this.setPointOpacity();
     }
   },
@@ -200,8 +157,8 @@ export default {
     getConf() {
       const conf = {
         // Axis
-        columnX: this.data.columns[this.columnXIndex].label,
-        columnY: this.data.columns[this.columnYIndex].label,
+        columnX: this.data.getColumn(this.columnXIndex)?.label,
+        columnY: this.data.getColumn(this.columnYIndex)?.label,
         dividePerColor: this.dividePerColor,
         absX: this.absX,
         absY: this.absY,
@@ -209,21 +166,21 @@ export default {
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("columnX" in conf) {
-        const c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXIndex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
           });
       }
       if ("columnY" in conf) {
-        const c = this.data.columns.find((c) => c.label == conf.columnY);
+        const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYIndex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
@@ -234,7 +191,7 @@ export default {
       if ("absY" in conf) this.absY = conf.absY;
 
       // Draw plot
-      this.checkPlot(true);
+      if (!options.onStartup) this.checkPlot(true);
     },
 
     // Plot
@@ -266,8 +223,9 @@ export default {
       const starsToDraw = [];
 
       // Get columns
-      const colX = this.data.columns[this.columnXIndex];
-      const colY = this.data.columns[this.columnYIndex];
+      const colX = this.data.getColumn(this.columnXIndex);
+      const colY = this.data.getColumn(this.columnYIndex);
+      if (!colX || !colY) return;
 
       const minX = colX.type == Number ? colX.min : 0;
       const maxX = colX.type == Number ? colX.max : colX.uniques.length - 1;
@@ -380,14 +338,14 @@ export default {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b>" + extraPlotName,
         xaxis: {
           range: [minX, maxX],
-          type: this.data.columns[this.columnXIndex].type == String ? "category" : "-",
+          type: this.data.getColumn(this.columnXIndex)?.type == String ? "category" : "-",
           title: {
             text: colX.label,
           },
         },
         yaxis: {
           range: [minY, maxY],
-          type: this.data.columns[this.columnYIndex].type == String ? "category" : "-",
+          type: this.data.getColumn(this.columnYIndex)?.type == String ? "category" : "-",
           title: {
             text: colY.label,
           },
@@ -438,6 +396,9 @@ export default {
     },
   },
   computed: {
+    canDraw() {
+      return this.columnXIndex !== null && this.columnYIndex !== null;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },

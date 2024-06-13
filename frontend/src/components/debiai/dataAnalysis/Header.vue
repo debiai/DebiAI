@@ -83,7 +83,7 @@
     <!-- Colored column info -->
     <div
       id="coloredColumn"
-      v-if="coloredColumnIndex !== null"
+      v-if="coloredColumnIndex !== null && coloredColumn"
     >
       Color
       <button
@@ -91,7 +91,7 @@
         class="blue"
         title="Change the analysis colored column"
       >
-        {{ data.columns.find((c) => c.index == coloredColumnIndex).label }}
+        {{ coloredColumn.label }}
       </button>
     </div>
     <div
@@ -188,6 +188,9 @@ export default {
   computed: {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
+    },
+    coloredColumn() {
+      return this.data.getColumn(this.coloredColumnIndex);
     },
   },
 };

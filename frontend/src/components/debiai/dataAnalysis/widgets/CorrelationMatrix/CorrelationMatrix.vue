@@ -152,7 +152,7 @@ export default {
     },
     AxisSelect(selectedColumns) {
       this.selectedColumns = selectedColumns
-        .map((colId) => this.data.columns.find((col) => col.index == colId))
+        .map((colId) => this.data.getColumn(colId))
         .filter((c) => c.nbOccurrence > 1);
 
       this.axisSelection = false;
@@ -292,7 +292,7 @@ export default {
       if ("selectedColumns" in conf) {
         this.selectedColumns = conf.selectedColumns
           .map((colId) => {
-            const column = this.data.columns.find((col) => col.index == colId);
+            const column = this.data.getColumn(colId);
             if (!column) {
               this.$store.commit("sendMessage", {
                 title: "warning",

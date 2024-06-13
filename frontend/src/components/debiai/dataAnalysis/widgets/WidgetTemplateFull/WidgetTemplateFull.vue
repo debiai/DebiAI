@@ -3,23 +3,6 @@
     id="WidgetTemplateFull"
     class="dataVisualizationWidget"
   >
-    <!-- Column selection modal -->
-    <modal
-      v-if="colSelection"
-      @close="colSelection = false"
-    >
-      <ColumnSelection
-        title="Select a column"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[selectedColumnIndex]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="colSelection = false"
-        v-on:colSelect="colSelect"
-      />
-    </modal>
-
     <!-- Multiple columns selection modal -->
     <modal
       v-if="multipleColSelection"
@@ -42,26 +25,30 @@
       id="settings"
       v-if="settings"
     >
-      <!-- Axis buttons -->
-      <div class="dataGroup">
-        <!-- Column selection -->
-        <div class="data">
-          <div class="name">My column</div>
-          <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == selectedColumnIndex)"
-              :colorSelection="true"
-              v-on:selected="colSelection = true"
-            />
+      <!-- Columns settings -->
+      <div id="columnsSettings">
+        <div class="dataGroup">
+          <!-- Column selection -->
+          <div class="data">
+            <div class="name">My column</div>
+            <div class="value">
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="selectedColumnIndex"
+                title="Select a column"
+                v-on:selected="colSelect"
+              />
+            </div>
           </div>
-        </div>
-        <!-- Columns selection -->
-        <div class="data">
-          <div class="name">My columns</div>
-          <div class="value">
-            <button @click="multipleColSelection = true">
-              {{ selectedColumnsIndexes.length }} col selected
-            </button>
+          <!-- Columns selection -->
+          <div class="data">
+            <div class="name">My columns</div>
+            <div class="value">
+              <button @click="multipleColSelection = true">
+                {{ selectedColumnsIndexes.length }} col selected
+              </button>
+            </div>
           </div>
         </div>
         <div class="dataGroup">
@@ -114,9 +101,15 @@
             </div>
           </div>
         </div>
-        <!-- Display button -->
-        <button @click="display">Display</button>
       </div>
+      <!-- Display button -->
+      <button
+        id="displayBtn"
+        class="blue"
+        @click="display"
+      >
+        Display
+      </button>
     </div>
     <div
       id="content"
@@ -134,16 +127,16 @@
  */
 
 // components
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
 
 // services
 import swal from "sweetalert";
 
 export default {
   components: {
+    ColumnSelectionButton,
     ColumnSelection,
-    Column,
   },
   data() {
     return {
@@ -151,14 +144,13 @@ export default {
       settings: true,
 
       // Conf
-      selectedColumnIndex: 0,
-      selectedColumnsIndexes: [0],
+      selectedColumnIndex: null,
+      selectedColumnsIndexes: [],
       checkboxValue: true,
       option: "Opt.1",
       value: 0,
 
       // Other
-      colSelection: false,
       multipleColSelection: false,
       displayedData: null,
 
@@ -230,7 +222,6 @@ export default {
     // ====== Functions defined in the template ===========
     colSelect(index) {
       this.selectedColumnIndex = index;
-      this.colSelection = false;
     },
     multipleColsSelected(indexes) {
       this.selectedColumnsIndexes = indexes;
@@ -238,7 +229,9 @@ export default {
     },
     display() {
       // Do something with the data
-      const selectedColumn = this.data.columns[this.selectedColumnIndex];
+      const selectedColumn = this.data.getColumn(this.selectedColumnIndex);
+      if (!selectedColumn) return;
+
       const columnData = this.data.selectedData.map((d) => selectedColumn.values[d]);
       this.displayedData =
         "The first 30 selected values of the chosen column are : " +
@@ -262,8 +255,8 @@ export default {
      */
     getConf() {
       let conf = {
-        selectedColumn: this.data.columns[this.selectedColumnIndex].label,
-        selectedColumns: this.selectedColumnsIndexes.map((index) => this.data.columns[index].label),
+        selectedColumn: this.data.getColumn(this.selectedColumnIndex)?.label,
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIndexes),
         checkboxValue: this.checkboxValue,
         option: this.option,
         value: this.value,
@@ -278,26 +271,30 @@ export default {
      *
      * This function is called when the user create a widget with a saved configuration
      * it takes in input a previously saved configuration
+     *
+     * @param {Object} conf - The configuration of the widget
+     * @param {Object} options - Options,
+     * for example { onStartup: true } if the function is called when the widget is created
+     * { onStartup: false } if the function is called when the user loads a configuration
      */
-    setConf(conf) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("selectedColumn" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.selectedColumn);
+        const c = this.data.getColumnByLabel(conf.selectedColumn);
         if (c) this.selectedColumnIndex = c.index;
-        else {
+        else if (!options.onStartup)
           // Send a warning to the user
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
           });
-        }
       }
       if ("selectedColumns" in conf) {
         this.selectedColumnsIndexes = [];
         conf.selectedColumns.forEach((cLabel) => {
-          let c = this.data.columns.find((c) => c.label == cLabel);
+          const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIndexes.push(c.index);
-          else
+          else if (!options.onStartup)
             this.$store.commit("sendMessage", {
               title: "warning",
               msg: "The column " + cLabel + " hasn't been found",
@@ -438,14 +435,14 @@ export default {
     },
   },
   watch: {
-    selectedDataUpdate () {
+    selectedDataUpdate() {
       // The selected data have changed
       // We might want to warn the user that an update is required
       this.$parent.selectedDataWarning = true;
       // A redraw btn will be displayed, pressing it will send redraw
       // that can watched and used to redraw a plot (see created())
     },
-    redrawRequired () {
+    redrawRequired() {
       // The colored colum has changed
       // We cat tell the parent widget that an update is required
       this.$parent.colorWarning = true;
@@ -456,7 +453,33 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+#settings {
+  display: flex;
+
+  #columnsSettings {
+    flex: 1;
+    .dataGroup {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .data {
+        flex: 1;
+        min-width: 200px;
+
+        .value {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  button {
+    margin: 5px;
+  }
+}
+
 input {
   width: 100px;
 }

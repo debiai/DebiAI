@@ -11,7 +11,9 @@
     <!-- No column selected, click to select -->
     <button
       v-else
+      id="labelButton"
       @click="columnSelectionModal = true"
+      :title="tooltip"
     >
       {{ title }}
     </button>
@@ -31,7 +33,7 @@
       @close="columnSelectionModal = false"
     >
       <ColumnSelection
-        :title="title"
+        :title="modalTitle ? modalTitle : title"
         :data="data"
         :defaultSelected="defaultSelectedColumns"
         :validColumnsProperties="validColumnsProperties"
@@ -56,6 +58,8 @@ export default {
   props: {
     data: { type: Object, required: true },
     title: { type: String, default: "Select a column" },
+    modalTitle: { type: String, default: null },
+    tooltip: { type: String, default: null },
     defaultColumnIndex: { type: String, default: null },
     validColumnsProperties: { type: Object, default: () => ({}) },
     canBeRemoved: { type: Boolean, default: false },
@@ -68,14 +72,9 @@ export default {
   },
   created() {
     // Set the default column index
-    if (this.defaultColumnIndex !== null) {
-      // Check if the default column index is valid
-      if (!this.data.columnExists(this.defaultColumnIndex)) {
-        this.defaultColumnIndex = null;
-      } else {
-        this.selectedColumnIndex = this.defaultColumnIndex;
-      }
-    }
+    // Check if the default column index is valid
+    if (this.defaultColumnIndex !== null && this.data.columnExists(this.defaultColumnIndex))
+      this.selectedColumnIndex = this.defaultColumnIndex;
   },
   mounted() {},
   methods: {
@@ -111,6 +110,7 @@ export default {
       // Check if the selected column still exists
       if (this.selectedColumnIndex !== null && !this.data.columnExists(this.selectedColumnIndex)) {
         this.selectedColumnIndex = null;
+        this.$emit("selected", null);
       }
     },
   },
@@ -121,5 +121,11 @@ export default {
 #ColumnSelectionButton {
   display: flex;
   align-items: center;
+
+  #labelButton {
+    min-width: 30px;
+    margin: 6px; // To match the column height
+    white-space: nowrap;
+  }
 }
 </style>
