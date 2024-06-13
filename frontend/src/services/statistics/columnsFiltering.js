@@ -60,14 +60,14 @@ let getColumnStatus = (column, validColumnsProperties) => {
     );
   }
 
-  // If there are errors, return the first error
-  if (errors.length > 0) {
-    return { status: "invalid", reason: errors.join("\n") };
-  }
-
   // If there are no errors but warnings, return the first warning
   if (warnings.length > 0) {
     return { status: "warning", reason: warnings.join("\n") };
+  }
+
+  // If there are errors, return the first error
+  if (errors.length > 0) {
+    return { status: "invalid", reason: errors.join("\n") };
   }
 
   // If validColumnsProperties is empty, return valid
