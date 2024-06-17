@@ -12,7 +12,6 @@
       <CustomColumnCreator
         :data="data"
         @cancel="customColumnCreation = false"
-        @create="createCustomColumn"
       />
     </modal>
     <!-- saveSelectionWidget -->
@@ -610,16 +609,6 @@ export default {
     },
     customColumn() {
       this.customColumnCreation = true;
-    },
-    createCustomColumn(newCol) {
-      this.customColumnCreation = false;
-      this.data.columns.push(newCol);
-      this.data.nbColumns += 1;
-      this.data.labels.push(newCol.label);
-      this.$store.commit("sendMessage", {
-        title: "success",
-        msg: "Column created successfully",
-      });
     },
     selectionSelectionBtn() {
       this.selectionSelect = true;

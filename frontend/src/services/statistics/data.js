@@ -11,7 +11,13 @@ class Data {
 
     // Register the columns
     data.columns.forEach((column) => {
-      this.addColumn(column.label, column.values, column.category, column.type, column.group);
+      this.addColumn({
+        label: column.label,
+        values: column.values,
+        category: column.category,
+        typeIn: column.type,
+        group: column.group,
+      });
     });
 
     this.resetData();
@@ -54,10 +60,28 @@ class Data {
     return this.columns.find((column) => column.label === label && column.category === category);
   }
 
-  addColumn(label, values, category, typeIn, group, unfoldedLevel = 0) {
+  addColumn({
+    label,
+    values,
+    category,
+    typeIn = null,
+    group = null,
+    unfoldedLevel = 0,
+    parentColumnIndex = null,
+  }) {
     const columnId = services.uuid();
     this.columns.push(
-      new Column(this, columnId, label, values, category, typeIn, group, unfoldedLevel)
+      new Column(
+        this,
+        columnId,
+        label,
+        values,
+        category,
+        typeIn,
+        group,
+        unfoldedLevel,
+        parentColumnIndex
+      )
     );
   }
   removeColumn(columnIndex) {
@@ -124,14 +148,15 @@ class Data {
       return unfoldedColumn.originalValues[originalIndex][valueIndex];
     });
     const new_label = unfoldedColumn.label + " (unfolded)";
-    this.addColumn(
-      new_label,
-      column_values,
-      unfoldedColumn.category,
-      unfoldedColumn.typeText,
-      null,
-      1
-    );
+    this.addColumn({
+      label: new_label,
+      values: column_values,
+      category: unfoldedColumn.category,
+      typeIn: unfoldedColumn.typeText,
+      group: null,
+      unfoldedLevel: 1,
+      parentColumnIndex: unfoldedColumn.index,
+    });
   }
   unfoldHorizontally() {
     // TODO
@@ -139,7 +164,17 @@ class Data {
 }
 
 class Column {
-  constructor(data, index, label, values, category, typeIn, group, unfoldedLevel = 0) {
+  constructor(
+    data,
+    index,
+    label,
+    values,
+    category,
+    typeIn,
+    group,
+    unfoldedLevel = 0,
+    parentColumnIndex = null
+  ) {
     this.data = data;
     this.index = index;
     this.label = label;
@@ -147,6 +182,7 @@ class Column {
     this.category = category;
     this.group = group;
     this.unfoldedLevel = unfoldedLevel;
+    this.parentColumnIndex = parentColumnIndex;
     this.unfolded = false;
 
     // Override the values with a proxy to handle the unfolding

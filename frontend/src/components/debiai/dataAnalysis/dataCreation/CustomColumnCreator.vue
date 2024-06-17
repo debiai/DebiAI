@@ -1,23 +1,5 @@
 <template>
   <div id="virtualColumnCreator">
-    <!-- Col selection Modal -->
-    <modal
-      v-if="selectedColToChange !== null"
-      @close="selectedColToChange = null"
-    >
-      <ColumnSelection
-        title="Select a column"
-        :data="data"
-        :validateRequired="false"
-        :defaultSelected="[
-          selectedColToChange == 0 ? firstColumn : rules[selectedColToChange - 1].colIndex,
-        ]"
-        :validColumnsProperties="validColumnsProperties"
-        v-on:cancel="selectedColToChange = null"
-        v-on:colSelect="selectCol"
-      />
-    </modal>
-
     <!-- Rule selection Modal -->
     <modal
       v-if="ruleSelection"
@@ -82,43 +64,75 @@
             />
           </div>
         </div>
+        <div class="data">
+          <button
+            @click="create"
+            :disabled="!columnOk"
+          >
+            Create the virtual column
+          </button>
+        </div>
       </div>
 
       <!-- Operations list -->
       <div id="colList">
-        <Column
-          :column="data.columns.find((c) => c.index == firstColumn)"
-          v-on:selected="selectedColToChange = 0"
+        <ColumnSelectionButton
+          :data="data"
+          :validColumnsProperties="validColumnsProperties"
+          :defaultColumnIndex="firstColumnIndex"
+          title="Select a column"
+          v-on:selected="selectFirstCol"
         />
 
         <div
           class="rule"
-          v-for="(rule, index) in rules"
-          :key="index"
+          v-for="(rule, ruleNb) in rules"
+          :key="ruleNb"
         >
           <button
             @click="
               ruleSelection = true;
-              ruleSelectionIndex = index;
+              ruleSelectionIndex = ruleNb;
             "
           >
             {{ rule.operator.display }}
           </button>
-          <Column
-            :column="data.columns.find((c) => c.index == rule.colIndex)"
-            v-on:selected="selectedColToChange = index + 1"
+
+          <ColumnSelectionButton
+            :data="data"
+            :validColumnsProperties="validColumnsProperties"
+            :defaultColumnIndex="rule.colIndex"
+            title="Select a column"
+            openOnCreation
+            canBeRemoved
+            v-on:selected="(index) => setColumnForRule(index, ruleNb)"
+            v-on:removed="removeRule(ruleNb)"
           />
         </div>
 
-        <button @click="addRule">Add column</button>
+        <button
+          @click="addRule"
+          v-if="firstColumnIndex !== null"
+        >
+          Add column
+        </button>
       </div>
 
-      <button
-        @click="create"
-        :disabled="!columnOk"
-      >
-        Create column
-      </button>
+      <!-- Display the warning messages -->
+      <transition name="fade">
+        <div
+          v-if="!colNameAvailable"
+          class="warning"
+        >
+          The column name already exists
+        </div>
+        <div
+          v-else-if="!columnOk"
+          class="warning"
+        >
+          The column name must be between 1 and 30 characters
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -128,13 +142,11 @@
 import customColumnCreator from "@/services/statistics/customColumnCreator";
 
 // components
-import ColumnSelection from "../common/ColumnSelection";
-import Column from "../common/Column";
+import ColumnSelectionButton from "../common/ColumnSelectionButton";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
 
   props: {
@@ -144,8 +156,7 @@ export default {
     return {
       colName: "New column",
 
-      firstColumn: 0,
-      selectedColToChange: null,
+      firstColumnIndex: null,
 
       ruleSelection: false,
       ruleSelectionIndex: null,
@@ -169,18 +180,45 @@ export default {
       },
     };
   },
-  created() {},
   methods: {
+    selectFirstCol(colIndex) {
+      this.firstColumnIndex = colIndex;
+    },
+    setColumnForRule(colIndex, ruleNb) {
+      this.rules[ruleNb].colIndex = colIndex;
+    },
+    addRule() {
+      this.rules.push({
+        colIndex: null,
+        operator: this.operators.plus,
+      });
+    },
+    selectRule(operatorName) {
+      this.rules[this.ruleSelectionIndex].operator = this.operators[operatorName];
+      this.ruleSelection = false;
+    },
+    removeRule(ruleNb) {
+      this.rules = this.rules.filter((r, i) => i != ruleNb);
+    },
     create() {
+      // Create the new column
       if (this.columnOk) {
         try {
-          let customColumn = customColumnCreator.customColumnCreation(
+          // Remove all the columns that aren't selected
+          this.rules = this.rules.filter((r) => this.data.columnExists(r.colIndex));
+
+          const customColumn = customColumnCreator.customColumnCreation(
             this.data,
             this.colName,
-            this.firstColumn,
+            this.firstColumnIndex,
             this.rules
           );
-          this.$emit("create", customColumn);
+
+          this.data.addColumn(customColumn);
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Column created successfully",
+          });
         } catch (e) {
           console.error(e);
           this.$store.commit("sendMessage", {
@@ -190,27 +228,10 @@ export default {
         }
       }
     },
-    selectCol(colIndex) {
-      if (this.selectedColToChange == 0) this.firstColumn = colIndex;
-      else this.rules[this.selectedColToChange - 1].colIndex = colIndex;
-
-      this.selectedColToChange = null;
-    },
-    addRule() {
-      this.rules.push({
-        colIndex: 0,
-        operator: this.operators.plus,
-      });
-      this.selectedColToChange = this.rules.length;
-    },
-    selectRule(operatorName) {
-      this.rules[this.ruleSelectionIndex].operator = this.operators[operatorName];
-      this.ruleSelection = false;
-    },
   },
   computed: {
     colNameAvailable() {
-      return this.data.labels.find((l) => l == this.colName) == undefined;
+      return !this.data.columns.some((col) => col.label === this.colName);
     },
     columnOk() {
       return this.colNameAvailable && this.colName.length > 0 && this.colName.length < 30;
@@ -223,7 +244,7 @@ export default {
 #virtualColumnCreator {
   display: flex;
   flex-direction: column;
-  height: 20vh;
+  height: 40vh;
   width: 70vw;
 }
 #content {
@@ -231,19 +252,29 @@ export default {
   flex-direction: column;
 }
 #colList {
-  padding: 10px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-direction: column;
   flex: 1;
 
-  overflow-y: auto;
-
-  border: 1px dotted black;
-  border-radius: 10px;
+  border: 1px solid black;
+  padding: 3px;
+  margin: 3px;
+  background-color: var(--greyLight);
 }
 
 .rule {
   display: flex;
+  align-items: center;
+}
+
+.warning {
+  color: var(--danger);
+  font-weight: bold;
+  border: 1px solid var(--danger);
+  border-radius: 5px;
+  padding: 5px;
+  margin: 5px;
 }
 </style>

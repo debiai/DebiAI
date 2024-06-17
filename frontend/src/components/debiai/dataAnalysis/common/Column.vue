@@ -176,17 +176,21 @@ export default {
     justify-content: center;
     align-items: center;
     border: none;
+
+    /* Colored column */
+    &.color {
+      color: white;
+      background-color: var(--secondary);
+      font-weight: bold;
+      svg {
+        stroke: white;
+      }
+    }
   }
 
-  /* Colored column */
-  .nbOccurrence.color {
-    border: solid 2px var(--secondary);
-    color: white;
-    background-color: var(--secondary);
-    font-weight: bold;
-    svg {
-      stroke: white;
-    }
+  div.nbOccurrence {
+    margin-left: 3px;
+    padding: 2px;
   }
 
   /* Type  */

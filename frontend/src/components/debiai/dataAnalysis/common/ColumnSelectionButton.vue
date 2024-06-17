@@ -4,7 +4,7 @@
     <Column
       v-if="selectedColumnIndex !== null"
       :column="data.columns.find((c) => c.index == selectedColumnIndex)"
-      :colorSelection="true"
+      :colorSelection="colorSelection"
       v-on:selected="columnSelectionModal = true"
     />
 
@@ -63,6 +63,8 @@ export default {
     defaultColumnIndex: { type: String, default: null },
     validColumnsProperties: { type: Object, default: () => ({}) },
     canBeRemoved: { type: Boolean, default: false },
+    colorSelection: { type: Boolean, default: false },
+    openOnCreation: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -75,6 +77,9 @@ export default {
     // Check if the default column index is valid
     if (this.defaultColumnIndex !== null && this.data.columnExists(this.defaultColumnIndex))
       this.selectedColumnIndex = this.defaultColumnIndex;
+
+    // Open the modal on creation
+    if (this.openOnCreation) this.columnSelectionModal = true;
   },
   mounted() {},
   methods: {
