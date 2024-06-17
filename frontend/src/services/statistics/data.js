@@ -224,12 +224,12 @@ class Column {
     this.defineColumnProperties(typeIn);
   }
 
-  min(arr) {
+  calculateMin(arr) {
     let min = Infinity;
     for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
     return min;
   }
-  max(arr) {
+  calculateMax(arr) {
     let max = -Infinity;
     for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
     return max;
@@ -237,7 +237,6 @@ class Column {
 
   defineColumnProperties(typeIn) {
     // Creating the column object
-
     this.uniques = [...new Set(this.originalValues)];
     this.nbOccurrence = this.uniques.length;
 
@@ -305,8 +304,8 @@ class Column {
         },
       });
 
-      this.min = this.min(this.valuesIndexUniques);
-      this.max = this.max(this.valuesIndexUniques);
+      this.min = this.calculateMin(this.valuesIndexUniques);
+      this.max = this.calculateMax(this.valuesIndexUniques);
     } else {
       // Default Type
       this.type = Number;
@@ -314,12 +313,17 @@ class Column {
       this.originalValues = this.originalValues.map((v) => +v);
       this.uniques = this.uniques.map((v) => +v);
       this.nbOccurrence = this.uniques.length;
-      this.min = this.min(this.uniques);
-      this.max = this.max(this.uniques);
+      this.min = this.calculateMin(this.uniques);
+      this.max = this.calculateMax(this.uniques);
       this.average =
         this.originalValues.reduce((a, b) => a + b, 0) / this.originalValues.length || 0;
       if (this.uniques.length < 100) this.uniques.sort((a, b) => a - b);
     }
+  }
+
+  updateValues(newValues) {
+    this.originalValues = newValues;
+    this.defineColumnProperties();
   }
 }
 

@@ -9,7 +9,7 @@
       <!-- Selected samples -->
       <div class="data">
         <span class="name"> Selected samples </span>
-        <span class="value"> {{ selectedData.length }} / {{ data.nbLines }} </span>
+        <span class="value"> {{ data.selectedData.length }} / {{ data.nbLines }} </span>
       </div>
       <div class="data">
         <span class="name"> Tag name </span>
@@ -19,7 +19,11 @@
             v-model="tagName"
             style="flex: 2"
           />
-          <select v-model="tagName">
+          <select
+            v-model="tagName"
+            v-if="taggedColumns.length"
+            title="Complete an existing tag column"
+          >
             <option
               v-for="taggedColName in taggedColumns"
               :key="taggedColName"
@@ -45,7 +49,7 @@
         @click="create"
         :disabled="!tagNameOk || !tagValueOk"
       >
-        Create the tag
+        {{ createdTags.includes(tagName) ? "Update" : "Create" }} the tag
       </button>
       <button
         @click="$emit('cancel')"
@@ -79,51 +83,32 @@ export default {
       let tagValue = parseInt(this.tagValue);
 
       // Check if tag already exist
-      let column = this.data.getColumnByLabel(this.tagName, "tag");
-      let values;
+      const column = this.data.getColumnByLabelAndCategory(this.tagName, "tag");
       if (column) {
-        // Update tag values
-        values = column.values;
+        const values = [...column.values];
         this.data.selectedData.forEach((i) => (values[i] = tagValue));
-        let uniques = [...new Set(values)].sort((a, b) => a - b);
-        column.values = values;
-        column.uniques = uniques;
-        column.nbOccurrence = uniques.length;
-        column.min = Math.min(...uniques);
-        column.max = Math.max(...uniques);
-        column.average = values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0;
+        column.updateValues(values);
+
         this.$store.commit("sendMessage", {
           title: "success",
           msg: "Tag updated successfully",
         });
       } else {
         // Create new tag
-        values = new Array(this.data.nbLines).fill(0);
+        const values = new Array(this.data.nbLines).fill(0);
         this.data.selectedData.forEach((i) => (values[i] = tagValue));
-        let uniques = [...new Set(values)].sort((a, b) => a - b);
-        let nbOccurrence = uniques.length;
-        this.data.columns.push({
+        this.data.addColumn({
           label: this.tagName,
-          index: this.data.nbColumns,
-          type: Number,
-          typeText: "Num",
+          values: values,
           category: "tag",
-          values,
-          uniques,
-          nbOccurrence,
-          min: Math.min(...uniques),
-          max: Math.max(...uniques),
-          average: values.reduce((a, b) => a + b, 0) / this.data.nbLines || 0,
         });
-        this.data.labels.push(this.tagName);
-        this.data.nbColumns += 1;
-        this.tagCreationWidget = false;
+
         this.$store.commit("sendMessage", {
           title: "success",
           msg: "Tag created successfully",
         });
-        this.$emit("cancel");
       }
+      this.$emit("cancel");
     },
   },
   computed: {
