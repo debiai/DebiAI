@@ -131,7 +131,7 @@
             <td class="colName">
               {{ colVal.colValue }}
               <!-- Repartition -->
-              <div class="repartion">
+              <div>
                 <span>
                   {{ colVal.repartition }}
                 </span>

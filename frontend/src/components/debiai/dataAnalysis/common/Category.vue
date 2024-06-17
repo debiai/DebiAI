@@ -21,58 +21,66 @@
     </div>
     <!-- Column list -->
     <div class="content">
+      <!-- Column groups -->
       <div
         class="group"
         v-for="(cols, group) in groupedColumns"
         :key="group"
       >
-        <!-- Grouped columns -->
-        <div
-          v-if="group"
-          class="group-title"
-        >
-          <Collapsible style="margin: 3px; width: 300px">
-            <template v-slot:header>
-              <h4>
-                {{ group }}
-                <!-- Nb selected columns in group: -->
-                <NbItem
-                  v-if="multipleSelection && cols.length > 1"
-                  :nbSelected="getNbSelectedColumns(cols)"
-                  :nbTotal="cols.length"
-                />
-              </h4>
-            </template>
-            <template v-slot:body>
-              <div class="columns">
-                <Column
-                  v-for="col in cols"
-                  :key="col.label"
-                  :column="col"
-                  :selected="selectedColumns.includes(col.index)"
-                  :colorSelection="colorSelection"
-                  :validColumnsProperties="validColumnsProperties"
-                  v-on:selected="columnSelect"
-                />
-              </div>
-            </template>
-          </Collapsible>
-        </div>
-        <!-- Ungrouped columns -->
-        <div
+        <Collapsible style="margin: 3px; width: 300px">
+          <template v-slot:header>
+            <h4>
+              {{ group }}
+              <!-- Nb selected columns in group: -->
+              <NbItem
+                v-if="multipleSelection && cols.length > 1"
+                :nbSelected="getNbSelectedColumns(cols)"
+                :nbTotal="cols.length"
+              />
+            </h4>
+          </template>
+          <template v-slot:body>
+            <div class="columns">
+              <Column
+                v-for="col in cols"
+                :key="col.label"
+                :column="col"
+                :selected="selectedColumns.includes(col.index)"
+                :colorSelection="colorSelection"
+                :validColumnsProperties="validColumnsProperties"
+                v-on:selected="columnSelect"
+              />
+            </div>
+          </template>
+        </Collapsible>
+      </div>
+
+      <!-- Ungrouped columns  -->
+      <div
+        id="ungrouped"
+        v-for="col in ungroupedColumns"
+        :key="col.index"
+      >
+        <!-- Without child -->
+        <Column
+          v-if="!col.hasChildren()"
+          :column="col"
+          :selected="selectedColumns.includes(col.index)"
+          :colorSelection="colorSelection"
+          :validColumnsProperties="validColumnsProperties"
+          v-on:selected="columnSelect"
+        />
+
+        <!-- With child -->
+        <ColumnParent
           v-else
-          class="group-title"
-        >
-          <Column
-            v-for="col in cols"
-            :key="col.label"
-            :column="col"
-            :selected="selectedColumns.includes(col.index)"
-            :colorSelection="colorSelection"
-            :validColumnsProperties="validColumnsProperties"
-            v-on:selected="columnSelect"
-          />
-        </div>
+          :data="data"
+          :column="col"
+          :selectedColumns="selectedColumns"
+          :colorSelection="colorSelection"
+          :validColumnsProperties="validColumnsProperties"
+          v-on:selected="columnSelect"
+        />
       </div>
     </div>
   </div>
@@ -80,11 +88,14 @@
 
 <script>
 import Column from "./Column";
+import ColumnParent from "./ColumnParent";
 export default {
   components: {
     Column,
+    ColumnParent,
   },
   props: {
+    data: { type: Object, required: true },
     name: { type: String, required: true },
     columns: { type: Array, required: true },
     selectedColumns: { type: Array },
@@ -108,23 +119,35 @@ export default {
   },
   computed: {
     groupedColumns() {
-      const groups = { "": [] };
+      // Group columns by group
+      const groups = {
+        // "Group name": [column, column, ...],
+      };
 
       this.columns.forEach((col) => {
+        // Ignore columns that have a parentColumnIndex
+        if (col.parentColumnIndex) return;
+
         if (col.group) {
           if (!groups[col.group]) {
             groups[col.group] = [];
           }
           groups[col.group].push(col);
-        } else {
-          groups[""].push(col);
         }
       });
 
       return groups;
     },
+
+    ungroupedColumns() {
+      return this.columns.filter((col) => !col.group & !col.parentColumnIndex);
+    },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+#category {
+  min-width: 250px;
+}
+</style>

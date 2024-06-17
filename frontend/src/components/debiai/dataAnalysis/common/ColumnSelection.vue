@@ -62,6 +62,7 @@
       <Category
         v-for="(columns, i) in categories"
         :key="i"
+        :data="data"
         :columns="columns"
         :selectedColumns="selectedColumns"
         :name="i"

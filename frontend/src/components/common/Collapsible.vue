@@ -53,6 +53,11 @@ export default {
       type: String,
       default: "",
     },
+    simple: {
+      // Made to place a column in the header
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => {
     return {
@@ -68,6 +73,7 @@ export default {
       return {
         collapsible: true,
         open: this.isOpen,
+        simple: this.simple,
       };
     },
     headerClass() {
@@ -116,7 +122,6 @@ export default {
       display: flex;
       align-items: center;
       margin: 0;
-      gap: 10px;
     }
 
     #arrow {
@@ -151,6 +156,20 @@ export default {
       &.red {
         background-color: var(--danger);
       }
+    }
+  }
+
+  &.simple {
+    border: none;
+
+    .header {
+      padding: 0 0 0 10px;
+      background-color: white;
+      border: none;
+    }
+    .body {
+      padding-left: 30px;
+      border: none;
     }
   }
 }
