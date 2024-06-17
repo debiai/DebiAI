@@ -372,6 +372,7 @@ button + button {
   padding: 2px 4px;
   font-size: 0.9em;
   color: var(--fontColorLight);
+  white-space: nowrap;
 
   svg {
     fill: var(--fontColorLight);
