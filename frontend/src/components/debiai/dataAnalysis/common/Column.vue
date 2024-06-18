@@ -98,13 +98,16 @@ export default {
       else if (this.selected) return "Unselect " + this.column.label;
       else return "Select " + this.column.label;
     },
-    select() {
+    select(event) {
+      event.stopPropagation();
       if (this.columnValidStatus["status"] !== "invalid") this.$emit("selected", this.column.index);
     },
-    selectAsColor() {
+    selectAsColor(event) {
+      event.stopPropagation();
       this.$store.commit("setColoredColumnIndex", this.column.index);
     },
-    unfoldColumn() {
+    unfoldColumn(event) {
+      event.stopPropagation();
       this.$store.commit("unfoldColumn", this.column.index);
     },
   },

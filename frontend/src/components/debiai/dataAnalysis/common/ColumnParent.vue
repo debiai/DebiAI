@@ -16,15 +16,31 @@
       </template>
       <!-- Display the child columns in the collapsible body -->
       <template v-slot:body>
-        <Column
+        <div
           v-for="col in childColumns"
           :key="col.index"
-          :column="col"
-          :selected="selectedColumns.includes(col.index)"
-          :colorSelection="colorSelection"
-          :validColumnsProperties="validColumnsProperties"
-          v-on:selected="columnSelect(col.index)"
-        />
+        >
+          <!-- Without child -->
+          <Column
+            v-if="!col.hasChildren()"
+            :column="col"
+            :selected="selectedColumns.includes(col.index)"
+            :colorSelection="colorSelection"
+            :validColumnsProperties="validColumnsProperties"
+            v-on:selected="columnSelect(col.index)"
+          />
+
+          <!-- With child -->
+          <ColumnParent
+            v-else
+            :data="data"
+            :column="col"
+            :selectedColumns="selectedColumns"
+            :colorSelection="colorSelection"
+            :validColumnsProperties="validColumnsProperties"
+            v-on:selected="columnSelect"
+          />
+        </div>
       </template>
     </Collapsible>
   </div>
