@@ -4,17 +4,16 @@
 var customColumnCreation = function (data, colName, firstColumnIndex, rules) {
   // creating the values from the rules with the eval function
 
-  let firstColumnValues = data.getColumn(firstColumnIndex).values;
-  let values = [];
+  const firstColumnValues = data.getColumn(firstColumnIndex).values;
+  const values = [];
 
   for (const rule of rules) {
-    let valuesToMerge = data.getColumn(rule.colIndex).values;
-    values.push(valuesToMerge);
+    values.push(data.getColumn(rule.colIndex).values);
   }
 
-  let newColValues = firstColumnValues.map((v, i) => {
+  const newColValues = firstColumnValues.map((v, i) => {
     let operation;
-    if (data.getColumn(firstColumnIndex).type == Number) operation = "" + firstColumnValues[i];
+    if (data.getColumn(firstColumnIndex).type == Number) operation = "" + v;
     else operation = "'" + firstColumnValues[i] + "'";
 
     rules.forEach((rule, ruleNb) => {

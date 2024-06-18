@@ -57,9 +57,8 @@ class Data {
     return this.columns.find((column) => column.label === label && column.category === category);
   }
 
-  addColumn({ label, values, category, typeIn = null, group = null }) {
+  addColumn({ label, values, category, typeIn = null, group = null, parentColumnIndex = null }) {
     const unfoldedLevel = this.verticallyUnfoldedColumnsIndexes.length;
-    const parentColumnIndex = this.verticallyUnfoldedColumnsIndexes.slice(-1)[0] || null;
     const columnId = services.uuid();
     this.columns.push(
       new Column(
@@ -143,6 +142,7 @@ class Data {
       category: unfoldedColumn.category,
       typeIn: unfoldedColumn.typeText,
       group: null,
+      parentColumnIndex: columnIndex,
     });
   }
   unfoldHorizontally() {
@@ -159,6 +159,11 @@ class Data {
           this.removeColumn(column.index);
           return;
         }
+      }
+      // We remove columns that have an unfolded level superior to the selected column
+      else if (column.unfoldedLevel > this.verticallyUnfoldedColumnsIndexes.length) {
+        this.removeColumn(column.index);
+        return;
       }
 
       // Set the unfolded property
@@ -234,8 +239,8 @@ class Column {
         if (prop === "length") return this.data.nbLines;
         else if (prop === "map")
           return (callback) => {
-            return this.data.selectedData.map((virtualIndex) => {
-              return callback(target[this.data.virtualIndexMapping[virtualIndex]].originalIndex);
+            return this.data.selectedData.map((virtualIndex, i) => {
+              return callback(target[this.data.virtualIndexMapping[virtualIndex].originalIndex], i);
             });
           };
         else if (prop === "reduce")
@@ -243,7 +248,7 @@ class Column {
             return this.data.selectedData.reduce((acc, virtualIndex) => {
               return callback(
                 acc,
-                target[this.data.virtualIndexMapping[virtualIndex]].originalIndex
+                target[this.data.virtualIndexMapping[virtualIndex].originalIndex]
               );
             }, initialValue);
           };
@@ -320,7 +325,7 @@ class Column {
           else if (prop === "map")
             return (callback) => {
               return this.data.selectedData.map((virtualIndex) => {
-                return callback(target[this.data.virtualIndexMapping[virtualIndex]].originalIndex);
+                return callback(target[this.data.virtualIndexMapping[virtualIndex].originalIndex]);
               });
             };
           else if (prop === "reduce")
@@ -328,7 +333,7 @@ class Column {
               return this.data.selectedData.reduce((acc, virtualIndex) => {
                 return callback(
                   acc,
-                  target[this.data.virtualIndexMapping[virtualIndex]].originalIndex
+                  target[this.data.virtualIndexMapping[virtualIndex].originalIndex]
                 );
               }, initialValue);
             };

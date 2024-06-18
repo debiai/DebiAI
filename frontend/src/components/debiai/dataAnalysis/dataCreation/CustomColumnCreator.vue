@@ -45,7 +45,7 @@
           @click="$emit('cancel')"
           class="red"
         >
-          Cancel
+          Close
         </button>
       </div>
     </h2>
@@ -55,7 +55,7 @@
       <!-- new column name input -->
       <div class="dataGroup">
         <div class="data">
-          <div class="name">Virtual column name</div>
+          <div class="name">New column name</div>
           <div class="value">
             <input
               type="text"
@@ -64,18 +64,40 @@
             />
           </div>
         </div>
+        <!-- Display the warning messages -->
+        <transition name="fade">
+          <div
+            v-if="!colNameAvailable"
+            class="warning"
+          >
+            The column name already exists
+          </div>
+          <div
+            v-else-if="!columnOk"
+            class="warning"
+          >
+            The column name must be between 1 and 30 characters
+          </div>
+        </transition>
         <div class="data">
           <button
             @click="create"
             :disabled="!columnOk"
           >
-            Create the virtual column
+            Create the column
           </button>
         </div>
       </div>
 
       <!-- Operations list -->
       <div id="colList">
+        <span
+          class="padded"
+          v-if="firstColumnIndex === null"
+        >
+          Select a column to start creating the new column
+        </span>
+
         <ColumnSelectionButton
           :data="data"
           :validColumnsProperties="validColumnsProperties"
@@ -83,6 +105,13 @@
           title="Select a column"
           v-on:selected="selectFirstCol"
         />
+
+        <span
+          class="padded"
+          v-if="!rules.length && firstColumnIndex !== null"
+        >
+          Select more columns and define the operations to create the new column
+        </span>
 
         <div
           class="rule"
@@ -117,22 +146,6 @@
           Add column
         </button>
       </div>
-
-      <!-- Display the warning messages -->
-      <transition name="fade">
-        <div
-          v-if="!colNameAvailable"
-          class="warning"
-        >
-          The column name already exists
-        </div>
-        <div
-          v-else-if="!columnOk"
-          class="warning"
-        >
-          The column name must be between 1 and 30 characters
-        </div>
-      </transition>
     </div>
   </div>
 </template>
@@ -272,8 +285,6 @@ export default {
 .warning {
   color: var(--danger);
   font-weight: bold;
-  border: 1px solid var(--danger);
-  border-radius: 5px;
   padding: 5px;
   margin: 5px;
 }
