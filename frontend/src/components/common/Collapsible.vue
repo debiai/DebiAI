@@ -166,9 +166,10 @@ export default {
       padding: 0 0 0 10px;
       background-color: white;
       border: none;
+      gap: 0;
     }
     .body {
-      padding-left: 30px;
+      padding-left: 20px;
       border: none;
     }
   }

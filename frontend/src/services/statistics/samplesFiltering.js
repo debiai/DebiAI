@@ -1,12 +1,12 @@
 // This service is used by the Filters component to
 // get selected data samples ids from a filter list
 
-let getSelected = (filters, data) => {
+const getSelected = (filters, data) => {
   let selectedSampleIds = [...Array(data.nbLines).keys()]; // Stars with 100%
-  let filtersEffects = {}; // number of samples left for each filters
+  const filtersEffects = {}; // number of samples left for each filters
 
   filters.forEach((filter) => {
-    let column = data.columns.find((c) => c.index == filter.columnIndex);
+    const column = data.getColumn(filter.columnIndex);
 
     if (!column) {
       console.error("Column index not found: " + filter.columnIndex);
@@ -34,7 +34,7 @@ let getSelected = (filters, data) => {
   return { selectedSampleIds, filtersEffects };
 };
 
-let getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) => {
+const getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) => {
   // Filter the selected samples ids
   // If one of the column value is in the filter values, the sample is selected
   if (filter.values.length > 0) {
@@ -50,7 +50,7 @@ let getSelectedSamplesIdsFromValuesFilter = (filter, selectedSampleIds, column) 
   return selectedSampleIds;
 };
 
-let getSelectedSamplesIdsFromIntervalsFilter = (filter, selectedSampleIds, col) => {
+const getSelectedSamplesIdsFromIntervalsFilter = (filter, selectedSampleIds, col) => {
   if (filter.intervals.length == 0) return selectedSampleIds;
 
   if (filter.intervals.length == 1)
@@ -68,6 +68,10 @@ let getSelectedSamplesIdsFromIntervalsFilter = (filter, selectedSampleIds, col) 
     )
   );
 
+  // Remove duplicates
+  const selectedSampleIdsFromIntervalsSet = new Set(selectedSampleIdsFromIntervals);
+  selectedSampleIdsFromIntervals = [...selectedSampleIdsFromIntervalsSet];
+
   if (filter.inverted)
     return selectedSampleIds.filter(
       (sampleId) => !selectedSampleIdsFromIntervals.includes(sampleId)
@@ -75,7 +79,7 @@ let getSelectedSamplesIdsFromIntervalsFilter = (filter, selectedSampleIds, col) 
   return selectedSampleIdsFromIntervals;
 };
 
-let getSelectedSamplesIdsFromIntervalFilter = (interval, selectedSampleIds, col, inverted) => {
+const getSelectedSamplesIdsFromIntervalFilter = (interval, selectedSampleIds, col, inverted) => {
   if (inverted) {
     if (interval.max !== null && interval.min !== null)
       return selectedSampleIds.filter(
