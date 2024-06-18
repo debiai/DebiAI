@@ -175,22 +175,30 @@ class Data {
       this.virtualIndexMapping = {};
       this.nbLines = this.nbLinesOriginal;
       this.selectedData = [...Array(this.nbLines).keys()];
+      // TODO : Reapply filter
       return;
     }
 
     // Compute the new number of lines and link the virtual index to the original index
     const lastUnfoldedColumn = this.getColumn(this.verticallyUnfoldedColumnsIndexes.slice(-1)[0]);
-    const virtualIndexMapping = {};
+    const newVirtualIndexMapping = {};
     let nbLines = 0;
     lastUnfoldedColumn.originalValues.forEach((value, i) => {
       // Check if the value is an array
       if (Array.isArray(value)) {
         // Register the virtual index mapping
         for (let j = 0; j < value.length; j++) {
-          virtualIndexMapping[nbLines + j] = {
-            originalIndex: i,
-            valueIndex: j,
+          const newMapping = {
+            originalIndex: i, // Point to the original index
+            valueIndex: j, // The index of the value in the array
+            depth: lastUnfoldedColumn.unfoldedLevel, // The depth of the unfolding
           };
+
+          // Add the parent mapping if we are increasing the depth
+          if (lastUnfoldedColumn.unfoldedLevel > this.virtualIndexMapping[i]?.depth)
+            newMapping.parentMapping = this.virtualIndexMapping[i]; // The parent mapping
+
+          newVirtualIndexMapping[nbLines + j] = newMapping;
         }
         nbLines += value.length;
       }
@@ -198,7 +206,7 @@ class Data {
 
     this.nbLines = nbLines;
     this.selectedData = [...Array(nbLines).keys()];
-    this.virtualIndexMapping = virtualIndexMapping;
+    this.virtualIndexMapping = newVirtualIndexMapping;
   }
 }
 
@@ -255,8 +263,22 @@ class Column {
         else if (prop === "_isVue") return true;
         else if (prop === "__ob__") return { dep: { id: 0 } };
 
-        if (this.unfoldedLevel > 0) return target[prop];
-        return target[this.data.virtualIndexMapping[prop].originalIndex];
+        // If the data current unfolded level is the same as the column unfolded level
+        // We can directly return the value
+        if (this.unfoldedLevel === this.data.verticallyUnfoldedColumnsIndexes.length) {
+          return target[prop];
+        }
+
+        // Else we need to return the value based on the virtual index
+        // Find the good mapping
+        let goodMapping = this.data.virtualIndexMapping[prop];
+
+        while (goodMapping.depth > this.unfoldedLevel) {
+          goodMapping = goodMapping.parentMapping;
+          if (!goodMapping) return undefined;
+        }
+
+        return target[goodMapping.originalIndex];
       },
     });
 
@@ -339,7 +361,23 @@ class Column {
             };
           else if (prop === "_isVue") return true;
           else if (prop === "__ob__") return { dep: { id: 0 } };
-          return target[this.data.virtualIndexMapping[prop].originalIndex];
+
+          // If the data current unfolded level is the same as the column unfolded level
+          // We can directly return the value
+          if (this.unfoldedLevel === this.data.verticallyUnfoldedColumnsIndexes.length) {
+            return target[prop];
+          }
+
+          // Else we need to return the value based on the virtual index
+          // Find the good mapping
+          let goodMapping = this.data.virtualIndexMapping[prop];
+
+          while (goodMapping.depth > this.unfoldedLevel) {
+            goodMapping = goodMapping.parentMapping;
+            if (!goodMapping) return undefined;
+          }
+
+          return target[goodMapping.originalIndex];
         },
       });
 

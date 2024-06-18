@@ -7,11 +7,7 @@ const getSelected = (filters, data) => {
 
   filters.forEach((filter) => {
     const column = data.getColumn(filter.columnIndex);
-
-    if (!column) {
-      console.error("Column index not found: " + filter.columnIndex);
-      return;
-    }
+    if (!column) return;
 
     if (filter.type == "values")
       selectedSampleIds = getSelectedSamplesIdsFromValuesFilter(filter, selectedSampleIds, column);
