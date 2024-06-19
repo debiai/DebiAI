@@ -29,11 +29,11 @@ class Data {
       });
     });
 
-    samplesFiltering.clearCache()
+    samplesFiltering.clearCache();
   }
 
   // Filters
-  updateFilters() {
+  updateFilters(ignoreCache = false) {
     // Update the selected samples from the stored filters
     const filters = store.state.StatisticalAnalysis.filters;
 
@@ -43,7 +43,11 @@ class Data {
     });
 
     try {
-      let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(filters, this);
+      let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
+        filters,
+        this,
+        ignoreCache
+      );
       store.commit("setFiltersEffects", filtersEffects);
       this.selectedData = selectedSampleIds;
     } catch (error) {
@@ -55,6 +59,15 @@ class Data {
     }
   }
 
+  getOriginalFilteredData() {
+    // Unfolding the data can change the number of lines
+    // This function returns the original selected data
+
+    if (!this.currentlyUnfoldedVertically()) return this.selectedData;
+    return this.selectedData.map((virtualIndex) => this.sampleIdList[virtualIndex]);
+  }
+
+  // column utils
   get nbColumns() {
     return this.columns.length;
   }
@@ -199,7 +212,7 @@ class Data {
       this.virtualIndexMapping = {};
       this.nbLines = this.nbLinesOriginal;
       // Reapply filter
-      this.updateFilters();
+      this.updateFilters(true);
       return;
     }
 
@@ -230,7 +243,7 @@ class Data {
 
     this.nbLines = nbLines;
     this.virtualIndexMapping = newVirtualIndexMapping;
-    this.updateFilters();
+    this.updateFilters(true);
   }
 }
 

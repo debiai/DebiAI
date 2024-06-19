@@ -5,6 +5,7 @@ let previouslyAppliedFilters = null;
 let previousSelectedSampleIds = null;
 let previousFiltersEffects = null;
 
+// Cache
 function deepEqual(obj1, obj2) {
   if (obj1 === obj2) return true;
 
@@ -24,7 +25,6 @@ function deepEqual(obj1, obj2) {
 
   return false;
 }
-
 const extractRelevantParts = (filters) => {
   // Sort
   return filters.map((filter) => {
@@ -36,11 +36,9 @@ const extractRelevantParts = (filters) => {
     return f;
   });
 };
-
 const sortFiltersByColumnIndex = (filters) => {
   return filters.slice().sort((a, b) => (a.columnIndex > b.columnIndex ? 1 : -1));
 };
-
 const shouldFilter = (newFilters) => {
   const newRelevantFilters = extractRelevantParts(newFilters);
   const sortedNewRelevantFilters = sortFiltersByColumnIndex(newRelevantFilters);
@@ -52,15 +50,15 @@ const shouldFilter = (newFilters) => {
     return true;
   }
 };
-
 const clearCache = () => {
   previouslyAppliedFilters = null;
   previousSelectedSampleIds = null;
   previousFiltersEffects = null;
 };
 
-const getSelected = (filters, data) => {
-  if (!shouldFilter(filters))
+// Get the selected samples ids from the filters
+const getSelected = (filters, data, ignoreCache = false) => {
+  if (!ignoreCache && !shouldFilter(filters))
     return { selectedSampleIds: previousSelectedSampleIds, filtersEffects: previousFiltersEffects };
 
   let selectedSampleIds = [...Array(data.nbLines).keys()]; // Stars with 100%
