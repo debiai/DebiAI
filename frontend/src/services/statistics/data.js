@@ -32,7 +32,6 @@ class Data {
 
   // Filters
   updateFilters() {
-    console.log("updateFilters");
     // Update the selected samples from the stored filters
     const filters = store.state.StatisticalAnalysis.filters;
 
@@ -198,7 +197,6 @@ class Data {
     if (this.verticallyUnfoldedColumnsIndexes.length === 0) {
       this.virtualIndexMapping = {};
       this.nbLines = this.nbLinesOriginal;
-      this.selectedData = [...Array(this.nbLines).keys()];
       // Reapply filter
       this.updateFilters();
       return;

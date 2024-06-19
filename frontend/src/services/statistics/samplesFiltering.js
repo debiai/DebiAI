@@ -1,7 +1,62 @@
 // This service is used by the Filters component to
 // get selected data samples ids from a filter list
 
+let previouslyAppliedFilters = null;
+let previousSelectedSampleIds = null;
+let previousFiltersEffects = null;
+
+function deepEqual(obj1, obj2) {
+  if (obj1 === obj2) return true;
+
+  if (obj1 && obj2 && typeof obj1 === "object" && typeof obj2 === "object") {
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+      return false;
+    }
+
+    for (let key in obj1) {
+      if (Object.prototype.hasOwnProperty.call(obj1, key) && !deepEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+const extractRelevantParts = (filters) => {
+  // Sort
+  return filters.map((filter) => {
+    const f = {
+      columnIndex: filter.columnIndex,
+    };
+    if (filter.values) f.values = filter.values;
+    if (filter.intervals) f.intervals = filter.intervals;
+    return f;
+  });
+};
+
+const sortFiltersByColumnIndex = (filters) => {
+  return filters.slice().sort((a, b) => (a.columnIndex > b.columnIndex ? 1 : -1));
+};
+
+const shouldFilter = (newFilters) => {
+  const newRelevantFilters = extractRelevantParts(newFilters);
+  const sortedNewRelevantFilters = sortFiltersByColumnIndex(newRelevantFilters);
+
+  if (deepEqual(previouslyAppliedFilters, sortedNewRelevantFilters)) {
+    return false;
+  } else {
+    previouslyAppliedFilters = JSON.parse(JSON.stringify(newRelevantFilters)); // Deep copy the relevant parts of the new filters
+    return true;
+  }
+};
+
 const getSelected = (filters, data) => {
+  if (!shouldFilter(filters))
+    return { selectedSampleIds: previousSelectedSampleIds, filtersEffects: previousFiltersEffects };
+
   let selectedSampleIds = [...Array(data.nbLines).keys()]; // Stars with 100%
   const filtersEffects = {}; // number of samples left for each filters
 
@@ -26,6 +81,10 @@ const getSelected = (filters, data) => {
 
     filtersEffects[filter.id] = selectedSampleIds.length;
   });
+
+  // Save the selected samples ids and the filters effects for caching
+  previousSelectedSampleIds = selectedSampleIds;
+  previousFiltersEffects = filtersEffects;
 
   return { selectedSampleIds, filtersEffects };
 };
