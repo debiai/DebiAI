@@ -28,6 +28,8 @@ class Data {
         group: column.group,
       });
     });
+
+    samplesFiltering.clearCache()
   }
 
   // Filters
@@ -53,7 +55,6 @@ class Data {
     }
   }
 
-  // column utils
   get nbColumns() {
     return this.columns.length;
   }

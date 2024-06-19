@@ -53,6 +53,12 @@ const shouldFilter = (newFilters) => {
   }
 };
 
+const clearCache = () => {
+  previouslyAppliedFilters = null;
+  previousSelectedSampleIds = null;
+  previousFiltersEffects = null;
+};
+
 const getSelected = (filters, data) => {
   if (!shouldFilter(filters))
     return { selectedSampleIds: previousSelectedSampleIds, filtersEffects: previousFiltersEffects };
@@ -160,4 +166,5 @@ const getSelectedSamplesIdsFromIntervalFilter = (interval, selectedSampleIds, co
 
 export default {
   getSelected,
+  clearCache,
 };
