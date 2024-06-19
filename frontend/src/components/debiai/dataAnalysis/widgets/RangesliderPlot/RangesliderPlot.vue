@@ -61,7 +61,7 @@
             <!-- Display the selected column -->
             <Column
               v-if="selectedY1ColumnsIds.length == 1"
-              :column="data.columns.find((c) => c.index == selectedY1ColumnsIds[0])"
+              :column="data.getColumn(selectedY1ColumnsIds[0])"
               :colorSelection="true"
               v-on:selected="y1AxisSelection = true"
             />
@@ -108,7 +108,7 @@
             <!-- Display the selected column -->
             <Column
               v-if="selectedY2ColumnsIds.length == 1"
-              :column="data.columns.find((c) => c.index == selectedY2ColumnsIds[0])"
+              :column="data.getColumn(selectedY2ColumnsIds[0])"
               :colorSelection="true"
               v-on:selected="y2AxisSelection = true"
             />

@@ -47,32 +47,6 @@
             <div class="name">Selected samples</div>
             <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
           </div>
-          <!-- saveRequestAsWell -->
-          <!-- TODO : Revert for the requests update -->
-          <!-- <div class="data">
-          <div class="name">Save the request as well</div>
-          <div class="value">
-            No
-            <input
-              type="checkbox"
-              id="selectionSaveRequest"
-              class="customCbx"
-              style="display: none"
-              v-model="saveRequestAsWell"
-            />
-            <label for="selectionSaveRequest" class="toggle">
-              <span></span>
-            </label>
-            Yes
-          </div>
-        </div> -->
-          <!-- nb filters:  -->
-          <!-- <div :class="saveRequestAsWell ? 'data ' : 'data date'">
-          <div class="name">Number of filters</div>
-          <div class="value">
-            {{ filters.length }}
-          </div>
-        </div> -->
         </div>
         <div style="display: flex; justify-content: flex-end">
           <button

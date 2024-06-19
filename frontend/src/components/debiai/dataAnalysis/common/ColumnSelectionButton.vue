@@ -3,7 +3,7 @@
     <!-- Column selected -->
     <Column
       v-if="selectedColumnIndex !== null"
-      :column="data.columns.find((c) => c.index == selectedColumnIndex)"
+      :column="data.getColumn(selectedColumnIndex)"
       :colorSelection="colorSelection"
       v-on:selected="columnSelectionModal = true"
     />

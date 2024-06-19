@@ -1012,7 +1012,7 @@ export default {
       });
 
       // Exporting the boundaries of the selections with the export feature
-      // Exporting only the first selection TODO : add all the selections
+      // Exporting only the first selection
       // Goal format :
       // {
       //   type: "2Drange",

@@ -1,7 +1,6 @@
 <template>
   <div id="column">
     <!-- Label button -->
-    <!-- TODO: have a 'select column' if index is null -->
     <button
       id="labelButton"
       :class="getColumnClass()"
