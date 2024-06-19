@@ -1,4 +1,6 @@
 import services from "../services";
+import store from "../../store";
+import samplesFiltering from "./samplesFiltering";
 
 class Data {
   constructor(data) {
@@ -28,19 +30,37 @@ class Data {
     });
   }
 
-  get nbColumns() {
-    return this.columns.length;
-  }
+  // Filters
+  updateFilters() {
+    console.log("updateFilters");
+    // Update the selected samples from the stored filters
+    const filters = store.state.StatisticalAnalysis.filters;
 
-  columnExists(columnIndex) {
-    return this.getColumn(columnIndex) !== undefined;
-  }
-  currentlyUnfoldedVertically() {
-    // Return true if at least one column is unfolded
-    return this.verticallyUnfoldedColumnsIndexes?.length > 0;
+    // Remove the filters that are on columns that don't exist anymore
+    filters.forEach((filter) => {
+      if (!this.columnExists(filter.columnIndex)) store.commit("removeFilter", filter.id);
+    });
+
+    try {
+      let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(filters, this);
+      store.commit("setFiltersEffects", filtersEffects);
+      this.selectedData = selectedSampleIds;
+    } catch (error) {
+      console.error(error);
+      store.commit("sendMessage", {
+        title: "error",
+        msg: "Error while filtering the samples",
+      });
+    }
   }
 
   // column utils
+  get nbColumns() {
+    return this.columns.length;
+  }
+  columnExists(columnIndex) {
+    return this.getColumn(columnIndex) !== undefined;
+  }
   getColumn(columnIndex) {
     return this.columns.find((column) => column.index === columnIndex);
   }
@@ -79,6 +99,10 @@ class Data {
   }
 
   // Column unfold
+  currentlyUnfoldedVertically() {
+    // Return true if at least one column is unfolded
+    return this.verticallyUnfoldedColumnsIndexes?.length > 0;
+  }
   unfoldColumn(columnIndex) {
     if (!this.columnExists(columnIndex)) return;
     if (this.getColumn(columnIndex).typeText === "Dict") this.unfoldHorizontally(columnIndex);
@@ -175,7 +199,8 @@ class Data {
       this.virtualIndexMapping = {};
       this.nbLines = this.nbLinesOriginal;
       this.selectedData = [...Array(this.nbLines).keys()];
-      // TODO : Reapply filter
+      // Reapply filter
+      this.updateFilters();
       return;
     }
 
@@ -205,8 +230,8 @@ class Data {
     });
 
     this.nbLines = nbLines;
-    this.selectedData = [...Array(nbLines).keys()];
     this.virtualIndexMapping = newVirtualIndexMapping;
+    this.updateFilters();
   }
 }
 
@@ -272,6 +297,7 @@ class Column {
         // Else we need to return the value based on the virtual index
         // Find the good mapping
         let goodMapping = this.data.virtualIndexMapping[prop];
+        // if (!goodMapping) return undefined;
 
         while (goodMapping.depth > this.unfoldedLevel) {
           goodMapping = goodMapping.parentMapping;
@@ -371,6 +397,7 @@ class Column {
           // Else we need to return the value based on the virtual index
           // Find the good mapping
           let goodMapping = this.data.virtualIndexMapping[prop];
+          if (!goodMapping) return undefined;
 
           while (goodMapping.depth > this.unfoldedLevel) {
             goodMapping = goodMapping.parentMapping;

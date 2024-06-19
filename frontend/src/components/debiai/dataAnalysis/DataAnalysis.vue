@@ -167,7 +167,6 @@ import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 // Services
 import Data from "@/services/statistics/data";
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
-import samplesFiltering from "@/services/statistics/samplesFiltering";
 import { getAnalysisExport } from "@/services/statistics/analysisExport";
 
 export default {
@@ -716,20 +715,7 @@ export default {
   watch: {
     filters() {
       // Update the selected samples from the filters
-      try {
-        let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
-          this.filters,
-          this.data
-        );
-        this.$store.commit("setFiltersEffects", filtersEffects);
-        this.data.selectedData = selectedSampleIds;
-      } catch (error) {
-        console.error(error);
-        this.$store.commit("sendMessage", {
-          title: "error",
-          msg: "Error while filtering the samples",
-        });
-      }
+      this.data.updateFilters();
     },
     unfoldCounter() {
       // Update the unfolded column
