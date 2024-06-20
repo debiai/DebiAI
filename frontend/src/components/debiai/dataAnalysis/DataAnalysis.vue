@@ -747,6 +747,11 @@ export default {
 
     // Remove the grid
     if (this.grid) this.grid.destroy();
+
+    // Free the data
+    this.data.clean();
+    this.data = null;
+    this.components = [];
   },
 };
 </script>

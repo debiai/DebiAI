@@ -250,6 +250,34 @@ class Data {
     this.virtualIndexMapping = newVirtualIndexMapping;
     this.updateFilters(true);
   }
+
+  // Other
+  clean() {
+    // Nullify references to arrays and objects to help garbage collection
+    this.categories = null;
+    this.labels = null;
+    this.nbLinesOriginal = null;
+    this.sampleIdList = null;
+
+    // Clear and nullify selected data variables
+    this.nbLines = null;
+    this.selectedData.length = 0;
+    this.selectedData = null;
+    this.nbOriginalSelectedData = null;
+
+    // Clear and nullify unfold variables
+    this.verticallyUnfoldedColumnsIndexes.length = 0;
+    this.verticallyUnfoldedColumnsIndexes = null;
+    this.virtualIndexMapping = {};
+
+    // Clear and nullify columns
+    this.columns.forEach((column) => column.clean());
+    this.columns.length = 0;
+    this.columns = null;
+
+    // Clear any additional caches or stored data
+    samplesFiltering.clearCache();
+  }
 }
 
 class Column {
@@ -328,6 +356,7 @@ class Column {
     this.defineColumnProperties(typeIn);
   }
 
+  // Setup
   calculateMin(arr) {
     let min = Infinity;
     for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
@@ -338,7 +367,6 @@ class Column {
     for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
     return max;
   }
-
   defineColumnProperties(typeIn) {
     // Creating the column object
     this.uniques = [...new Set(this.originalValues)];
@@ -442,17 +470,44 @@ class Column {
     }
   }
 
+  // Updates
   updateValues(newValues) {
     this.originalValues = newValues;
     this.defineColumnProperties();
   }
 
+  // Children
   hasChildren() {
     return this.getChildrenColumns().length > 0;
   }
-
   getChildrenColumns() {
     return this.data.columns.filter((column) => column.parentColumnIndex === this.index);
+  }
+
+  // Other
+  clean() {
+    this.data = null;
+    this.index = null;
+    this.label = null;
+    this.originalValues.length = 0;
+    this.originalValues = null;
+    this.category = null;
+    this.group = null;
+    this.unfoldedLevel = null;
+    this.parentColumnIndex = null;
+    this.unfolded = null;
+
+    this.values = null;
+
+    // Clear any additional properties
+    this.uniques.length = 0;
+    this.uniques = null;
+    this.nbOccurrence = null;
+    if (this.undefinedIndexes.length) this.undefinedIndexes.length = 0;
+    this.undefinedIndexes = null;
+    this.valuesIndexUniques.length = 0;
+    this.valuesIndexUniques = null;
+    this.valuesIndex = null;
   }
 }
 
