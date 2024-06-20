@@ -503,7 +503,7 @@ class Column {
     this.uniques.length = 0;
     this.uniques = null;
     this.nbOccurrence = null;
-    if (this.undefinedIndexes.length) this.undefinedIndexes.length = 0;
+    if (this.undefinedIndexes?.length) this.undefinedIndexes.length = 0;
     this.undefinedIndexes = null;
     this.valuesIndexUniques.length = 0;
     this.valuesIndexUniques = null;

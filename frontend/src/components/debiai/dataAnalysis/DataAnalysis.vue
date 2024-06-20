@@ -749,7 +749,7 @@ export default {
     if (this.grid) this.grid.destroy();
 
     // Free the data
-    this.data.clean();
+    if (this.data) this.data.clean();
     this.data = null;
     this.components = [];
   },
