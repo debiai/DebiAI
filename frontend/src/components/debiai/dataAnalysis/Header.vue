@@ -118,10 +118,7 @@
     >
       <!-- Filters panel button -->
       <!-- Selected data info -->
-      <SelectedDataInfo
-        :data="data"
-        v-on:dataSelection="dataSelection"
-      />
+      <SelectedDataInfo :data="data" />
 
       <!-- Global filters -->
       <button
@@ -175,10 +172,6 @@ export default {
     this.projectId = this.$store.state.ProjectPage.projectId;
   },
   methods: {
-    dataSelection(selection) {
-      // Update the selected samples for all widgets
-      this.$emit("dataSelection", selection);
-    },
     coloredColSelect(index) {
       // Update the selected colored column
       this.$store.commit("setColoredColumnIndex", index);
@@ -207,7 +200,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 50px;
+  gap: 10px;
 
   background-color: var(--greyLight);
   border-bottom: var(--greyDark) 2px solid;
@@ -226,6 +219,7 @@ export default {
       font-size: 18px;
       font-weight: bold;
       color: var(--fontColorLight);
+      white-space: nowrap;
 
       a {
         color: var(--fontColor);
@@ -256,6 +250,7 @@ export default {
     font-weight: bold;
     border: solid var(--primary) 2px;
     border: none;
+    white-space: nowrap;
 
     text-decoration: none;
     font-size: 1.2em;
@@ -279,7 +274,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // flex-direction: column-reverse;
   gap: 15px;
   padding: 0px 10px;
   color: var(--fontColorLight);
@@ -292,6 +286,16 @@ export default {
     svg {
       // Rotate
       transform: rotate(45deg);
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  // Hide the logo
+  #logoAndName {
+    padding-left: 10px;
+    #debiaiLogo {
+      display: none;
     }
   }
 }

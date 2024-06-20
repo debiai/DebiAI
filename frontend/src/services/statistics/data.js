@@ -12,6 +12,7 @@ class Data {
     // Register selected data variables
     this.nbLines = this.nbLinesOriginal;
     this.selectedData = [...Array(this.nbLinesOriginal).keys()];
+    this.nbOriginalSelectedData = this.nbLinesOriginal;
 
     // Register unfold variables
     this.verticallyUnfoldedColumnsIndexes = []; // Ordered list of unfolded columns
@@ -57,14 +58,18 @@ class Data {
         msg: "Error while filtering the samples",
       });
     }
-  }
 
-  getOriginalFilteredData() {
-    // Unfolding the data can change the number of lines
-    // This function returns the original selected data
-
-    if (!this.currentlyUnfoldedVertically()) return this.selectedData;
-    return this.selectedData.map((virtualIndex) => this.sampleIdList[virtualIndex]);
+    // Unfolding the data will change the number of lines
+    // This function will get the selected original data from the selected virtual data
+    if (this.currentlyUnfoldedVertically()) {
+      const originalSelectedData = {};
+      this.selectedData.forEach((sampleNumber) => {
+        let mapping = this.virtualIndexMapping[sampleNumber];
+        while (mapping.depth > 0 || !mapping) mapping = mapping.parentMapping;
+        if (mapping) originalSelectedData[mapping.originalIndex] = true;
+      });
+      this.nbOriginalSelectedData = Object.keys(originalSelectedData).length;
+    } else this.nbOriginalSelectedData = this.selectedData.length;
   }
 
   // column utils
