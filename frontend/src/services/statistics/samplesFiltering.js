@@ -52,6 +52,7 @@ const shouldFilter = (newFilters) => {
 };
 const clearCache = () => {
   previouslyAppliedFilters = null;
+  previousSelectedSampleIds.length = 0;
   previousSelectedSampleIds = null;
   previousFiltersEffects = null;
 };
