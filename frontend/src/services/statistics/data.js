@@ -44,13 +44,25 @@ class Data {
     });
 
     try {
+      // Update the selected samples based on the filters
       let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
         filters,
         this,
         ignoreCache
       );
-      store.commit("setFiltersEffects", filtersEffects);
-      this.selectedData = selectedSampleIds;
+
+      // Update the selected data only if the selected samples have changed
+      const selectedDataChanged = (previousSelectedData, newSelectedData) => {
+        if (previousSelectedData.length !== newSelectedData.length) return true;
+        for (let i = 0; i < previousSelectedData.length; i++)
+          if (previousSelectedData[i] !== newSelectedData[i]) return true;
+        return false;
+      };
+
+      if (selectedDataChanged(this.selectedData, selectedSampleIds)) {
+        this.selectedData = selectedSampleIds;
+        store.commit("setFiltersEffects", filtersEffects);
+      }
     } catch (error) {
       console.error(error);
       store.commit("sendMessage", {
@@ -122,6 +134,14 @@ class Data {
     const column = this.getColumn(columnIndex);
     if (!column) return;
 
+    // Remove from the unfolded list
+    this.verticallyUnfoldedColumnsIndexes = this.verticallyUnfoldedColumnsIndexes.filter(
+      (index) => index !== columnIndex
+    );
+
+    // Remove the column children
+    this.removeColumns(this.columns.filter((column) => column.parentColumnIndex === columnIndex));
+
     // Remove the column
     this.columns = this.columns.filter((column) => column.index !== columnIndex);
     column.clean();
@@ -180,7 +200,6 @@ class Data {
     });
   }
   foldVertically(columnIndex) {
-    console.log("foldVertically", columnIndex);
     // Get the column to fold
     const unfoldedColumn = this.getColumn(columnIndex);
     if (!unfoldedColumn || unfoldedColumn.typeText !== "Array") return;
@@ -240,6 +259,7 @@ class Data {
 
     // Compute the new number of lines and link the virtual index to the original index
     const lastUnfoldedColumn = this.getColumn(this.verticallyUnfoldedColumnsIndexes.slice(-1)[0]);
+
     const newVirtualIndexMapping = {};
     let nbLines = 0;
     lastUnfoldedColumn.originalValues.forEach((value, i) => {
@@ -347,6 +367,7 @@ class Data {
     );
 
     unfoldedColumn.unfoldedHorizontally = false;
+    this.resetUnfoldedColumns();
   }
 
   // Other
