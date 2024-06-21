@@ -82,7 +82,7 @@
               :id="column"
               v-model="column.selected"
             />
-            <label :for="column">{{ column.key }}</label>
+            <label>{{ column.key }}</label>
           </div>
         </div>
 

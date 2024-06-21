@@ -437,7 +437,7 @@ export default {
       if ("columnX" in conf) {
         const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
@@ -446,7 +446,7 @@ export default {
       if ("columnY" in conf) {
         const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYindex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
@@ -455,7 +455,7 @@ export default {
       if ("columnSized" in conf) {
         const c = this.data.getColumnByLabel(conf.columnSized);
         if (c) this.columnSizeIndex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnSized + " hasn't been found",

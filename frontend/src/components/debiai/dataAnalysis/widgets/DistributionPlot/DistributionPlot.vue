@@ -240,7 +240,7 @@ export default {
       }
       return conf;
     },
-    setConf(conf, options) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("columnX" in conf) {
         let c = this.data.getColumnByLabel(conf.columnX);
