@@ -36,12 +36,18 @@ Click to set column as the main color"
     <!-- Expand column button -->
     <button
       v-else-if="column.typeText === 'Dict' || column.typeText === 'Array'"
-      :class="'nbOccurrence ' + (column.unfolded ? 'color' : '')"
+      :class="'nbOccurrence ' + (column.unfolded || column.unfoldedVertically ? 'color' : '')"
       :title="'Unfold the ' + column.typeText + ' column'"
       @click="unfoldColumn"
     >
       <inline-svg
-        v-if="column.typeText === 'Dict'"
+        v-if="column.arrayColumnSizeNumber"
+        :src="require('@/assets/svg/expand.svg')"
+        height="14"
+        width="14"
+      />
+      <inline-svg
+        v-else-if="column.typeText === 'Dict'"
         :src="require('@/assets/svg/expandSide.svg')"
         height="18"
         width="18"
@@ -52,7 +58,7 @@ Click to set column as the main color"
         height="18"
         width="18"
       />
-    </button>
+  </button>
 
     <!-- Type display -->
     <div

@@ -89,6 +89,8 @@
         "
       />
     </modal>
+    <!-- Column unfolding menu -->
+    <ColumnUnfoldingMenu :data="data" />
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
@@ -157,6 +159,7 @@ import Header from "./Header";
 import SideBar from "./SideBar";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionSelection from "./dataNavigation/SelectionSelection";
+import ColumnUnfoldingMenu from "./dataCreation/ColumnUnfoldingMenu";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
@@ -178,6 +181,7 @@ export default {
     Header,
     SideBar,
     CustomColumnCreator,
+    ColumnUnfoldingMenu,
     SelectionSelection,
     SelectionCreator,
     TagCreator,
@@ -593,9 +597,6 @@ export default {
           });
         });
     },
-    unfoldColumn(columnIndex) {
-      this.data.unfoldColumn(columnIndex);
-    },
 
     // Buttons
     restoreDefaultLayout() {
@@ -708,20 +709,13 @@ export default {
       // Get the filters form the store
       return this.$store.state.StatisticalAnalysis.filters;
     },
-    unfoldCounter() {
-      return this.$store.state.StatisticalAnalysis.unfoldCounter;
-    },
   },
   watch: {
     filters() {
       // Update the selected samples from the filters
       this.data.updateFilters();
     },
-    unfoldCounter() {
-      // Update the unfolded column
-      const columnIndex = this.$store.state.StatisticalAnalysis.unfoldedColumnIndex;
-      this.unfoldColumn(columnIndex);
-    },
+
     widgetCatalog() {
       // Emit the showCatalog event to the widgetCatalog component
       if (this.widgetCatalog) {
@@ -749,9 +743,9 @@ export default {
     if (this.grid) this.grid.destroy();
 
     // Free the data
-    if (this.data) this.data.clean();
-    this.data = null;
-    this.components = [];
+    // if (this.data) this.data.clean();
+    // this.data = null;
+    // this.components = [];
   },
 };
 </script>
