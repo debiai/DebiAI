@@ -36,7 +36,7 @@ Click to set column as the main color"
     <!-- Expand column button -->
     <button
       v-else-if="column.typeText === 'Dict' || column.typeText === 'Array'"
-      :class="'nbOccurrence ' + (column.unfolded || column.unfoldedVertically ? 'color' : '')"
+      :class="'nbOccurrence ' + (column.unfolded || column.unfoldedHorizontally ? 'color' : '')"
       :title="'Unfold the ' + column.typeText + ' column'"
       @click="unfoldColumn"
     >

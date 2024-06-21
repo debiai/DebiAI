@@ -37,7 +37,7 @@
         >
           Unfolding the column horizontally will <br />
           add as many columns as the size of the array.
-          <button @click="unfoldHorizontally(columnIndexToUnfoldVerticallyOrHorizontally)">
+          <button @click="unfoldArrayHorizontally(columnIndexToUnfoldVerticallyOrHorizontally)">
             Unfold horizontally
           </button>
         </div>
@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <button @click="unfoldHorizontally(columnIndexToSelectHorizontalColumns)">
+        <button @click="unfoldDictHorizontally(columnIndexToSelectHorizontalColumns)">
           Unfold horizontally
         </button>
       </div>
@@ -118,47 +118,53 @@ export default {
       if (!column) return;
 
       if (column.arrayColumnSizeNumber) {
-        if (column.unfolded) {
-          // Fold if the column is already unfolded
-          this.data.unfoldVertically(columnIndex);
+        // Fold if the column is already unfolded
+        if (column.unfolded) this.data.foldVertically(columnIndex);
+        else if (column.unfoldedHorizontally) this.data.foldHorizontally(columnIndex);
+        // Ask if we unfold vertically or horizontally
+        else this.columnIndexToUnfoldVerticallyOrHorizontally = columnIndex;
+      } else if (column.typeText === "Dict") {
+        // Fold if the column is already unfolded
+        if (column.unfoldedHorizontally) {
+          this.data.foldHorizontally(columnIndex);
           return;
         }
 
-        // Ask if we unfold vertically or horizontally
-        this.columnIndexToUnfoldVerticallyOrHorizontally = columnIndex;
-      } else if (column.typeText === "Dict") {
-        if (column.unfoldedVertically) {
-          // Fold if the column is already unfolded
-          this.data.unfoldHorizontally(columnIndex);
+        // Get the possible columns to unfold
+        const newPossibleColumns = column.getPossibleColumnsToUnfold();
+        if (newPossibleColumns.error) {
+          this.horizontalUnfoldErrorMessage = newPossibleColumns.error;
           return;
         }
 
         // Ask what columns to select
-        const newPossibleColumns = column.getPossibleColumnsToUnfold();
-        if (newPossibleColumns.error) this.horizontalUnfoldErrorMessage = newPossibleColumns.error;
-        else {
-          this.newPossibleColumns = newPossibleColumns.keys.map((key) => {
-            return {
-              selected: true,
-              key: key,
-            };
-          });
-          console.log(this.newPossibleColumns);
-          this.columnIndexToSelectHorizontalColumns = columnIndex;
-        }
-      } else if (column.typeText === "Array") this.data.unfoldVertically(columnIndex);
+        this.newPossibleColumns = newPossibleColumns.keys.map((key) => {
+          return {
+            selected: true,
+            key: key,
+          };
+        });
+        this.columnIndexToSelectHorizontalColumns = columnIndex;
+      } else if (column.typeText === "Array") {
+        if (column.unfolded) this.data.foldVertically(columnIndex);
+        else this.data.unfoldVertically(columnIndex);
+      }
     },
     unfoldVertically(columnIndex) {
       this.data.unfoldVertically(columnIndex);
       this.columnIndexToUnfoldVerticallyOrHorizontally = null;
     },
-    unfoldHorizontally(columnIndex) {
+    unfoldDictHorizontally(columnIndex) {
       const columnsToUnfold = this.newPossibleColumns
         .filter((column) => column.selected)
         .map((column) => column.key);
-      this.data.unfoldHorizontally(columnIndex, columnsToUnfold);
+      this.data.unfoldDictHorizontally(columnIndex, columnsToUnfold);
       this.columnIndexToSelectHorizontalColumns = null;
       this.newPossibleColumns = [];
+    },
+    unfoldArrayHorizontally(columnIndex) {
+      this.data.unfoldArrayHorizontally(columnIndex);
+      this.columnIndexToUnfoldVerticallyOrHorizontally = null;
     },
   },
   computed: {
