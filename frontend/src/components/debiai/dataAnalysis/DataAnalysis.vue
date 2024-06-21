@@ -89,8 +89,6 @@
         "
       />
     </modal>
-    <!-- Column unfolding menu -->
-    <ColumnUnfoldingMenu :data="data" />
 
     <!-- WIDGET GRIDSTACK BOARD -->
     <div class="grid-stack">
@@ -143,6 +141,9 @@
 
     <!-- Side menu -->
     <SideBar :menuList="menuList" />
+
+    <!-- Column unfolding menu -->
+    <ColumnUnfoldingMenu :data="data" />
   </div>
 </template>
 

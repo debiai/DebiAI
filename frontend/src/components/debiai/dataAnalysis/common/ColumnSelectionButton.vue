@@ -111,7 +111,6 @@ export default {
       }
     },
     dataColumns() {
-      console.log("Data Column update");
       // Check if the selected column still exists
       if (this.selectedColumnIndex !== null && !this.data.columnExists(this.selectedColumnIndex)) {
         this.selectedColumnIndex = null;

@@ -45,7 +45,7 @@
           <!-- nb samples -->
           <div class="data">
             <div class="name">Selected samples</div>
-            <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
+            <div class="value">{{ data.nbOriginalSelectedData }} / {{ data.nbLinesOriginal }}</div>
           </div>
         </div>
         <div style="display: flex; justify-content: flex-end">
@@ -110,9 +110,15 @@ export default {
     },
 
     saveSelection(requestId = null) {
-      let selectedIds = this.data.selectedData.map(
+      // Get the selected data positions
+      const selectedDataNumbers = this.data.getOriginalSelectedData();
+
+      // Get the ids of the selected data
+      const selectedIds = selectedDataNumbers.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
+
+      // Save the selection
       this.$backendDialog
         .addSelection(selectedIds, this.selectionName, requestId)
         .then(() => {
@@ -121,11 +127,6 @@ export default {
             msg: "Selection saved successfully",
           });
           this.$emit("cancel");
-
-          // this.$backendDialog.getSelections().then((selections) => {
-          //   this.createdSelections = selections;
-          //   this.$store.commit("setProjectSelections", selections);
-          // });
         })
         .catch(() => {
           this.$store.commit("sendMessage", {

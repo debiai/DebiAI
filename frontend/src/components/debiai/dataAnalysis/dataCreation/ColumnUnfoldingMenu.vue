@@ -187,17 +187,17 @@ export default {
       border-radius: 5px;
     }
   }
-}
 
-#selectColumnsToUnfold {
-  text-align: left;
-  #columnsToUnfold {
-    display: flex;
-    flex-wrap: wrap;
-    .columnToUnfold {
+  #selectColumnsToUnfold {
+    text-align: left;
+    #columnsToUnfold {
       display: flex;
-      align-items: center;
-      margin: 5px;
+      flex-wrap: wrap;
+      .columnToUnfold {
+        display: flex;
+        align-items: center;
+        margin: 5px;
+      }
     }
   }
 }
