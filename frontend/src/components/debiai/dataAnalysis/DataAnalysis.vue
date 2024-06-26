@@ -740,6 +740,9 @@ export default {
     this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
 
+    // Remove the created experiments
+    this.$store.commit("deleteAllExperiments");
+
     // Remove the grid
     if (this.grid) this.grid.destroy();
 

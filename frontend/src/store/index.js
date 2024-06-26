@@ -245,6 +245,10 @@ const StatisticalAnalysis = {
       // Update for reactivity
       state.experiments = { ...state.experiments };
     },
+    deleteAllExperiments(state) {
+      state.experiments = {};
+      state.nbExperiments = 0;
+    },
 
     // Opened widget menu
     setOpenedWidgetMenuId(state, widgetId) {
