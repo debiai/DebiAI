@@ -7,8 +7,14 @@ backend/data
 .coverage
 __pycache__/
 
+# Backend.egg-info
+backend.egg-info/
+
 # Front
 frontend/node_modules/
+
+# Data
+data/
 
 # Ignore the notebookDebiai.ipynb file
 notebookDebiai.ipynb
@@ -18,3 +24,6 @@ test_imports.py
 
 # Ignore the tree_project.md file
 tree_project.md
+
+# Ignore the build and run file
+build_and_run.sh
