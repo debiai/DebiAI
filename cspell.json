@@ -55,7 +55,9 @@
     "vuejs",
     "Vuex",
     "websrv",
-    "werkzeug"
+    "werkzeug",
+    "sdist",
+    "bdist"
   ],
   "flagWords": [],
   "ignorePaths": [
