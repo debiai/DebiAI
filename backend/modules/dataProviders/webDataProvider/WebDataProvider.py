@@ -14,7 +14,7 @@ from backend.modules.dataProviders.webDataProvider.useCases.models import (
     get_model_result_id,
     delete_model,
 )
-import backend.modules.dataProviders.webDataProvider.useCases.selections as useCaseSelections # noqa
+import backend.modules.dataProviders.webDataProvider.useCases.selections as useCaseSelections  # noqa
 from backend.modules.dataProviders.webDataProvider.http.api import get_info, get_status
 from backend.modules.dataProviders.webDataProvider.cache.cache import Cache
 
