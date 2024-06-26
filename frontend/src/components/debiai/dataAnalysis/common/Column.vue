@@ -5,6 +5,7 @@
       id="labelButton"
       :class="getColumnClass()"
       @click="select"
+      @contextmenu.prevent="handleRightClick"
       :title="getColumnLabelTitle()"
     >
       <span v-if="columnValidStatus.status === 'warning'"> ⚠️ </span>
@@ -67,13 +68,28 @@ Click to set column as the main color"
     >
       {{ column.typeText }}
     </div>
+
+    <!-- Menu -->
+    <transition name="fade">
+      <dropdown-menu
+        v-if="showMenu"
+        :menu="getColumnMenu()"
+        :position="{ x: this.mousePos.x, y: this.mousePos.y }"
+        @close="showMenu = false"
+        flipVertically
+      />
+    </transition>
   </div>
 </template>
 
 <script>
 import columnsFiltering from "@/services/statistics/columnsFiltering";
+import DropdownMenu from "@/components/common/DropdownMenu";
 
 export default {
+  components: {
+    DropdownMenu,
+  },
   props: {
     column: { type: Object, required: true },
     selected: { type: Boolean, default: true },
@@ -82,6 +98,10 @@ export default {
   },
   data() {
     return {
+      // Menu
+      showMenu: false,
+      mousePos: { x: 0, y: 0 },
+
       columnTypesWithNoNbOccurrence: ["undefined", "Dict", "Array"],
     };
   },
@@ -103,17 +123,76 @@ export default {
       else if (this.selected) return "Unselect " + this.column.label;
       else return "Select " + this.column.label;
     },
+    getUnfoldIcon() {
+      if (
+        this.column.arrayColumnSizeNumber &&
+        !this.column.unfoldedHorizontally &&
+        !this.column.unfolded
+      )
+        return "expand";
+      else if (this.column.typeText === "Dict" || this.column.unfoldedHorizontally)
+        return "expandSide";
+      else return "expandUp";
+    },
     select(event) {
       event.stopPropagation();
       if (this.columnValidStatus["status"] !== "invalid") this.$emit("selected", this.column.index);
     },
     selectAsColor(event) {
-      event.stopPropagation();
+      event?.stopPropagation();
       this.$store.commit("setColoredColumnIndex", this.column.index);
     },
     unfoldColumn(event) {
-      event.stopPropagation();
+      event?.stopPropagation();
       this.$store.commit("unfoldColumn", this.column.index);
+    },
+    deleteColumn(event) {
+      event?.stopPropagation();
+      this.$store.commit("deleteColumn", this.column.index);
+    },
+
+    // Column menu
+    getColumnMenu() {
+      const menu = [];
+
+      // Select as color
+      if (this.canDisplayNbOccurrence)
+        menu.push({
+          name: this.selectedAsColor ? "Unselect as color" : "Select as color",
+          action: this.selectAsColor,
+        });
+
+      // Unfold column vertically
+      if (this.column.typeText === "Dict" || this.column.typeText === "Array")
+        menu.push({
+          name: this.column.unfolded || this.column.unfoldedHorizontally ? "Fold" : "Unfold",
+          action: this.unfoldColumn,
+          icon: this.getUnfoldIcon(),
+        });
+
+      // Add the delete column button
+      menu.push({
+        name: "Delete column",
+        action: this.deleteColumn,
+        icon: "close",
+      });
+
+      return menu;
+    },
+    handleRightClick(event) {
+      // Get the widget position x and y on screen
+      let widgetX = this.$el.getBoundingClientRect().x;
+      let widgetY = this.$el.getBoundingClientRect().y;
+
+      // Get the mouse position relative to the widget
+      this.mousePos.x = event.clientX - widgetX;
+      this.mousePos.y = event.clientY - widgetY;
+
+      this.showMenu = true;
+
+      // Store the data for the menu
+      this.$store.commit("setOpenedColumnMenuId", this.column.index);
+      event.stopPropagation();
     },
   },
   computed: {
@@ -126,12 +205,23 @@ export default {
     columnValidStatus: function () {
       return columnsFiltering.getColumnStatus(this.column, this.validColumnsProperties);
     },
+    // Dropdown menu
+    openedColumnMenuId() {
+      return this.$store.state.StatisticalAnalysis.openedColumnMenuId;
+    },
+  },
+
+  watch: {
+    openedColumnMenuId() {
+      if (this.openedColumnMenuId !== this.column.index) this.showMenu = false;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 #column {
+  position: relative;
   display: flex;
   margin: 5px;
   transition: all 0.3s;

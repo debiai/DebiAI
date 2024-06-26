@@ -1,7 +1,7 @@
 <template>
   <div
     id="modal"
-    @click.stop="outsideClick"
+    @click="outsideClick"
   >
     <div id="Panel">
       <slot />
@@ -62,7 +62,10 @@ export default {
   },
   methods: {
     outsideClick(e) {
-      if (e.target.id === "modal") this.$emit("close");
+      if (e.target.id === "modal") {
+        this.$emit("close");
+        e.stopPropagation();
+      }
     },
   },
   beforeDestroy() {

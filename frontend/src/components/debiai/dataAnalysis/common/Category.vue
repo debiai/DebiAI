@@ -29,15 +29,13 @@
       >
         <Collapsible style="margin: 3px; width: 300px">
           <template v-slot:header>
-            <h4>
-              {{ group }}
-              <!-- Nb selected columns in group: -->
-              <NbItem
-                v-if="multipleSelection && cols.length > 1"
-                :nbSelected="getNbSelectedColumns(cols)"
-                :nbTotal="cols.length"
-              />
-            </h4>
+            {{ group }}
+            <!-- Nb selected columns in group: -->
+            <NbItem
+              v-if="multipleSelection && cols.length > 1"
+              :nbSelected="getNbSelectedColumns(cols)"
+              :nbTotal="cols.length"
+            />
           </template>
           <template v-slot:body>
             <div class="columns">

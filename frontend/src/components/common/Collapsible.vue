@@ -113,7 +113,6 @@ export default {
 
     cursor: pointer;
     background-color: var(--greyLight);
-    color: var(--fontColorLight);
     display: flex;
     align-items: center;
     gap: 10px;
