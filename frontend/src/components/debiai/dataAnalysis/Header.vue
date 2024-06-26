@@ -72,12 +72,6 @@
         height="13"
       />
       Add a widget
-
-      <!-- <inline-svg
-        :src="require('@/assets/svg/bar_plot.svg')"
-        width="15"
-        height="15"
-      /> -->
     </button>
 
     <!-- Colored column info -->
@@ -183,7 +177,14 @@ export default {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     coloredColumn() {
-      return this.data.getColumn(this.coloredColumnIndex);
+      if (this.coloredColumnIndex === null) return null;
+
+      const coloredColumn = this.data.getColumn(this.coloredColumnIndex);
+      if (coloredColumn) return coloredColumn;
+      else {
+        this.$store.commit("setColoredColumnIndex", null);
+        return null;
+      }
     },
   },
 };

@@ -284,21 +284,6 @@ export default {
       let colX = this.data.getColumn(this.columnXindex);
       if (!colX) return;
 
-      // // Check synchronously if the selected column type is string and if their is more than 100 uniques values
-      // if (colX.type == String && colX.uniques.length > 100) {
-      //   if (!askConfirmation) return;
-
-      //   const answer = await swal({
-      //     title: "Warning",
-      //     text:
-      //       "You are about to display a plot with more than 100 bins.\n" +
-      //       "This may take a while. Do you want to proceed?",
-      //     icon: "warning",
-      //     buttons: true,
-      //   });
-      //   console.log(answer);
-      // }
-
       // Alert the user if he decided to divide by more than 100 uniq values
       if (this.bins > 100 && colX.type == String) {
         if (!askConfirmation) return;
