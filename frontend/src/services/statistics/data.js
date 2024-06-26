@@ -616,6 +616,28 @@ class Column {
     this.originalValues = newValues;
     this.defineColumnProperties();
   }
+  canAddArrayLength() {
+    if (this.typeText !== "Array") return false;
+    // If a column with the same label already exists, we can't add the length
+    if (this.data.getColumnByLabel(this.label + ".length")) return false;
+    return true;
+  }
+  addArrayLength() {
+    // Create a new column with the length of each array values
+    if (!this.canAddArrayLength()) return;
+    if (this.typeText !== "Array") return;
+
+    const new_label = this.label + ".length";
+    const column_values = this.values.map((arr) => arr.length);
+    this.data.addColumn({
+      label: new_label,
+      values: column_values,
+      category: this.category,
+      typeIn: "num",
+      group: null,
+      parentColumnIndex: this.index,
+    });
+  }
 
   // Children
   hasChildren() {
@@ -677,6 +699,12 @@ class Column {
   }
 
   // Other
+  canBeDeleted() {
+    return this.label !== "Data ID";
+  }
+  delete() {
+    this.data.removeColumn(this.index);
+  }
   clean() {
     this.data = null;
     this.index = null;

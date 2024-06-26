@@ -710,10 +710,6 @@ export default {
       // Get the filters form the store
       return this.$store.state.StatisticalAnalysis.filters;
     },
-    columnToDelete() {
-      // Get the column to delete from the store
-      return this.$store.state.StatisticalAnalysis.columnToDelete;
-    },
   },
   watch: {
     filters() {
@@ -727,11 +723,6 @@ export default {
         const widgetCatalog = this.$refs.widgetCatalog;
         if (widgetCatalog) widgetCatalog.loadWidgetConfigurationsOverview();
       }
-    },
-
-    columnToDelete() {
-      // Delete the column
-      if (this.columnToDelete) this.data.removeColumn(this.columnToDelete);
     },
   },
   beforeDestroy() {

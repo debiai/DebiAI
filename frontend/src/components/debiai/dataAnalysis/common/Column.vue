@@ -76,7 +76,6 @@ Click to set column as the main color"
         :menu="getColumnMenu()"
         :position="{ x: this.mousePos.x, y: this.mousePos.y }"
         @close="showMenu = false"
-        flipVertically
       />
     </transition>
   </div>
@@ -146,9 +145,11 @@ export default {
       event?.stopPropagation();
       this.$store.commit("unfoldColumn", this.column.index);
     },
-    deleteColumn(event) {
-      event?.stopPropagation();
-      this.$store.commit("deleteColumn", this.column.index);
+    deleteColumn() {
+      this.column.delete();
+    },
+    addArrayLength() {
+      this.column.addArrayLength();
     },
 
     // Column menu
@@ -170,12 +171,21 @@ export default {
           icon: this.getUnfoldIcon(),
         });
 
+      // Add array metrics
+      if (this.column.typeText === "Array" && this.column.canAddArrayLength())
+        menu.push({
+          name: "Add values length",
+          action: this.addArrayLength,
+          icon: "gear",
+        });
+
       // Add the delete column button
-      menu.push({
-        name: "Delete column",
-        action: this.deleteColumn,
-        icon: "close",
-      });
+      if (this.column.canBeDeleted())
+        menu.push({
+          name: "Delete column",
+          action: this.deleteColumn,
+          icon: "close",
+        });
 
       return menu;
     },

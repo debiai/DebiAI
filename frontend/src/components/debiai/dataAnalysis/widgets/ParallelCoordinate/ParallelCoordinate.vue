@@ -76,14 +76,14 @@ export default {
         selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
-    setConf(conf) {
+    setConf(conf, options={}) {
       if (!conf) return;
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];
         conf.selectedColumns.forEach((cLabel) => {
           const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIds.push(c.index);
-          else
+          else if (!options.onStartup)
             this.$store.commit("sendMessage", {
               title: "warning",
               msg: "The column " + cLabel + " hasn't been found",

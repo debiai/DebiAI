@@ -8,7 +8,7 @@
     <div
       v-for="(item, index) in availableMenuItems"
       :key="index"
-      @click="!item.disabled && item.action ? item.action() : ''"
+      @click="(event) => itemSelected(event, item)"
     >
       <div
         v-if="item.name !== 'separator'"
@@ -29,6 +29,10 @@
         <div class="dropdownMenuName">
           {{ item.name }}
         </div>
+
+        <documentationBlock v-if="item.documentation">
+          {{ item.documentation }}
+        </documentationBlock>
       </div>
       <div
         v-else
@@ -82,6 +86,13 @@ export default {
   methods: {
     closeMenu() {
       this.$emit("close");
+    },
+    itemSelected(event, item) {
+      event.stopPropagation();
+      if (item.action && !item.disabled) {
+        item.action();
+        this.closeMenu();
+      }
     },
   },
 

@@ -120,7 +120,6 @@ const StatisticalAnalysis = {
     // Columns
     unfoldCounter: 0, // To trigger reactivity
     unfoldedColumnIndex: null,
-    columnToDelete: null,
   },
   mutations: {
     setColoredColumnIndex(state, index) {
@@ -267,9 +266,6 @@ const StatisticalAnalysis = {
       state.unfoldCounter++;
       state.unfoldedColumnIndex = columnIndex;
     },
-    deleteColumn(state, columnIndex) {
-      state.columnToDelete = columnIndex;
-    }
   },
   getters: {
     getAlgoExperiments: (state) => (algoProviderName, algoId) => {
