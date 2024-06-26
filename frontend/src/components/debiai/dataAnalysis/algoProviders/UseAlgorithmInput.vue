@@ -253,8 +253,6 @@ export default {
       if (this.selectedArrayInputOption === "columnSelectedData")
         this.value = this.data.selectedData.map((id) => dataValues[id]);
       else this.value = dataValues;
-
-      this.$emit("inputValueUpdate", this.value);
     },
     idListInputTypeSelected(type) {
       // This function is called when the user selects the type of input for the idList
@@ -262,7 +260,6 @@ export default {
       const dataIdValues = this.data.getColumn(this.idColumnsIndex).values;
       if (type == "column") this.value = dataIdValues;
       else this.value = this.data.selectedData.map((id) => dataIdValues[id]);
-      this.$emit("inputValueUpdate", this.value);
     },
   },
   computed: {

@@ -650,12 +650,12 @@ class Column {
             " keys).",
         };
 
-      if (nbKeys > 10)
+      if (nbKeys > 30)
         return {
           error:
             "The number of keys in the dictionary is too high to unfold horizontally (" +
             nbKeys +
-            " > 10).",
+            " > 30).",
         };
 
       const previousNbKeys = keys.size;
