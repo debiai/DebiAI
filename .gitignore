@@ -9,3 +9,12 @@ __pycache__/
 
 # Front
 frontend/node_modules/
+
+# Ignore the notebookDebiai.ipynb file
+notebookDebiai.ipynb
+
+# Ignore the test_imports.py file
+test_imports.py
+
+# Ignore the tree_project.md file
+tree_project.md

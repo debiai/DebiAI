@@ -29,8 +29,8 @@ setup(
     },
     author="Fady Bekkar",
     author_email="fady.bekkar@irt-systemx.fr",
-    description="Python module that allows users to have a standalone version "
-    "DebiAI.",
+    description="Python module that allows users to have a standalone DebiAI"
+    "version.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/debiai/DebiAI",

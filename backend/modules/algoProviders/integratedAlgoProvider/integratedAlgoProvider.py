@@ -29,7 +29,7 @@ def _get_algorithm_python(algorithm_name):
 
     # Import the algorithm
     algorithm_python = __import__(
-        "modules.algoProviders.integratedAlgoProvider.algorithms." + algorithm_file,
+        "backend.modules.algoProviders.integratedAlgoProvider.algorithms." + algorithm_file,
         fromlist=["*"],
     )
 

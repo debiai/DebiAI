@@ -13,5 +13,4 @@ echo "Installation du package localement..."
 pip install .
 
 # Démarrage du serveur
-echo "Démarrage du serveur..."
 debiai-start
