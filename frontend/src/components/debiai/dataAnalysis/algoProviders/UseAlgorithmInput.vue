@@ -175,7 +175,7 @@
           <div v-if="!isIdList">
             <ColumnSelectionButton
               :data="data"
-              :validColumnsProperties="{}"
+              :validColumnsProperties="validColumnsProperties"
               :defaultColumnIndex="columnIndex"
               :title="'Select a column to use as input for ' + input.name"
               :colorSelection="false"
@@ -211,6 +211,10 @@ export default {
     return {
       value: null,
       projectId: null,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
 
       // Array input
       selectedArrayInputOption: "manual",
