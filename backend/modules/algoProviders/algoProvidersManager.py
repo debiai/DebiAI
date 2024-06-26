@@ -6,9 +6,9 @@ from backend.config.init_config import (
     ERROR_COLOR,
     SUCCESS_COLOR,
 )
-from backend.modules.algoProviders.AlgoProviderException import AlgoProviderException
+from backend.modules.algoProviders.AlgoProviderException import AlgoProviderException # noqa
 from backend.modules.algoProviders.AlgoProvider import AlgoProvider
-from backend.modules.algoProviders.integratedAlgoProvider.integratedAlgoProvider import (
+from backend.modules.algoProviders.integratedAlgoProvider.integratedAlgoProvider import ( # noqa
     IntegratedAlgoProvider,
 )
 

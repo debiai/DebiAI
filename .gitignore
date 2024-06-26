@@ -13,6 +13,9 @@ backend.egg-info/
 # Front
 frontend/node_modules/
 
+# Build
+build/
+
 # Data
 data/
 
