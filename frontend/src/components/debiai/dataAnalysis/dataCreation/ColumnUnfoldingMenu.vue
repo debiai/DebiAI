@@ -2,44 +2,75 @@
   <div id="ColumnUnfoldingMenu">
     <!-- Vertical or horizontal unfolding menu -->
     <Modal
-      @close="columnIndexToUnfoldVerticallyOrHorizontally = null"
-      v-if="columnIndexToUnfoldVerticallyOrHorizontally"
+      @close="columnToUnfoldVerticallyOrHorizontally = null"
+      v-if="columnToUnfoldVerticallyOrHorizontally"
     >
       <div id="verticalOrHorizontalUnfoldingMenu">
-        <h3>How do you want to unfold the column?</h3>
+        <h3
+          class="aligned spaced"
+          style="gap: 20px"
+        >
+          How do you want to unfold the column?
 
-        <p>
-          You are about to unfold a column containing arrays with
-          <br />
-          a constant size of length
-          <b class="tag">
-            {{
-              data.getColumn(columnIndexToUnfoldVerticallyOrHorizontally).arrayColumnSizeNumber
-            }} </b
-          >.
-        </p>
+          <button
+            class="red"
+            @click="columnToUnfoldVerticallyOrHorizontally = null"
+          >
+            Cancel
+          </button>
+        </h3>
 
-        <p>Do you want to unfold it vertically or horizontally?</p>
+        <!-- <p>Do you want to unfold it vertically or horizontally?</p> -->
 
         <div
           id="verticalUnfold"
           class="unfoldMethod"
         >
-          Unfolding the column vertically will <br />
-          add as many lines as the size of the array.
-          <button @click="unfoldVertically(columnIndexToUnfoldVerticallyOrHorizontally)">
+          <h4 class="aligned spaced">
             Unfold vertically
+
+            <AvailableTag available />
+          </h4>
+          Unfolding the column vertically will <br />
+          add one new line for each elements in the array.
+          <br />
+          <button @click="unfoldVertically(columnToUnfoldVerticallyOrHorizontally)">
+            Add new lines
           </button>
         </div>
+
         <div
           id="horizontalUnfold"
           class="unfoldMethod"
         >
+          <h4 class="aligned spaced">
+            Unfold horizontally
+
+            <AvailableTag
+              :available="columnToUnfoldVerticallyOrHorizontally.arrayColumnSizeNumber > 0"
+            />
+          </h4>
           Unfolding the column horizontally will <br />
           add as many columns as the size of the array.
-          <button @click="unfoldArrayHorizontally(columnIndexToUnfoldVerticallyOrHorizontally)">
-            Unfold horizontally
+          <br />
+
+          <button
+            v-if="columnToUnfoldVerticallyOrHorizontally.arrayColumnSizeNumber"
+            @click="unfoldArrayHorizontally(columnToUnfoldVerticallyOrHorizontally)"
+          >
+            Add
+            {{ columnToUnfoldVerticallyOrHorizontally.arrayColumnSizeNumber }}
+            new columns
           </button>
+
+          <p
+            v-else
+            class="unfoldingError"
+          >
+            The column {{ columnToUnfoldVerticallyOrHorizontally.label }} cannot be unfolded
+            horizontally, <br />
+            the size of the array elements are not constant.
+          </p>
         </div>
       </div>
     </Modal>
@@ -50,7 +81,19 @@
       v-if="horizontalUnfoldErrorMessage"
     >
       <div id="horizontalUnfoldErrorMessage">
-        <h3>Error</h3>
+        <h3
+          class="aligned spaced"
+          style="gap: 20px"
+        >
+          Error
+
+          <button
+            class="red"
+            @click="horizontalUnfoldErrorMessage = ''"
+          >
+            Close
+          </button>
+        </h3>
         <p>The column cannot be unfolded horizontally.</p>
         <p>{{ horizontalUnfoldErrorMessage }}</p>
       </div>
@@ -87,7 +130,7 @@
         </div>
 
         <button @click="unfoldDictHorizontally(columnIndexToSelectHorizontalColumns)">
-          Unfold horizontally
+          Add the new columns
         </button>
       </div>
     </Modal>
@@ -100,7 +143,7 @@ export default {
   data() {
     return {
       // Array columns
-      columnIndexToUnfoldVerticallyOrHorizontally: null,
+      columnToUnfoldVerticallyOrHorizontally: null,
 
       // Dict columns
       columnIndexToSelectHorizontalColumns: null,
@@ -117,12 +160,12 @@ export default {
       const column = this.data.getColumn(columnIndex);
       if (!column) return;
 
-      if (column.arrayColumnSizeNumber) {
+      if (column.typeText === "Array") {
         // Fold if the column is already unfolded
         if (column.unfolded) this.data.foldVertically(columnIndex);
         else if (column.unfoldedHorizontally) this.data.foldHorizontally(columnIndex);
         // Ask if we unfold vertically or horizontally
-        else this.columnIndexToUnfoldVerticallyOrHorizontally = columnIndex;
+        else this.columnToUnfoldVerticallyOrHorizontally = column;
       } else if (column.typeText === "Dict") {
         // Fold if the column is already unfolded
         if (column.unfoldedHorizontally) {
@@ -145,14 +188,11 @@ export default {
           };
         });
         this.columnIndexToSelectHorizontalColumns = columnIndex;
-      } else if (column.typeText === "Array") {
-        if (column.unfolded) this.data.foldVertically(columnIndex);
-        else this.data.unfoldVertically(columnIndex);
       }
     },
-    unfoldVertically(columnIndex) {
-      this.data.unfoldVertically(columnIndex);
-      this.columnIndexToUnfoldVerticallyOrHorizontally = null;
+    unfoldVertically() {
+      this.data.unfoldVertically(this.columnToUnfoldVerticallyOrHorizontally.index);
+      this.columnToUnfoldVerticallyOrHorizontally = null;
     },
     unfoldDictHorizontally(columnIndex) {
       const columnsToUnfold = this.newPossibleColumns
@@ -162,9 +202,9 @@ export default {
       this.columnIndexToSelectHorizontalColumns = null;
       this.newPossibleColumns = [];
     },
-    unfoldArrayHorizontally(columnIndex) {
-      this.data.unfoldArrayHorizontally(columnIndex);
-      this.columnIndexToUnfoldVerticallyOrHorizontally = null;
+    unfoldArrayHorizontally(column) {
+      this.data.unfoldArrayHorizontally(column.index);
+      this.columnToUnfoldVerticallyOrHorizontally = null;
     },
   },
   computed: {
@@ -187,10 +227,16 @@ export default {
   #verticalOrHorizontalUnfoldingMenu {
     text-align: left;
     .unfoldMethod {
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid var(--greyDark);
-      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 40px 30px;
+
+      .unfoldingError {
+        color: var(--danger);
+        font-weight: bold;
+        margin: 0;
+      }
     }
   }
 
