@@ -29,6 +29,10 @@ def get_project_selections(url, project_id):
                 selection_to_add["creationDate"] = selection["creationDate"]
             if "updateDate" in selection:
                 selection_to_add["updateDate"] = selection["updateDate"]
+            if "metadata" not in selection:
+                selection_to_add["metadata"] = None
+            else:
+                selection_to_add["metadata"] = selection["metadata"]
 
             debiai_selections.append(selection_to_add)
         return debiai_selections

@@ -1596,6 +1596,8 @@ definitions:
         properties:
           nbSamples:
             type: integer
+          metadata:
+            type: object
 
   request:
     allOf:

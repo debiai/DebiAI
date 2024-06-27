@@ -130,10 +130,7 @@
             <h4 class="experiment-title">
               Experiment {{ experiment.nb }}
               <!-- Display Inputs -->
-              <DocumentationBlock
-                :followCursor="true"
-                v-if="experiment.inputs.length > 0"
-              >
+              <DocumentationBlock v-if="experiment.inputs.length > 0">
                 <span v-if="experiment.selectedData">
                   On {{ experiment.selectedData.length }} selected data.
                 </span>
