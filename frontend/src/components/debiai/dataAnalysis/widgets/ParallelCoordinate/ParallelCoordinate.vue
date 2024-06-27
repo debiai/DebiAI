@@ -76,7 +76,7 @@ export default {
         selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
-    setConf(conf, options={}) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];

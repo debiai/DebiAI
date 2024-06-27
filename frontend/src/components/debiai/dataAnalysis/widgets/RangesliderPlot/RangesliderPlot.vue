@@ -863,7 +863,10 @@ export default {
   },
   computed: {
     canDraw() {
-      return this.columnXindex !== null && (this.selectedY1ColumnsIds.length > 0 || this.selectedY2ColumnsIds.length > 0);
+      return (
+        this.columnXindex !== null &&
+        (this.selectedY1ColumnsIds.length > 0 || this.selectedY2ColumnsIds.length > 0)
+      );
     },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;

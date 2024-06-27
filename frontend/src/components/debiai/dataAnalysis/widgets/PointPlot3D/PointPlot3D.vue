@@ -165,7 +165,7 @@ export default {
 
       return conf;
     },
-    setConf(conf, options={}) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("columnX" in conf) {
         const c = this.data.getColumnByLabel(conf.columnX);
