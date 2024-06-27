@@ -62,7 +62,7 @@
           </div>
           <div class="allButtons">
             <!-- Model Metadata -->
-            <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata)">
+            <DocumentationBlock v-if="model.metadata && Object.keys(model.metadata).length > 0">
               <h4>Model Metadata</h4>
               <br />
               <div style="white-space: pre-wrap">

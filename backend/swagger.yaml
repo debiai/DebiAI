@@ -483,8 +483,8 @@ paths:
         404:
           description: model or project doesn't exist
 
-    /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict:
-     post:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict:
+    post:
       summary: Add a results to a model
       tags: [Model]
       operationId: controller.pythonModuleDp.add_results_dict
@@ -524,7 +524,7 @@ paths:
         404:
           description: model or project doesn't exist
 
-   /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
     post:
       summary: Get the model results from a sample list
       tags: [Model]
@@ -707,7 +707,7 @@ paths:
             type: object
 
   /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
-   get:
+    get:
       summary: Get a project selection id list
       tags: [Selection]
       operationId: controller.selection.get_selection_id_list
