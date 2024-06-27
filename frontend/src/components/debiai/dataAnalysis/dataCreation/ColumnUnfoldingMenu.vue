@@ -10,7 +10,7 @@
           class="aligned spaced"
           style="gap: 20px"
         >
-          How do you want to unfold the column?
+          Unfold column
 
           <button
             class="red"
@@ -48,6 +48,7 @@
 
             <AvailableTag
               :available="columnToUnfoldVerticallyOrHorizontally.arrayColumnSizeNumber > 0"
+              :notAvailableColor="'var(--greyDarker)'"
             />
           </h4>
           Unfolding the column horizontally will <br />
@@ -65,7 +66,7 @@
 
           <p
             v-else
-            class="unfoldingError"
+            class="unfoldingNotAvailable"
           >
             The column {{ columnToUnfoldVerticallyOrHorizontally.label }} cannot be unfolded
             horizontally, <br />
@@ -230,10 +231,13 @@ export default {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin: 40px 30px;
+      margin: 20px 15px;
+      padding: 20px 15px;
+      border-radius: 5px;
+      border: 1px solid var(--greyDarker);
 
-      .unfoldingError {
-        color: var(--danger);
+      .unfoldingNotAvailable {
+        color: var(--greyDarker);
         font-weight: bold;
         margin: 0;
       }
