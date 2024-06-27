@@ -628,7 +628,10 @@ class Column {
     if (this.typeText !== "Array") return;
 
     const new_label = this.label + ".length";
-    const column_values = this.values.map((arr) => arr.length);
+    const column_values = new Array(this.data.nbLines)
+      .fill(null)
+      .map((_, i) => this.values[i].length);
+
     this.data.addColumn({
       label: new_label,
       values: column_values,
