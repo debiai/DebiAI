@@ -23,7 +23,6 @@ def send_frontend(path):
         path = "index.html"
 
     # If production, use the index.html from the dist folder
-    # if os.getenv("FLASK_ENV") == "production":
     env = os.getenv("FLASK_ENV", "production")
     debug_mode = env == "production"
     if debug_mode:
@@ -68,12 +67,6 @@ def create_app():
     @app.route("/<path:path>")
     def send_supporting_elements(path):
         return send_frontend(path)
-
-    @app.route("/verify")
-    def index():
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        dist_dir = os.path.join(base_dir, "dist")
-        return f"Chemin du dossier dist : {dist_dir}"
 
     return app
 
