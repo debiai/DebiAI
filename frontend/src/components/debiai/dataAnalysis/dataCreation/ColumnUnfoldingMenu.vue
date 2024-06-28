@@ -10,7 +10,21 @@
           class="aligned spaced"
           style="gap: 20px"
         >
-          Unfold column
+          <span class="aligned">
+            Unfold column
+            <DocumentationBlock>
+              You are about to unfold a column containing array values.
+              <br />
+              <br />
+              More information about column unfolding can be found in our
+              <a
+                href="https://debiai.irt-systemx.fr/dashboard/unfolding"
+                target="_blank"
+              >
+                online documentation
+              </a>
+            </DocumentationBlock>
+          </span>
 
           <button
             class="red"
@@ -86,7 +100,21 @@
           class="aligned spaced"
           style="gap: 20px"
         >
-          Error
+          <span class="aligned">
+            Horizontal unfolding error
+            <DocumentationBlock>
+              The column cannot be unfolded horizontally.
+              <br />
+              <br />
+              More information about column unfolding can be found in our
+              <a
+                href="https://debiai.irt-systemx.fr/dashboard/unfolding"
+                target="_blank"
+              >
+                online documentation
+              </a>
+            </DocumentationBlock>
+          </span>
 
           <button
             class="red"
@@ -95,7 +123,6 @@
             Close
           </button>
         </h3>
-        <p>The column cannot be unfolded horizontally.</p>
         <p>{{ horizontalUnfoldErrorMessage }}</p>
       </div>
 
@@ -108,7 +135,33 @@
       v-if="columnIndexToSelectHorizontalColumns"
     >
       <div id="selectColumnsToUnfold">
-        <h3>Select columns to unfold</h3>
+        <h3
+          class="aligned spaced"
+          style="gap: 20px"
+        >
+          <span class="aligned">
+            Select the keys to unfold
+            <DocumentationBlock>
+              You are about to unfold a column containing a dictionary.
+              <br />
+              <br />
+              More information about column unfolding can be found in our
+              <a
+                href="https://debiai.irt-systemx.fr/dashboard/unfolding"
+                target="_blank"
+              >
+                online documentation
+              </a>
+            </DocumentationBlock>
+          </span>
+
+          <button
+            class="red"
+            @click="columnIndexToSelectHorizontalColumns = null"
+          >
+            Cancel
+          </button>
+        </h3>
         <p>
           You are about to unfold a column containing a dictionary.
           <br />
