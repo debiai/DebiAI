@@ -37,14 +37,12 @@
     </div>
     <!-- Algorithm inputs-->
     <div id="content">
-      <h5>{{ "Input" + (algorithm.inputs.length > 1 ? "s" : "") }}:</h5>
       <div id="inputs">
         <UseAlgorithmInput
           v-for="(input, index) in algorithm.inputs"
           :key="index"
           :input="input"
           :data="data"
-          :selectedData="selectedData"
           v-on:inputValueUpdate="
             (val) => {
               input.value = val;
@@ -83,7 +81,6 @@ export default {
     algorithm: { type: Object, required: true },
     algoProvider: { type: Object, required: true },
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -99,9 +96,9 @@ export default {
         if (input.value === null || input.value === undefined) body += "null,\n";
         else {
           if (input.type === "array") body += "[";
-          body += input.value.toString().slice(0, 100);
-          if (input.value.toString().length > 100) body += "...";
-          if (input.type === "array") body += "]";
+          body += input.value.toString().slice(0, 50);
+          if (input.value.toString().length > 50) body += "...";
+          if (input.type === "array") body += "] (" + input.value.length + " values)";
           body += ",\n";
         }
       });

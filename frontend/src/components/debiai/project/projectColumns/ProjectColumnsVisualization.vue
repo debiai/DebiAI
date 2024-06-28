@@ -17,10 +17,8 @@
             <!-- Grouped columns -->
             <Collapsible style="margin: 3px">
               <template v-slot:header>
-                <h4>
-                  {{ group }}
-                  <span class="nbItem"> {{ dataColumnsPerGroup[category][group].length }} </span>
-                </h4>
+                {{ group }}
+                <span class="nbItem"> {{ dataColumnsPerGroup[category][group].length }} </span>
               </template>
               <template v-slot:body>
                 <div class="columns">
@@ -56,10 +54,8 @@
           <!-- Grouped columns -->
           <Collapsible style="margin: 3px">
             <template v-slot:header>
-              <h4>
-                {{ group }}
-                <span class="nbItem"> {{ resultsColumnsPerGroup.results[group].length }} </span>
-              </h4>
+              {{ group }}
+              <span class="nbItem"> {{ resultsColumnsPerGroup.results[group].length }} </span>
             </template>
             <template v-slot:body>
               <div class="columns">

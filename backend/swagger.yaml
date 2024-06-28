@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.27.2
+  version: 0.27.1
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -1596,6 +1596,8 @@ definitions:
         properties:
           nbSamples:
             type: integer
+          metadata:
+            type: object
 
   request:
     allOf:

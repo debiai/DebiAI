@@ -3,68 +3,53 @@
     :id="'SimpleStatistics' + index"
     class="dataVisualizationWidget"
   >
-    <!-- Column selection Modal -->
-    <modal
-      v-if="columnSelection"
-      @close="columnSelection = false"
-    >
-      <ColumnSelection
-        title="Select a column"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[selectedColumn.index]"
-        v-on:cancel="columnSelection = false"
-        v-on:colSelect="selectCol"
-      />
-    </modal>
-
     <!-- Column & settings -->
     <div
       id="settings"
+      class="dataGroup gapped"
+      style="align-items: center; justify-content: space-evenly"
       v-if="settings"
     >
-      <div style="display: flex">
-        <Column
-          :column="selectedColumn"
-          :colorSelection="true"
-          v-on:selected="columnSelection = true"
-        />
-        <!-- abs value option -->
-        <div
-          class="dataGroup"
-          style="flex: 1"
-          v-if="absoluteOption"
-        >
-          <div
-            class="data"
-            style="width: 100%"
-          >
-            <span class="name"> Absolute value </span>
-            <span
-              class="value"
-              style="width: 100%"
-            >
-              <input
-                type="checkbox"
-                :id="'absolute' + index"
-                class="customCbx"
-                v-model="absolute"
-                style="display: none"
-              />
-              <label
-                :for="'absolute' + index"
-                class="toggle"
-              >
-                <span></span>
-              </label>
-            </span>
-          </div>
+      <div class="data">
+        <div class="name">Select the column to display statistics</div>
+        <div class="value">
+          <ColumnSelectionButton
+            :data="data"
+            :validColumnsProperties="validColumnsProperties"
+            :defaultColumnIndex="selectedColumn ? selectedColumn.index : null"
+            title="Select a column"
+            v-on:selected="selectCol"
+          />
         </div>
+        <!-- abs value option -->
+      </div>
+      <div
+        class="data"
+        v-if="absoluteOption"
+      >
+        <span class="name"> Absolute value </span>
+        <span class="value">
+          <input
+            type="checkbox"
+            :id="'absolute' + index"
+            class="customCbx"
+            v-model="absolute"
+            style="display: none"
+          />
+          <label
+            :for="'absolute' + index"
+            class="toggle"
+          >
+            <span></span>
+          </label>
+        </span>
       </div>
     </div>
 
-    <div id="columnStat">
+    <div
+      id="columnStat"
+      v-if="selectedColumn !== null"
+    >
       <!-- Title -->
       <span>
         <b>
@@ -112,7 +97,7 @@
     <div v-if="toMuchUniqueValues">To much unique values in the selected colored column</div>
     <div
       id="groupStat"
-      v-else-if="statByColor !== null"
+      v-else-if="statByColor !== null && selectedColumn !== null"
     >
       <!-- Title 2 -->
       <b>
@@ -146,7 +131,7 @@
             <td class="colName">
               {{ colVal.colValue }}
               <!-- Repartition -->
-              <div class="repartion">
+              <div>
                 <span>
                   {{ colVal.repartition }}
                 </span>
@@ -199,8 +184,7 @@
 
 <script>
 // Components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 // Services
 import dataOperations from "@/services/statistics/dataOperations";
@@ -208,20 +192,17 @@ import { std, variance } from "mathjs";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   data() {
     return {
       // Settings
       settings: true,
       selectedColumn: null,
-      columnSelection: false,
       absoluteOption: false,
       absolute: false,
 
@@ -245,11 +226,13 @@ export default {
       toMuchUniqueValues: false,
       colColorName: null,
       colColorDisplayed: null,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   created() {
-    // Select the 3 firsts columns
-    if (this.data.nbColumns > 0) this.selectCol(0);
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
     });
@@ -259,8 +242,7 @@ export default {
   },
   methods: {
     selectCol(index) {
-      this.selectedColumn = this.data.columns.find((c) => c.index === index);
-      this.columnSelection = false;
+      this.selectedColumn = this.data.getColumn(index);
       this.absoluteOption = this.selectedColumn.type !== String && this.selectedColumn.min < 0;
       this.absolute = false;
 
@@ -270,10 +252,10 @@ export default {
       let values;
       let valuesText;
       if (this.selectedColumn.type === String) {
-        values = this.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
-        valuesText = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        values = this.data.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
+        valuesText = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
       } else {
-        values = this.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        values = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
         if (this.absolute) values = values.map((v) => Math.abs(v));
       }
       this.nbSelectedSamplesAtUpdate = values.length;
@@ -311,14 +293,14 @@ export default {
       }
 
       // Average by color
-      if (this.coloredColumnIndex != null) {
-        let colColor = this.data.columns[this.coloredColumnIndex];
+      if (this.data.columnExists(this.coloredColumnIndex)) {
+        let colColor = this.data.getColumn(this.coloredColumnIndex);
         if (colColor.nbOccurrence <= 100) {
           this.toMuchUniqueValues = false;
           let selectedColors;
           if (colColor.type === String)
-            selectedColors = this.selectedData.map((i) => colColor.valuesIndex[i]);
-          else selectedColors = this.selectedData.map((i) => colColor.values[i]);
+            selectedColors = this.data.selectedData.map((i) => colColor.valuesIndex[i]);
+          else selectedColors = this.data.selectedData.map((i) => colColor.values[i]);
 
           let groupedValues = dataOperations.groupBy(
             selectedColors,
@@ -385,9 +367,12 @@ export default {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    selectedData() {
+    selectedDataUpdate() {
       this.$parent.selectedDataWarning = true;
     },
     coloredColumnIndex(n) {

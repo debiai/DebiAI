@@ -2,7 +2,7 @@
   "name": "Widget template full",
   "description": "Widget template with all features for developers",
   "layout": {
-    "width": 5,
+    "width": 8,
     "minWidth": 2,
     "height": 4,
     "minHeight": 2,

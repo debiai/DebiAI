@@ -11,6 +11,7 @@
       :cancelAvailable="selectedColumnsIds.length > 0"
       :colorSelection="true"
       :defaultSelected="selectedColumnsIds"
+      :validColumnsProperties="validColumnsProperties"
       v-on:cancel="settings = false"
       v-on:validate="validateSettings"
     />
@@ -42,12 +43,14 @@ export default {
       settings: true,
       selectedColumnsIds: [],
       currentDrawnColorIndex: null,
+      validColumnsProperties: {
+        types: ["Num", "Bool", "Class"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -60,7 +63,7 @@ export default {
 
     // Select default columns
     this.selectedColumnsIds = this.data.columns
-      .filter((c) => c.nbOccurrence > 1)
+      .filter((c) => c.nbOccurrence > 1 && this.validColumnsProperties.types.includes(c.typeText))
       .map((c) => c.index);
   },
   mounted() {
@@ -70,17 +73,17 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
-    setConf(conf) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];
         conf.selectedColumns.forEach((cLabel) => {
-          let c = this.data.columns.find((c) => c.label == cLabel);
+          const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIds.push(c.index);
-          else
+          else if (!options.onStartup)
             this.$store.commit("sendMessage", {
               title: "warning",
               msg: "The column " + cLabel + " hasn't been found",
@@ -92,13 +95,13 @@ export default {
     // Plot
     drawPlot() {
       // Filter selected columns
-      let columns = this.selectedColumnsIds.map((cId) => this.data.columns[cId]);
+      let columns = this.data.getColumnExistingColumns(this.selectedColumnsIds);
 
-      let plotlyColumns = dataOperations.columnsCreation(columns, this.selectedData);
+      let plotlyColumns = dataOperations.columnsCreation(columns, this.data.selectedData);
 
       // Color
       let coloredColIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
-      let colColor = this.data.columns[coloredColIndex];
+      let colColor = this.data.getColumn(coloredColIndex);
       this.currentDrawnColorIndex = coloredColIndex;
 
       let colorscale = "Portland";
@@ -107,9 +110,9 @@ export default {
       let color;
       if (colColor) {
         if (colColor.type == String) {
-          color = this.selectedData.map((sId) => colColor.valuesIndex[sId]);
+          color = this.data.selectedData.map((sId) => colColor.valuesIndex[sId]);
         } else {
-          color = this.selectedData.map((sId) => colColor.values[sId]);
+          color = this.data.selectedData.map((sId) => colColor.values[sId]);
           showscale = true;
         }
       }
@@ -227,12 +230,15 @@ export default {
     startFiltering() {
       return !this.$parent.startFiltering;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     startFiltering(o, n) {

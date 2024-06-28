@@ -3,50 +3,7 @@
     id="pointPlot"
     class="dataVisualizationWidget"
   >
-    <!-- Axis selection Modals -->
-    <modal
-      v-if="xAxisSelection"
-      @close="cancelXAxisSettings"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        v-on:cancel="cancelXAxisSettings"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="yAxisSelection"
-      @close="cancelYAxisSettings"
-    >
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        v-on:cancel="cancelYAxisSettings"
-        :defaultSelected="[columnYindex]"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="zAxisSelection"
-      @close="cancelZAxisSettings"
-    >
-      <ColumnSelection
-        title="Select the Z axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        v-on:cancel="cancelZAxisSettings"
-        :defaultSelected="[columnZindex]"
-        v-on:colSelect="zAxisSelect"
-      />
-    </modal>
-
+    <!-- Settings -->
     <div
       id="settings"
       v-if="settings"
@@ -57,30 +14,36 @@
           <div class="data">
             <div class="name">X axis</div>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnXindex)"
-                :colorSelection="true"
-                v-on:selected="selectXaxis"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="columnXindex"
+                title="Select the X axis"
+                v-on:selected="xAxisSelect"
               />
             </div>
           </div>
           <div class="data">
             <div class="name">Y axis</div>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnYindex)"
-                :colorSelection="true"
-                v-on:selected="selectYaxis"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="columnYindex"
+                title="Select the Y axis"
+                v-on:selected="yAxisSelect"
               />
             </div>
           </div>
           <div class="data">
             <div class="name">Z axis</div>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnZindex)"
-                :colorSelection="true"
-                v-on:selected="selectZaxis"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validColumnsProperties"
+                :defaultColumnIndex="columnZindex"
+                title="Select the Z axis"
+                v-on:selected="zAxisSelect"
               />
             </div>
           </div>
@@ -125,6 +88,7 @@
           id="drawBtn"
           class="blue"
           @click="drawPlot"
+          :disabled="!canDraw"
         >
           Draw
         </button>
@@ -143,26 +107,21 @@ import Plotly from "plotly.js/dist/plotly";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   data() {
     return {
       // Settings
       settings: true,
-      xAxisSelection: false,
-      yAxisSelection: false,
-      zAxisSelection: false,
 
       // Conf
-      columnXindex: 0,
-      columnYindex: 0,
-      columnZindex: 0,
+      columnXindex: null,
+      columnYindex: null,
+      columnZindex: null,
       pointSize: 2,
       autoPointOpacity: true,
       pointOpacity: 0,
@@ -170,12 +129,15 @@ export default {
       // Other
       currentDrawnColorIndex: null,
       plotDrawn: false,
+
+      validColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -186,20 +148,15 @@ export default {
   },
   mounted() {
     this.divPointPlot = document.getElementById("PP3DDiv" + this.index);
-    if (this.data.columns.length >= 3) {
-      this.xAxisSelect(0);
-      this.yAxisSelect(1);
-      this.zAxisSelect(2);
-      this.setPointOpacity();
-    }
+    if (this.data.columns.length >= 3) this.setPointOpacity();
   },
   methods: {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex].label,
-        columnY: this.data.columns[this.columnYindex].label,
-        columnZ: this.data.columns[this.columnZindex].label,
+        columnX: this.data.getColumn(this.columnXindex)?.label,
+        columnY: this.data.getColumn(this.columnYindex)?.label,
+        columnZ: this.data.getColumn(this.columnZindex)?.label,
         pointSize: this.pointSize,
         autoPointOpacity: this.autoPointOpacity,
       };
@@ -208,30 +165,30 @@ export default {
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options = {}) {
       if (!conf) return;
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
           });
       }
       if ("columnY" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnY);
+        const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYindex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
       if ("columnZ" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnZ);
+        const c = this.data.getColumnByLabel(conf.columnZ);
         if (c) this.columnZindex = c.index;
-        else
+        else if (!options.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnZ + " hasn't been found",
@@ -242,14 +199,16 @@ export default {
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
     },
     drawPlot() {
-      var colX = this.data.columns[this.columnXindex];
-      var colY = this.data.columns[this.columnYindex];
-      var colZ = this.data.columns[this.columnZindex];
+      var colX = this.data.getColumn(this.columnXindex);
+      var colY = this.data.getColumn(this.columnYindex);
+      var colZ = this.data.getColumn(this.columnZindex);
+
+      if (!colX || !colY || !colZ) return;
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
-      let valuesZ = this.selectedData.map((i) => colZ.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.data.selectedData.map((i) => colY.values[i]);
+      let valuesZ = this.data.selectedData.map((i) => colZ.values[i]);
 
       // Color
       let colorscale = "Portland";
@@ -260,8 +219,8 @@ export default {
 
       var colColor;
       if (this.coloredColumnIndex !== null) {
-        colColor = this.data.columns[this.coloredColumnIndex];
-        color = this.selectedData.map((i) =>
+        colColor = this.data.getColumn(this.coloredColumnIndex);
+        color = this.data.selectedData.map((i) =>
           colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
         );
         // Deal with color if string
@@ -297,22 +256,16 @@ export default {
         title: "<b>" + colX.label + "</b> / <b>" + colY.label + "</b> / <b>" + colZ.label + "</b>",
         scene: {
           xaxis: {
-            type: this.data.columns[this.columnXindex].type == String ? "category" : "-",
-            title: {
-              text: colX.label,
-            },
+            type: colX.type == String ? "category" : "-",
+            title: { text: colX.label },
           },
           yaxis: {
-            type: this.data.columns[this.columnYindex].type == String ? "category" : "-",
-            title: {
-              text: colY.label,
-            },
+            type: colY.type == String ? "category" : "-",
+            title: { text: colY.label },
           },
           zaxis: {
-            type: this.data.columns[this.columnZindex].type == String ? "category" : "-",
-            title: {
-              text: colZ.label,
-            },
+            type: colZ.type == String ? "category" : "-",
+            title: { text: colZ.label },
           },
         },
         margin: {
@@ -335,24 +288,6 @@ export default {
     },
 
     // axis selection
-    selectXaxis() {
-      this.xAxisSelection = true;
-    },
-    selectYaxis() {
-      this.yAxisSelection = true;
-    },
-    selectZaxis() {
-      this.zAxisSelection = true;
-    },
-    cancelXAxisSettings() {
-      this.xAxisSelection = false;
-    },
-    cancelYAxisSettings() {
-      this.yAxisSelection = false;
-    },
-    cancelZAxisSettings() {
-      this.zAxisSelection = false;
-    },
     xAxisSelect(index) {
       this.columnXindex = index;
       this.xAxisSelection = false;
@@ -369,7 +304,7 @@ export default {
       this.plotDrawn = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+      this.pointOpacity = parseFloat((1 / Math.pow(this.data.selectedData.length, 0.2)).toFixed(2));
     },
     // Export
     async getImage() {
@@ -378,29 +313,35 @@ export default {
     },
   },
   computed: {
+    canDraw() {
+      return this.columnXindex !== null && this.columnYindex !== null && this.columnZindex !== null;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    autoPointOpacity: function (newVal) {
+    autoPointOpacity(newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {
+    pointOpacity() {
       this.plotDrawn = false;
     },
-    pointSize: function () {
+    pointSize() {
       this.plotDrawn = false;
     },
-    selectedData: function () {
+    selectedDataUpdate() {
       this.plotDrawn = false;
       this.$parent.selectedDataWarning = true;
       if (this.autoPointOpacity) this.setPointOpacity();
     },
-    coloredColumnIndex: function () {
+    coloredColumnIndex() {
       this.plotDrawn = false;
     },
     redrawRequired(o, n) {

@@ -15,6 +15,7 @@
         :cancelAvailable="true"
         :colorSelection="true"
         :defaultSelected="selectedColumns.map((c) => c.index)"
+        :validColumnsProperties="validColumnsProperties"
         v-on:cancel="cancelAxisSettings"
         v-on:validate="AxisSelect"
       />
@@ -121,12 +122,15 @@ export default {
       selectedMatrixType: "pearson",
       error: false,
       loading: false,
+
+      validColumnsProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -148,7 +152,7 @@ export default {
     },
     AxisSelect(selectedColumns) {
       this.selectedColumns = selectedColumns
-        .map((colId) => this.data.columns.find((col) => col.index == colId))
+        .map((colId) => this.data.getColumn(colId))
         .filter((c) => c.nbOccurrence > 1);
 
       this.axisSelection = false;
@@ -163,8 +167,8 @@ export default {
       // Creating data to send
       var columnsData = [];
       this.selectedColumns.forEach((c) => {
-        if (c.type == String) columnsData.push(this.selectedData.map((i) => c.valuesIndex[i]));
-        else columnsData.push(this.selectedData.map((i) => c.values[i]));
+        if (c.type == String) columnsData.push(this.data.selectedData.map((i) => c.valuesIndex[i]));
+        else columnsData.push(this.data.selectedData.map((i) => c.values[i]));
       });
 
       // Sending request
@@ -288,7 +292,7 @@ export default {
       if ("selectedColumns" in conf) {
         this.selectedColumns = conf.selectedColumns
           .map((colId) => {
-            const column = this.data.columns.find((col) => col.index == colId);
+            const column = this.data.getColumn(colId);
             if (!column) {
               this.$store.commit("sendMessage", {
                 title: "warning",
@@ -311,11 +315,16 @@ export default {
       return await plotlyToImage(this.divHeatMapPlot);
     },
   },
+  computed: {
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
+  },
   watch: {
     loading() {
       this.$parent.$emit("loading", this.loading);
     },
-    selectedData() {
+    selectedDataUpdate() {
       this.matrixDrawn = false;
       this.$parent.selectedDataWarning = true;
     },

@@ -89,7 +89,7 @@ export default {
     const indent = "  ".repeat(indentation);
 
     for (const key in jsonObj) {
-      if (jsonObj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(jsonObj, key)) {
         const formattedKey = `<b>${key}</b>`;
         if (Array.isArray(jsonObj[key])) {
           if (jsonObj[key].every((item) => typeof item === "string" || typeof item === "number")) {

@@ -12,14 +12,12 @@
       <CustomColumnCreator
         :data="data"
         @cancel="customColumnCreation = false"
-        @create="createCustomColumn"
       />
     </modal>
     <!-- saveSelectionWidget -->
     <SelectionCreator
       v-if="saveSelectionWidget"
       :data="data"
-      :selectedData="selectedData"
       @cancel="saveSelectionWidget = false"
       @done="saveSelectionWidget = false"
     />
@@ -30,7 +28,6 @@
     >
       <TagCreator
         :data="data"
-        :selectedData="selectedData"
         @cancel="tagCreationWidget = false"
         @created="tagCreationWidget = false"
       />
@@ -49,7 +46,6 @@
     >
       <SelectionExportMenu
         :data="data"
-        :selectedData="selectedData"
         @cancel="selectionExport = false"
         @exported="selectionExport = false"
       />
@@ -76,16 +72,16 @@
       <Algorithms
         @cancel="algorithmModal = false"
         :data="data"
-        :selectedData="selectedData"
       />
     </modal>
     <!-- WidgetCatalog -->
     <modal
-      v-if="widgetCatalog"
+      v-show="widgetCatalog"
       @close="widgetCatalog = false"
       :preventBodyScroll="false"
     >
       <WidgetCatalog
+        ref="widgetCatalog"
         @cancel="widgetCatalog = false"
         @add="addWidget"
         @addWithConf="
@@ -125,7 +121,6 @@
             :is="component.widgetKey"
             :component="component"
             :data="data"
-            :selectedData="selectedData"
             :index="component.id"
           />
         </Widget>
@@ -141,12 +136,14 @@
     -->
     <Header
       :data="data"
-      :selectedData="selectedData"
       @addWidget="widgetCatalog = !widgetCatalog"
     />
 
     <!-- Side menu -->
     <SideBar :menuList="menuList" />
+
+    <!-- Column unfolding menu -->
+    <ColumnUnfoldingMenu :data="data" />
   </div>
 </template>
 
@@ -163,6 +160,7 @@ import Header from "./Header";
 import SideBar from "./SideBar";
 import CustomColumnCreator from "./dataCreation/CustomColumnCreator";
 import SelectionSelection from "./dataNavigation/SelectionSelection";
+import ColumnUnfoldingMenu from "./dataCreation/ColumnUnfoldingMenu";
 import SelectionCreator from "./dataCreation/SelectionCreator";
 import TagCreator from "./dataCreation/TagCreator";
 import SelectionExportMenu from "./dataExport/SelectionExportMenu";
@@ -171,8 +169,8 @@ import Layouts from "./widget/layouts/Layouts";
 import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 
 // Services
+import Data from "@/services/statistics/data";
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
-import samplesFiltering from "@/services/statistics/samplesFiltering";
 import { getAnalysisExport } from "@/services/statistics/analysisExport";
 
 export default {
@@ -184,6 +182,7 @@ export default {
     Header,
     SideBar,
     CustomColumnCreator,
+    ColumnUnfoldingMenu,
     SelectionSelection,
     SelectionCreator,
     TagCreator,
@@ -196,7 +195,6 @@ export default {
     return {
       // Analysis data
       data: null, // Contain all the data that the widget will read
-      selectedData: null, // Index of the selected samples or results
 
       // Workspace
       components: [],
@@ -328,8 +326,7 @@ export default {
       } else this.$router.push("/");
     } else {
       // Load provided data and set selected data to 100%
-      this.data = this.$route.params.data;
-      this.selectedData = [...Array(this.data.nbLines).keys()];
+      this.data = new Data.Data(this.$route.params.data);
 
       // Load available Widgets from the widget folder
       this.loadWidgets();
@@ -420,22 +417,22 @@ export default {
     },
     loadLayout(layout_full) {
       const layout = layout_full.layout;
-      const selectedColorColumn = layout_full.selectedColorColumn;
+      const savedSelectedColorColumn = layout_full.savedSelectedColorColumn;
 
       this.clearLayout();
       this.layoutModal = false;
 
-      // Set selectedColorColumn
-      if (selectedColorColumn) {
+      // Set the colored column
+      if (savedSelectedColorColumn) {
         // Get the column index
-        const column = this.data.columns.find((c) => c.label == selectedColorColumn);
+        const column = this.data.getColumnByLabel(savedSelectedColorColumn);
         const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
 
         // Set the column index
         if (column == null) {
           this.$store.commit("sendMessage", {
             title: "warning",
-            msg: "The column " + selectedColorColumn + " hasn't been found",
+            msg: "The column " + savedSelectedColorColumn + " hasn't been found",
           });
         } else if (coloredColumnIndex != column.index) {
           this.$store.commit("setColoredColumnIndex", column.index);
@@ -500,6 +497,9 @@ export default {
       this.components = this.components.filter((c) => c.id !== component.id);
     },
     copyWidget({ component, configuration }) {
+      if (!component) return;
+      if (!configuration) configuration = { name: component.name };
+
       // Add something to the name
       // Check if their is a (x) at the end of the name
       const widgetCopyText = configuration.name.match(/\(\d+\)$/);
@@ -562,8 +562,8 @@ export default {
 
       // Add the selectedColorColumn
       const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
-      if (coloredColumnIndex !== null) {
-        requestBody.selectedColorColumn = this.data.columns[coloredColumnIndex].label;
+      if (coloredColumnIndex !== null && this.data.columnExists(coloredColumnIndex)) {
+        requestBody.selectedColorColumn = this.data.getColumn(coloredColumnIndex).label;
       }
 
       // We remove some properties from the layout
@@ -610,16 +610,6 @@ export default {
     },
     customColumn() {
       this.customColumnCreation = true;
-    },
-    createCustomColumn(newCol) {
-      this.customColumnCreation = false;
-      this.data.columns.push(newCol);
-      this.data.nbColumns += 1;
-      this.data.labels.push(newCol.label);
-      this.$store.commit("sendMessage", {
-        title: "success",
-        msg: "Column created successfully",
-      });
     },
     selectionSelectionBtn() {
       this.selectionSelect = true;
@@ -724,19 +714,14 @@ export default {
   watch: {
     filters() {
       // Update the selected samples from the filters
-      try {
-        let { selectedSampleIds, filtersEffects } = samplesFiltering.getSelected(
-          this.filters,
-          this.data
-        );
-        this.$store.commit("setFiltersEffects", filtersEffects);
-        this.selectedData = selectedSampleIds;
-      } catch (error) {
-        console.error(error);
-        this.$store.commit("sendMessage", {
-          title: "error",
-          msg: "Error while filtering the samples",
-        });
+      this.data.updateFilters();
+    },
+
+    widgetCatalog() {
+      // Emit the showCatalog event to the widgetCatalog component
+      if (this.widgetCatalog) {
+        const widgetCatalog = this.$refs.widgetCatalog;
+        if (widgetCatalog) widgetCatalog.loadWidgetConfigurationsOverview();
       }
     },
   },
@@ -755,8 +740,16 @@ export default {
     this.$store.commit("setSelectionsIds", null);
     this.$store.commit("setColoredColumnIndex", 0);
 
+    // Remove the created experiments
+    this.$store.commit("deleteAllExperiments");
+
     // Remove the grid
     if (this.grid) this.grid.destroy();
+
+    // Free the data
+    // if (this.data) this.data.clean();
+    // this.data = null;
+    // this.components = [];
   },
 };
 </script>
