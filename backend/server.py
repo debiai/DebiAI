@@ -1,5 +1,5 @@
-from backend.backend import start_server
+from backend.websrv import start_server
 
 
 def run():
-    start_server()
+    start_server(reloader=False)
