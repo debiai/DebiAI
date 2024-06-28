@@ -117,6 +117,9 @@ export default {
         .then((configuration) => {
           this.widgetConfigurationsOverview = configuration;
         })
+        .catch((error) => {
+          console.error("Failed to load widget configurations:", error);
+        })
         .finally(() => {
           this.setupWidgets();
         });
@@ -150,15 +153,15 @@ export default {
   },
   computed: {
     widgetCategoriesSorted() {
-      return this.widgetCategories.sort();
+      return [...this.widgetCategories].sort();
     },
     widgetProjectTypesSorted() {
-      return this.widgetProjectTypes.sort();
+      return [...this.widgetProjectTypes].sort();
     },
     selectedWidgets() {
       // Sort the widget by number of categories so that
       // the most important ones are displayed first
-      const sortedWidgets = this.widgets.sort((a, b) => {
+      const sortedWidgets = [...this.widgets].sort((a, b) => {
         if (a.categories && b.categories) {
           if (a.categories.length > b.categories.length) return -1;
           if (a.categories.length < b.categories.length) return 1;

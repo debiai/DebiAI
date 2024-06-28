@@ -3,22 +3,7 @@
     id="RangeSliderPlot"
     class="dataVisualizationWidget"
   >
-    <!-- Axis selection Modals -->
-    <modal
-      v-if="xAxisSelection"
-      @close="xAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <!-- multi Y1 axis selection -->
+    <!-- Multi Y1 axis selection -->
     <modal
       v-if="y1AxisSelection"
       @close="y1AxisSelection = false"
@@ -28,11 +13,12 @@
         :data="data"
         :colorSelection="true"
         :defaultSelected="[...selectedY1ColumnsIds]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="y1AxisSelection = false"
         v-on:validate="y1AxisSelect"
       />
     </modal>
-    <!-- multi Y2 axis selection -->
+    <!-- Multi Y2 axis selection -->
     <modal
       v-if="y2AxisSelection"
       @close="y2AxisSelection = false"
@@ -42,23 +28,9 @@
         :data="data"
         :colorSelection="true"
         :defaultSelected="[...selectedY2ColumnsIds]"
+        :validColumnsProperties="validYColumnsProperties"
         v-on:cancel="y2AxisSelection = false"
         v-on:validate="y2AxisSelect"
-      />
-    </modal>
-    <!-- Tag axis selection -->
-    <modal
-      v-if="tagAxisSelection"
-      @close="tagAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the background color column"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="columnTagIndex === null ? undefined : [columnTagIndex]"
-        v-on:cancel="tagAxisSelection = false"
-        v-on:colSelect="tagAxisSelect"
       />
     </modal>
 
@@ -73,10 +45,12 @@
         <div class="data">
           <div class="name">X axis</div>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="xAxisSelection = true"
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validXColumnsProperties"
+              :defaultColumnIndex="columnXindex"
+              title="Select the X axis"
+              v-on:selected="xAxisSelect"
             />
           </div>
         </div>
@@ -87,7 +61,7 @@
             <!-- Display the selected column -->
             <Column
               v-if="selectedY1ColumnsIds.length == 1"
-              :column="data.columns.find((c) => c.index == selectedY1ColumnsIds[0])"
+              :column="data.getColumn(selectedY1ColumnsIds[0])"
               :colorSelection="true"
               v-on:selected="y1AxisSelection = true"
             />
@@ -134,7 +108,7 @@
             <!-- Display the selected column -->
             <Column
               v-if="selectedY2ColumnsIds.length == 1"
-              :column="data.columns.find((c) => c.index == selectedY2ColumnsIds[0])"
+              :column="data.getColumn(selectedY2ColumnsIds[0])"
               :colorSelection="true"
               v-on:selected="y2AxisSelection = true"
             />
@@ -178,30 +152,19 @@
         <!-- Background color -->
         <div class="data">
           <span class="name">Background color</span>
-          <div
-            class="value"
-            v-if="columnTagIndex !== null"
-          >
-            <Column
-              :column="data.columns.find((c) => c.index == columnTagIndex)"
-              :colorSelection="true"
-              v-on:selected="tagAxisSelection = true"
-            />
-            <button
-              class="red"
-              @click="
+          <div class="value">
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validTagColumnsProperties"
+              :defaultColumnIndex="columnTagIndex"
+              title="Select column"
+              canBeRemoved
+              v-on:selected="tagAxisSelect"
+              v-on:removed="
                 columnTagIndex = null;
                 plotDrawn = false;
               "
-            >
-              Remove
-            </button>
-          </div>
-          <div
-            class="value"
-            v-else
-          >
-            <button @click="tagAxisSelection = true">Select column</button>
+            />
           </div>
         </div>
       </div>
@@ -211,6 +174,7 @@
         id="drawBtn"
         class="blue"
         @click="drawPlot"
+        :disabled="!canDraw"
       >
         Draw
       </button>
@@ -227,6 +191,7 @@
 <script>
 import swal from "sweetalert";
 import Plotly from "plotly.js/dist/plotly";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 import ColumnSelection from "../../common/ColumnSelection";
 import Column from "../../common/Column";
 import dataOperations from "@/services/statistics/dataOperations";
@@ -234,6 +199,7 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 export default {
   components: {
+    ColumnSelectionButton,
     ColumnSelection,
     Column,
   },
@@ -241,13 +207,11 @@ export default {
     return {
       // Settings
       settings: true,
-      xAxisSelection: false,
       y1AxisSelection: false,
       y2AxisSelection: false,
-      tagAxisSelection: false,
 
       // Conf
-      columnXindex: 0,
+      columnXindex: null,
       selectedY1ColumnsIds: [],
       selectedY2ColumnsIds: [],
       divideY1PerColor: false,
@@ -257,12 +221,21 @@ export default {
       // Other
       currentDrawnColorIndex: null,
       plotDrawn: false,
+
+      validXColumnsProperties: {
+        types: ["Num", "Class"],
+      },
+      validYColumnsProperties: {
+        types: ["Num", "Bool"],
+      },
+      validTagColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget events
@@ -283,8 +256,6 @@ export default {
   mounted() {
     this.plotDiv = document.getElementById("rangeSliderPlot_" + this.index);
 
-    if (this.data.columns.length >= 1) this.xAxisSelect(0);
-
     // Watch for configuration changes
     this.defConfChangeUpdate();
   },
@@ -293,9 +264,9 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex].label,
-        columnsY1: this.selectedY1ColumnsIds.map((id) => this.data.columns[id].label),
-        columnsY2: this.selectedY2ColumnsIds.map((id) => this.data.columns[id].label),
+        columnX: this.data.getColumn(this.columnXindex)?.label,
+        columnsY1: this.data.getColumnExistingColumnsLabels(this.selectedY1ColumnsIds),
+        columnsY2: this.data.getColumnExistingColumnsLabels(this.selectedY2ColumnsIds),
 
         // Options
         divideY1PerColor: this.divideY1PerColor,
@@ -304,30 +275,31 @@ export default {
 
       // Tag column
       if (this.columnTagIndex !== null)
-        conf.columnTag = this.data.columns[this.columnTagIndex].label;
+        conf.columnTag = this.data.getColumn(this.columnTagIndex).label;
       else conf.columnTag = null;
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options = {}) {
       const sendColNotFoundMessage = (col) => {
-        this.$store.commit("sendMessage", {
-          title: "warning",
-          msg: "The column " + col + " hasn't been found",
-        });
+        if (!options.onStartup)
+          this.$store.commit("sendMessage", {
+            title: "warning",
+            msg: "The column " + col + " hasn't been found",
+          });
       };
       if (!conf) return;
 
       // Axis
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
         else sendColNotFoundMessage(conf.columnX);
       }
       if ("columnsY1" in conf) {
         this.selectedY1ColumnsIds = [];
         conf.columnsY1.forEach((label) => {
-          let c = this.data.columns.find((c) => c.label == label);
+          const c = this.data.getColumnByLabel(label);
           if (c) this.selectedY1ColumnsIds.push(c.index);
           else sendColNotFoundMessage(label);
         });
@@ -335,7 +307,7 @@ export default {
       if ("columnsY2" in conf) {
         this.selectedY2ColumnsIds = [];
         conf.columnsY2.forEach((label) => {
-          let c = this.data.columns.find((c) => c.label == label);
+          const c = this.data.getColumnByLabel(label);
           if (c) this.selectedY2ColumnsIds.push(c.index);
           else sendColNotFoundMessage(label);
         });
@@ -346,9 +318,8 @@ export default {
       if ("divideY2PerColor" in conf) this.divideY2PerColor = conf.divideY2PerColor;
       if (conf.columnTag === null || conf.columnTag === undefined) this.columnTagIndex = null;
       if ("columnTag" in conf && conf.columnTag !== null) {
-        let c = this.data.columns.find((c) => c.label == conf.columnTag);
+        const c = this.data.getColumnByLabel(conf.columnTag);
         if (c) this.columnTagIndex = c.index;
-        else sendColNotFoundMessage(conf.columnTag);
       }
 
       this.plotDrawn = false;
@@ -371,34 +342,38 @@ export default {
     },
     getConfNameSuggestion() {
       // X axis
-      let confName = this.data.columns[this.columnXindex].label + " / ";
+      if (this.columnXindex === null) return "No X axis selected";
+      let confName = "";
 
-      // Y2 axis
+      if (this.data.columnExists(this.columnXindex))
+        confName += this.data.getColumn(this.columnXindex).label + " / ";
+
+      // Y1 axis
       if (this.selectedY1ColumnsIds.length >= 0) {
-        this.selectedY1ColumnsIds.forEach((id) => {
-          confName += this.data.columns[id].label + ", ";
+        this.data.getColumnExistingColumnsLabels(this.selectedY1ColumnsIds).forEach((label) => {
+          confName += label + ", ";
         });
         confName = confName.slice(0, -3);
       }
 
-      if (this.divideY1PerColor && this.coloredColumnIndex !== null)
-        confName += " / " + this.data.columns[this.coloredColumnIndex].label;
+      if (this.divideY1PerColor && this.data.columnExists(this.coloredColumnIndex))
+        confName += " / " + this.data.getColumn(this.coloredColumnIndex).label;
 
       // Y2 axis
       if (this.selectedY2ColumnsIds.length >= 0) {
         confName += " & ";
-        this.selectedY2ColumnsIds.forEach((id) => {
-          confName += this.data.columns[id].label + ", ";
+        this.data.getColumnExistingColumnsLabels(this.selectedY2ColumnsIds).forEach((label) => {
+          confName += label + ", ";
         });
         confName = confName.slice(0, -3);
       }
 
-      if (this.divideY2PerColor && this.coloredColumnIndex !== null)
-        confName += " / " + this.data.columns[this.coloredColumnIndex].label;
+      if (this.divideY2PerColor && this.data.columnExists(this.coloredColumnIndex))
+        confName += " / " + this.data.getColumn(this.coloredColumnIndex).label;
 
       // Background color
-      if (this.columnTagIndex !== null)
-        confName += ", Background is " + this.data.columns[this.columnTagIndex].label;
+      if (this.columnTagIndex !== null && this.data.columnExists(this.columnTagIndex))
+        confName += ", Background is " + this.data.getColumn(this.columnTagIndex).label;
 
       return confName;
     },
@@ -406,16 +381,18 @@ export default {
     // Display
     async drawPlot() {
       // Get the X column
-      const colX = this.data.columns[this.columnXindex];
+      const colX = this.data.getColumn(this.columnXindex);
+      if (!colX) return;
 
       // Get the Y columns
-      const colY1 = this.selectedY1ColumnsIds.map((index) => this.data.columns[index]);
-      const colY2 = this.selectedY2ColumnsIds.map((index) => this.data.columns[index]);
+      const colY1 = this.data.getColumnExistingColumns(this.selectedY1ColumnsIds);
+      const colY2 = this.data.getColumnExistingColumns(this.selectedY2ColumnsIds);
+      if (colY1.length == 0 && colY2.length == 0) return;
 
       // Apply selection filters
-      const valuesX = this.selectedData.map((i) => colX.values[i]);
-      const valuesY1 = colY1.map((col) => this.selectedData.map((i) => col.values[i]));
-      const valuesY2 = colY2.map((col) => this.selectedData.map((i) => col.values[i]));
+      const valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      const valuesY1 = colY1.map((col) => this.data.selectedData.map((i) => col.values[i]));
+      const valuesY2 = colY2.map((col) => this.data.selectedData.map((i) => col.values[i]));
 
       // Generate the plot traces
       let tracesY1;
@@ -452,6 +429,14 @@ export default {
       // Draw the plot
       Plotly.react(this.plotDiv, data, layout, { displayModeBar: false, responsive: true });
 
+      // Update the range slider next tick
+      this.$nextTick(() => {
+        Plotly.relayout(this.plotDiv, { "xaxis.rangeslider.visible": false });
+        this.$nextTick(() => {
+          Plotly.relayout(this.plotDiv, { "xaxis.rangeslider.visible": true });
+        });
+      });
+
       // Deal with point click to select data
       // Goal : place two vertical lines and export boundaries
       this.plotDiv.removeListener("plotly_click", this.selectDataOnPlot);
@@ -476,7 +461,6 @@ export default {
             {
               type: "sort",
               target: "x",
-              order: "descending",
             },
           ],
         };
@@ -497,7 +481,7 @@ export default {
     async generateColorerPlotTraces(valuesX, colY, valuesY, isY2 = false) {
       if (valuesY.length == 0) return [];
 
-      const colColor = this.data.columns[this.coloredColumnIndex];
+      const colColor = this.data.getColumn(this.coloredColumnIndex);
 
       // Check if the color column is not too big
       if (colColor.uniques.length > 20) {
@@ -523,8 +507,8 @@ export default {
       // Get the colored column values
       const selectedColorsValues =
         colColor.type == String
-          ? this.selectedData.map((i) => colColor.valuesIndex[i])
-          : this.selectedData.map((i) => colColor.values[i]);
+          ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+          : this.data.selectedData.map((i) => colColor.values[i]);
       const selectorUniques =
         colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -550,7 +534,6 @@ export default {
               {
                 type: "sort",
                 target: "x",
-                order: "descending",
               },
             ],
           };
@@ -582,7 +565,7 @@ export default {
         plotTitle += "/ <b>" + colY1Labels + "</b>";
         if (this.divideY1PerColor && this.coloredColumnIndex !== null)
           plotTitle +=
-            " grouped by <b>" + this.data.columns[this.coloredColumnIndex].label + "</b>";
+            " grouped by <b>" + this.data.getColumn(this.coloredColumnIndex).label + "</b>";
       }
 
       // Add the Y2 columns to the title
@@ -592,12 +575,12 @@ export default {
         plotTitle += " & <b>" + colY2Labels + "</b>";
         if (this.divideY1PerColor && this.coloredColumnIndex !== null)
           plotTitle +=
-            " grouped by <b>" + this.data.columns[this.coloredColumnIndex].label + "</b>";
+            " grouped by <b>" + this.data.getColumn(this.coloredColumnIndex).label + "</b>";
       }
 
       // Add the background color to the title
-      if (this.columnTagIndex !== null) {
-        const colTag = this.data.columns[this.columnTagIndex];
+      if (this.data.columnExists(this.columnTagIndex)) {
+        const colTag = this.data.getColumn(this.columnTagIndex);
         plotTitle += " with background color <b>" + colTag.label + "</b>";
       }
 
@@ -674,12 +657,13 @@ export default {
     },
     drawTagHeatmap(x, layout) {
       if (this.columnTagIndex === null) return;
-      const colTag = this.data.columns[this.columnTagIndex];
+      const colTag = this.data.getColumn(this.columnTagIndex);
 
       // Get the tag values with selection
       let valuesTag = [];
-      if (colTag.type === String) valuesTag = this.selectedData.map((i) => colTag.valuesIndex[i]);
-      else valuesTag = this.selectedData.map((i) => colTag.values[i]);
+      if (colTag.type === String)
+        valuesTag = this.data.selectedData.map((i) => colTag.valuesIndex[i]);
+      else valuesTag = this.data.selectedData.map((i) => colTag.values[i]);
 
       // Construct a text array for the hover
       const textTag = valuesTag.map((v) => colTag.uniques[v] || v);
@@ -737,7 +721,6 @@ export default {
     // axis selection
     xAxisSelect(index) {
       this.columnXindex = index;
-      this.xAxisSelection = false;
       this.plotDrawn = false;
     },
     y1AxisSelect(indexes) {
@@ -752,7 +735,6 @@ export default {
     },
     tagAxisSelect(index) {
       this.columnTagIndex = index;
-      this.tagAxisSelection = false;
       this.plotDrawn = false;
     },
 
@@ -818,7 +800,7 @@ export default {
       if (this.border1 === null || this.border2 === null) return;
 
       // Create a debiai filter
-      let colx = this.data.columns[this.columnXindex];
+      let colx = this.data.getColumn(this.columnXindex);
 
       const min = this.border1 < this.border2 ? this.border1 : this.border2;
       const max = this.border1 > this.border2 ? this.border1 : this.border2;
@@ -880,18 +862,27 @@ export default {
     },
   },
   computed: {
+    canDraw() {
+      return (
+        this.columnXindex !== null &&
+        (this.selectedY1ColumnsIds.length > 0 || this.selectedY2ColumnsIds.length > 0)
+      );
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     dividePerColor() {
       this.plotDrawn = false;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     redrawRequired(o, n) {

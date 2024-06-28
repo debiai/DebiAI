@@ -213,7 +213,7 @@
             <span
               class="updatedDate"
               :title="$services.timeStampToDate(project.updateDate)"
-              v-if="project.updateDate !== project.creationDate"
+              v-if="project.updateDate && project.updateDate !== project.creationDate"
             >
               Updated {{ $services.prettyTimeStamp(project.updateDate) }}
             </span>

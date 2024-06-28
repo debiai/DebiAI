@@ -3,36 +3,7 @@
     id="confusionMatrix"
     class="dataVisualizationWidget"
   >
-    <!-- Axis selection Modals -->
-    <modal
-      v-if="trueAxisSelection"
-      @close="cancelXAxisSettings"
-    >
-      <ColumnSelection
-        title="Select the True axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnTIndex]"
-        v-on:cancel="cancelXAxisSettings"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="predAxisSelection"
-      @close="cancelYAxisSettings"
-    >
-      <ColumnSelection
-        title="Select the Predicted axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnPIndex]"
-        v-on:cancel="cancelYAxisSettings"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-
+    <!-- Settings-->
     <div
       id="settings"
       v-if="settings"
@@ -47,10 +18,12 @@
             <div class="data">
               <div class="name">Truth</div>
               <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnTIndex)"
-                  :colorSelection="true"
-                  v-on:selected="trueAxisSelection = true"
+                <ColumnSelectionButton
+                  :data="data"
+                  :validColumnsProperties="validColumnsProperties"
+                  :defaultColumnIndex="columnTIndex"
+                  title="Select the True axis"
+                  v-on:selected="xAxisSelect"
                 />
               </div>
             </div>
@@ -63,10 +36,12 @@
             <div class="data">
               <div class="name">Prediction</div>
               <div class="value">
-                <Column
-                  :column="data.columns.find((c) => c.index == columnPIndex)"
-                  :colorSelection="true"
-                  v-on:selected="predAxisSelection = true"
+                <ColumnSelectionButton
+                  :data="data"
+                  :validColumnsProperties="validColumnsProperties"
+                  :defaultColumnIndex="columnPIndex"
+                  title="Select the Predicted axis"
+                  v-on:selected="yAxisSelect"
                 />
               </div>
             </div>
@@ -99,7 +74,7 @@
         <button
           id="drawBtn"
           @click="checkMatrix"
-          :disabled="plotDrawn"
+          :disabled="plotDrawn || !canDraw"
           class="blue"
         >
           Draw
@@ -120,34 +95,33 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 import Plotly from "plotly.js/dist/plotly";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 import swal from "sweetalert";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   data() {
     return {
       // Configurations
-      columnTIndex: 0,
-      columnPIndex: 0,
+      columnTIndex: null,
+      columnPIndex: null,
       dividePerColor: true,
 
       // Settings
       settings: true,
       plotDrawn: false,
-      trueAxisSelection: false,
-      predAxisSelection: false,
       currentDrawnColorIndex: null,
+
+      validColumnsProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -158,8 +132,6 @@ export default {
   },
   mounted() {
     this.divConfusionMatrix = document.getElementById("CFM" + this.index);
-    this.xAxisSelect(0);
-    this.yAxisSelect(1);
 
     // Watch for configuration changes
     this.defConfChangeUpdate();
@@ -167,8 +139,13 @@ export default {
   methods: {
     async checkMatrix() {
       // Check that there isn't too many unique values in the selected columns
-      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
-      let uniquesPred = this.data.columns[this.columnPIndex].uniques;
+      let colGDT = this.data.getColumn(this.columnTIndex);
+      let colPred = this.data.getColumn(this.columnPIndex);
+
+      if (!colGDT || !colPred) return;
+
+      const uniquesGDT = colGDT.uniques;
+      const uniquesPred = colPred.uniques;
 
       if (uniquesGDT.length > 30 || uniquesPred.length > 30) {
         let rep = await swal({
@@ -192,7 +169,7 @@ export default {
 
       // Same with the colored column
       if (this.coloredColumnIndex != null && this.dividePerColor) {
-        let uniquesColor = this.data.columns[this.coloredColumnIndex].uniques;
+        let uniquesColor = this.data.getColumn(this.coloredColumnIndex).uniques;
         if (uniquesColor.length > 30) {
           let rep = await swal({
             title: "Long calculation: do you want to proceed ?",
@@ -224,16 +201,16 @@ export default {
     createMatrix() {
       console.time("ConfusionMatrix");
       // Load values
-      let truthColumnValues = this.data.columns[this.columnTIndex].values;
-      let predictedColumnValues = this.data.columns[this.columnPIndex].values;
-      let selectedTruth = this.selectedData.map((i) => truthColumnValues[i]);
-      let selectedPred = this.selectedData.map((i) => predictedColumnValues[i]);
+      let truthColumnValues = this.data.getColumn(this.columnTIndex).values;
+      let predictedColumnValues = this.data.getColumn(this.columnPIndex).values;
+      let selectedTruth = this.data.selectedData.map((i) => truthColumnValues[i]);
+      let selectedPred = this.data.selectedData.map((i) => predictedColumnValues[i]);
 
       // Find all the unique values in the selected columns
       let allUniques = [
         ...new Set([
-          ...this.data.columns[this.columnTIndex].uniques,
-          ...this.data.columns[this.columnPIndex].uniques,
+          ...this.data.getColumn(this.columnTIndex).uniques,
+          ...this.data.getColumn(this.columnPIndex).uniques,
         ]),
       ];
 
@@ -242,12 +219,12 @@ export default {
 
       // Then, if we have a colored column, we create the matrix for each unique value
       if (this.coloredColumnIndex != null && this.dividePerColor) {
-        let colColor = this.data.columns[this.coloredColumnIndex];
+        let colColor = this.data.getColumn(this.coloredColumnIndex);
 
         let selectedColorsValues =
           colColor.type == String
-            ? this.selectedData.map((i) => colColor.valuesIndex[i])
-            : this.selectedData.map((i) => colColor.values[i]);
+            ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+            : this.data.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
           colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -286,7 +263,7 @@ export default {
 
       // Fill matrix according to indexer
       let matrix = [];
-      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
+      let uniquesGDT = this.data.getColumn(this.columnTIndex).uniques;
       uniquesGDT.forEach((uniqueValue) => {
         let row = [];
         allUniques.forEach((uniqueValue2) => {
@@ -306,13 +283,13 @@ export default {
         [1, "rgb(255,0,0)"],
       ];
 
-      let uniquesGDT = this.data.columns[this.columnTIndex].uniques;
+      let uniquesGDT = this.data.getColumn(this.columnTIndex).uniques;
       let data = [];
       for (let i = 0; i < matrixList.length; i++) {
         // Find the subplot title
         let uniqueValue;
         if (i >= 1) {
-          uniqueValue = this.data.columns[this.coloredColumnIndex].uniques[i - 1];
+          uniqueValue = this.data.getColumn(this.coloredColumnIndex).uniques[i - 1];
         }
 
         data.push({
@@ -344,14 +321,14 @@ export default {
           // Truth axis
           dtick: 1,
           type: "category",
-          title: this.data.columns[this.columnTIndex].label + " (Truth)",
+          title: this.data.getColumn(this.columnTIndex).label + " (Truth)",
           autorange: "reversed",
         },
         xaxis: {
           // Predicted axis
           dtick: 1,
           type: "category",
-          title: this.data.columns[this.columnPIndex].label + " (Predicted)",
+          title: this.data.getColumn(this.columnPIndex).label + " (Predicted)",
           side: "top",
         },
         margin: {
@@ -385,7 +362,7 @@ export default {
         // Add the title of each subplot
         let uniqueValue;
         if (matrixNumber >= 1)
-          uniqueValue = this.data.columns[this.coloredColumnIndex].uniques[matrixNumber - 1];
+          uniqueValue = this.data.getColumn(this.coloredColumnIndex).uniques[matrixNumber - 1];
         if (this.coloredColumnIndex != null && this.dividePerColor) {
           layout.annotations.push({
             text: matrixNumber >= 1 ? uniqueValue : "All data",
@@ -426,20 +403,12 @@ export default {
       this.divConfusionMatrix.on("plotly_click", this.selectDataOnPlot);
     },
     // axis selection
-    cancelXAxisSettings() {
-      this.trueAxisSelection = false;
-    },
-    cancelYAxisSettings() {
-      this.predAxisSelection = false;
-    },
     xAxisSelect(index) {
       this.columnTIndex = index;
-      this.trueAxisSelection = false;
       this.plotDrawn = false;
     },
     yAxisSelect(index) {
       this.columnPIndex = index;
-      this.predAxisSelection = false;
       this.plotDrawn = false;
     },
     swap() {
@@ -453,33 +422,33 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnTIndex: this.data.columns[this.columnTIndex].label,
-        columnPIndex: this.data.columns[this.columnPIndex].label,
+        columnTIndex: this.data.getColumn(this.columnTIndex)?.label,
+        columnPIndex: this.data.getColumn(this.columnPIndex)?.label,
       };
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options) {
       if (!conf) return;
       if ("columnTIndex" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnTIndex);
+        let c = this.data.getColumnByLabel(conf.columnTIndex);
         if (c) this.columnTIndex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnTIndex + " hasn't been found",
           });
       }
       if ("columnPIndex" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnPIndex);
+        let c = this.data.getColumnByLabel(conf.columnPIndex);
         if (c) this.columnPIndex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnPIndex + " hasn't been found",
           });
       }
-      this.checkMatrix();
+      if (!options?.onStartup) this.checkMatrix();
     },
     defConfChangeUpdate() {
       this.$watch(
@@ -491,9 +460,9 @@ export default {
     },
     getConfNameSuggestion() {
       return (
-        this.data.columns[this.columnTIndex].label +
+        this.data.getColumn(this.columnTIndex).label +
         " and " +
-        this.data.columns[this.columnPIndex].label
+        this.data.getColumn(this.columnPIndex).label
       );
     },
 
@@ -507,8 +476,8 @@ export default {
         "pointIndex" in event.points[0]
       ) {
         let filters = [];
-        let colTruth = this.data.columns[this.columnTIndex];
-        let colPred = this.data.columns[this.columnPIndex];
+        let colTruth = this.data.getColumn(this.columnTIndex);
+        let colPred = this.data.getColumn(this.columnPIndex);
         let selectedSquareCoordinates = event.points[0].pointIndex;
 
         let selectedTruth = colTruth.uniques[selectedSquareCoordinates[0]];
@@ -528,7 +497,7 @@ export default {
 
         // Apply color
         if (this.coloredColumnIndex != null && this.dividePerColor) {
-          let colColor = this.data.columns[this.coloredColumnIndex];
+          let colColor = this.data.getColumn(this.coloredColumnIndex);
           let selectedColor = colColor.uniques[event.points[0].curveNumber - 1];
 
           filters.push({
@@ -558,18 +527,24 @@ export default {
     },
   },
   computed: {
+    canDraw() {
+      return this.columnTIndex != null && this.columnPIndex != null;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequired() {
       return !(this.dividePerColor && this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     dividePerColor() {
       this.checkMatrix();
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
     redrawRequired(o, n) {

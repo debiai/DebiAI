@@ -72,12 +72,18 @@
       <!-- Dates -->
       <div
         id="dates"
-        v-if="project && project.creationDate && project.updateDate"
+        v-if="project && (project.creationDate || project.updateDate)"
       >
-        <span :title="$services.timeStampToDate(project.creationDate)">
+        <span
+          v-if="project.creationDate"
+          :title="$services.timeStampToDate(project.creationDate)"
+        >
           Created {{ $services.prettyTimeStamp(project.creationDate) }}
         </span>
-        <span :title="$services.timeStampToDate(project.updateDate)">
+        <span
+          v-if="project.updateDate"
+          :title="$services.timeStampToDate(project.updateDate)"
+        >
           Updated {{ $services.prettyTimeStamp(project.updateDate) }}
         </span>
       </div>

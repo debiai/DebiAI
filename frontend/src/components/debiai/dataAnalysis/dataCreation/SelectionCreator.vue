@@ -45,34 +45,8 @@
           <!-- nb samples -->
           <div class="data">
             <div class="name">Selected samples</div>
-            <div class="value">{{ selectedData.length }} / {{ data.nbLines }}</div>
+            <div class="value">{{ data.nbOriginalSelectedData }} / {{ data.nbLinesOriginal }}</div>
           </div>
-          <!-- saveRequestAsWell -->
-          <!-- TODO : Revert for the requests update -->
-          <!-- <div class="data">
-          <div class="name">Save the request as well</div>
-          <div class="value">
-            No
-            <input
-              type="checkbox"
-              id="selectionSaveRequest"
-              class="customCbx"
-              style="display: none"
-              v-model="saveRequestAsWell"
-            />
-            <label for="selectionSaveRequest" class="toggle">
-              <span></span>
-            </label>
-            Yes
-          </div>
-        </div> -->
-          <!-- nb filters:  -->
-          <!-- <div :class="saveRequestAsWell ? 'data ' : 'data date'">
-          <div class="name">Number of filters</div>
-          <div class="value">
-            {{ filters.length }}
-          </div>
-        </div> -->
         </div>
         <div style="display: flex; justify-content: flex-end">
           <button
@@ -100,7 +74,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$backendDialog.getSelections().then((selections) => {
@@ -137,9 +110,15 @@ export default {
     },
 
     saveSelection(requestId = null) {
-      let selectedIds = this.selectedData.map(
+      // Get the selected data positions
+      const selectedDataNumbers = this.data.getOriginalSelectedData();
+
+      // Get the ids of the selected data
+      const selectedIds = selectedDataNumbers.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
+
+      // Save the selection
       this.$backendDialog
         .addSelection(selectedIds, this.selectionName, requestId)
         .then(() => {
@@ -148,11 +127,6 @@ export default {
             msg: "Selection saved successfully",
           });
           this.$emit("cancel");
-
-          // this.$backendDialog.getSelections().then((selections) => {
-          //   this.createdSelections = selections;
-          //   this.$store.commit("setProjectSelections", selections);
-          // });
         })
         .catch(() => {
           this.$store.commit("sendMessage", {

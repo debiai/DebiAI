@@ -3,64 +3,7 @@
     id="intervalPlot"
     class="dataVisualizationWidget"
   >
-    <!-- Axis selection Modals -->
-    <modal
-      v-if="xAxisSelection"
-      @close="xAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="yAxisSelection"
-      @close="yAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnYindex]"
-        v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="upperAxisSelection"
-      @close="upperAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the upper axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="columnUpperIndex === null ? undefined : [columnUpperIndex]"
-        v-on:cancel="upperAxisSelection = false"
-        v-on:colSelect="upperAxisSelect"
-      />
-    </modal>
-    <modal
-      v-if="lowerAxisSelection"
-      @close="lowerAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the lower axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="columnLowerIndex === null ? undefined : [columnLowerIndex]"
-        v-on:cancel="lowerAxisSelection = false"
-        v-on:colSelect="lowerAxisSelect"
-      />
-    </modal>
-
+    <!-- Plot settings -->
     <div
       id="settings"
       v-if="settings"
@@ -73,10 +16,12 @@
           <div class="data">
             <span class="name">X axis</span>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnXindex)"
-                :colorSelection="true"
-                v-on:selected="xAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validXColumnsProperties"
+                :defaultColumnIndex="columnXindex"
+                title="Select the X axis"
+                v-on:selected="xAxisSelect"
               />
             </div>
           </div>
@@ -84,10 +29,12 @@
           <div class="data">
             <span class="name">Y axis</span>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnYindex)"
-                :colorSelection="true"
-                v-on:selected="yAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validYColumnsProperties"
+                :defaultColumnIndex="columnYindex"
+                title="Select the Y axis"
+                v-on:selected="yAxisSelect"
               />
             </div>
           </div>
@@ -97,10 +44,12 @@
           <div class="data">
             <span class="name">Lower axis</span>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnLowerIndex)"
-                :colorSelection="true"
-                v-on:selected="lowerAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validYColumnsProperties"
+                :defaultColumnIndex="columnLowerIndex"
+                title="Select the lower axis"
+                v-on:selected="lowerAxisSelect"
               />
             </div>
           </div>
@@ -108,10 +57,12 @@
           <div class="data">
             <span class="name">Upper axis</span>
             <div class="value">
-              <Column
-                :column="data.columns.find((c) => c.index == columnUpperIndex)"
-                :colorSelection="true"
-                v-on:selected="upperAxisSelection = true"
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validYColumnsProperties"
+                :defaultColumnIndex="columnUpperIndex"
+                title="Select the upper axis"
+                v-on:selected="upperAxisSelect"
               />
             </div>
           </div>
@@ -141,7 +92,7 @@
 
       <!-- Draw button -->
       <button
-        :disabled="intervalPlotDrawn"
+        :disabled="intervalPlotDrawn || !canDraw"
         @click="updateTraces"
         class="blue"
       >
@@ -162,39 +113,39 @@ import { plotlyToImage } from "@/services/statistics/analysisExport";
 import Plotly from "plotly.js/dist/plotly";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   data() {
     return {
       // === Setting ===
       settings: true,
-      xAxisSelection: false,
-      yAxisSelection: false,
-      upperAxisSelection: false,
-      lowerAxisSelection: false,
       smooth: true,
 
       // === Configuration ===
       // Axis
-      columnXindex: 0,
-      columnYindex: 0,
-      columnUpperIndex: 0,
-      columnLowerIndex: 0,
+      columnXindex: null,
+      columnYindex: null,
+      columnUpperIndex: null,
+      columnLowerIndex: null,
 
       // === Other ===
       intervalPlotDrawn: false,
+      validXColumnsProperties: {
+        types: ["Class", "Num"],
+      },
+      validYColumnsProperties: {
+        types: ["Num", "Bool"],
+        warningTypes: ["Class"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget setting btn
@@ -208,8 +159,6 @@ export default {
   },
   mounted() {
     this.divIntervalPlot = document.getElementById("IPDiv" + this.index);
-    this.xAxisSelect(0);
-    this.yAxisSelect(1);
 
     // Watch for configuration changes
     this.defConfChangeUpdate();
@@ -219,49 +168,49 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex].label,
-        columnY: this.data.columns[this.columnYindex].label,
-        columnUpper: this.data.columns[this.columnUpperIndex].label,
-        columnLower: this.data.columns[this.columnLowerIndex].label,
+        columnX: this.data.getColumn(this.columnXindex)?.label,
+        columnY: this.data.getColumn(this.columnYindex)?.label,
+        columnUpper: this.data.getColumn(this.columnUpperIndex)?.label,
+        columnLower: this.data.getColumn(this.columnLowerIndex)?.label,
         smooth: this.smooth,
       };
 
       return conf;
     },
-    setConf(conf) {
+    setConf(conf, options) {
       if (!conf) return;
 
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
           });
       }
       if ("columnY" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnY);
+        const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYindex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
       if ("columnUpper" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnUpper);
+        const c = this.data.getColumnByLabel(conf.columnUpper);
         if (c) this.columnUpperIndex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
       if ("columnLower" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnLower);
+        const c = this.data.getColumnByLabel(conf.columnLower);
         if (c) this.columnLowerIndex = c.index;
-        else
+        else if (!options?.onStartup)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
@@ -283,24 +232,26 @@ export default {
     },
     getConfNameSuggestion() {
       let confName =
-        this.data.columns[this.columnXindex].label +
+        this.data.getColumn(this.columnXindex)?.label +
         " / " +
-        this.data.columns[this.columnYindex].label;
+        this.data.getColumn(this.columnYindex)?.label;
       return confName;
     },
 
     // Plot
     updateTraces() {
-      let colX = this.data.columns[this.columnXindex];
-      let colY = this.data.columns[this.columnYindex];
-      let colUpper = this.data.columns[this.columnUpperIndex];
-      let colLower = this.data.columns[this.columnLowerIndex];
+      let colX = this.data.getColumn(this.columnXindex);
+      let colY = this.data.getColumn(this.columnYindex);
+      let colUpper = this.data.getColumn(this.columnUpperIndex);
+      let colLower = this.data.getColumn(this.columnLowerIndex);
+
+      if (!colX || !colY || !colUpper || !colLower) return;
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
-      let valuesY = this.selectedData.map((i) => colY.values[i]);
-      let valuesUpper = this.selectedData.map((i) => colUpper.values[i]);
-      let valuesLower = this.selectedData.map((i) => colLower.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
+      let valuesY = this.data.selectedData.map((i) => colY.values[i]);
+      let valuesUpper = this.data.selectedData.map((i) => colUpper.values[i]);
+      let valuesLower = this.data.selectedData.map((i) => colLower.values[i]);
 
       // Reorganize data to sort by the x axis
       let data = [];
@@ -322,7 +273,7 @@ export default {
       valuesLower = data.map((i) => i.lower);
 
       // Plot
-      let color = this.selectedData.map((i, j) =>
+      let color = this.data.selectedData.map((i, j) =>
         valuesLower[j] <= valuesY[j] && valuesY[j] <= valuesUpper[j] ? "rgb(0,225,0)" : "red"
       );
 
@@ -419,12 +370,10 @@ export default {
     // axis selection
     xAxisSelect(index) {
       this.columnXindex = index;
-      this.xAxisSelection = false;
       this.intervalPlotDrawn = false;
     },
     yAxisSelect(index) {
       this.columnYindex = index;
-      this.yAxisSelection = false;
       this.intervalPlotDrawn = false;
     },
     upperAxisSelect(index) {
@@ -434,7 +383,6 @@ export default {
     },
     lowerAxisSelect(index) {
       this.columnLowerIndex = index;
-      this.lowerAxisSelection = false;
       this.intervalPlotDrawn = false;
     },
 
@@ -445,12 +393,20 @@ export default {
     },
   },
   computed: {
+    canDraw() {
+      return (
+        this.columnXindex && this.columnYindex && this.columnUpperIndex && this.columnLowerIndex
+      );
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    selectedData() {
+    selectedDataUpdate() {
       if (this.intervalPlotDrawn) this.$parent.selectedDataWarning = true;
     },
   },
@@ -481,6 +437,7 @@ export default {
 }
 #axisSelection .data {
   flex: 1;
+  padding: 2px;
 }
 #axisSelection .data .value {
   flex: 1;

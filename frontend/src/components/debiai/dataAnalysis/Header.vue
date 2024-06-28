@@ -7,6 +7,7 @@
     >
       <ColumnSelection
         title="Select the workspace colored column"
+        :validColumnsProperties="validColoredColumnProperties"
         :data="data"
         :validateRequired="false"
         :colorSelection="false"
@@ -71,18 +72,12 @@
         height="13"
       />
       Add a widget
-
-      <!-- <inline-svg
-        :src="require('@/assets/svg/bar_plot.svg')"
-        width="15"
-        height="15"
-      /> -->
     </button>
 
     <!-- Colored column info -->
     <div
       id="coloredColumn"
-      v-if="coloredColumnIndex !== null"
+      v-if="coloredColumnIndex !== null && coloredColumn"
     >
       Color
       <button
@@ -90,13 +85,8 @@
         class="blue"
         title="Change the analysis colored column"
       >
-        {{ data.columns.find((c) => c.index == coloredColumnIndex).label }}
+        {{ coloredColumn.label }}
       </button>
-      <!-- <Column
-        :column="data.columns.find((c) => c.index == coloredColumnIndex)"
-        :colorSelection="false"
-        v-on:selected="selectColoredCol = true"
-      /> -->
     </div>
     <div
       id="coloredColumn"
@@ -122,11 +112,7 @@
     >
       <!-- Filters panel button -->
       <!-- Selected data info -->
-      <SelectedDataInfo
-        :data="data"
-        :selectedData="selectedData"
-        v-on:dataSelection="dataSelection"
-      />
+      <SelectedDataInfo :data="data" />
 
       <!-- Global filters -->
       <button
@@ -153,20 +139,17 @@
 
 <script>
 import SelectedDataInfo from "./dataNavigation/SelectedDataInfo";
-import Column from "./common/Column";
 import ColumnSelection from "./common/ColumnSelection";
 import GlobalFilters from "./dataFilters/GlobalFilters";
 
 export default {
   components: {
     SelectedDataInfo,
-    Column,
     ColumnSelection,
     GlobalFilters,
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data() {
     return {
@@ -174,16 +157,15 @@ export default {
       selectColoredCol: false,
       selectDataset: false,
       filtersMenu: false,
+      validColoredColumnProperties: {
+        types: ["Class", "Num", "Bool"],
+      },
     };
   },
   created() {
     this.projectId = this.$store.state.ProjectPage.projectId;
   },
   methods: {
-    dataSelection(selection) {
-      // Update the selected samples for all widgets
-      this.$emit("dataSelection", selection);
-    },
     coloredColSelect(index) {
       // Update the selected colored column
       this.$store.commit("setColoredColumnIndex", index);
@@ -193,6 +175,16 @@ export default {
   computed: {
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
+    },
+    coloredColumn() {
+      if (this.coloredColumnIndex === null) return null;
+
+      const coloredColumn = this.data.getColumn(this.coloredColumnIndex);
+      if (coloredColumn) return coloredColumn;
+      else {
+        this.$store.commit("setColoredColumnIndex", null);
+        return null;
+      }
     },
   },
 };
@@ -209,7 +201,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 50px;
+  gap: 10px;
 
   background-color: var(--greyLight);
   border-bottom: var(--greyDark) 2px solid;
@@ -228,6 +220,7 @@ export default {
       font-size: 18px;
       font-weight: bold;
       color: var(--fontColorLight);
+      white-space: nowrap;
 
       a {
         color: var(--fontColor);
@@ -258,6 +251,7 @@ export default {
     font-weight: bold;
     border: solid var(--primary) 2px;
     border: none;
+    white-space: nowrap;
 
     text-decoration: none;
     font-size: 1.2em;
@@ -281,7 +275,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // flex-direction: column-reverse;
   gap: 15px;
   padding: 0px 10px;
   color: var(--fontColorLight);
@@ -290,9 +283,20 @@ export default {
     padding-left: 15px;
     padding-right: 15px;
     min-width: 50px;
+
     svg {
       // Rotate
       transform: rotate(45deg);
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  // Hide the logo
+  #logoAndName {
+    padding-left: 10px;
+    #debiaiLogo {
+      display: none;
     }
   }
 }

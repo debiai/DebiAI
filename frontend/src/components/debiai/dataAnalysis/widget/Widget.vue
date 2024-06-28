@@ -575,6 +575,12 @@ export default {
 
       // The plot has been drawn, we can save a copy of the local filters
       const storeFilters = this.$store.state.StatisticalAnalysis.filters;
+
+      // Remove the column field (causes a cyclic object error)
+      storeFilters.forEach((filter) => {
+        delete filter.column;
+      });
+
       this.localFilters = JSON.parse(JSON.stringify(storeFilters));
     },
     getLocalFilters() {

@@ -2,12 +2,13 @@
   <div
     id="menu"
     :style="getStyles"
+    :class="{ flipVertically: flipVertically }"
   >
     <!-- Dropdown menu -->
     <div
       v-for="(item, index) in availableMenuItems"
       :key="index"
-      @click="!item.disabled && item.action ? item.action() : ''"
+      @click="(event) => itemSelected(event, item)"
     >
       <div
         v-if="item.name !== 'separator'"
@@ -22,11 +23,16 @@
             width="14"
             height="14"
             fill="var(--fontColor))"
+            stroke="var(--fontColor)"
           />
         </div>
-        <div class="name">
+        <div class="dropdownMenuName">
           {{ item.name }}
         </div>
+
+        <documentationBlock v-if="item.documentation">
+          {{ item.documentation }}
+        </documentationBlock>
       </div>
       <div
         v-else
@@ -62,6 +68,10 @@ export default {
         };
       },
     },
+    flipVertically: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {};
@@ -76,6 +86,13 @@ export default {
   methods: {
     closeMenu() {
       this.$emit("close");
+    },
+    itemSelected(event, item) {
+      event.stopPropagation();
+      if (item.action && !item.disabled) {
+        item.action();
+        this.closeMenu();
+      }
     },
   },
 
@@ -109,6 +126,11 @@ export default {
   min-width: 150px;
   z-index: 10000000;
 
+  &.flipVertically {
+    // Flip vertically
+    transform: translateY(-100%);
+  }
+
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   background-color: #fff;
   border-radius: 5px;
@@ -123,7 +145,7 @@ export default {
       cursor: not-allowed;
 
       .icon,
-      .name {
+      .dropdownMenuName {
         opacity: 0.5;
       }
     }
@@ -136,7 +158,7 @@ export default {
     align-items: center;
     gap: 10px;
 
-    .name {
+    .dropdownMenuName {
       white-space: nowrap;
       user-select: none;
     }

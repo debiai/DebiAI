@@ -11,6 +11,7 @@
       :cancelAvailable="selectedColumnsIds.length > 0"
       :colorSelection="true"
       :defaultSelected="selectedColumnsIds"
+      :validColumnsProperties="validColumnsProperties"
       v-on:cancel="settings = false"
       v-on:validate="selectColumns"
     />
@@ -41,12 +42,16 @@ export default {
 
       // Conf
       selectedColumnsIds: [],
+      validColumnsProperties: {
+        types: ["Num", "Bool", "Class"],
+        maxUniqueValues: 20,
+        warningMaxUniqueValues: 10,
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     this.$parent.$on("settings", () => {
@@ -58,7 +63,11 @@ export default {
 
     // Select default columns
     this.selectedColumnsIds = this.data.columns
-      .filter((c) => c.nbOccurrence <= 20)
+      .filter(
+        (c) =>
+          c.nbOccurrence <= this.validColumnsProperties.maxUniqueValues &&
+          this.validColumnsProperties.types.includes(c.typeText)
+      )
       .map((c) => c.index);
   },
   mounted() {
@@ -68,7 +77,7 @@ export default {
     // Conf
     getConf() {
       return {
-        selectedColumns: this.selectedColumnsIds.map((cIndex) => this.data.columns[cIndex].label),
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
       };
     },
     setConf(conf) {
@@ -76,7 +85,7 @@ export default {
       if ("selectedColumns" in conf) {
         this.selectedColumnsIds = [];
         conf.selectedColumns.forEach((cLabel) => {
-          let c = this.data.columns.find((c) => c.label == cLabel);
+          const c = this.data.getColumnByLabel(cLabel);
           if (c) this.selectedColumnsIds.push(c.index);
           else
             this.$store.commit("sendMessage", {
@@ -95,14 +104,14 @@ export default {
       let colColor;
       let nbColor;
       if (coloredColIndex !== null) {
-        colColor = this.data.columns[coloredColIndex];
+        colColor = this.data.getColumn(coloredColIndex);
         nbColor = colColor.nbOccurrence;
       }
 
       // Get columns
-      let selectedColumns = this.selectedColumnsIds.map((cIdx) =>
-        this.data.columns.find((c) => c.index == cIdx)
-      );
+      let selectedColumns = this.selectedColumnsIds
+        .map((cIdx) => this.data.getColumn(cIdx))
+        .filter((c) => c !== undefined);
 
       // Check that columns are not too numerous
       if (selectedColumns.some((c) => c.nbOccurrence > 20) || (nbColor && nbColor > 20)) {
@@ -125,9 +134,9 @@ export default {
       let color;
       if (colColor) {
         if (colColor.type == String) {
-          color = this.selectedData.map((sId) => colColor.valuesIndex[sId]);
+          color = this.data.selectedData.map((sId) => colColor.valuesIndex[sId]);
         } else {
-          color = this.selectedData.map((sId) => colColor.values[sId]);
+          color = this.data.selectedData.map((sId) => colColor.values[sId]);
           showscale = true;
         }
       }
@@ -135,7 +144,7 @@ export default {
       let colWithSelectedSamples = [];
       selectedColumns.forEach((c, i) => {
         colWithSelectedSamples.push({ label: c.label, values: [] });
-        this.selectedData.map((j) => colWithSelectedSamples[i].values.push(c.values[j]));
+        this.data.selectedData.map((j) => colWithSelectedSamples[i].values.push(c.values[j]));
       });
 
       let trace = {
@@ -194,7 +203,9 @@ export default {
                 columnIndex: this.currentDrawnColorIndex,
                 values: [
                   "" +
-                    this.data.columns[this.currentDrawnColorIndex].uniques[parCatSelections.color],
+                    this.data.getColumn(this.currentDrawnColorIndex).uniques[
+                      parCatSelections.color
+                    ],
                 ],
               });
             }
@@ -230,12 +241,15 @@ export default {
         this.selectedColumnsIds.length > 0
       );
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
     },
-    selectedData() {
+    selectedDataUpdate() {
       if (!this.settings && !this.$parent.startFiltering) this.$parent.selectedDataWarning = true;
     },
   },

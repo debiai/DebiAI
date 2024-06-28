@@ -17,10 +17,12 @@
         <div class="data">
           <span class="name">X axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnXindex)"
-              :colorSelection="true"
-              v-on:selected="xAxisSelection = true"
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validXColumnsProperties"
+              :defaultColumnIndex="columnXindex"
+              title="Select the X axis"
+              v-on:selected="xAxisSelect"
             />
           </div>
         </div>
@@ -36,16 +38,18 @@
         <div class="data">
           <span class="name">Y axis</span>
           <div class="value">
-            <Column
-              :column="data.columns.find((c) => c.index == columnYindex)"
-              :colorSelection="true"
-              v-on:selected="yAxisSelection = true"
+            <ColumnSelectionButton
+              :data="data"
+              :validColumnsProperties="validYColumnsProperties"
+              :defaultColumnIndex="columnYindex"
+              title="Select the Y axis"
+              v-on:selected="yAxisSelect"
             />
           </div>
         </div>
       </div>
 
-      <!-- 2D points & lite plot specific controls -->
+      <!-- 2D points & line plot specific controls -->
       <div id="plotControls">
         <!-- 2D Point Plot Controls -->
         <div
@@ -57,6 +61,7 @@
             class="drawBtn blue"
             @click="pointPlot"
             v-if="!pointPlotDrawn"
+            :disabled="!canDrawPointPlot"
           >
             Draw 2D points
           </button>
@@ -70,30 +75,19 @@
           <!-- Point size axis -->
           <div class="data">
             <span class="name">Point size axis</span>
-            <div
-              class="value"
-              v-if="columnSizeIndex !== null"
-            >
-              <Column
-                :column="data.columns.find((c) => c.index == columnSizeIndex)"
-                :colorSelection="true"
-                v-on:selected="sizeAxisSelection = true"
-              />
-              <button
-                class="red"
-                @click="
+            <div class="value">
+              <ColumnSelectionButton
+                :data="data"
+                :validColumnsProperties="validSizeColumnsProperties"
+                :defaultColumnIndex="columnSizeIndex"
+                title="Select point size column"
+                canBeRemoved
+                v-on:selected="sizeAxisSelect"
+                v-on:removed="
                   columnSizeIndex = null;
                   pointPlotDrawn = false;
                 "
-              >
-                Remove
-              </button>
-            </div>
-            <div
-              class="value"
-              v-else
-            >
-              <button @click="sizeAxisSelection = true">Select an axis</button>
+              />
             </div>
           </div>
           <!-- Max point Size -->
@@ -149,6 +143,7 @@
             class="drawBtn blue"
             @click="checkLinePlot"
             v-if="!linePlotDrawn"
+            :disabled="!canDrawPointPlot"
           >
             Draw statistics
           </button>
@@ -216,7 +211,7 @@
         </div>
       </div>
 
-      <!-- 2D points & lite plot common controls -->
+      <!-- 2D points & line plot common controls -->
       <div
         id="commonControls"
         class="dataGroup"
@@ -282,51 +277,6 @@
     </div>
 
     <!-- Modals -->
-    <!-- Xcol selection -->
-    <modal
-      v-if="xAxisSelection"
-      @close="xAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the X axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnXindex]"
-        v-on:cancel="xAxisSelection = false"
-        v-on:colSelect="xAxisSelect"
-      />
-    </modal>
-    <!-- Ycol selection -->
-    <modal
-      v-if="yAxisSelection"
-      @close="yAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the Y axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="[columnYindex]"
-        v-on:cancel="yAxisSelection = false"
-        v-on:colSelect="yAxisSelect"
-      />
-    </modal>
-    <!-- Size axis selection -->
-    <modal
-      v-if="sizeAxisSelection"
-      @close="sizeAxisSelection = false"
-    >
-      <ColumnSelection
-        title="Select the point size axis"
-        :data="data"
-        :validateRequired="false"
-        :colorSelection="true"
-        :defaultSelected="columnSizeIndex === null ? undefined : [columnSizeIndex]"
-        v-on:cancel="sizeAxisSelection = false"
-        v-on:colSelect="sizeAxisSelect"
-      />
-    </modal>
     <!-- Axis range selection -->
     <modal
       @close="axisRangeModal = false"
@@ -345,7 +295,7 @@
       />
     </modal>
 
-    <!-- The plotly plot -->
+    <!-- Plot -->
     <div
       class="plot"
       :id="'PPDiv' + index"
@@ -358,8 +308,7 @@ import Plotly from "plotly.js/dist/plotly";
 import { plotlyToImage } from "@/services/statistics/analysisExport";
 
 // components
-import ColumnSelection from "../../common/ColumnSelection";
-import Column from "../../common/Column";
+import ColumnSelectionButton from "../../common/ColumnSelectionButton";
 import AxisRangeSelection from "../../common/AxisRangeSelection";
 
 // services
@@ -368,23 +317,20 @@ import swal from "sweetalert";
 
 export default {
   components: {
-    ColumnSelection,
-    Column,
     AxisRangeSelection,
+    ColumnSelectionButton,
   },
   data() {
     return {
       // === Setting ===
       settings: true,
-      xAxisSelection: false,
-      yAxisSelection: false,
       sizeAxisSelection: false,
       axisRangeModal: false,
 
       // === Configuration ===
       // Axis
-      columnXindex: 0,
-      columnYindex: 1,
+      columnXindex: null,
+      columnYindex: null,
       // Shared settings
       dividePerColor: true,
       absolute: false,
@@ -409,12 +355,23 @@ export default {
       pointPlotDrawn: false,
       linePlotDrawn: false,
       currentDrawnColorIndex: null,
+
+      validXColumnsProperties: {
+        types: ["Num", "Class", "Bool"],
+      },
+      validYColumnsProperties: {
+        types: ["Num", "Bool"],
+        warningTypes: ["Class"],
+      },
+      validSizeColumnsProperties: {
+        types: ["Num"],
+        warningTypes: ["Class"],
+      },
     };
   },
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {
     // Widget setting btn
@@ -443,8 +400,8 @@ export default {
     getConf() {
       let conf = {
         // Axis
-        columnX: this.data.columns[this.columnXindex].label,
-        columnY: this.data.columns[this.columnYindex].label,
+        columnX: this.data.getColumn(this.columnXindex)?.label,
+        columnY: this.data.getColumn(this.columnYindex)?.label,
         // Shared settings
         dividePerColor: this.dividePerColor,
         absolute: this.absolute,
@@ -457,9 +414,9 @@ export default {
 
       if (!this.averageAsBar) conf.displayNull = this.displayNull;
       if (!this.autoPointOpacity) conf.pointOpacity = this.pointOpacity;
-      if (this.columnSizeIndex !== null) {
+      if (this.columnSizeIndex !== null && this.data.columnExists(this.columnSizeIndex)) {
         conf.maxPointSize = this.maxPointSize;
-        conf.columnSized = this.data.columns[this.columnSizeIndex].label;
+        conf.columnSized = this.data.getColumn(this.columnSizeIndex).label;
       }
 
       // Set axis range
@@ -478,36 +435,35 @@ export default {
       if (!conf) return;
 
       if ("columnX" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnX);
+        const c = this.data.getColumnByLabel(conf.columnX);
         if (c) this.columnXindex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnX + " hasn't been found",
           });
       }
       if ("columnY" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnY);
+        const c = this.data.getColumnByLabel(conf.columnY);
         if (c) this.columnYindex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnY + " hasn't been found",
           });
       }
       if ("columnSized" in conf) {
-        let c = this.data.columns.find((c) => c.label == conf.columnSized);
+        const c = this.data.getColumnByLabel(conf.columnSized);
         if (c) this.columnSizeIndex = c.index;
-        else
+        else if (options.onStartup !== true)
           this.$store.commit("sendMessage", {
             title: "warning",
             msg: "The column " + conf.columnSized + " hasn't been found",
           });
-      }
+      } else this.columnSizeIndex = null;
       if ("absolute" in conf) this.absolute = conf.absolute;
       if ("autoPointOpacity" in conf) this.autoPointOpacity = conf.autoPointOpacity;
       if ("pointOpacity" in conf) this.pointOpacity = conf.pointOpacity;
-      if ("columnSizeIndex" in conf) this.columnSizeIndex = conf.columnSizeIndex;
       if ("maxPointSize" in conf) this.maxPointSize = conf.maxPointSize;
       if ("averageAsBar" in conf) this.averageAsBar = conf.averageAsBar;
       if ("displayNull" in conf) this.displayNull = conf.displayNull;
@@ -561,13 +517,13 @@ export default {
     },
     getConfNameSuggestion() {
       let confName =
-        this.data.columns[this.columnXindex].label +
+        this.data.getColumn(this.columnXindex)?.label +
         " / " +
-        this.data.columns[this.columnYindex].label;
+        this.data.getColumn(this.columnYindex)?.label;
 
       // Add the sized column to the legend name
-      if (this.columnSizeIndex !== null)
-        confName += " Sized by " + this.data.columns[this.columnSizeIndex].label;
+      if (this.columnSizeIndex !== null && this.data.columnExists(this.columnSizeIndex))
+        confName += " Sized by " + this.data.getColumn(this.columnSizeIndex).label;
 
       // Add if y is absolute
       if (this.absolute) confName += " (abs)";
@@ -583,14 +539,16 @@ export default {
 
     // Point plot
     pointPlot() {
-      let colX = this.data.columns[this.columnXindex];
-      let colY = this.data.columns[this.columnYindex];
+      let colX = this.data.getColumn(this.columnXindex);
+      let colY = this.data.getColumn(this.columnYindex);
+
+      if (!colX || !colY) return;
 
       // Apply selection
-      let valuesX = this.selectedData.map((i) => colX.values[i]);
+      let valuesX = this.data.selectedData.map((i) => colX.values[i]);
       let valuesY;
-      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
-      else valuesY = this.selectedData.map((i) => colY.values[i]);
+      if (colY.type == String) valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
+      else valuesY = this.data.selectedData.map((i) => colY.values[i]);
 
       // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
@@ -604,8 +562,8 @@ export default {
 
       let colColor;
       if (this.coloredColumnIndex !== null && this.dividePerColor) {
-        colColor = this.data.columns[this.coloredColumnIndex];
-        color = this.selectedData.map((i) =>
+        colColor = this.data.getColumn(this.coloredColumnIndex);
+        color = this.data.selectedData.map((i) =>
           colColor.type == String ? colColor.valuesIndex[i] : colColor.values[i]
         );
         // Deal with color if string
@@ -626,8 +584,8 @@ export default {
       const MIN_POINT_SIZE = 3;
       let colSize;
       if (this.columnSizeIndex !== null) {
-        colSize = this.data.columns[this.columnSizeIndex];
-        size = this.selectedData.map((i) =>
+        colSize = this.data.getColumn(this.columnSizeIndex);
+        size = this.data.selectedData.map((i) =>
           colSize.type == String ? colSize.valuesIndex[i] : colSize.values[i]
         );
         if (colSize.type === String) {
@@ -698,7 +656,7 @@ export default {
       }
 
       // Check that the group by color is not to performance intensive
-      let colColor = this.data.columns[this.coloredColumnIndex];
+      let colColor = this.data.getColumn(this.coloredColumnIndex);
 
       if (colColor.uniques.length <= 100) {
         this.linePlot();
@@ -720,7 +678,7 @@ export default {
     // Check columns type and uniques values
     async DoesUserAcceptRisk() {
       // Get the index of the selected column
-      let colY = this.data.columns[this.columnYindex];
+      let colY = this.data.getColumn(this.columnYindex);
 
       // Get the name of rhe selected column
       let colNameY = colY.label;
@@ -755,28 +713,31 @@ export default {
     },
 
     async linePlot() {
+      let colX = this.data.getColumn(this.columnXindex);
+      let colY = this.data.getColumn(this.columnYindex);
+
+      if (!colX || !colY) return;
+
       // Apply selection
       let traces = [];
-      let colX = this.data.columns[this.columnXindex];
       let valuesX;
-      if (colX.type == String) valuesX = this.selectedData.map((i) => colX.valuesIndex[i]);
-      else valuesX = this.selectedData.map((i) => colX.values[i]);
+      if (colX.type == String) valuesX = this.data.selectedData.map((i) => colX.valuesIndex[i]);
+      else valuesX = this.data.selectedData.map((i) => colX.values[i]);
 
-      let colY = this.data.columns[this.columnYindex];
       let valuesY;
-      if (colY.type == String) valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
-      else valuesY = this.selectedData.map((i) => colY.values[i]);
+      if (colY.type == String) valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
+      else valuesY = this.data.selectedData.map((i) => colY.values[i]);
 
       // Abs checked
       if (this.absolute) valuesY = valuesY.map((val) => Math.abs(val));
 
-      let colColor = this.data.columns[this.coloredColumnIndex];
+      let colColor = this.data.getColumn(this.coloredColumnIndex);
       if (colColor && this.dividePerColor) {
         // === Divide lines per color ===
         let selectedColorsValues =
           colColor.type == String
-            ? this.selectedData.map((i) => colColor.valuesIndex[i])
-            : this.selectedData.map((i) => colColor.values[i]);
+            ? this.data.selectedData.map((i) => colColor.valuesIndex[i])
+            : this.data.selectedData.map((i) => colColor.values[i]);
         let selectorUniques =
           colColor.type == String ? colColor.valuesIndexUniques : colColor.uniques;
 
@@ -821,8 +782,9 @@ export default {
           });
         });
       } else {
-        let colY = this.data.columns[this.columnYindex];
-        if (colY.type == String) this.valuesY = this.selectedData.map((i) => colY.valuesIndex[i]);
+        let colY = this.data.getColumn(this.columnYindex);
+        if (colY.type == String)
+          this.valuesY = this.data.selectedData.map((i) => colY.valuesIndex[i]);
 
         let stats = dataOperations.getStats(valuesX, valuesY, this.bins - 1, {
           displayNull: this.displayNull,
@@ -1026,8 +988,10 @@ export default {
       }
 
       // Create the filters
-      let colx = this.data.columns[this.columnXindex];
-      let coly = this.data.columns[this.columnYindex];
+      let colx = this.data.getColumn(this.columnXindex);
+      let coly = this.data.getColumn(this.columnYindex);
+
+      if (!colx || !coly) return;
 
       // Create the first filter
       const selections = event.selections;
@@ -1048,7 +1012,7 @@ export default {
       });
 
       // Exporting the boundaries of the selections with the export feature
-      // Exporting only the first selection TODO : add all the selections
+      // Exporting only the first selection
       // Goal format :
       // {
       //   type: "2Drange",
@@ -1165,7 +1129,6 @@ export default {
     // Axis selection
     async xAxisSelect(index) {
       this.columnXindex = index;
-      this.xAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
       this.setBins();
@@ -1173,7 +1136,6 @@ export default {
     async yAxisSelect(index) {
       let previousIndex = this.columnYindex;
       this.columnYindex = index;
-      this.yAxisSelection = false;
       this.pointPlotDrawn = false;
       this.linePlotDrawn = false;
 
@@ -1210,13 +1172,14 @@ export default {
       this.updateTraces();
     },
     setBins() {
-      let colX = this.data.columns[this.columnXindex];
+      if (this.columnXindex === null) return;
+      let colX = this.data.getColumn(this.columnXindex);
       if (colX.type == String) this.bins = Math.min(colX.nbOccurrence, 300);
       else this.bins = Math.min(colX.nbOccurrence, 30);
       this.linePlotDrawn = false;
     },
     setPointOpacity() {
-      this.pointOpacity = parseFloat((1 / Math.pow(this.selectedData.length, 0.2)).toFixed(2));
+      this.pointOpacity = parseFloat((1 / Math.pow(this.data.selectedData.length, 0.2)).toFixed(2));
     },
     axisRangeSelect({ axisXAuto, axisXMin, axisXMax, axisYAuto, axisYMin, axisYMax }) {
       this.axisRangeModal = false;
@@ -1237,33 +1200,39 @@ export default {
     },
   },
   computed: {
+    canDrawPointPlot() {
+      return this.columnXindex !== null && this.columnYindex !== null;
+    },
     coloredColumnIndex() {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex;
     },
     redrawRequired() {
       return !(this.currentDrawnColorIndex !== this.coloredColumnIndex);
     },
+    selectedDataUpdate() {
+      return this.data.selectedData;
+    },
   },
   watch: {
-    dividePerColor: function () {
+    dividePerColor() {
       this.updateTraces();
     },
-    autoPointOpacity: function (newVal) {
+    autoPointOpacity(newVal) {
       if (newVal) this.setPointOpacity();
     },
-    pointOpacity: function () {
+    pointOpacity() {
       this.pointPlotDrawn = false;
     },
-    absolute: function () {
+    absolute() {
       this.updateTraces();
     },
-    displayNull: function () {
+    displayNull() {
       if (this.linePlotDrawn) this.checkLinePlot();
     },
-    averageAsBar: function () {
+    averageAsBar() {
       if (this.linePlotDrawn) this.checkLinePlot();
     },
-    selectedData: function () {
+    selectedDataUpdate() {
       if (!this.$parent.startFiltering && (this.pointPlotDrawn || this.linePlotDrawn))
         this.$parent.selectedDataWarning = true;
     },

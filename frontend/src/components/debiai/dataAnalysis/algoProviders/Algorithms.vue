@@ -71,7 +71,6 @@
         :algoProvider="selectedAlgoProvider"
         :algorithm="algoToUse"
         :data="data"
-        :selectedData="selectedData"
         @cancel="algoToUse = null"
         @use="useAlgo(selectedAlgoProvider, algoToUse)"
       />
@@ -174,7 +173,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -291,8 +289,11 @@ export default {
           };
 
           // Add the selected data to the experiment
-          if (this.selectedData.length > 0 && this.selectedData.length < this.data.nbLines) {
-            experiment.selectedData = this.selectedData;
+          if (
+            this.data.selectedData.length > 0 &&
+            this.data.selectedData.length < this.data.nbLines
+          ) {
+            experiment.selectedData = this.data.selectedData;
           }
 
           this.$store.commit("addExperiment", {

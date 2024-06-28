@@ -116,12 +116,11 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {},
   methods: {
     exportSamples(methodId) {
-      let selectedHash = this.selectedData.map(
+      let selectedHash = this.data.selectedData.map(
         (selectedIndex) => this.data.sampleIdList[selectedIndex]
       );
 

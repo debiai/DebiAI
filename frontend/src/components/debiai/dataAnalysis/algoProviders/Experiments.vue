@@ -88,7 +88,7 @@
         id="title"
         :title="'Id: ' + algorithm.id"
       >
-        <span> Experiments of the algorithm: </span>
+        <span>Experiments of the algorithm:</span>
         <inline-svg
           :src="require('@/assets/svg/algorithm.svg')"
           width="20"
@@ -127,7 +127,7 @@
           class="experiment"
         >
           <div class="top">
-            <h5 class="experiment-title">
+            <h4 class="experiment-title">
               Experiment {{ experiment.nb }}
               <!-- Display Inputs -->
               <DocumentationBlock v-if="experiment.inputs.length > 0">
@@ -146,7 +146,7 @@
                   </div>
                 </div>
               </DocumentationBlock>
-            </h5>
+            </h4>
 
             <div class="controls">
               <button
@@ -163,42 +163,52 @@
               </button>
             </div>
           </div>
-          <div class="results">
-            <div
-              class="result"
-              v-for="result in experiment.results"
-              :key="result.name"
-            >
-              <!-- Display Outputs -->
-              <div class="name">{{ result.name }}</div>
-              <div
-                class="value"
-                v-if="Array.isArray(result.value)"
+          <table class="results">
+            <thead>
+              <tr>
+                <th>Algo output</th>
+                <th>Experiment output</th>
+                <th>Add to the analysis as a column</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="result"
+                v-for="result in experiment.results"
+                :key="result.name"
               >
-                {{ result.value.length }} elements {{ result.value.slice(0, 5) }}...
-              </div>
-              <div
-                class="value"
-                v-else
-              >
-                {{ result.value }}
-              </div>
+                <!-- Display Outputs -->
+                <td class="name">{{ result.name }}</td>
+                <td
+                  class="value"
+                  v-if="Array.isArray(result.value)"
+                >
+                  {{ result.value.length }} elements {{ result.value.slice(0, 5) }}...
+                </td>
+                <td
+                  class="value"
+                  v-else
+                >
+                  {{ result.value }}
+                </td>
 
-              <button
-                v-if="canCreateColumnFromOutput(experiment, result) === true"
-                @click="createColumnButton(experiment, result)"
-              >
-                Add to the analysis as a column
-              </button>
-              <button
-                v-else
-                :title="canCreateColumnFromOutput(experiment, result)"
-                disabled
-              >
-                Add to the analysis as a column
-              </button>
-            </div>
-          </div>
+                <td>
+                  <button
+                    v-if="canCreateColumnFromOutput(experiment, result) === true"
+                    @click="createColumnButton(experiment, result)"
+                  >
+                    Create column
+                  </button>
+                  <div
+                    v-else
+                    style="color: var(--fontColorLight)"
+                  >
+                    {{ canCreateColumnFromOutput(experiment, result) }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </transition-group>
     </div>
@@ -206,8 +216,6 @@
 </template>
 
 <script>
-import dataLoader from "@/services/dataLoader";
-
 export default {
   name: "Experiments",
   props: {
@@ -318,12 +326,12 @@ export default {
       }
 
       // Create column
-      const col = dataLoader.createColumn(this.columnName, values, "Algorithm output", null);
-      const nbColumns = this.data.columns.length;
-      col.index = nbColumns;
-      this.data.columns.push(col);
-      this.data.labels.push(output.name);
-      this.data.nbColumns += 1;
+      this.data.addColumn({
+        label: this.columnName,
+        values: values,
+        category: "Algorithm output",
+      });
+
       this.$store.commit("sendMessage", {
         title: "success",
         msg: "Column added successfully",
@@ -371,8 +379,6 @@ export default {
 
 #content {
   display: flex;
-  gap: 10px;
-  padding-top: 20px;
   flex-direction: column;
   justify-content: flex-start;
   overflow: auto;
@@ -381,19 +387,17 @@ export default {
   .experiment {
     display: flex;
     flex-direction: column;
-
-    border: solid 1px var(--fontColorLight);
-    border-radius: 4px;
-    padding: 13px;
+    border-radius: 3px;
     margin-bottom: 10px;
+    // background-color: var(--greyLight);
+    border: var(--greyDark) solid 1px;
+    padding: 15px;
 
     .experiment-title {
       display: flex;
       align-items: center;
       margin: 0;
-      padding: 0;
       margin-bottom: 5px;
-      color: var(--fontColorLight);
     }
 
     .top {
@@ -403,39 +407,32 @@ export default {
       justify-content: space-between;
     }
 
-    .results,
-    .inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .results {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
 
-    .results .result,
-    .inputs .input {
-      display: flex;
-      align-items: center;
-      border: solid 1px var(--fontColorLight);
-      border-radius: 4px;
-      padding: 3px 7px 3px 7px;
-      gap: 15px;
-    }
-    .results .result .name,
-    .inputs .input .name {
-      white-space: nowrap;
-    }
+      th {
+        color: var(--fontColorLight);
+        font-weight: bold;
+        border-bottom: solid 1px var(--greyDark);
+        padding: 5px;
+      }
 
-    .results .result .value,
-    .inputs .input .value {
-      border: solid 1px var(--fontColorLight);
-      padding: 2px 7px 2px 7px;
-      border-radius: 4px;
-      max-width: 450px;
-      max-height: 50px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .results .result button {
-      margin-left: auto;
+      td {
+        padding: 5px;
+      }
+
+      .name {
+        font-weight: bold;
+      }
+      .value {
+        width: 500px;
+        max-width: 500px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 }

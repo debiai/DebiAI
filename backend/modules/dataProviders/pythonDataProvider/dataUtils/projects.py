@@ -11,26 +11,32 @@ def project_exist(projectId):
     return projectId in os.listdir(DATA_PATH)
 
 
+def _get_project_info(projectId):
+    file_path = DATA_PATH + projectId + "/info.json"
+    if not os.path.exists(file_path):
+        delete_project(projectId)
+        raise Exception("The project info file is missing")
+
+    with open(file_path) as json_file:
+        data = json.load(json_file)
+
+    if "name" not in data:
+        delete_project(projectId)
+        raise Exception("The project name is missing from the info.json file")
+    if "creationDate" not in data:
+        delete_project(projectId)
+        raise Exception("The project creationDate is missing from the info.json file")
+    if "updateDate" not in data:
+        delete_project(projectId)
+        raise Exception("The project updateDate is missing from the info.json file")
+
+    return data
+
+
 def get_project(projectId):
     try:
-        # Json info file
-        if not os.path.exists(DATA_PATH + projectId + "/info.json"):
-            raise Exception('The "info.json" file is missing')
-
-        with open(DATA_PATH + projectId + "/info.json") as json_file:
-            data = json.load(json_file)
-
-        if "name" not in data:
-            raise Exception("The project name is missing from the info.json file")
-
-        if "creationDate" not in data:
-            raise Exception(
-                "The project creationDate is missing from the info.json file"
-            )
-
-        if "updateDate" not in data:
-            raise Exception("The project updateDate is missing from the info.json file")
-
+        # Get info file
+        data = _get_project_info(projectId)
         name = data["name"]
         creationDate = data["creationDate"]
         updateDate = data["updateDate"]
@@ -122,13 +128,10 @@ def update_project(projectId):
 
 
 def get_project_block_level_info(projectId):
-    if not os.path.isfile(DATA_PATH + projectId + "/info.json"):
-        raise Exception(
-            "The project '" + projectId + "' doesn't have an info.json file"
-        )
 
-    with open(DATA_PATH + projectId + "/info.json") as json_file:
-        return json.load(json_file)["blockLevelInfo"]
+    data = _get_project_info(projectId)
+    if "blockLevelInfo" in data:
+        return data["blockLevelInfo"]
 
 
 def get_project_columns(projectId):
@@ -213,12 +216,11 @@ def get_project_columns(projectId):
 
 
 def get_result_structure(projectId):
-    with open(DATA_PATH + projectId + "/info.json") as json_file:
-        projectInfo = json.load(json_file)
-        if "resultStructure" in projectInfo:
-            return projectInfo["resultStructure"]
-        else:
-            return None
+    data = _get_project_info(projectId)
+    if "resultStructure" in data:
+        return data["resultStructure"]
+    else:
+        return None
 
 
 def delete_project(projectId):
