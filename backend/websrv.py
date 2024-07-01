@@ -99,5 +99,4 @@ def start_server(reloader=True):
         + colored("http://localhost:" + str(PORT), DEBUG_COLOR)
     )
     app = create_app()
-    Timer(1, open_browser).start()
     app.run(port=PORT, debug=True, use_reloader=reloader)
