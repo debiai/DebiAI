@@ -48,7 +48,7 @@ def send_frontend(path):
                 return response
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
                 return (
-                    "You are in a development environment and the DebAI frontend"
+                    "You are in a development environment and the DebiAI frontend"
                     + "is not available at the url : "
                     + DEV_FRONTEND_URL,
                     503,
