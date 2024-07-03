@@ -22,7 +22,7 @@ from modules.dataProviders.webDataProvider.cache.cache import Cache
 # WebDataProvider class, allow to get data from a web data-provider
 class WebDataProvider(DataProvider):
     def __init__(self, url, name):
-        self.url = url.strip()
+        self.url = url
         self._name = name
         self.alive = None
 
@@ -30,22 +30,11 @@ class WebDataProvider(DataProvider):
         if not self.url:
             raise ValueError("Url is empty")
 
+        # Remove trailing spaces
+        self.url = self.url.strip()
+
         # Remove trailing slash
         self.url = self.url.rstrip("/")
-
-        # Remove empty spaces
-        def remove_suffix(url):
-            if url.endswith(" "):
-                return url[:-1]
-            return url
-
-        self.url = remove_suffix(url)
-
-        # Remove trailing slash then space
-        self.url = self.url.replace("/ ", "")
-
-        # Remove trailing space then slash
-        self.url = self.url.replace(" /", "")
 
         # Remove trailing slash, sharp then slash
         self.url = self.url.rstrip("/#/")
