@@ -34,7 +34,12 @@ class WebDataProvider(DataProvider):
         self.url = self.url.rstrip("/")
 
         # Remove empty spaces
-        self.url = self.url.removesuffix(" ")
+        def remove_suffix(url):
+            if url.endswith(" "):
+                return url[:-1]
+            return url
+
+        self.url = remove_suffix(url)
 
         # Remove trailing slash then space
         self.url = self.url.replace("/ ", "")
