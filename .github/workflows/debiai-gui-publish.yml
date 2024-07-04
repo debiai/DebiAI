@@ -1,0 +1,95 @@
+# This workflow will upload a Debiai-gui Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: build
+
+on:
+  push:
+    branches:
+      - main
+      - 205-debiai-easy-start-module-to-launch-debiai-standlalone
+jobs:
+  version-upgrade-check: # Check that the version is greater than the previous commit version
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check that the version in backend and frontend are the same
+        id: version-check
+        run: |
+          cd frontend
+          FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+          cd ../backend
+          BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
+          if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'."
+            exit 1
+          fi
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
+          echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Check that the version is greater than the previous commit version
+        run: |
+          BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
+          cd frontend
+          PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
+
+          echo "PREVIOUS_VERSION=$PREVIOUS_VERSION"
+          echo "BRANCH_VERSION=$BRANCH_VERSION"
+
+          # If pervious version is beta, ignore test
+          if [[ $PREVIOUS_VERSION == *"beta"* ]]; then
+            echo "Beta version detected, skipping version upgrade check."
+            exit 0
+          fi
+
+          if [ "$BRANCH_VERSION" == "" ]; then
+            echo "No version found in current branch."
+            exit 1
+          fi
+
+          if [ "$PREVIOUS_VERSION" == "" ]; then
+            echo "No version found in main branch."
+            exit 1
+          fi
+
+          if [[ $PREVIOUS_VERSION == $BRANCH_VERSION ]]; then
+            echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
+            exit 1
+          fi
+
+          if [[ $PREVIOUS_VERSION > $BRANCH_VERSION ]]; then
+            echo "Version not upgraded: frontend/package.json version '$PREVIOUS
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install build wheel
+      - name: Build
+        run: |
+          python setup.py sdist bdist_wheel
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: dist
