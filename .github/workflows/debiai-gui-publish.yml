@@ -25,13 +25,13 @@ jobs:
         run: |
           cd frontend
           FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-          cd ../backend
+          cd ../debiaiServer
           BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
           if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'."
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
             exit 1
           fi
-          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
