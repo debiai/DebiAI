@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="backend",
+    name="debiai server",
     version="0.1.0",
-    packages=find_packages(include=["backend", "backend.*"]),
+    packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
     install_requires=[
         "Flask==2.0.3",
@@ -24,7 +24,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-start=backend.server:run",
+            "debiai-start=debiaiServer.server:run",
         ],
     },
     author="IRT-Systemx",
