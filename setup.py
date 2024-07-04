@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="debiai-gui",
-    version="0.1.0",
+    version="0.1.2",
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
     install_requires=[
