@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.27.1"  # Same as DebiAI app (c.f swagger.yml)
+VERSION = "0.27.2"  # Same as DebiAI app (c.f swagger.yml)
 
 setup(
     name="debiai-gui",
