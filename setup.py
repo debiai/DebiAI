@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+VERSION = "0.27.1"  # Same as DebiAI app (c.f swagger.yml)
+
 setup(
     name="debiai-gui",
-    version="0.1.2",
+    version=VERSION,
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
     install_requires=[
@@ -24,7 +26,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-start=debiaiServer.server:run",
+            "debiai =debiaiServer.server:run",
         ],
     },
     author="IRT-Systemx",

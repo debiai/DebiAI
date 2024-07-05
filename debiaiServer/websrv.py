@@ -4,7 +4,6 @@ import requests
 import webbrowser
 import psutil
 from termcolor import colored
-from threading import Timer
 from flask_cors import CORS
 from flask import send_from_directory, request, Response
 from debiaiServer.init import init
