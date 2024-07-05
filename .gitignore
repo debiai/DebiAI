@@ -1,32 +1,28 @@
-dist/
-deployment/
-.vscode/
-
-# Back
-backend/data
-.coverage
+# Byte-compiled / optimized / DLL files
 __pycache__/
 
-# Backend.egg-info
-backend.egg-info/
+# Build and packaging
+dist/
+build/
+*data/
+*.egg-info/
 
-# Front
+# Dependency directories
 frontend/node_modules/
 
-# Build
-build/
+# coverage
+.coverage
 
-# Data
-data/
-
-# Ignore the notebookDebiai.ipynb file
+# Tests and utils
 notebookDebiai.ipynb
-
-# Ignore the test_imports.py file
 test_imports.py
-
-# Ignore the tree_project.md file
 tree_project.md
 
-# Ignore the build and run file
+# Scripts
 build_and_run.sh
+
+# Deployement
+deployment/
+
+# VSCODE
+.vscode/
