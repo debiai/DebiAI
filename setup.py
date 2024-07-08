@@ -1,6 +1,14 @@
 from setuptools import setup, find_packages
+import yaml
 
-VERSION = "0.28.1"
+
+def get_version_from_swagger():
+    with open("debiaiServer/swagger.yaml", "r") as f:
+        swagger_data = yaml.safe_load(f)
+    return swagger_data["info"]["version"]
+
+
+VERSION = get_version_from_swagger()
 
 setup(
     name="debiai-gui",
