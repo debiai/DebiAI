@@ -34,7 +34,7 @@ jobs:
           npm run build
       - name: Use Frontend build
         run: |
-          cp -r /dist debiaiServer/dist
+          cp -r dist ../debiaiServer/dist
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
