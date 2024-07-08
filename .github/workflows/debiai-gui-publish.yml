@@ -14,56 +14,6 @@ on:
       - main
       - 205-debiai-easy-start-module-to-launch-debiai-standlalone
 jobs:
-  version-upgrade-check: # Check that the version is greater than the previous commit version
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Check that the version in backend and frontend are the same
-        id: version-check
-        run: |
-          cd frontend
-          FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-          cd ../debiaiServer
-          BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
-          if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
-            exit 1
-          fi
-          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
-          echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
-
-      - uses: actions/checkout@v3
-        with:
-          ref: main
-
-      - name: Check that the version is greater than the previous commit version
-        run: |
-          BRANCH_VERSION=${{ steps.version-check.outputs.BRANCH_VERSION }}
-          cd frontend
-          PREVIOUS_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-
-          echo "PREVIOUS_VERSION=$PREVIOUS_VERSION"
-          echo "BRANCH_VERSION=$BRANCH_VERSION"
-
-          if [ "$BRANCH_VERSION" == "" ]; then
-            echo "No version found in current branch."
-            exit 1
-          fi
-
-          if [ "$PREVIOUS_VERSION" == "" ]; then
-            echo "No version found in main branch."
-            exit 1
-          fi
-
-          if [[ $PREVIOUS_VERSION == $BRANCH_VERSION ]]; then
-            echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' == branch version '$BRANCH_VERSION'."
-            exit 1
-          fi
-
-          if [[ $PREVIOUS_VERSION > $BRANCH_VERSION ]]; then
-            echo "Version not upgraded: frontend/package.json version '$PREVIOUS
   deploy:
     runs-on: ubuntu-latest
 
@@ -86,12 +36,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel
+          - name: Use Frontend build
+          run: |
+          cp -r frontend/dist debiaiServer/dist
       - name: Build
         run: |
           python setup.py sdist bdist_wheel
-      - name: Use Frontend build
-        run: |
-          cp -r frontend/dist debiaiServer/dist
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
         with:
