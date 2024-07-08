@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.28.0"
+VERSION = "0.28.1"
 
 setup(
     name="debiai-gui",
