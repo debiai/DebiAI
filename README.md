@@ -15,9 +15,9 @@
 
 </div>
 
-## Why DebiAI ?
+## Why DebiAI Gui?
 
-DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
+DebiAI Gui is an open source package that allows you to launch DebiAI in a standalone state. Thus by installing this module you can use quickly the DebiAI open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
 
 DebiAI provides data scientists with features to:
 
