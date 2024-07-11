@@ -272,6 +272,7 @@ export default {
         return {
           name: input.name,
           value: input.value,
+          columnLabel: input.columnLabel,
         };
       });
       this.$backendDialog

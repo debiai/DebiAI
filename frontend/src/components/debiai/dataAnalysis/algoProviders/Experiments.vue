@@ -141,8 +141,26 @@
                     v-for="input in experiment.inputs"
                     :key="input.name"
                   >
-                    <div class="name">{{ input.name }}</div>
-                    <div class="value">{{ input.value.toString() }}</div>
+                    <div class="name">{{ input.name }}:</div>
+                    <div
+                      class="value"
+                      v-if="input.columnLabel"
+                    >
+                      {{ input.columnLabel }}
+                    </div>
+                    <div
+                      class="value"
+                      v-else-if="Array.isArray(input.value)"
+                    >
+                      {{ input.value.slice(0, 10) }}
+                      <span v-if="input.value.length > 10">...</span>
+                    </div>
+                    <div
+                      class="value"
+                      v-else
+                    >
+                      {{ input.value }}
+                    </div>
                   </div>
                 </div>
               </DocumentationBlock>
@@ -405,6 +423,13 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .inputs {
+      .input {
+        display: flex;
+        gap: 5px;
+      }
     }
 
     .results {

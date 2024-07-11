@@ -41,12 +41,7 @@
           :key="index"
           :input="input"
           :data="data"
-          v-on:inputValueUpdate="
-            (val) => {
-              input.value = val;
-              updateBody();
-            }
-          "
+          v-on:inputValueUpdate="(valueUpdate) => updateInput(input, valueUpdate)"
         />
       </div>
       <div v-if="algorithm.inputs.length === 0">
@@ -87,6 +82,11 @@ export default {
   },
   mounted() {},
   methods: {
+    updateInput(input, { value, columnLabel }) {
+      input.value = value;
+      input.columnLabel = columnLabel;
+      this.updateBody();
+    },
     updateBody() {
       let body = "";
       const nb_val_displayed = 10;

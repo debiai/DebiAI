@@ -236,7 +236,7 @@ export default {
     else if (this.input.availableValues && this.input.availableValues.length > 0)
       this.value = this.input.availableValues[0];
 
-    this.$emit("inputValueUpdate", this.value);
+    this.$emit("inputValueUpdate", { value: this.value, columnLabel: null });
   },
   methods: {
     columnSelected(index) {
@@ -247,47 +247,48 @@ export default {
 
       if (!this.data.columnExists(index)) return;
 
-      const dataValues = this.data.getColumn(index).values;
+      const column = this.data.getColumn(index);
+      const dataValues = column.values;
 
       // Convert to the good type and send to parent
+      let value = null;
       if (this.selectedArrayInputOption === "columnSelectedData")
-        this.emitGoodType(this.data.selectedData.map((id) => dataValues[id]));
-      else this.emitGoodType(dataValues);
+        value = this.getGoodType(this.data.selectedData.map((id) => dataValues[id]));
+      else value = this.getGoodType(dataValues);
+
+      this.$emit("inputValueUpdate", { value: value, columnLabel: column.label });
     },
     idListInputTypeSelected(type) {
       // This function is called when the user selects the type of input for the idList
       // Set the value of the idList according to the selected type
-      const dataIdValues = this.data.getColumn(this.idColumnsIndex).values;
-      if (type == "column") this.emitGoodType(dataIdValues);
-      else this.emitGoodType(this.data.selectedData.map((id) => dataIdValues[id]));
+      const idColumn = this.data.getColumn(this.idColumnsIndex);
+      if (!idColumn) return;
+
+      let dataIdValues = null;
+      if (type == "column") dataIdValues = idColumn.values;
+      else dataIdValues = this.data.selectedData.map((id) => dataIdValues[id]);
+
+      this.$emit("inputValueUpdate", { value: dataIdValues, columnLabel: idColumn.label });
     },
-    emitGoodType(value) {
+    getGoodType(value) {
       if (this.input.type === "number") {
-        this.$emit("inputValueUpdate", Number(value));
-        return;
+        return Number(value);
       }
       if (this.input.type === "array" && value !== null) {
         if (this.input.arrayType === "number") {
           if (this.selectedArrayInputOption === "columnSelectedData") {
-            this.$emit("inputValueUpdate", value);
-            return;
+            return value;
           } else if (this.selectedArrayInputOption === "column") {
-            this.$emit("inputValueUpdate", value);
-            return;
+            return value;
           } else if (this.selectedArrayInputOption === "manual") {
-            this.$emit(
-              "inputValueUpdate",
-              value.split(",").map((v) => Number(v))
-            );
-            return;
+            return value.split(",").map((v) => Number(v));
           }
         } else {
           // we don't need to convert the values
-          this.$emit("inputValueUpdate", value);
-          return;
+          return value;
         }
       }
-      this.$emit("inputValueUpdate", value);
+      return value;
     },
   },
   computed: {
