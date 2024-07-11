@@ -9,7 +9,7 @@ setup(
     version=VERSION,
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
-    package_data={"debiaiServer": ["swagger.yaml"]},
+    package_data={"debiaiServer": ["swagger.yaml", "config.env", "config.ini"]},
     install_requires=[
         "Flask==2.0.3",
         "flask_cors==3.0.8",
