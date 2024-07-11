@@ -199,7 +199,18 @@
                 <td class="name">{{ result.name }}</td>
                 <td
                   class="value"
-                  v-if="Array.isArray(result.value)"
+                  v-if="
+                    Array.isArray(result.value) &&
+                    result.value.length &&
+                    typeof result.value[0] === 'object' &&
+                    result.value[0] !== null
+                  "
+                >
+                  <DataTable :data="result.value" />
+                </td>
+                <td
+                  class="value"
+                  v-else-if="Array.isArray(result.value)"
                 >
                   {{ result.value.length }} elements {{ result.value.slice(0, 5) }}...
                 </td>
@@ -234,8 +245,13 @@
 </template>
 
 <script>
+import DataTable from "@/components/debiai/dataAnalysis/common/DataTable.vue";
+
 export default {
   name: "Experiments",
+  components: {
+    DataTable,
+  },
   props: {
     algorithm: { type: Object, required: true },
     algoProvider: { type: Object, required: true },
@@ -445,7 +461,8 @@ export default {
       }
 
       td {
-        padding: 5px;
+        padding: 10px 5px;
+        vertical-align: top;
       }
 
       .name {

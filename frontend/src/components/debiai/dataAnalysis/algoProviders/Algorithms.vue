@@ -284,6 +284,19 @@ export default {
           });
           this.algoToUse = null;
 
+          if (typeof results === "string") {
+            try {
+              // Convert to object if it's a string
+              // Replace 'Infinity' to avoid JSON.parse error
+              results = results
+                .replace(/ -Infinity/g, '"-Infinity"')
+                .replace(/ Infinity/g, '"Infinity"');
+              results = JSON.parse(results);
+            } catch (error) {
+              throw new Error("Results are not a valid JSON object");
+            }
+          }
+
           const experiment = {
             results,
             inputs,
