@@ -450,6 +450,12 @@ class Column {
               );
             }, initialValue);
           };
+        else if (prop === "slice")
+          return (start, end) => {
+            return this.data.selectedData.slice(start, end).map((virtualIndex) => {
+              return target[this.data.virtualIndexMapping[virtualIndex].originalIndex];
+            });
+          };
         else if (prop === "_isVue") return true;
         else if (prop === "__ob__") return { dep: { id: 0 } };
 
