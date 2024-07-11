@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.28.4
+  version: 0.28.5
   title: DebiAI_debiaiServer_API
   description: DebiAI backend api
   contact:
