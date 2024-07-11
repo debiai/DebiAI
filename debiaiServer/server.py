@@ -19,7 +19,6 @@ def print_bash_info():
         f"{BRIGHT_CYAN}Options:{RESET}\n"
         "\t"
         f"{BRIGHT_GREEN}--version {RESET} Prints DebiAI version number.\n"
-        "\t"
         f"{BRIGHT_CYAN}Commands:{RESET}\n"
         "\t"
         f"{BRIGHT_GREEN}start {RESET}     Starts the DebiAI GUI and open it in a web browser.\n"
