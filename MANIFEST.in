@@ -1,3 +1,4 @@
 include debiaiServer/swagger.yaml
+include debiaiServer/config *
 recursive-include debiaiServer/dist *
 

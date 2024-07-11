@@ -5,7 +5,7 @@ from debiaiServer.utils.utils import get_app_version
 
 BRIGHT_CYAN = "\033[96m"
 BRIGHT_GREEN = "\033[92m"
-RESET = "\033[0m"  # called to return to standard terminal text color
+RESET = "\033[0m"
 
 
 def print_bash_info():
