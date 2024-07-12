@@ -175,7 +175,6 @@
           <div v-if="!isIdList">
             <ColumnSelectionButton
               :data="data"
-              :validColumnsProperties="validColumnsProperties"
               :defaultColumnIndex="columnIndex"
               :title="'Select a column to use as input for ' + input.name"
               :colorSelection="false"
@@ -212,10 +211,6 @@ export default {
       value: null,
       projectId: null,
 
-      validColumnsProperties: {
-        types: ["Num", "Class", "Bool"],
-      },
-
       // Array input
       selectedArrayInputOption: "manual",
       columnIndex: null,
@@ -241,7 +236,7 @@ export default {
     else if (this.input.availableValues && this.input.availableValues.length > 0)
       this.value = this.input.availableValues[0];
 
-    this.$emit("inputValueUpdate", this.value);
+    this.$emit("inputValueUpdate", { value: this.value, columnLabel: null });
   },
   methods: {
     columnSelected(index) {
@@ -252,18 +247,48 @@ export default {
 
       if (!this.data.columnExists(index)) return;
 
-      const dataValues = this.data.getColumn(index).values;
+      const column = this.data.getColumn(index);
+      const dataValues = column.values;
 
+      // Convert to the good type and send to parent
+      let value = null;
       if (this.selectedArrayInputOption === "columnSelectedData")
-        this.value = this.data.selectedData.map((id) => dataValues[id]);
-      else this.value = dataValues;
+        value = this.getGoodType(this.data.selectedData.map((id) => dataValues[id]));
+      else value = this.getGoodType(dataValues);
+
+      this.$emit("inputValueUpdate", { value: value, columnLabel: column.label });
     },
     idListInputTypeSelected(type) {
       // This function is called when the user selects the type of input for the idList
       // Set the value of the idList according to the selected type
-      const dataIdValues = this.data.getColumn(this.idColumnsIndex).values;
-      if (type == "column") this.value = dataIdValues;
-      else this.value = this.data.selectedData.map((id) => dataIdValues[id]);
+      const idColumn = this.data.getColumn(this.idColumnsIndex);
+      if (!idColumn) return;
+
+      let dataIdValues = null;
+      if (type == "column") dataIdValues = idColumn.values;
+      else dataIdValues = this.data.selectedData.map((id) => dataIdValues[id]);
+
+      this.$emit("inputValueUpdate", { value: dataIdValues, columnLabel: idColumn.label });
+    },
+    getGoodType(value) {
+      if (this.input.type === "number") {
+        return Number(value);
+      }
+      if (this.input.type === "array" && value !== null) {
+        if (this.input.arrayType === "number") {
+          if (this.selectedArrayInputOption === "columnSelectedData") {
+            return value;
+          } else if (this.selectedArrayInputOption === "column") {
+            return value;
+          } else if (this.selectedArrayInputOption === "manual") {
+            return value.split(",").map((v) => Number(v));
+          }
+        } else {
+          // we don't need to convert the values
+          return value;
+        }
+      }
+      return value;
     },
   },
   computed: {
@@ -273,22 +298,6 @@ export default {
       else if (this.input.type === "array") return Array.isArray(this.value);
       else return true;
     },
-    valueWithGoodType() {
-      if (this.input.type === "number") return Number(this.value);
-      if (this.input.type === "array" && this.value !== null) {
-        if (this.input.arrayType === "number") {
-          if (this.selectedArrayInputOption === "columnSelectedData") return this.value;
-          else if (this.selectedArrayInputOption === "column") return this.value;
-          else if (this.selectedArrayInputOption === "manual") {
-            return this.value.split(",").map((v) => Number(v));
-          }
-        } else {
-          // we don't need to convert the values
-          return this.value;
-        }
-      }
-      return this.value;
-    },
     isIdList: function () {
       return this.input.type === "array" && this.input.name === "idList";
     },
@@ -296,11 +305,7 @@ export default {
       return this.input.type === "string" && this.input.name === "projectId";
     },
   },
-  watch: {
-    valueWithGoodType: function (val) {
-      this.$emit("inputValueUpdate", val);
-    },
-  },
+  watch: {},
 };
 </script>
 
