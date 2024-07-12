@@ -5,8 +5,10 @@ import unicodedata
 import string
 import shutil
 import time
+import pkg_resources
 
-DATA_PATH = "data/pythonDataProvider/"
+
+DATA_PATH = pkg_resources.resource_filename("debiaiServer", "data/pythonDataProvider/")
 
 DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 

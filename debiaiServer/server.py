@@ -2,10 +2,15 @@ from threading import Timer
 import sys
 from debiaiServer.websrv import start_server, open_browser
 from debiaiServer.utils.utils import get_app_version
+from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+)
 
 BRIGHT_CYAN = "\033[96m"
 BRIGHT_GREEN = "\033[92m"
 RESET = "\033[0m"
+
+DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 def print_bash_info():

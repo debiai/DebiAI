@@ -26,6 +26,7 @@ setup(
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
+        "psutil==6.0.0",
     ],
     entry_points={
         "console_scripts": [
