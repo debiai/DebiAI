@@ -1,13 +1,16 @@
 import time
 import yaml
+import pkg_resources
 from yaml.loader import SafeLoader
 from urllib.parse import urlparse
 
 
 def get_app_version():
     # Read the version from the API YAML file
+    yaml_path = pkg_resources.resource_filename("debiaiServer", "swagger.yaml")
+
     try:
-        with open("debiaiServer/swagger.yaml") as f:
+        with open(yaml_path, "r") as f:
             data = yaml.load(f, Loader=SafeLoader)
             return data["info"]["version"]
     except Exception as e:
