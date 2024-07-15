@@ -1,17 +1,19 @@
-import connexion
 import os
-import requests
-import webbrowser
+import sys
 import psutil
-from termcolor import colored
+import logging
+import requests
+import connexion
+import webbrowser
 from flask_cors import CORS
-from flask import send_from_directory, request, Response
+from termcolor import colored
 from debiaiServer.init import init
 from debiaiServer.utils.utils import get_app_version
 from debiaiServer.config.init_config import DEBUG_COLOR
+from flask import send_from_directory, request, Response
+
 
 DEV_FRONTEND_URL = "http://localhost:8080/"
-PORT = 3000
 app = connexion.App(__name__)
 app.add_api("swagger.yaml", strict_validation=True)
 CORS(app.app)
@@ -80,22 +82,28 @@ def is_browser_open():
     return False
 
 
-def open_browser():
-    url = f"http://localhost:{PORT}"
+def open_browser(port):
+    url = f"http://localhost:{port}"
     if is_browser_open():
         webbrowser.open_new_tab(url)
     else:
         webbrowser.open(url)
 
 
-def start_server(reloader=True):
+def start_server(port, reloader=True):
     # Run DebiAI init
     print("================= DebiAI " + get_app_version() + " ====================")
     init()
     print("======================== RUN =======================")
     print(
         "   DebiAI is available at "
-        + colored("http://localhost:" + str(PORT), DEBUG_COLOR)
+        + colored("http://localhost:" + str(port), DEBUG_COLOR)
     )
+
+    from gevent.pywsgi import WSGIServer
+
     app = create_app()
-    app.run(port=PORT, debug=True, use_reloader=reloader)
+    http_server = WSGIServer(("127.0.0.1", port), app)
+    http_server.serve_forever()
+
+    app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
