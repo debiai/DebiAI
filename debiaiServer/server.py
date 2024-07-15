@@ -14,7 +14,7 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 
 def bash_info():
     print(
-        colored("Usage example:", DEBUG_COLOR) + "debiai-gui [OPTIONS] COMMAND\n\n"
+        colored("Usage: ", DEBUG_COLOR) + "debiai-gui [OPTIONS] COMMAND\n\n"
         "\t"
         "Use the line below to run the app: \n\n"
         "\t\t"
@@ -27,7 +27,8 @@ def bash_info():
         + colored("Commands:\n", DEBUG_COLOR)
         + "\t"
         + colored("start ", SUCCESS_COLOR)
-        + "    Starts the DebiAI GUI and open it in a web browser.\n"
+        + "    Starts the DebiAI GUI and open it in a web browser.\n\n"
+        + "For more information visit : https://debiai.irt-systemx.fr/ \n\n"
     )
 
 
