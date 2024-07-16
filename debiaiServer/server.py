@@ -58,6 +58,6 @@ def run():
         print("DebiAI Version:" + colored(version, SUCCESS_COLOR))
     elif args.command == "start":
         Timer(1, lambda: open_browser(args.port)).start()
-        start_server(args.port, reloader=False, is_dev=True)
+        start_server(args.port, reloader=False, is_dev=False)
     else:
         bash_info()

@@ -4,9 +4,9 @@ import requests
 import connexion
 import webbrowser
 from flask_cors import CORS
+from waitress import serve
 from termcolor import colored
 from debiaiServer.init import init
-from gevent.pywsgi import WSGIServer
 from debiaiServer.utils.utils import get_app_version
 from debiaiServer.config.init_config import DEBUG_COLOR
 from flask import send_from_directory, request, Response
@@ -98,11 +98,10 @@ def start_server(port, reloader=True, is_dev=True):
         "   DebiAI is available at "
         + colored("http://localhost:" + str(port), DEBUG_COLOR)
     )
-
+    app = create_app()
     if is_dev:
-        # Use flask server else wsgi server for production
+        # Use flask server for development
         app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
     else:
-        prod_app = create_app()
-        http_server = WSGIServer(("127.0.0.1", port), prod_app)
-        http_server.serve_forever()
+        # Use waitress for production
+        serve(app, host="0.0.0.0", port=port)

@@ -27,7 +27,7 @@ setup(
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
         "psutil==6.0.0",
-        "gevent==21.8.0",
+        "waitress==3.0.0",
     ],
     entry_points={
         "console_scripts": [
