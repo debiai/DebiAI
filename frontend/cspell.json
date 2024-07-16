@@ -80,7 +80,8 @@
     "zeroline",
     "Zindex",
     "zmax",
-    "zmin"
+    "zmin",
+    "psutil"
   ],
   "flagWords": [],
   "ignorePaths": [

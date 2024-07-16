@@ -1,13 +1,12 @@
 import os
-import sys
 import psutil
-import logging
 import requests
 import connexion
 import webbrowser
 from flask_cors import CORS
 from termcolor import colored
 from debiaiServer.init import init
+from gevent.pywsgi import WSGIServer
 from debiaiServer.utils.utils import get_app_version
 from debiaiServer.config.init_config import DEBUG_COLOR
 from flask import send_from_directory, request, Response
@@ -90,7 +89,7 @@ def open_browser(port):
         webbrowser.open(url)
 
 
-def start_server(port, reloader=True):
+def start_server(port, reloader=True, is_dev=True):
     # Run DebiAI init
     print("================= DebiAI " + get_app_version() + " ====================")
     init()
@@ -100,10 +99,10 @@ def start_server(port, reloader=True):
         + colored("http://localhost:" + str(port), DEBUG_COLOR)
     )
 
-    from gevent.pywsgi import WSGIServer
-
-    app = create_app()
-    http_server = WSGIServer(("127.0.0.1", port), app)
-    http_server.serve_forever()
-
-    app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
+    if is_dev:
+        # Use flask server else wsgi server for production
+        app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
+    else:
+        prod_app = create_app()
+        http_server = WSGIServer(("127.0.0.1", port), prod_app)
+        http_server.serve_forever()
