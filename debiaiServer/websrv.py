@@ -1,6 +1,7 @@
 import os
 import psutil
 import requests
+import logging
 import connexion
 import webbrowser
 from flask_cors import CORS
@@ -99,7 +100,8 @@ def start_server(port, reloader=True, is_dev=True):
     print("======================== RUN =======================", flush=True)
     print(
         "   DebiAI is available at "
-        + colored("http://localhost:" + str(port), DEBUG_COLOR)
+        + colored("http://localhost:" + str(port), DEBUG_COLOR),
+        flush=True,
     )
     app = create_app()
     if is_dev:
@@ -107,6 +109,7 @@ def start_server(port, reloader=True, is_dev=True):
         app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
     else:
         # Use waitress for production
+        logging.getLogger("requests").setLevel(logging.WARNING)
         serve(app, host="0.0.0.0", port=port)
 
 
