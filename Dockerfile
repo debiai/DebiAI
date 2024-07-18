@@ -5,7 +5,7 @@ COPY frontend/ .
 RUN npm install
 RUN npm run build
 
-# DebiAI Python debiaiServer (old backend dir)
+# DebiAI Python debiaiServer
 FROM python:3.10.12-slim-bullseye
 WORKDIR /
 COPY debiaiServer/ debiaiServer/

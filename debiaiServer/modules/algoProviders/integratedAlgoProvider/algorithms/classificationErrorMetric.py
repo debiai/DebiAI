@@ -2,8 +2,6 @@ from debiaiServer.modules.algoProviders.integratedAlgoProvider.utils import (
     get_input_from_inputs,
 )
 
-# from ..utils import get_input_from_inputs
-
 # This algorithm is a simple classification metric calculator
 # It takes a list of values corresponding to the ground truth
 # and a list of values corresponding to the predictions

@@ -13,11 +13,6 @@ frontend/node_modules/
 # coverage
 .coverage
 
-# Tests and utils
-notebookDebiai.ipynb
-test_imports.py
-tree_project.md
-
 # Scripts
 build_and_run.sh
 
