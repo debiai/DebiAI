@@ -35,6 +35,7 @@
           :type="input.type"
           v-model="value"
           :readonly="isProjectId"
+          @input="valueChanged"
         />
       </div>
 
@@ -43,7 +44,10 @@
         v-if="input.availableValues && input.availableValues.length > 0"
         title="Values suggested by the Algo Provider"
       >
-        <select v-model="value">
+        <select
+          v-model="value"
+          @change="valueChanged"
+        >
           <option
             v-for="(value, index) in input.availableValues.slice(0, 100)"
             :key="index"
@@ -239,6 +243,13 @@ export default {
     this.$emit("inputValueUpdate", { value: this.value, columnLabel: null });
   },
   methods: {
+    valueChanged() {
+      // This function is called when the value of the input changes
+      // Check if the value is correct and send it to the parent
+      if (!this.valueMatchInputType) return;
+
+      this.$emit("inputValueUpdate", { value: this.getGoodType(this.value), columnLabel: null });
+    },
     columnSelected(index) {
       // This function is called when the user selects a column to use as input
       if (index === null) return;

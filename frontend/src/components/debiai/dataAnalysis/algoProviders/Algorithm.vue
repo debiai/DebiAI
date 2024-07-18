@@ -266,7 +266,7 @@ export default {
       border: 1px solid var(--greyDark);
       border-radius: 4px;
       padding: 6px;
-      min-width: 150px;
+      min-width: 200px;
 
       .name {
         display: flex;
