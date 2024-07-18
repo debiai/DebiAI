@@ -7,10 +7,11 @@ RUN npm run build
 
 # DebiAI Python debiaiServer (old backend dir)
 FROM python:3.10.12-slim-bullseye
-WORKDIR /debiaiServer
-COPY debiaiServer/ .
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-COPY --from=build-stage /frontend/dist dist
+WORKDIR /
+COPY debiaiServer/ debiaiServer/
+RUN pip install --trusted-host pypi.python.org -r debiaiServer/requirements.txt
+COPY run.py .
+COPY --from=build-stage /frontend/dist debiaiServer/dist
 ENV FLASK_ENV production
-CMD ["python", "websrv.py"]
+CMD ["python", "run.py"]
 

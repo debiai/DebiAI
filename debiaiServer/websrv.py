@@ -91,9 +91,12 @@ def open_browser(port):
 
 def start_server(port, reloader=True, is_dev=True):
     # Run DebiAI init
-    print("================= DebiAI " + get_app_version() + " ====================")
+    print(
+        "================= DebiAI " + get_app_version() + " ====================",
+        flush=True,
+    )
     init()
-    print("======================== RUN =======================")
+    print("======================== RUN =======================", flush=True)
     print(
         "   DebiAI is available at "
         + colored("http://localhost:" + str(port), DEBUG_COLOR)
@@ -105,3 +108,7 @@ def start_server(port, reloader=True, is_dev=True):
     else:
         # Use waitress for production
         serve(app, host="0.0.0.0", port=port)
+
+
+if __name__ == "__main__":
+    start_server(port=3000, reloader=False, is_dev=True)
