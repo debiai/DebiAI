@@ -56,6 +56,7 @@
       @close="layoutModal = false"
     >
       <Layouts
+        ref="layoutsComponent"
         :data="data"
         :components="components"
         :gridstack="grid"
@@ -417,7 +418,7 @@ export default {
     },
     loadLayout(layout_full) {
       const layout = layout_full.layout;
-      const savedSelectedColorColumn = layout_full.savedSelectedColorColumn;
+      const savedSelectedColorColumn = layout_full.selectedColorColumn;
 
       this.clearLayout();
       this.layoutModal = false;
@@ -426,15 +427,10 @@ export default {
       if (savedSelectedColorColumn) {
         // Get the column index
         const column = this.data.getColumnByLabel(savedSelectedColorColumn);
-        const coloredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
+        const currentColoredColumnIndex = this.$store.state.StatisticalAnalysis.coloredColumnIndex;
 
         // Set the column index
-        if (column == null) {
-          this.$store.commit("sendMessage", {
-            title: "warning",
-            msg: "The column " + savedSelectedColorColumn + " hasn't been found",
-          });
-        } else if (coloredColumnIndex != column.index) {
+        if (column && currentColoredColumnIndex != column.index) {
           this.$store.commit("setColoredColumnIndex", column.index);
         }
       } else this.$store.commit("setColoredColumnIndex", null);
@@ -474,6 +470,9 @@ export default {
         this.components.forEach((component) => {
           this.grid.makeWidget(document.getElementById(component.id));
         });
+
+        // Scroll to the top
+        window.scrollTo(0, 0);
       });
     },
     addWidget(compKey, layout, configuration = null) {
@@ -589,6 +588,9 @@ export default {
             title: "success",
             msg: "Layout saved",
           });
+
+          // Reload the layouts
+          if (this.$refs.layoutsComponent) this.$refs.layoutsComponent.loadLayouts();
         })
         .catch((e) => {
           console.log(e);
