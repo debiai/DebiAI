@@ -44,22 +44,33 @@ def setup_layouts():
     if not os.path.exists(LAYOUTS_PATH):
         with open(LAYOUTS_PATH, "w") as json_file:
             json.dump([], json_file)
+            json_file.flush()
+            json_file.close()
 
 
 def get_layouts():
     # Return the layouts list
     try:
+        if os.path.getsize(LAYOUTS_PATH) == 0:
+            # File exists but is empty, reset to default layouts
+            print("Layouts file is empty, resetting to default layouts.")
+            _save_layouts([])
+            return []
         with open(LAYOUTS_PATH) as json_file:
-            return json.load(json_file)
+            layouts = json.load(json_file)
+            print("Reading layouts:", layouts)
+            return layouts
 
     except FileNotFoundError:
+        # File does not exist, create it with default layouts
+        print("Layouts file not found, creating with default layouts.")
         setup_layouts()
         return []
 
     except json.decoder.JSONDecodeError as e:
-        print("Error while reading the layouts file")
-        print(e)
-        print("The file will be reset")
+        # Print the error and reset the file with default layouts
+        print("Error while reading the layouts file:", e)
+        print("The file will be reset to default layouts.")
         _save_layouts([])
         return []
 
@@ -135,15 +146,17 @@ def delete_layout(id):
     _save_layouts(layouts)
 
 
-def _save_layouts(layouts, retry=False):
+def _save_layouts(layouts, _second_try=False):
     # Update the json file
     try:
         with open(LAYOUTS_PATH, "w") as json_file:
-            json.dump(layouts, json_file)
+            json.dump(layouts, json_file, ensure_ascii=False, indent=4)
+            # Ensure data is written before closing the file
+            json_file.flush()
+            json_file.close()
     except FileNotFoundError:
-        if not retry:
+        if not _second_try:
             setup_layouts()
-            _save_layouts(layouts, True)
+            _save_layouts(layouts, _second_try=True)
         else:
             print("Error while saving the layouts file")
-            print("The file will not be saved")

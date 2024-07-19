@@ -141,8 +141,26 @@
                     v-for="input in experiment.inputs"
                     :key="input.name"
                   >
-                    <div class="name">{{ input.name }}</div>
-                    <div class="value">{{ input.value.toString() }}</div>
+                    <div class="name">{{ input.name }}:</div>
+                    <div
+                      class="value"
+                      v-if="input.columnLabel"
+                    >
+                      {{ input.columnLabel }}
+                    </div>
+                    <div
+                      class="value"
+                      v-else-if="Array.isArray(input.value)"
+                    >
+                      {{ input.value.slice(0, 10) }}
+                      <span v-if="input.value.length > 10">...</span>
+                    </div>
+                    <div
+                      class="value"
+                      v-else
+                    >
+                      {{ input.value }}
+                    </div>
                   </div>
                 </div>
               </DocumentationBlock>
@@ -181,7 +199,18 @@
                 <td class="name">{{ result.name }}</td>
                 <td
                   class="value"
-                  v-if="Array.isArray(result.value)"
+                  v-if="
+                    Array.isArray(result.value) &&
+                    result.value.length &&
+                    typeof result.value[0] === 'object' &&
+                    result.value[0] !== null
+                  "
+                >
+                  <DataTable :data="result.value" />
+                </td>
+                <td
+                  class="value"
+                  v-else-if="Array.isArray(result.value)"
                 >
                   {{ result.value.length }} elements {{ result.value.slice(0, 5) }}...
                 </td>
@@ -216,8 +245,13 @@
 </template>
 
 <script>
+import DataTable from "@/components/debiai/dataAnalysis/common/DataTable.vue";
+
 export default {
   name: "Experiments",
+  components: {
+    DataTable,
+  },
   props: {
     algorithm: { type: Object, required: true },
     algoProvider: { type: Object, required: true },
@@ -407,6 +441,13 @@ export default {
       justify-content: space-between;
     }
 
+    .inputs {
+      .input {
+        display: flex;
+        gap: 5px;
+      }
+    }
+
     .results {
       width: 100%;
       border-collapse: collapse;
@@ -420,7 +461,8 @@ export default {
       }
 
       td {
-        padding: 5px;
+        padding: 10px 5px;
+        vertical-align: top;
       }
 
       .name {

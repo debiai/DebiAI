@@ -26,6 +26,22 @@ class WebDataProvider(DataProvider):
         self._name = name
         self.alive = None
 
+        # Check if url is valid
+        if not self.url:
+            raise ValueError("Url is empty")
+
+        # Remove trailing spaces
+        self.url = self.url.strip()
+
+        # Remove trailing slash
+        self.url = self.url.rstrip("/")
+
+        # Remove trailing slash, sharp then slash
+        self.url = self.url.rstrip("/#/")
+
+        # Check if the url is in uppercase
+        self.url = self.url.lower()
+
         # Init cache
         self.cache = Cache()
 

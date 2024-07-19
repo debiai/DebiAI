@@ -32,9 +32,7 @@
       </button>
     </div>
 
-    <div id="description">
-      {{ algorithm.description }}
-    </div>
+    <p id="description">{{ algorithm.description }}</p>
     <!-- Algorithm inputs-->
     <div id="content">
       <div id="inputs">
@@ -43,12 +41,7 @@
           :key="index"
           :input="input"
           :data="data"
-          v-on:inputValueUpdate="
-            (val) => {
-              input.value = val;
-              updateBody();
-            }
-          "
+          v-on:inputValueUpdate="(valueUpdate) => updateInput(input, valueUpdate)"
         />
       </div>
       <div v-if="algorithm.inputs.length === 0">
@@ -89,15 +82,21 @@ export default {
   },
   mounted() {},
   methods: {
+    updateInput(input, { value, columnLabel }) {
+      input.value = value;
+      input.columnLabel = columnLabel;
+      this.updateBody();
+    },
     updateBody() {
       let body = "";
+      const nb_val_displayed = 10;
       this.algorithm.inputs.forEach((input) => {
         body += input.name + ": ";
         if (input.value === null || input.value === undefined) body += "null,\n";
         else {
           if (input.type === "array") body += "[";
-          body += input.value.toString().slice(0, 50);
-          if (input.value.toString().length > 50) body += "...";
+          body += input.value.toString().slice(0, nb_val_displayed);
+          if (input.value.toString().length > nb_val_displayed) body += "...";
           if (input.type === "array") body += "] (" + input.value.length + " values)";
           body += ",\n";
         }
@@ -110,71 +109,79 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #UseAlgo {
   width: 75vw;
   height: 75vh;
   display: flex;
   flex-direction: column;
-}
 
-#info {
-  font-size: 1.3em;
-}
-#info #title {
-  display: flex;
-  align-items: center;
-}
-#info #algoName {
-  font-weight: bold;
-}
-#description {
-  margin: 10px 0 10px 0;
-  text-align: left;
-  color: var(--fontColorLight);
-}
+  #info {
+    font-size: 1.3em;
 
-/* Content */
-#content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    #title {
+      display: flex;
+      align-items: center;
+    }
 
-#content h5 {
-  align-self: flex-start;
-}
+    #algoName {
+      font-weight: bold;
+    }
+  }
 
-#inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  #description {
+    margin: 10px 0;
+    text-align: left;
+    color: var(--fontColorLight);
+    white-space: pre-wrap;
+  }
 
-#bottom {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-#bottom #requestBody {
-  flex: 1;
-  height: 70px;
-  overflow: auto;
-}
-#bottom fieldset {
-  color: var(--fontColorLight);
+  /* Content */
+  #content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 
-  border: 1px solid var(--greyDark);
-  border-radius: 2px;
-  padding-left: 20px;
+    h5 {
+      align-self: flex-start;
+    }
+  }
 
-  white-space: pre-line;
-  text-align: start;
-}
-#bottom legend {
-  color: var(--fontColor);
-}
-#bottom button {
-  margin: 10px 0 5px 0;
+  #inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #bottom {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    #requestBody {
+      flex: 1;
+      height: 70px;
+      overflow: auto;
+    }
+
+    fieldset {
+      color: var(--fontColorLight);
+      border: 1px solid var(--greyDark);
+      border-radius: 2px;
+      padding-left: 20px;
+      white-space: pre-line;
+      text-align: start;
+    }
+
+    legend {
+      color: var(--fontColor);
+    }
+
+    button {
+      margin: 10px 0 5px 0;
+    }
+  }
 }
 </style>
