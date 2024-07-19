@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://github.com/debiai/DebiAI/blob/main/images/DebiAI_logo.svg" height="200" align="">
+    <img src="https://github.com/debiai/DebiAI/raw/main/images/DebiAI_logo.svg" height="200" align="">
 
 [![Online documentation](https://img.shields.io/static/v1?label=&message=Online documentation&color=0077de)](https://debiai.irt-systemx.fr/)
 </br>
@@ -35,7 +35,7 @@ The full documentation is available on the [DebiAI website](https://debiai.irt-s
 DebiAI has a Web Graphical User Interface with a complete data visualization toolkit offering many statistical analysis tools:
 
 <p align="center">
-  <img src="https://github.com/debiai/DebiAI/blob/main/images/DebiAI_dashboard.png">
+  <img src="https://github.com/debiai/DebiAI/raw/main/images/DebiAI_dashboard.png">
 </p>
 
 The dashboard is highly customizable and can be used for large and small projects. Learn more about the [widgets and how to use them](https://debiai.irt-systemx.fr/dashboard/widgets/).
@@ -65,7 +65,7 @@ One of them is the [Valeo - WoodScape](https://woodscape.valeo.com/) dataset:
 The Valeo - WoodScape dataset is an annotated image dataset taken from 4 fisheye cameras. DebiAI is used to analyze the dataset for biases and outliers in the data.
 
 <p align="center">
-  <img src="https://github.com/debiai/DebiAI/blob/main/images/valeo.png">
+  <img src="https://github.com/debiai/DebiAI/raw/main/images/valeo.png">
 </p>
 
 Withing the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been able to import the project data, detect biases, find annotations errors and export them to the project's image annotation tool.
