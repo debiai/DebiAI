@@ -1,6 +1,8 @@
 import requests
 import json
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 
 
 # Todo : change info if in not alive anymore

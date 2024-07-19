@@ -15,7 +15,10 @@ from debiaiServer.modules.dataProviders.webDataProvider.useCases.models import (
     delete_model,
 )
 import debiaiServer.modules.dataProviders.webDataProvider.useCases.selections as useCaseSelections  # noqa
-from debiaiServer.modules.dataProviders.webDataProvider.http.api import get_info, get_status
+from debiaiServer.modules.dataProviders.webDataProvider.http.api import (
+    get_info,
+    get_status,
+)
 from debiaiServer.modules.dataProviders.webDataProvider.cache.cache import Cache
 
 

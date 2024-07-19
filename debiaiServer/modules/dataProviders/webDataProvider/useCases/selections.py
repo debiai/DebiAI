@@ -1,5 +1,7 @@
 import debiaiServer.modules.dataProviders.webDataProvider.http.api as api
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 
 
 def get_project_selections(url, project_id):

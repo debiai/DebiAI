@@ -1,6 +1,8 @@
 from debiaiServer.config.init_config import get_config
 from debiaiServer.modules.dataProviders.DataProvider import DataProvider
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
     pythonModuleUtils,
     projects,

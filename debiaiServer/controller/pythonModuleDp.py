@@ -1,4 +1,6 @@
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 
 

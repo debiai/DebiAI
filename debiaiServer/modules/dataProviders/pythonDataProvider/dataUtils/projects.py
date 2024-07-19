@@ -131,7 +131,6 @@ def update_project(projectId):
 
 
 def get_project_block_level_info(projectId):
-
     data = _get_project_info(projectId)
     if "blockLevelInfo" in data:
         return data["blockLevelInfo"]

@@ -1,7 +1,9 @@
 # Class for AlgoProvider
 import requests
 import json
-from debiaiServer.modules.algoProviders.AlgoProviderException import AlgoProviderException
+from debiaiServer.modules.algoProviders.AlgoProviderException import (
+    AlgoProviderException,
+)
 
 
 class AlgoProvider:

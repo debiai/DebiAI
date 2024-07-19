@@ -4,7 +4,9 @@
 from debiaiServer.config.init_config import get_config
 from debiaiServer.utils.utils import is_url_valid, is_valid_name
 import debiaiServer.modules.algoProviders.algoProvidersManager as algo_provider_manager
-from debiaiServer.modules.algoProviders.AlgoProviderException import AlgoProviderException
+from debiaiServer.modules.algoProviders.AlgoProviderException import (
+    AlgoProviderException,
+)
 from debiaiServer.modules.algoProviders.AlgoProvider import AlgoProvider
 
 #############################################################################

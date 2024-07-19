@@ -13,7 +13,9 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.PythonDataProvider im
     PythonDataProvider,
     PYTHON_DATA_PROVIDER_ID,
 )
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 
 data_providers_list = []
 python_data_provider_disabled = True

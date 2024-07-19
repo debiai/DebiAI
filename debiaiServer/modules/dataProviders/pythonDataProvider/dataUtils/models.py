@@ -5,7 +5,9 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
     projects,
     tree,
 )
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 

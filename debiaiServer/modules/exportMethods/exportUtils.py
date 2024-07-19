@@ -1,6 +1,8 @@
 from debiaiServer.config.init_config import get_config
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
-from debiaiServer.modules.dataProviders.DataProviderException import DataProviderException
+from debiaiServer.modules.dataProviders.DataProviderException import (
+    DataProviderException,
+)
 import time
 
 from debiaiServer.modules.exportMethods.methods.kafkaUtils import KafkaExportType

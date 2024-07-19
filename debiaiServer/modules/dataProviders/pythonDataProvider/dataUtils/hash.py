@@ -1,7 +1,9 @@
 import hashlib
 import ujson as json
 
-from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import pythonModuleUtils
+from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
+    pythonModuleUtils,
+)
 
 DATA_PATH = pythonModuleUtils.DATA_PATH
 

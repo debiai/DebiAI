@@ -3,7 +3,9 @@ from termcolor import colored
 
 from debiaiServer.config.init_config import DEBUG_COLOR
 from debiaiServer.modules.algoProviders.AlgoProvider import AlgoProvider
-from debiaiServer.modules.algoProviders.AlgoProviderException import AlgoProviderException
+from debiaiServer.modules.algoProviders.AlgoProviderException import (
+    AlgoProviderException,
+)
 
 
 def _get_algorithm_python(algorithm_name):
