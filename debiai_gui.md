@@ -15,9 +15,9 @@
 
 </div>
 
-## Why DebiAI ?
+## Why DebiAI Gui?
 
-DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
+DebiAI Gui is an open source package that allows you to launch DebiAI in a standalone state. Thus by installing this module you can use quickly the DebiAI open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
 
 DebiAI provides data scientists with features to:
 
@@ -52,7 +52,7 @@ DebiAI provide two main ways to import your data:
 
 ## Installation
 
-DebiAI is available as a Docker image. To install it, you can follow the [installation guide](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation).
+DebiAI-GUI is available as a python module with pip. To install it, you can follow the [installation guide](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation).
 
 ## Use cases
 
@@ -73,7 +73,7 @@ Withing the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been a
 ---
 
 <p align="center">
-  DebiAI is developed by 
+  DebiAI-GUI is developed by 
   <a href="https://www.irt-systemx.fr/" title="IRT SystemX">
    <img src="https://www.irt-systemx.fr/wp-content/uploads/2013/03/system-x-logo.jpeg"  height="70">
   </a>

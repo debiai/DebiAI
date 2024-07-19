@@ -1,4 +1,4 @@
-# This workflow will upload a Debiai-gui Package using Twine when a release is created
+# This workflow will upload a Debiai-gui Package using Twine  when the main branch is updated
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 # This workflow uses actions that are not certified by GitHub.

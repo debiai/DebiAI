@@ -9,7 +9,6 @@ setup(
     version=VERSION,
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
-    package_data={"debiaiServer": ["swagger.yaml", "config.env", "config.ini"]},
     install_requires=[
         "Flask==2.0.3",
         "flask_cors==3.0.8",
@@ -31,13 +30,13 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-gui=debiaiServer.server:run",
+            "debiai-gui=debiaiServer.debiai_gui_utils:run",
         ],
     },
     author="IRT-Systemx",
     author_email="debiai@irt-systemx.fr",
     description="DebiAI easy start module, the standalone version of DebiAI",
-    long_description=open("README.md").read(),
+    long_description=open("debiai_gui.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/debiai/DebiAI",
     classifiers=[
