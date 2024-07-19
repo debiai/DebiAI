@@ -1,4 +1,3 @@
-import sys
 import argparse
 from threading import Timer
 from termcolor import colored
