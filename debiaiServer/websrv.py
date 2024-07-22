@@ -1,4 +1,3 @@
-import os
 import psutil
 import requests
 import connexion
@@ -18,14 +17,12 @@ app.add_api("swagger.yaml", strict_validation=True)
 CORS(app.app)
 
 
-def send_frontend(path):
+def send_frontend(path, is_dev):
     if path == "/":
         path = "index.html"
 
     # If production, use the index.html from the dist folder
-    env = os.getenv("FLASK_ENV", "production")
-    debug_mode = env == "production"
-    if debug_mode:
+    if not is_dev:
         return send_from_directory("dist", path)
 
     # In development, redirect to the DEV_FRONTEND_URL
@@ -57,16 +54,16 @@ def send_frontend(path):
             print("Unexpected request method")
 
 
-def create_app():
+def create_app(is_dev):
     # For serving the dashboard
     @app.route("/")
     def send_index():
-        return send_frontend("/")
+        return send_frontend("/", is_dev)
 
     # For serving the dashboard assets
     @app.route("/<path:path>")
     def send_supporting_elements(path):
-        return send_frontend(path)
+        return send_frontend(path, is_dev)
 
     return app
 
@@ -102,7 +99,7 @@ def start_server(port, reloader=True, is_dev=True):
         + colored("http://localhost:" + str(port), DEBUG_COLOR),
         flush=True,
     )
-    app = create_app()
+    app = create_app(is_dev)
     if is_dev:
         # Use flask server for development
         app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
