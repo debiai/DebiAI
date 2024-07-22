@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 import numpy.random as nr
 
-from scipy.stats.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr
 from scipy.special import digamma
 import scipy.spatial as ss
-from scipy.spatial.ckdtree import cKDTree
+from scipy.spatial import cKDTree
 from sklearn.neighbors import NearestNeighbors
 from math import log, fabs, sqrt
 
