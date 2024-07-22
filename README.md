@@ -15,7 +15,7 @@
 
 </div>
 
-## Why DebiAI ?
+## Why DebiAI?
 
 DebiAI is an open-source web application that aims to facilitate the process of developing Machine Learning models, especially in the stage of the project data analysis and the model performance comparison.
 
@@ -42,17 +42,17 @@ The dashboard is highly customizable and can be used for large and small project
 
 ## Data
 
-DebiAI is designed to be used for any kind projects and data, it is particularly useful for projects that involve many contextual data.
+DebiAI is designed to be used for any kind of projects and data, it is particularly useful for projects that involve many contextual data.
 
 DebiAI provide two main ways to import your data:
 
 - A [DebiAI Python module](https://debiai.irt-systemx.fr/dataInsertion/pythonModule/) is provided to insert, directly from your Python workflow, the data and model results that you want to study.
 - You can also create a [Data Provider](https://debiai.irt-systemx.fr/dataInsertion/dataProviders/), a Web API that will allow DebiAI to reach your data and model results from any programming language and any data sources without duplication.
-  Check out the [DebiAI Data Provider NodeJs template](https://github.com/debiai/data-provider-nodejs-template) for an example of a Data Provider.
+  Check out the [DebiAI Data Provider Node.js template](https://github.com/debiai/data-provider-nodejs-template) for an example of a Data Provider.
 
 ## Installation
 
-DebiAI is available as a Docker image. To install it, you can follow the [installation guide](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation).
+DebiAI is available with pip or as a Docker image. To install it, you can follow the [installation guide](https://debiai.irt-systemx.fr/introduction/gettingStarted/installation).
 
 ## Use cases
 
@@ -68,7 +68,29 @@ The Valeo - WoodScape dataset is an annotated image dataset taken from 4 fisheye
   <img src="./images/valeo.png">
 </p>
 
-Withing the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been able to import the project data, detect biases, find annotations errors and export them to the project's image annotation tool.
+Within the [Confiance.ai](https://www.confiance.ai/) program, DebiAI has been able to import the project data, detect biases, find annotations errors and export them to the project's image annotation tool.
+
+## Scientific publications
+
+- ICAS 2024 [DebiAI: Open-Source Toolkit for Data Analysis, Visualization and Evaluation in Machine Learning](https://hal.science/hal-04446930).
+  - [Best paper award](https://www.iaria.org/conferences2024/AwardsICAS24.html)! 🏆
+
+## Citation
+
+If you use DebiAI in your research, please cite the following paper:
+
+<!-- cSpell:disable -->
+
+```
+@inproceedings{mansion2024debiai,
+  title={DebiAI: Open-Source Toolkit for Data Analysis, Visualisation and Evaluation in Machine Learning},
+  author={Mansion, Tom and Braud, Rapha{\"e}l and Amrani, Ahmed and Chaouche, Sabrina and Adjed, Faouzi and Cantat, Lo{\"\i}c},
+  booktitle={ICAS 2024},
+  year={2024}
+}
+```
+
+<!-- cSpell:enable -->
 
 ---
 
