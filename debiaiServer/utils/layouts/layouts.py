@@ -58,7 +58,6 @@ def get_layouts():
             return []
         with open(LAYOUTS_PATH) as json_file:
             layouts = json.load(json_file)
-            print("Reading layouts:", layouts)
             return layouts
 
     except FileNotFoundError:
