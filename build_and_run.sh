@@ -8,4 +8,4 @@ python3 setup.py sdist bdist_wheel
 pip install .
 
 # Run the package
-debiai-gui start
+debiai_gui start
