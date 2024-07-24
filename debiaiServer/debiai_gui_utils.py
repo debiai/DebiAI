@@ -27,11 +27,11 @@ def parse_arguments():
 
 def bash_info():
     print(
-        colored("Usage: ", DEBUG_COLOR) + "debiai-gui [OPTIONS] COMMAND\n\n"
+        colored("Usage: ", DEBUG_COLOR) + "debiai_gui [OPTIONS] COMMAND\n\n"
         "\t"
         "Use the line below to run the app: \n\n"
         "\t\t"
-        "$ debiai-gui"
+        "$ debiai_gui"
         + colored(" start\n\n")
         + colored("Options:\n", DEBUG_COLOR)
         + "\t"

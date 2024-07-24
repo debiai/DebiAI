@@ -5,7 +5,7 @@ from debiaiServer.utils.utils import get_app_version
 VERSION = get_app_version()
 
 setup(
-    name="debiai-gui",
+    name="debiai_gui",
     version=VERSION,
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
@@ -30,7 +30,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-gui=debiaiServer.debiai_gui_utils:run",
+            "debiai_gui=debiaiServer.debiai_gui_utils:run",
         ],
     },
     author="IRT-Systemx",
