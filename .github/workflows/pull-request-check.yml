@@ -8,7 +8,7 @@ on:
       - reopened
 
 jobs:
-  black-format-check: # Check that the backend codebase is formatted with black
+  black-format-check: # Check that the debiaiServer codebase is formatted with black
     name: Black format check
     runs-on: ubuntu-latest
     steps:
@@ -19,12 +19,12 @@ jobs:
           python-version: 3.8
       - name: Install dependencies and check black format
         run: |
-          cd backend
+          cd debiaiServer
           python -m pip install --upgrade pip
           pip install black
           black --check --diff .
 
-  flake8-check: # Check that the backend codebase does not contain linting errors
+  flake8-check: # Check that the debiaiServer codebase does not contain linting errors
     name: Flake8 check
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +35,7 @@ jobs:
           python-version: 3.8
       - name: Install dependencies and check flake8 format
         run: |
-          cd backend
+          cd debiaiServer
           python -m pip install --upgrade pip
           pip install flake8
           flake8 .
@@ -73,18 +73,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check that the version in backend and frontend are the same
+      - name: Check that the version in debiaiServer and frontend are the same
         id: version-check
         run: |
           cd frontend
           FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-          cd ../backend
+          cd ../debiaiServer
           BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
           if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != backend/swagger.yaml version '$BACKEND_VERSION'."
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
             exit 1
           fi
-          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == backend/swagger.yaml version '$BACKEND_VERSION'."
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
@@ -146,14 +146,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          cd backend
+          cd debiaiServer
           python -m pip install --upgrade pip
           pip install pytest
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          cd backend
-          python websrv.py & sleep 5 && pytest tests/
+          python run_debiai_server_dev.py & sleep 5 && pytest debiaiServer/tests/
 
   docker-build-check: # Build the docker image and check that it can run
     name: Docker build check

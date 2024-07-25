@@ -55,7 +55,10 @@
     "Valeo",
     "vuejs",
     "Vuex",
-    "websrv"
+    "websrv",
+    "werkzeug",
+    "sdist",
+    "bdist"
   ],
   "flagWords": [],
   "ignorePaths": [
@@ -64,11 +67,12 @@
     "*.png",
     "*.yaml",
     ".vscode/*",
-    "backend/requirements.txt",
-    "backend/data/*",
+    "debiaiServer/requirements.txt",
+    "debiaiServer/data/*",
     "__pycache__/",
     "frontend/dist",
     "frontend/node_modules",
+    "./setup.py",
     "TODO"
   ]
 }

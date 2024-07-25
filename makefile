@@ -2,38 +2,38 @@
 
 # Install dependencies
 install:
-	cd backend && pip install -r requirements.txt
+	cd debiaiServer && pip install -r requirements.txt
 	cd frontend && npm install
 
 # Run the application in development mode
-run_backend:
-	cd backend && python websrv.py
+run_debiaiServer:
+	cd debiaiServer && python websrv.py
 
 run_frontend:
 	cd frontend && npm run serve
 
 start:
-	make run_backend & make run_frontend
+	make run_debiaiServer & make run_frontend
 
 code:
-	code backend
+	code debiaiServer
 	code frontend
 
 
 # Code quality
 format:
 	# -----  Formatting Python code with Black
-	cd backend && black .
+	cd debiaiServer && black .
 
 	# -----  Formatting JavaScript code with Prettier
 	cd frontend && npm run prettier
 
 check:
 	# -----  Validating Black code style
-	cd backend && black --check --diff .
+	cd debiaiServer && black --check --diff .
 
 	# -----  Validating Flake8 code style
-	cd backend && flake8 .
+	cd debiaiServer && flake8 .
 
 	# -----  Validating Prettier code style
 	cd frontend && npm run prettier:check

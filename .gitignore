@@ -1,11 +1,23 @@
-dist/
-deployment/
-.vscode/
-
-# Back
-backend/data
-.coverage
+# Byte-compiled / optimized / DLL files
 __pycache__/
 
-# Front
+# Build and packaging
+dist/
+build/
+*data/
+*.egg-info/
+
+# Dependency directories
 frontend/node_modules/
+
+# coverage
+.coverage
+
+# Scripts
+build_and_run.sh
+
+# Deployement
+deployment/
+
+# VSCODE
+.vscode/
