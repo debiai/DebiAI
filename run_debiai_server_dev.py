@@ -2,4 +2,4 @@
 
 from debiaiServer import websrv
 
-websrv.start_server(port=3000, reloader=False, is_dev=True)
+websrv.start_server(port=3000, reloader=True, is_dev=True)
