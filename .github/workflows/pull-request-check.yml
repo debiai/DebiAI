@@ -152,7 +152,7 @@ jobs:
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          python run_debiai_server_dev.py & sleep 5 && pytest tests/
+          python run_debiai_server_dev.py & sleep 5 && pytest debiaiServer/tests/
 
   docker-build-check: # Build the docker image and check that it can run
     name: Docker build check
