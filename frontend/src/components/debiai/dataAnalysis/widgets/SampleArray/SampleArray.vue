@@ -15,25 +15,44 @@
       v-on:validate="columnsSelect"
     />
 
-    <vue-table-dynamic
-      v-if="displayArray"
-      :params="params"
-    ></vue-table-dynamic>
+    <!-- Array -->
+    <div v-if="arrayData !== null">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th
+              v-for="(column, index) in arrayLabels"
+              :key="index"
+            >
+              {{ column }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, index) in arrayData"
+            :key="index"
+          >
+            <td
+              v-for="(cell, index) in row"
+              :key="index"
+            >
+              {{ cell }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
-import VueTableDynamic from "vue-table-dynamic";
-
 // components
 import ColumnSelection from "../../common/ColumnSelection";
-import swal from "sweetalert";
 
 export default {
   components: {
-    VueTableDynamic,
     ColumnSelection,
-    // Column,
   },
   props: {
     data: { type: Object, required: true },
@@ -41,24 +60,12 @@ export default {
   },
   data() {
     return {
-      displayArray: false,
       selectedColumnsIds: [],
       settings: true,
       columnsSelection: false,
 
-      // VueTableDynamic props
-      params: {
-        data: [[]],
-        header: "row",
-        // border: true,
-        stripe: true,
-        // showCheck: true, // TODO : use as data selection
-        enableSearch: true,
-        pagination: true,
-        height: 100,
-        pageSize: 10,
-        // pageSizes: [5, 10, 20, 50],
-      },
+      arrayLabels: [],
+      arrayData: null,
     };
   },
   created() {
@@ -70,50 +77,27 @@ export default {
     });
     this.$parent.$on("redraw", this.updateArray);
   },
-  mounted() {
-    this.setArrayHeight();
-
-    this.$parent.$parent.$on("GridStack_resizestop", () => {
-      this.setArrayHeight();
-    });
-  },
+  mounted() {},
   methods: {
-    setArrayHeight() {
-      let d = document.getElementById("SampleArray" + this.index) || null;
-      if (d) this.params.height = d.clientHeight - 120; //* 0.75;
-    },
     updateArray() {
-      if (this.data.selectedData.length <= 1000) this._updateArray();
-      else {
-        swal({
-          title: "Display the array ?",
-          text: "There is a lot of samples to display, the process may be  resource-intensive.\rYou can always select fewer data.",
-          buttons: true,
-          dangerMode: true,
-        }).then((validate) => {
-          if (validate) this._updateArray();
-          else if (!this.displayArray) this.settings = true;
-        });
-      }
-    },
-    _updateArray() {
+      const maxData = 10;
       this.selectedColumnsIds = this.selectedColumnsIds.filter((i) => this.data.columnExists(i));
+      const selectedData = this.data.selectedData.slice(0, maxData);
       const labels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
-      var data = new Array(this.data.selectedData.length + 1); // Number of rows
-      data[0] = labels;
+      const nbRows = Math.min(selectedData.length, maxData); // Number of rows to display
+      const data = new Array(nbRows);
+      this.arrayLabels = labels;
 
-      for (var i = 1; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
+      for (let i = 0; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
 
       this.selectedColumnsIds.forEach((columnIndex, i) => {
         const col = this.data.getColumn(columnIndex);
-        this.data.selectedData.map((j, indRow) => (data[indRow + 1][i] = col.values[j]));
+        selectedData.map((j, indRow) => (data[indRow][i] = col.values[j]));
       });
 
-      this.displayArray = true;
       this.settings = false;
+      this.arrayData = data;
 
-      this.params.data = data;
-      this.params.sort = this.selectedColumnsIds.map((c, i) => i);
       this.$parent.$emit("drawn");
     },
     columnsSelect(columnIndexes) {
@@ -136,4 +120,29 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    max-width: 200px;
+    // make text wrap, not overflow
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+}
+</style>
