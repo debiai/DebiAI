@@ -42,6 +42,29 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button
+          v-if="currentPage > 0"
+          @click="pageUp"
+        >
+          &laquo;
+        </button>
+
+        <span>{{ currentPage + 1 }} / {{ maxPage + 1 }}</span>
+        <button
+          v-if="currentPage < maxPage"
+          @click="pageDown"
+        >
+          &raquo;
+        </button>
+      </div>
+    </div>
+
+    <!-- No data -->
+    <div v-else>
+      <p>No data to display</p>
     </div>
   </div>
 </template>
@@ -66,6 +89,9 @@ export default {
 
       arrayLabels: [],
       arrayData: null,
+      currentSamplePosition: 0,
+      dataPerPage: 0,
+      maxPage: 0,
     };
   },
   created() {
@@ -76,28 +102,43 @@ export default {
       this.settings = !this.settings;
     });
     this.$parent.$on("redraw", this.updateArray);
+    this.$parent.$parent.$on("GridStack_resizestop", () => {
+      this.updateArray();
+    });
   },
-  mounted() {},
   methods: {
     updateArray() {
-      const maxData = 10;
+      // Get the number of rows to display and the height of the div
+      const d = document.getElementById("SampleArray" + this.index) || null;
+      if (!d) return;
+      const rowHeight = 27;
+      this.dataPerPage = Math.floor(d.clientHeight / rowHeight) - 3; // Number of rows to display
+
+      // Calculate the number of pages
+      this.maxPage = Math.ceil(this.data.selectedData.length / this.dataPerPage) - 1;
+
+      // Get the labels of the columns
       this.selectedColumnsIds = this.selectedColumnsIds.filter((i) => this.data.columnExists(i));
-      const selectedData = this.data.selectedData.slice(0, maxData);
-      const labels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
-      const nbRows = Math.min(selectedData.length, maxData); // Number of rows to display
+      this.arrayLabels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
+
+      // Get the data to display
+      const selectedData = this.data.selectedData.slice(
+        this.currentSamplePosition,
+        this.currentSamplePosition + this.dataPerPage
+      );
+
+      // Create the array of data
+      const nbRows = Math.min(selectedData.length, this.dataPerPage); // Number of rows to display
       const data = new Array(nbRows);
-      this.arrayLabels = labels;
-
-      for (let i = 0; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length); // Number of columns
-
+      for (let i = 0; i < data.length; i++) data[i] = new Array(this.selectedColumnsIds.length);
       this.selectedColumnsIds.forEach((columnIndex, i) => {
         const col = this.data.getColumn(columnIndex);
         selectedData.map((j, indRow) => (data[indRow][i] = col.values[j]));
       });
 
-      this.settings = false;
       this.arrayData = data;
 
+      this.settings = false;
       this.$parent.$emit("drawn");
     },
     columnsSelect(columnIndexes) {
@@ -106,10 +147,27 @@ export default {
       this.settings = false;
       this.updateArray();
     },
+    pageUp() {
+      this.currentSamplePosition += this.dataPerPage;
+      this.updateArray();
+    },
+    pageDown() {
+      if (this.currentSamplePosition > this.dataPerPage) {
+        this.currentSamplePosition -= this.dataPerPage;
+        this.updateArray();
+      } else {
+        this.currentSamplePosition = 0;
+        this.updateArray();
+      }
+    },
   },
   computed: {
     selectedDataUpdate() {
       return this.data.selectedData;
+    },
+    currentPage() {
+      if (this.dataPerPage === 0) return 0;
+      return Math.floor(this.currentSamplePosition / this.dataPerPage);
     },
   },
   watch: {
@@ -128,9 +186,10 @@ table {
   th,
   td {
     border: 1px solid #ddd;
-    padding: 8px;
     text-align: left;
     max-width: 200px;
+    height: 25px;
+    padding-left: 3px;
     // make text wrap, not overflow
     overflow: hidden;
     text-overflow: ellipsis;
@@ -143,6 +202,29 @@ table {
 
   tr:nth-child(even) {
     background-color: #f2f2f2;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+
+  button {
+    background-color: #f2f2f2;
+    border: none;
+    color: black;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  span {
+    padding: 8px 16px;
+    font-size: 16px;
   }
 }
 </style>
