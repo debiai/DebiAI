@@ -499,17 +499,7 @@ class Column {
     this.nbOccurrence = this.uniques.length;
 
     // Checking if the this.umn is type text, number or got undefined values
-    if (this.uniques.findIndex((v) => v === undefined || v === "" || v === null) >= 0) {
-      // undefined Values
-      this.type = undefined;
-      this.typeText = "undefined";
-      this.undefinedIndexes = this.originalValues
-        .map((v, i) => (v == undefined || v == "" || v == null ? i : -1))
-        .filter((v) => v >= 0);
-      console.warn("Undefined values : " + this.label);
-      console.warn(this.uniques);
-      console.warn(this.originalValues);
-    } else if (!(this.uniques.findIndex((v) => !Array.isArray(v)) >= 0)) {
+    if (!(this.uniques.findIndex((v) => !Array.isArray(v)) >= 0)) {
       // If all the values are arrays
       this.type = Array;
       this.typeText = "Array";
@@ -586,8 +576,8 @@ class Column {
       // Default Type
       this.type = Number;
       this.typeText = "Num";
-      this.originalValues = this.originalValues.map((v) => +v);
-      this.uniques = this.uniques.map((v) => +v);
+      this.originalValues = this.originalValues.map((v) => (v === null ? v : +v));
+      this.uniques = this.uniques.map((v) => (v === null ? v : +v));
       this.nbOccurrence = this.uniques.length;
       this.min = this.calculateMin(this.uniques);
       this.max = this.calculateMax(this.uniques);
