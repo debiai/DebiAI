@@ -49,9 +49,20 @@
 
       <!-- Pagination -->
       <div class="pagination">
-        <span style="width: 50px">
+        <span class="buttons">
           <button
-            v-if="currentPage > 0"
+            :disabled="!(currentPage > 0)"
+            @click="
+              currentSamplePosition = 0;
+              updateArray();
+            "
+          >
+            ◀◀
+          </button>
+        </span>
+        <span class="buttons">
+          <button
+            :disabled="!(currentPage > 0)"
             @click="pageDown"
           >
             ◀
@@ -63,12 +74,23 @@
           @click="pageToJumpTo = currentPage + 1"
           >{{ currentPage + 1 }} / {{ maxPage + 1 }}
         </span>
-        <span style="width: 50px">
+        <span class="buttons">
           <button
-            v-if="currentPage < maxPage"
+            :disabled="!(currentPage < maxPage)"
             @click="pageUp"
           >
             ▶
+          </button>
+        </span>
+        <span class="buttons">
+          <button
+            :disabled="!(currentPage < maxPage)"
+            @click="
+              currentSamplePosition = maxPage * dataPerPage;
+              updateArray();
+            "
+          >
+            ▶▶
           </button>
         </span>
       </div>
@@ -287,7 +309,8 @@ export default {
   .pagination {
     display: flex;
     justify-content: center;
-    margin: 10px 0px;
+    margin-bottom: 10px;
+    gap: 3px;
 
     button {
       background-color: #f2f2f2;
@@ -313,10 +336,19 @@ export default {
       }
     }
 
-    span {
+    .buttons {
       display: flex;
       justify-content: center;
       align-items: center;
+
+      width: 50px;
+      button {
+        width: 100%;
+        &:hover {
+          background-color: #f2f2f2;
+          border-radius: 5px;
+        }
+      }
     }
   }
 }
