@@ -49,7 +49,7 @@
 
       <!-- Pagination -->
       <div class="pagination">
-        <span style="width: 70px">
+        <span style="width: 50px">
           <button
             v-if="currentPage > 0"
             @click="pageDown"
@@ -57,8 +57,13 @@
             ◀
           </button>
         </span>
-        <span class="pageDisplayer">{{ currentPage + 1 }} / {{ maxPage + 1 }}</span>
-        <span style="width: 70px">
+        <span
+          class="pageDisplayer"
+          title="Jump to page"
+          @click="pageToJumpTo = currentPage + 1"
+          >{{ currentPage + 1 }} / {{ maxPage + 1 }}
+        </span>
+        <span style="width: 50px">
           <button
             v-if="currentPage < maxPage"
             @click="pageUp"
@@ -68,6 +73,34 @@
         </span>
       </div>
     </div>
+
+    <!-- Page selection modal -->
+    <modal
+      v-if="pageToJumpTo !== null"
+      @close="pageToJumpTo = null"
+    >
+      <div>
+        <h3 style="margin-bottom: 10px; display: flex; justify-content: space-between; gap: 10px">
+          Jump to page
+          <button
+            @click="pageToJumpTo = null"
+            class="red"
+          >
+            Cancel
+          </button>
+        </h3>
+        <form @submit.prevent="jumpToPage">
+          <input
+            type="number"
+            v-model="pageToJumpTo"
+            min="1"
+            max="maxPage + 1"
+            style="padding: 5px"
+          />
+          <button type="submit">Jump</button>
+        </form>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -94,6 +127,8 @@ export default {
       currentSamplePosition: 0,
       dataPerPage: 0,
       maxPage: 0,
+
+      pageToJumpTo: null,
     };
   },
   created() {
@@ -179,6 +214,14 @@ export default {
       if (this.currentSamplePosition >= this.data.selectedData.length)
         this.currentSamplePosition = this.data.selectedData.length - this.dataPerPage;
     },
+    jumpToPage() {
+      if (this.pageToJumpTo <= 1) this.pageToJumpTo = 1;
+      if (this.pageToJumpTo > this.maxPage + 1) this.pageToJumpTo = this.maxPage + 1;
+
+      this.currentSamplePosition = (this.pageToJumpTo - 1) * this.dataPerPage;
+      this.updateArray();
+      this.pageToJumpTo = null;
+    },
   },
   computed: {
     selectedDataUpdate() {
@@ -254,8 +297,21 @@ export default {
     }
 
     .pageDisplayer {
+      width: 80px;
       padding: 8px 16px;
       font-size: 16px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f2f2f2;
+        border-radius: 5px;
+      }
+    }
+
+    span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
