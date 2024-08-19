@@ -24,7 +24,6 @@
     "vue-inline-svg": "^2.0.0",
     "vue-progressive-image": "^3.2.0",
     "vue-router": "^3.3.4",
-    "vue-table-dynamic": "^0.4.4",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
