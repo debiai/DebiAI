@@ -11,7 +11,13 @@
         :class="'aligned centered ' + (filter.type === 'intervals' ? 'intervalCol' : 'valueCol')"
         title="Column name"
       >
-        {{ filter.column.label }}
+        <span v-if="filter.column && filter.column.label">
+          {{ filter.column.label }}
+        </span>
+        <span v-else>
+          Column not found
+          <!-- TODO Prevent this from happening -->
+        </span>
       </div>
     </div>
 

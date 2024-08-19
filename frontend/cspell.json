@@ -41,6 +41,7 @@
     "ncontours",
     "parcats",
     "parcoords",
+    "psutil",
     "rangeslider",
     "relayout",
     "resizestop",
@@ -80,8 +81,7 @@
     "zeroline",
     "Zindex",
     "zmax",
-    "zmin",
-    "psutil"
+    "zmin"
   ],
   "flagWords": [],
   "ignorePaths": [
