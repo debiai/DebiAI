@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'SampleArray' + index"
-    class="dataVisualizationWidget"
+    class="sampleArray dataVisualizationWidget"
   >
     <!-- Columns selection Modals -->
     <ColumnSelection
@@ -11,12 +11,16 @@
       :validateRequired="true"
       :colorSelection="true"
       :defaultSelected="selectedColumnsIds"
+      :minimumSelection="1"
       v-on:cancel="settings = false"
       v-on:validate="columnsSelect"
     />
 
     <!-- Array -->
-    <div v-if="arrayData !== null">
+    <div
+      class="array"
+      v-if="arrayData !== null"
+    >
       <table class="table table-bordered table-striped">
         <thead>
           <tr>
@@ -45,26 +49,24 @@
 
       <!-- Pagination -->
       <div class="pagination">
-        <button
-          v-if="currentPage > 0"
-          @click="pageUp"
-        >
-          &laquo;
-        </button>
-
-        <span>{{ currentPage + 1 }} / {{ maxPage + 1 }}</span>
-        <button
-          v-if="currentPage < maxPage"
-          @click="pageDown"
-        >
-          &raquo;
-        </button>
+        <span style="width: 70px">
+          <button
+            v-if="currentPage > 0"
+            @click="pageDown"
+          >
+            ◀
+          </button>
+        </span>
+        <span class="pageDisplayer">{{ currentPage + 1 }} / {{ maxPage + 1 }}</span>
+        <span style="width: 70px">
+          <button
+            v-if="currentPage < maxPage"
+            @click="pageUp"
+          >
+            ▶
+          </button>
+        </span>
       </div>
-    </div>
-
-    <!-- No data -->
-    <div v-else>
-      <p>No data to display</p>
     </div>
   </div>
 </template>
@@ -96,7 +98,7 @@ export default {
   },
   created() {
     // Select the 3 firsts columns
-    for (let i = 0; i < 3; i++) if (this.data.nbColumns > i) this.selectedColumnsIds.push(i);
+    this.selectedColumnsIds = this.data.columns.slice(0, 10).map((c) => c.index);
 
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
@@ -108,11 +110,13 @@ export default {
   },
   methods: {
     updateArray() {
+      if (this.data.selectedData.length === 0 || this.settings) return;
+
       // Get the number of rows to display and the height of the div
       const d = document.getElementById("SampleArray" + this.index) || null;
       if (!d) return;
       const rowHeight = 27;
-      this.dataPerPage = Math.floor(d.clientHeight / rowHeight) - 3; // Number of rows to display
+      this.dataPerPage = Math.floor((d.clientHeight * 0.95) / rowHeight) - 3; // Number of rows to display
 
       // Calculate the number of pages
       this.maxPage = Math.ceil(this.data.selectedData.length / this.dataPerPage) - 1;
@@ -122,6 +126,8 @@ export default {
       this.arrayLabels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
 
       // Get the data to display
+      this.adjustPagination();
+
       const selectedData = this.data.selectedData.slice(
         this.currentSamplePosition,
         this.currentSamplePosition + this.dataPerPage
@@ -144,8 +150,10 @@ export default {
     columnsSelect(columnIndexes) {
       this.selectedColumnsIds = columnIndexes;
 
-      this.settings = false;
-      this.updateArray();
+      if (this.selectedColumnsIds.length > 0) {
+        this.settings = false;
+        this.updateArray();
+      }
     },
     pageUp() {
       this.currentSamplePosition += this.dataPerPage;
@@ -160,6 +168,17 @@ export default {
         this.updateArray();
       }
     },
+    adjustPagination() {
+      // If the currentSamplePosition is greater than the number of rows
+      if (this.currentSamplePosition >= this.data.selectedData.length)
+        this.currentSamplePosition = this.data.selectedData.length - this.dataPerPage;
+
+      // After a resize, adjust the pagination to have the currentSamplePosition
+      // In the start of the page
+      this.currentSamplePosition = this.currentPage * this.dataPerPage;
+      if (this.currentSamplePosition >= this.data.selectedData.length)
+        this.currentSamplePosition = this.data.selectedData.length - this.dataPerPage;
+    },
   },
   computed: {
     selectedDataUpdate() {
@@ -167,64 +186,77 @@ export default {
     },
     currentPage() {
       if (this.dataPerPage === 0) return 0;
-      return Math.floor(this.currentSamplePosition / this.dataPerPage);
+      return Math.ceil(this.currentSamplePosition / this.dataPerPage);
     },
   },
   watch: {
     selectedDataUpdate() {
       this.$parent.selectedDataWarning = true;
     },
+    settings() {
+      // If the settings are closed, update the array
+      setTimeout(() => {
+        if (!this.settings) this.updateArray();
+      }, 30);
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    border: 1px solid #ddd;
-    text-align: left;
-    max-width: 200px;
-    height: 25px;
-    padding-left: 3px;
-    // make text wrap, not overflow
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  th {
-    background-color: #f2f2f2;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-}
-
-.pagination {
+.array {
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 
-  button {
-    background-color: #f2f2f2;
-    border: none;
-    color: black;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      text-align: left;
+      max-width: 200px;
+      height: 25px;
+      padding-left: 3px;
+      // make text wrap, not overflow
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
   }
 
-  span {
-    padding: 8px 16px;
-    font-size: 16px;
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0px;
+
+    button {
+      background-color: #f2f2f2;
+      border: none;
+      color: black;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .pageDisplayer {
+      padding: 8px 16px;
+      font-size: 16px;
+    }
   }
 }
 </style>
