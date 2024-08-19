@@ -53,7 +53,10 @@
       </table>
 
       <!-- Pagination -->
-      <div class="pagination" v-if="maxPage > 0">
+      <div
+        class="pagination"
+        v-if="maxPage > 0"
+      >
         <span class="buttons">
           <button
             :disabled="!(currentPage > 0)"
@@ -174,6 +177,46 @@ export default {
     });
   },
   methods: {
+    getConf() {
+      let conf = {
+        // Columns
+        selectedColumns: this.data.getColumnExistingColumnsLabels(this.selectedColumnsIds),
+      };
+
+      // Sort
+      if (this.sortedColumnId !== null) {
+        conf.sortedColumn = this.data.getColumn(this.sortedColumnId).label;
+        conf.reverseSort = this.reverseSort;
+      }
+
+      return conf;
+    },
+    setConf(conf, options = {}) {
+      if (!conf) return;
+      if ("selectedColumns" in conf) {
+        this.selectedColumnsIds = [];
+        conf.selectedColumns.forEach((cLabel) => {
+          const c = this.data.getColumnByLabel(cLabel);
+          if (c) this.selectedColumnsIds.push(c.index);
+          else if (!options.onStartup)
+            this.$store.commit("sendMessage", {
+              title: "warning",
+              msg: "The column " + cLabel + " hasn't been found",
+            });
+        });
+      }
+
+      this.drawArray();
+
+      if ("sortedColumn" in conf) {
+        const c = this.data.getColumnByLabel(conf.sortedColumn);
+        if (c) {
+          this.sortedColumnId = c.index;
+          this.reverseSort = conf.reverseSort;
+          this.sortByColumn(c.index, false);
+        }
+      }
+    },
     drawArray() {
       // Copy the selected data array
       this.selectedDataIds = this.data.selectedData.slice();
@@ -258,14 +301,21 @@ export default {
       this.updateArray();
       this.pageToJumpTo = null;
     },
-    sortByColumn(columnId) {
-      if (this.sortedColumnId === columnId) this.reverseSort = !this.reverseSort;
-      else this.reverseSort = false;
+    sortByColumn(columnId, reverseUpdate = true) {
+      if (reverseUpdate && this.sortedColumnId === columnId)
+        if (this.reverseSort) {
+          this.reverseSort = false;
+          this.sortedColumnId = null;
+          this.selectedDataIds.sort((a, b) => a - b);
+          this.updateArray();
+          return;
+        } else this.reverseSort = true;
+
+      const selectedData = this.selectedDataIds.slice();
 
       this.sortedColumnId = columnId;
       const column = this.data.getColumn(columnId);
       const columnValues = column.values;
-      const selectedData = this.selectedDataIds.slice();
 
       if (this.reverseSort)
         selectedData.sort((a, b) => {
@@ -364,7 +414,6 @@ export default {
     }
 
     .pageDisplayer {
-      width: 80px;
       padding: 8px 16px;
       font-size: 16px;
       cursor: pointer;
