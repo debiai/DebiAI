@@ -119,6 +119,7 @@ export default {
   data() {
     return {
       selectedColumnsIds: [],
+      selectedDataIds: [],
       settings: true,
       columnsSelection: false,
 
@@ -138,14 +139,21 @@ export default {
     this.$parent.$on("settings", () => {
       this.settings = !this.settings;
     });
-    this.$parent.$on("redraw", this.updateArray);
+    this.$parent.$on("redraw", this.drawArray);
     this.$parent.$parent.$on("GridStack_resizestop", () => {
       this.updateArray();
     });
   },
   methods: {
+    drawArray() {
+      // Copy the selected data array
+      this.selectedDataIds = this.data.selectedData.slice();
+      this.updateArray();
+      this.settings = false;
+      this.$parent.$emit("drawn");
+    },
     updateArray() {
-      if (this.data.selectedData.length === 0 || this.settings) return;
+      if (this.selectedDataIds.length === 0 || this.settings) return;
 
       // Get the number of rows to display and the height of the div
       const d = document.getElementById("SampleArray" + this.index) || null;
@@ -154,7 +162,7 @@ export default {
       this.dataPerPage = Math.floor((d.clientHeight * 0.95) / rowHeight) - 3; // Number of rows to display
 
       // Calculate the number of pages
-      this.maxPage = Math.ceil(this.data.selectedData.length / this.dataPerPage) - 1;
+      this.maxPage = Math.ceil(this.selectedDataIds.length / this.dataPerPage) - 1;
 
       // Get the labels of the columns
       this.selectedColumnsIds = this.selectedColumnsIds.filter((i) => this.data.columnExists(i));
@@ -163,7 +171,7 @@ export default {
       // Get the data to display
       this.adjustPagination();
 
-      const selectedData = this.data.selectedData.slice(
+      const selectedData = this.selectedDataIds.slice(
         this.currentSamplePosition,
         this.currentSamplePosition + this.dataPerPage
       );
@@ -178,16 +186,13 @@ export default {
       });
 
       this.arrayData = data;
-
-      this.settings = false;
-      this.$parent.$emit("drawn");
     },
     columnsSelect(columnIndexes) {
       this.selectedColumnsIds = columnIndexes;
 
       if (this.selectedColumnsIds.length > 0) {
         this.settings = false;
-        this.updateArray();
+        this.drawArray();
       }
     },
     pageUp() {
@@ -205,14 +210,14 @@ export default {
     },
     adjustPagination() {
       // If the currentSamplePosition is greater than the number of rows
-      if (this.currentSamplePosition >= this.data.selectedData.length)
-        this.currentSamplePosition = this.data.selectedData.length - this.dataPerPage;
+      if (this.currentSamplePosition >= this.selectedDataIds.length)
+        this.currentSamplePosition = this.selectedDataIds.length - this.dataPerPage;
 
       // After a resize, adjust the pagination to have the currentSamplePosition
       // In the start of the page
       this.currentSamplePosition = this.currentPage * this.dataPerPage;
-      if (this.currentSamplePosition >= this.data.selectedData.length)
-        this.currentSamplePosition = this.data.selectedData.length - this.dataPerPage;
+      if (this.currentSamplePosition >= this.selectedDataIds.length)
+        this.currentSamplePosition = this.selectedDataIds.length - this.dataPerPage;
     },
     jumpToPage() {
       if (this.pageToJumpTo <= 1) this.pageToJumpTo = 1;
