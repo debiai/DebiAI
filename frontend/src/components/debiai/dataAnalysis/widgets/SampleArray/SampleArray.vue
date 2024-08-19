@@ -25,10 +25,15 @@
         <thead>
           <tr>
             <th
-              v-for="(column, index) in arrayLabels"
-              :key="index"
+              v-for="column in arrayLabels"
+              :key="column.index"
+              @click="sortByColumn(column.index)"
+              class="columnHeader"
             >
-              {{ column }}
+              {{ column.label }}
+
+              <span v-if="sortedColumnId === column.index && !reverseSort">▼</span>
+              <span v-if="sortedColumnId === column.index && reverseSort">▲</span>
             </th>
           </tr>
         </thead>
@@ -48,7 +53,7 @@
       </table>
 
       <!-- Pagination -->
-      <div class="pagination">
+      <div class="pagination" v-if="maxPage > 0">
         <span class="buttons">
           <button
             :disabled="!(currentPage > 0)"
@@ -152,6 +157,8 @@ export default {
       maxPage: 0,
 
       pageToJumpTo: null,
+      sortedColumnId: null,
+      reverseSort: false,
     };
   },
   created() {
@@ -188,7 +195,9 @@ export default {
 
       // Get the labels of the columns
       this.selectedColumnsIds = this.selectedColumnsIds.filter((i) => this.data.columnExists(i));
-      this.arrayLabels = this.selectedColumnsIds.map((i) => this.data.getColumn(i).label);
+      this.arrayLabels = this.selectedColumnsIds.map((i) => {
+        return { label: this.data.getColumn(i).label, index: i };
+      });
 
       // Get the data to display
       this.adjustPagination();
@@ -249,6 +258,29 @@ export default {
       this.updateArray();
       this.pageToJumpTo = null;
     },
+    sortByColumn(columnId) {
+      if (this.sortedColumnId === columnId) this.reverseSort = !this.reverseSort;
+      else this.reverseSort = false;
+
+      this.sortedColumnId = columnId;
+      const column = this.data.getColumn(columnId);
+      const columnValues = column.values;
+      const selectedData = this.selectedDataIds.slice();
+
+      if (this.reverseSort)
+        selectedData.sort((a, b) => {
+          if (columnValues[a] === columnValues[b]) return 0;
+          return columnValues[a] < columnValues[b] ? 1 : -1;
+        });
+      else
+        selectedData.sort((a, b) => {
+          if (columnValues[a] === columnValues[b]) return 0;
+          return columnValues[a] > columnValues[b] ? 1 : -1;
+        });
+
+      this.selectedDataIds = selectedData;
+      this.updateArray();
+    },
   },
   computed: {
     selectedDataUpdate() {
@@ -303,6 +335,13 @@ export default {
 
     tr:nth-child(even) {
       background-color: #f2f2f2;
+    }
+
+    .columnHeader {
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
