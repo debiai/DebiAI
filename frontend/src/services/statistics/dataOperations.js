@@ -7,20 +7,19 @@ const MAX_STRING_LENGTH = 30;
 
 // create data for the plotly par. coord.
 const columnsCreation = function (columns, selectedSamplesIds) {
-  let plotlyColumns = columns.map((col) => {
+  const plotlyColumns = columns.map((col) => {
     if (col.type == String) {
-      let tickvals = [];
+      const tickvals = [...Array(col.nbOccurrence).keys()];
       let ticktext = [];
-
-      tickvals = [...Array(col.nbOccurrence).keys()];
 
       if (col.nbOccurrence > MAX_STRING_DISPLAYED)
         // No text on the axis
         ticktext = tickvals.map(() => "");
       else
-        ticktext = col.uniques.map((v) =>
-          v.length > MAX_STRING_LENGTH ? v.substring(0, MAX_STRING_LENGTH) + "..." : v
-        );
+        ticktext = col.uniques.map((v) => {
+          if (v === null) return "null";
+          return v.length > MAX_STRING_LENGTH ? v.substring(0, MAX_STRING_LENGTH) + "..." : v;
+        });
 
       return {
         label: col.label,
@@ -29,10 +28,15 @@ const columnsCreation = function (columns, selectedSamplesIds) {
         ticktext: ticktext,
       };
     } else {
+      const values = selectedSamplesIds.map((sId) => {
+        const v = col.values[sId];
+        if (v === null) return undefined;
+        return v;
+      });
       return {
         type: "int",
         label: col.label,
-        values: selectedSamplesIds.map((sId) => col.values[sId]),
+        values: values,
       };
     }
   });
@@ -151,7 +155,9 @@ const getRepartition = function (x, interval, min, max) {
   for (let i = 0; i < interval + 1; i++) {
     xSections.push(sectionLength * i + min);
     repartition.push(
-      x.filter((v) => v >= sectionLength * i + min && v < sectionLength * (i + 1) + min).length
+      x.filter(
+        (v) => v >= sectionLength * i + min && v < sectionLength * (i + 1) + min && v !== null
+      ).length
     );
   }
 

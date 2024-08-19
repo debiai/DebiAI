@@ -498,13 +498,16 @@ class Column {
     this.uniques = [...new Set(this.originalValues)];
     this.nbOccurrence = this.uniques.length;
 
+    const isAllDictionaries = (arr) => {
+      return arr.every((item) => item !== null && typeof item === "object" && !Array.isArray(item));
+    };
     // Checking if the this.umn is type text, number or got undefined values
     if (!(this.uniques.findIndex((v) => !Array.isArray(v)) >= 0)) {
       // If all the values are arrays
       this.type = Array;
       this.typeText = "Array";
       this.arrayColumnSizeNumber = this.getArrayColumnSizeNumber();
-    } else if (this.uniques.findIndex((v) => typeof v !== "object")) {
+    } else if (isAllDictionaries(this.uniques)) {
       // If all the values are dictionaries
       this.type = Object;
       this.typeText = "Dict";

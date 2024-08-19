@@ -1238,8 +1238,6 @@ paths:
             type: array
             items:
               type: array
-              items:
-                type: number
 
       responses:
         200:
