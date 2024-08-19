@@ -77,7 +77,7 @@
           </button>
         </span>
         <span
-          class="pageDisplayer"
+          class="pageDisplay"
           title="Jump to page"
           @click="pageToJumpTo = currentPage + 1"
           >{{ currentPage + 1 }} / {{ maxPage + 1 }}
@@ -413,7 +413,7 @@ export default {
       cursor: pointer;
     }
 
-    .pageDisplayer {
+    .pageDisplay {
       padding: 8px 16px;
       font-size: 16px;
       cursor: pointer;
