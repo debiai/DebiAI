@@ -143,7 +143,7 @@
                 v-else
                 style="opacity: 0.7"
               >
-                Missing value
+                Null
               </div>
 
               <!-- Repartition -->
@@ -189,7 +189,7 @@
                 v-else
                 style="opacity: 0.7"
               >
-                Missing value
+                Null
               </div>
             </td>
             <!-- frequency-->
@@ -283,12 +283,19 @@ export default {
       let values;
       let valuesOriginal; // With null values
       let valuesText;
+      let textColumnNullValueUniqueIndex = null;
       this.nbNullValues = 0;
       if (this.selectedColumn.type === String) {
         values = this.data.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
         valuesOriginal = values;
         valuesText = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
         this.nbNullValues = valuesText.filter((v) => v === null).length;
+        if (this.nbNullValues) {
+          // Get the index of the null value in the unique values
+          textColumnNullValueUniqueIndex = this.selectedColumn.valuesIndexUniques.find(
+            (v) => this.selectedColumn.uniques[v] === null
+          );
+        }
       } else {
         valuesOriginal = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
         values = valuesOriginal.filter((v) => v !== null);
@@ -343,7 +350,11 @@ export default {
           );
 
           this.statByColor = groupedValues.map((sampleIds, i) => {
-            const gpValues = sampleIds.map((sId) => valuesOriginal[sId]);
+            let gpValues = sampleIds.map((sId) => valuesOriginal[sId]);
+
+            if (textColumnNullValueUniqueIndex !== null)
+              gpValues = gpValues.map((v) => (v === textColumnNullValueUniqueIndex ? null : v));
+
             const gpValuesNonNull = gpValues.filter((v) => v !== null);
 
             // Stats

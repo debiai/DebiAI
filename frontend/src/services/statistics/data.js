@@ -497,6 +497,7 @@ class Column {
     // Creating the column object
     this.uniques = [...new Set(this.originalValues)];
     this.nbOccurrence = this.uniques.length;
+    this.nbNullValues = this.originalValues.filter((v) => v === null).length;
 
     const isAllDictionaries = (arr) => {
       return arr.every((item) => item !== null && typeof item === "object" && !Array.isArray(item));
