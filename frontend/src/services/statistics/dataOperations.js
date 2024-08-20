@@ -53,12 +53,12 @@ const mean = (arr) => (arr.length ? sum(arr) / arr.length : null);
 
 const getMin = (arr) => {
   let min = Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] < min) min = arr[i];
+  for (let i = 0; i < arr.length; i++) if (arr[i] !== null && arr[i] < min) min = arr[i];
   return min;
 };
 const getMax = (arr) => {
   let max = -Infinity;
-  for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
+  for (let i = 0; i < arr.length; i++) if (arr[i] !== null && arr[i] > max) max = arr[i];
   return max;
 };
 const mode = (arr) => {
@@ -92,22 +92,22 @@ const getStats = function (
   interval,
   { fromIn = null, toIn = null, detailed = true, displayNull = true }
 ) {
-  let xSections = [];
-  let average = [];
-  let min = [];
-  let max = [];
-  let q1 = [];
-  let q3 = [];
-  let std = [];
+  const xSections = [];
+  const average = [];
+  const min = [];
+  const max = [];
+  const q1 = [];
+  const q3 = [];
+  const std = [];
 
-  let from = fromIn !== null ? fromIn : getMin(x);
-  let to = toIn !== null ? toIn : getMax(x);
-  let sectionLength = (to - from) / interval;
+  const from = fromIn !== null ? fromIn : getMin(x);
+  const to = toIn !== null ? toIn : getMax(x);
+  const sectionLength = (to - from) / interval;
 
   for (let i = 0; i < interval + 1; i++) {
-    var ySection = [];
+    const ySection = [];
     x.forEach((v, vId) => {
-      if (v >= sectionLength * i + from && v < sectionLength * (i + 1) + from)
+      if (v >= sectionLength * i + from && v < sectionLength * (i + 1) + from && y[vId] !== null)
         ySection.push(y[vId]);
     });
 
@@ -115,7 +115,7 @@ const getStats = function (
     xSections.push(sectionLength * i + from);
 
     if (ySection.length > 0) {
-      let sorted = asc(ySection);
+      const sorted = asc(ySection);
 
       average.push(mean(ySection));
       if (detailed) min.push(sorted[0]);

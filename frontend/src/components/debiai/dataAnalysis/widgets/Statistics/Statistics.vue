@@ -136,7 +136,16 @@
             :key="colVal.colValue"
           >
             <td class="colName">
-              {{ colVal.colValue }}
+              <div v-if="colVal.colValue !== null">
+                {{ colVal.colValue }}
+              </div>
+              <div
+                v-else
+                style="opacity: 0.7"
+              >
+                Missing value
+              </div>
+
               <!-- Repartition -->
               <div>
                 <span>
@@ -173,7 +182,15 @@
             </td>
             <!-- top-->
             <td v-if="colVal.top !== undefined">
-              {{ colVal.top }}
+              <div v-if="colVal.top !== null">
+                {{ colVal.top }}
+              </div>
+              <div
+                v-else
+                style="opacity: 0.7"
+              >
+                Missing value
+              </div>
             </td>
             <!-- frequency-->
             <td v-if="colVal.frequency !== undefined">
@@ -271,7 +288,7 @@ export default {
         values = this.data.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
         valuesOriginal = values;
         valuesText = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
-        this.nbNullValues = values.filter((v) => v === null).length;
+        this.nbNullValues = valuesText.filter((v) => v === null).length;
       } else {
         valuesOriginal = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
         values = valuesOriginal.filter((v) => v !== null);

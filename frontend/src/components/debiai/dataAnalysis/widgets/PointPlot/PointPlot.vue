@@ -185,12 +185,12 @@
               </label>
             </div>
           </div>
-          <!-- Display null values -->
+          <!-- Connect values -->
           <div
             class="data"
             v-if="!averageAsBar"
           >
-            <span class="name">Display null values</span>
+            <span class="name">Connect values</span>
             <div class="value">
               <input
                 type="checkbox"

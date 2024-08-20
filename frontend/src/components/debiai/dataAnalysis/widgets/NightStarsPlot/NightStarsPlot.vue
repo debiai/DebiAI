@@ -196,11 +196,12 @@ export default {
 
     // Plot
     checkPlot(failFast = false) {
-      const colColor = this.data.columns[this.coloredColumnIndex];
+      const colColor = this.data.getColumn(this.coloredColumnIndex);
 
       if (
         this.coloredColumnIndex !== null &&
         this.dividePerColor &&
+        colColor &&
         colColor.uniques.length > 100
       ) {
         if (failFast) return false;
@@ -248,8 +249,12 @@ export default {
 
       let colColor;
       let extraPlotName = "";
-      if (this.coloredColumnIndex !== null && this.dividePerColor) {
-        colColor = this.data.columns[this.coloredColumnIndex];
+      if (
+        this.coloredColumnIndex !== null &&
+        this.dividePerColor &&
+        this.data.getColumn(this.coloredColumnIndex)
+      ) {
+        colColor = this.data.getColumn(this.coloredColumnIndex);
         extraPlotName = " grouped by " + colColor.label;
 
         let selectedColors;
@@ -286,7 +291,7 @@ export default {
             stdX,
             stdY,
             color: i,
-            name: colColor.uniques[i],
+            name: colColor.uniques[i] || "Missing data",
           });
         });
       } else {
@@ -428,6 +433,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#nightStarsPlot {
+  display: flex;
+  flex-direction: column;
+}
+
 #settings {
   display: flex;
   flex-direction: column;

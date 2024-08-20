@@ -516,7 +516,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#pointPlot {
+#densityPlot2D {
   display: flex;
   flex-direction: column;
 }
