@@ -111,7 +111,6 @@ export default {
     } else {
       this.selectedColumns = this.defaultSelected;
     }
-    document.addEventListener("keydown", this.keyHandler);
   },
   mounted() {
     // Set focus on search bar
@@ -119,10 +118,6 @@ export default {
   },
 
   methods: {
-    // Handles the keydown event and emits the "cancel" event when the Escape key is pressed
-    keyHandler(k) {
-      if (k.key == "Escape") this.$emit("cancel");
-    },
     // Handles the selection of a column and emits the "colSelect" event with the selected column index
     columnSelected(colIndex) {
       this.$emit("colSelect", colIndex);
@@ -232,9 +227,6 @@ export default {
     defaultSelected() {
       if (this.defaultSelected) this.selectedColumns = this.defaultSelected;
     },
-  },
-  beforeDestroy() {
-    document.removeEventListener("keydown", this.keyHandler);
   },
 };
 </script>

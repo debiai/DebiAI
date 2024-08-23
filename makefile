@@ -7,7 +7,7 @@ install:
 
 # Run the application in development mode
 run_debiaiServer:
-	cd debiaiServer && python websrv.py
+	python run_debiai_server_dev.py
 
 run_frontend:
 	cd frontend && npm run serve

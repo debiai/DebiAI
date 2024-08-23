@@ -1,6 +1,6 @@
 {
   "name": "debiai_frontend",
-  "version": "0.28.1",
+  "version": "0.29.0-beta2",
   "description": "Frontend for Debiai, made with Vuejs",
   "license": "Apache-2.0",
   "scripts": {
@@ -24,7 +24,6 @@
     "vue-inline-svg": "^2.0.0",
     "vue-progressive-image": "^3.2.0",
     "vue-router": "^3.3.4",
-    "vue-table-dynamic": "^0.4.4",
     "vuex": "^3.5.1"
   },
   "devDependencies": {

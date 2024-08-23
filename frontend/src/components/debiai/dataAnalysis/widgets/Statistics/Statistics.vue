@@ -69,6 +69,7 @@
             <th v-if="selectedColumn.type !== String">Average</th>
             <th v-if="selectedColumn.type !== String">Std</th>
             <th v-if="selectedColumn.type !== String">Variance</th>
+            <th v-if="nbNullValues">Missing values</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +89,11 @@
             <td v-if="selectedColumn.type !== String">{{ average }}</td>
             <td v-if="selectedColumn.type !== String">{{ std }}</td>
             <td v-if="selectedColumn.type !== String">{{ variance }}</td>
+            <td v-if="nbNullValues">
+              {{ nbNullValues }} ({{
+                Math.round((nbNullValues / nbSelectedSamplesAtUpdate) * 100)
+              }}%)
+            </td>
           </tr>
         </tbody>
       </table>
@@ -120,6 +126,7 @@
             <th v-if="selectedColumn.type !== String">Average</th>
             <th v-if="selectedColumn.type !== String">Std</th>
             <th v-if="selectedColumn.type !== String">Variance</th>
+            <th v-if="nbNullValues">Missing values</th>
           </tr>
         </thead>
         <tbody>
@@ -129,7 +136,16 @@
             :key="colVal.colValue"
           >
             <td class="colName">
-              {{ colVal.colValue }}
+              <div v-if="colVal.colValue !== null">
+                {{ colVal.colValue }}
+              </div>
+              <div
+                v-else
+                style="opacity: 0.7"
+              >
+                Null
+              </div>
+
               <!-- Repartition -->
               <div>
                 <span>
@@ -166,7 +182,15 @@
             </td>
             <!-- top-->
             <td v-if="colVal.top !== undefined">
-              {{ colVal.top }}
+              <div v-if="colVal.top !== null">
+                {{ colVal.top }}
+              </div>
+              <div
+                v-else
+                style="opacity: 0.7"
+              >
+                Null
+              </div>
             </td>
             <!-- frequency-->
             <td v-if="colVal.frequency !== undefined">
@@ -174,6 +198,12 @@
               <span v-if="colVal.repartition">
                 ({{ Math.round((colVal.frequency / colVal.repartition) * 100) }}%)
               </span>
+            </td>
+            <!-- Null values -->
+            <td v-if="nbNullValues">
+              {{ colVal.nbNullValues }} ({{
+                Math.round((colVal.nbNullValues / colVal.repartition) * 100)
+              }}%)
             </td>
           </tr>
         </tbody>
@@ -208,6 +238,7 @@ export default {
 
       // Statistics
       nbSelectedSamplesAtUpdate: null,
+      nbNullValues: null,
 
       // Class
       top: null,
@@ -250,15 +281,28 @@ export default {
     },
     updateStatistics() {
       let values;
+      let valuesOriginal; // With null values
       let valuesText;
+      let textColumnNullValueUniqueIndex = null;
+      this.nbNullValues = 0;
       if (this.selectedColumn.type === String) {
         values = this.data.selectedData.map((sId) => this.selectedColumn.valuesIndex[sId]);
+        valuesOriginal = values;
         valuesText = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        this.nbNullValues = valuesText.filter((v) => v === null).length;
+        if (this.nbNullValues) {
+          // Get the index of the null value in the unique values
+          textColumnNullValueUniqueIndex = this.selectedColumn.valuesIndexUniques.find(
+            (v) => this.selectedColumn.uniques[v] === null
+          );
+        }
       } else {
-        values = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        valuesOriginal = this.data.selectedData.map((sId) => this.selectedColumn.values[sId]);
+        values = valuesOriginal.filter((v) => v !== null);
         if (this.absolute) values = values.map((v) => Math.abs(v));
+        this.nbNullValues = this.data.selectedData.length - values.length;
       }
-      this.nbSelectedSamplesAtUpdate = values.length;
+      this.nbSelectedSamplesAtUpdate = this.data.selectedData.length;
 
       // Average or frequency
       if (this.selectedColumn.type === String) {
@@ -275,14 +319,12 @@ export default {
       // Min
       this.min = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolute) this.min = dataOperations.humanize(this.selectedColumn.min);
-        else this.min = dataOperations.humanize(dataOperations.getMin(values));
+        this.min = dataOperations.humanize(dataOperations.getMin(values));
 
       // Max
       this.max = null;
       if (this.selectedColumn.type !== String)
-        if (!this.absolute) this.max = dataOperations.humanize(this.selectedColumn.max);
-        else this.max = dataOperations.humanize(dataOperations.getMax(values));
+        this.max = dataOperations.humanize(dataOperations.getMax(values));
 
       // Std & variance
       this.std = null;
@@ -308,7 +350,12 @@ export default {
           );
 
           this.statByColor = groupedValues.map((sampleIds, i) => {
-            let gpValues = sampleIds.map((sId) => values[sId]);
+            let gpValues = sampleIds.map((sId) => valuesOriginal[sId]);
+
+            if (textColumnNullValueUniqueIndex !== null)
+              gpValues = gpValues.map((v) => (v === textColumnNullValueUniqueIndex ? null : v));
+
+            const gpValuesNonNull = gpValues.filter((v) => v !== null);
 
             // Stats
             //  Numbers
@@ -321,19 +368,19 @@ export default {
             let top;
             let frequency;
 
-            if (gpValues.length) {
+            if (gpValuesNonNull.length) {
               if (this.selectedColumn.type === String) {
-                let mode = dataOperations.mode(gpValues);
+                let mode = dataOperations.mode(gpValuesNonNull);
                 top = this.selectedColumn.uniques[mode.top];
                 frequency = mode.frequency;
               } else {
-                average = dataOperations.humanize(dataOperations.mean(gpValues));
+                average = dataOperations.humanize(dataOperations.mean(gpValuesNonNull));
 
                 // Std & variance
-                colStd = dataOperations.humanize(std(gpValues));
-                colVariance = dataOperations.humanize(variance(gpValues));
-                min = dataOperations.humanize(dataOperations.getMin(gpValues));
-                max = dataOperations.humanize(dataOperations.getMax(gpValues));
+                colStd = dataOperations.humanize(std(gpValuesNonNull));
+                colVariance = dataOperations.humanize(variance(gpValuesNonNull));
+                min = dataOperations.humanize(dataOperations.getMin(gpValuesNonNull));
+                max = dataOperations.humanize(dataOperations.getMax(gpValuesNonNull));
               }
             }
             return {
@@ -347,6 +394,7 @@ export default {
               std: colStd,
               variance: colVariance,
               repartition: gpValues.length,
+              nbNullValues: gpValues.length - gpValuesNonNull.length,
             };
           });
 

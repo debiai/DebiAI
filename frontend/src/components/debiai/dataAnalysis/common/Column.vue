@@ -69,6 +69,19 @@ Click to set column as the main color"
       {{ column.typeText }}
     </div>
 
+    <!-- Nb null values pie chart -->
+    <div
+      class="nbNullValues"
+      v-if="column.nbNullValues > 0"
+      :title="column.nbNullValues + ' null values'"
+    >
+      <div
+        class="pie"
+        :style="{ '--p': (column.nbNullValues / column.originalValues.length) * 100 }"
+      />
+      {{ Math.ceil((column.nbNullValues / column.originalValues.length) * 100) }}%
+    </div>
+
     <!-- Menu -->
     <transition name="fade">
       <dropdown-menu
@@ -331,6 +344,33 @@ export default {
 
     &.undefined {
       color: var(--undefined);
+    }
+  }
+
+  /* Pie chart */
+  .nbNullValues {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8em;
+    color: var(--greyDarker);
+    font-weight: bold;
+
+    .pie {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      display: inline-grid;
+      place-content: center;
+      border-radius: 50%;
+      background: var(--greyLight);
+    }
+    .pie:before {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 0;
+      background: conic-gradient(var(--greyDarker) calc(var(--p) * 1%), #0000 0);
     }
   }
 }
