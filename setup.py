@@ -30,13 +30,13 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-gui=debiaiServer.debiai-gui_utils:run",
+            "debiai-gui=debiaiServer.debiai_gui_utils:run",
         ],
     },
     author="IRT-Systemx",
     author_email="debiai@irt-systemx.fr",
     description="DebiAI easy start module, the standalone version of DebiAI",
-    long_description=open("debiai-gui.md").read(),
+    long_description=open("debiai_gui.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/debiai/DebiAI",
     classifiers=[
