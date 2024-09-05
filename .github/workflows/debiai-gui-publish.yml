@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: debiai_gui publish
+name: debiai-gui publish
 
 on:
   push:
