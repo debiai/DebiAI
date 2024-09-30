@@ -5,6 +5,7 @@
     "*index",
     "applymap",
     "astype",
+    "bdist",
     "buildx",
     "cacheout",
     "ckdtree",
@@ -17,6 +18,7 @@
     "Drange",
     "dtype",
     "dvec",
+    "EEXIST",
     "elif",
     "fromlist",
     "groundtruth",
@@ -31,6 +33,7 @@
     "openapi",
     "pearsonr",
     "plotly",
+    "psutil",
     "pval",
     "pycache",
     "pypi",
@@ -39,6 +42,7 @@
     "relayout",
     "rurl",
     "scipy",
+    "sdist",
     "showgrid",
     "showline",
     "sklearn",
@@ -56,9 +60,7 @@
     "vuejs",
     "Vuex",
     "websrv",
-    "werkzeug",
-    "sdist",
-    "bdist"
+    "werkzeug"
   ],
   "flagWords": [],
   "ignorePaths": [
