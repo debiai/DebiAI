@@ -10,7 +10,7 @@ from termcolor import colored
 from debiaiServer.config.init_config import DEBUG_COLOR, SUCCESS_COLOR
 
 
-data_folder_path = None  # The path to the DebiAI data folder
+data_folder_path = "debiai_data"  # The path to the DebiAI data folder
 DEFAULT_PORT = 3000  # default port
 
 welcome_logo = """
