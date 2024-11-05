@@ -20,6 +20,7 @@
     "dvec",
     "EEXIST",
     "elif",
+    "ENOTDIR",
     "fromlist",
     "groundtruth",
     "ICAS",
