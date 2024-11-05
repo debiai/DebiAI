@@ -107,6 +107,11 @@ def start_server(port, reloader=True, is_dev=True):
         # Use waitress for production
         serve(app, host="0.0.0.0", port=port, threads=6)
 
+    # Print goodbye message
+    print("\n====================================================", flush=True)
+    print("\nGoodbye!")
+    print("Thank you for using DebiAI.\n")
+
 
 if __name__ == "__main__":
     start_server(port=3000, reloader=False, is_dev=True)
