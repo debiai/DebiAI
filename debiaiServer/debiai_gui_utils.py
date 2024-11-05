@@ -3,29 +3,33 @@ import os
 import argparse
 from threading import Timer
 from termcolor import colored
-from debiaiServer.utils.utils import get_app_version
-from debiaiServer.websrv import start_server, open_browser
 from debiaiServer.config.init_config import DEBUG_COLOR, SUCCESS_COLOR
-from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
-    pythonModuleUtils,
-)
 
 
-DATA_PATH = pythonModuleUtils.DATA_PATH
-PORT = 3000  # default port
+data_folder_path = None  # The path to the DebiAI data folder
+DEFAULT_PORT = 3000  # default port
 
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run the DebiAI GUI")
-    parser.add_argument("command", nargs="?", help="Start the DebiAI GUI server")
-    parser.add_argument("path", nargs='?', help="The path to the DebiAI data folder.")
-    parser.add_argument(
-        "--port", type=int, default=PORT, help="Port on which to run the DebiAI GUI"
-    )
-    parser.add_argument(
-        "--version", action="store_true", help="Prints the version number of DebiAI"
-    )
-    return parser.parse_args()
+welcome_logo = """
+                                                    █████████████            
+                                                 ███████████████████         
+                                               ███████████████████████       
+                                             ██████████████████████████      
+   █████████             ████        ███    ██████████   ██████   ███████    
+    ███    ███            ███              ██████████     █████   ████████   
+    ███     ███  ███████  ████████  ████   █████████   █   ████   ████████   
+    ███     ███ ███   ███ ███   ███  ███   ████████   ███   ███   ████████   
+    ███     ███ ████████  ███   ███  ███   ███████           ██   ████████   
+    ███    ███  ███       ███   ███  ███   ███████   █████   ██   ████████   
+   ██████████    ███████  ████████  █████  ██████   ███████   █   ███████    
+                                            █████████████████████████████    
+                                             ██████████████████████████      
+                                            ██████████████████████████       
+                                           █████████████████████████         
+                                         ██████     █████████████            
+                                       ██████                                
+                                      ████                                   
+"""
+                                        
 
 def create_folder(path=None):
     """Creates a folder at the specified path.
@@ -44,16 +48,24 @@ def create_folder(path=None):
     try:
         # Check if the folder already exists
         if os.path.exists(path):
-            print(f"Folder '{path}' already exists.")
+            # Check if the path is a folder
+            if not os.path.isdir(path):
+                raise OSError(
+                    errno.ENOTDIR,
+                    f"'{path}' is not a folder. Please provide a valid folder path.",
+                )
             return os.path.abspath(path)  # Return the existing full path
 
-        create_folder_answer = input("Do you want to create it ? (Y/n)")
-        if create_folder_answer == "Y":
+        # If the folder does not exist, ask the user if they want to create it
+        create_folder_answer = input(
+            "The folder does not exist. Do you want to create it? (Y/n): "
+        )
+        if create_folder_answer == "Y" or create_folder_answer == "":
             # Create the folder
             os.makedirs(path)
             print(f"DebiAI data folder '{path}' created successfully.")
         else:
-            print("end of run")
+            print("Folder creation cancelled, exiting.")
             exit()
 
     except OSError as e:
@@ -66,6 +78,7 @@ def create_folder(path=None):
             raise e
 
     return os.path.abspath(path)
+
 
 def bash_info():
     print(
@@ -93,25 +106,68 @@ def bash_info():
 
 
 def run():
-    args = parse_arguments()
+    # Parse the arguments
+    parser = argparse.ArgumentParser(description="Run the DebiAI GUI")
+    parser.add_argument("command", nargs="?", help="Start the DebiAI GUI server")
+    parser.add_argument("path", nargs="?", help="The path to the DebiAI data folder.")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=DEFAULT_PORT,
+        help="Port on which to run the DebiAI GUI, default is " + str(DEFAULT_PORT),
+    )
+    parser.add_argument(
+        "--version", action="store_true", help="Prints the version number of DebiAI"
+    )
+    args = parser.parse_args()
 
+    # Check the arguments
     if args.version:
+        # Print the version number
+        from debiaiServer.utils.utils import get_app_version
+
         version = get_app_version()
         print("DebiAI Version:" + colored(version, SUCCESS_COLOR))
+
     elif args.command == "start":
+        global data_folder_path
+
+        print(welcome_logo)
+        print("   Welcome!\n")
+
+        # Deal with the data folder path
         if args.path is None:
+            # Set the default data folder path
             default_folder_name = "debiai_data"
-            default_folder = os.path.join(os.getcwd(),default_folder_name)
-            data_folder_path_input = input(f"Enter the path to create the DebiAI data folder ({default_folder}): ")
-            if data_folder_path_input == '': 
+            default_folder = os.path.join(os.getcwd(), default_folder_name)
+
+            # Ask the user for the data folder path
+            print("DebiAI requires a data folder to store the data.")
+            data_folder_path_input = input(
+                f"Enter the path of the DebiAI data folder ({default_folder}): "
+            )
+            if data_folder_path_input == "":
                 data_folder_path_input = default_folder
-            print(f"Data folder path input :",data_folder_path_input)
+            print("Data folder path input :", data_folder_path_input)
             data_folder_path = os.path.abspath(data_folder_path_input)
         else:
+            # Use the provided data folder path
             data_folder_path = os.path.abspath(args.path)
+
+        # Create the data folder
         data_folder_path_created = create_folder(data_folder_path)
-        print(f"Data folder path:",data_folder_path_created)
-        Timer(1, lambda: open_browser(args.port)).start()
-        start_server(args.port, reloader=False, is_dev=False)
+        print("Data folder path:", data_folder_path_created, "\n")
+
+        # Start the DebiAI GUI
+        start_server_with_browser(args.port)
+
     else:
+        # Print the usage information
         bash_info()
+
+
+def start_server_with_browser(port):
+    from debiaiServer.websrv import start_server, open_browser
+
+    Timer(1, lambda: open_browser(port)).start()
+    start_server(port, reloader=False, is_dev=False)
