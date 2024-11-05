@@ -1,6 +1,10 @@
 import errno
 import os
 import argparse
+from itertools import cycle
+from shutil import get_terminal_size
+from threading import Thread
+from time import sleep
 from threading import Timer
 from termcolor import colored
 from debiaiServer.config.init_config import DEBUG_COLOR, SUCCESS_COLOR
@@ -29,7 +33,50 @@ welcome_logo = """
                                        ██████                                
                                       ████                                   
 """
-                                        
+
+
+class Loader:
+    def __init__(self, desc="Loading...", end="Done!", timeout=0.1):
+        """
+        A loader-like context manager
+
+        Args:
+            desc (str, optional): The loader's description. Defaults to "Loading...".
+            end (str, optional): Final print. Defaults to "Done!".
+            timeout (float, optional): Sleep time between prints. Defaults to 0.1.
+        """
+        self.desc = desc
+        self.end = end
+        self.timeout = timeout
+
+        self._thread = Thread(target=self._animate, daemon=True)
+        self.steps = ["⢿", "⣻", "⣽", "⣾", "⣷", "⣯", "⣟", "⡿"]
+        self.done = False
+
+    def start(self):
+        self._thread.start()
+        return self
+
+    def _animate(self):
+        for c in cycle(self.steps):
+            if self.done:
+                break
+            print(f"\r{self.desc} {c}", flush=True, end="")
+            sleep(self.timeout)
+
+    def __enter__(self):
+        self.start()
+
+    def stop(self):
+        self.done = True
+        cols = get_terminal_size((80, 20)).columns
+        print("\r" + " " * cols, end="", flush=True)
+        print(f"\r{self.end}", flush=True)
+
+    def __exit__(self, exc_type, exc_value, tb):
+        # handle exceptions with those variables ^
+        self.stop()
+
 
 def create_folder(path=None):
     """Creates a folder at the specified path.
@@ -159,15 +206,18 @@ def run():
         print("Data folder path:", data_folder_path_created, "\n")
 
         # Start the DebiAI GUI
-        start_server_with_browser(args.port)
+        animation = Loader("Starting the DebiAI GUI", "")
+        animation.start()
+        start_server_with_browser(args.port, animation)
 
     else:
         # Print the usage information
         bash_info()
 
 
-def start_server_with_browser(port):
+def start_server_with_browser(port, animation):
     from debiaiServer.websrv import start_server, open_browser
 
     Timer(1, lambda: open_browser(port)).start()
+    animation.stop()
     start_server(port, reloader=False, is_dev=False)
