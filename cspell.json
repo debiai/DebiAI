@@ -70,7 +70,7 @@
     "*.yaml",
     ".vscode/*",
     "debiaiServer/requirements.txt",
-    "debiaiServer/data/*",
+    "debiai_data/*",
     "__pycache__/",
     "frontend/dist",
     "frontend/node_modules",
