@@ -129,11 +129,11 @@ def create_folder(path=None):
 
 def bash_info():
     print(
-        colored("Usage: ", DEBUG_COLOR) + "debiai_gui [OPTIONS] COMMAND DATA_PATH\n\n"
+        colored("Usage: ", DEBUG_COLOR) + "debiai-gui [OPTIONS] COMMAND DATA_PATH\n\n"
         "\t"
         "Use the line below to run the app: \n\n"
         "\t\t"
-        "$ debiai_gui"
+        "$ debiai-gui"
         + colored(" start")
         + colored(" ./debiai_data\n\n")
         + colored("Options:\n", DEBUG_COLOR)
