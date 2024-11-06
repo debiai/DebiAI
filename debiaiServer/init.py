@@ -1,3 +1,7 @@
+import os
+
+from debiaiServer.debiai_gui_utils import data_folder_path
+
 from debiaiServer.modules.dataProviders import (
     dataProviderManager,
 )
@@ -19,6 +23,9 @@ from debiaiServer.config import (
 
 
 def init():
+    # Create the folder if it does not exist
+    os.makedirs(data_folder_path, exist_ok=True)
+
     # Init config file
     config.init_config()
 

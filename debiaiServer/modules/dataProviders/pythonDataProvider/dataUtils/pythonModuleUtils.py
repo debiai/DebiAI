@@ -5,22 +5,18 @@ import unicodedata
 import string
 import shutil
 import time
-import pkg_resources
+from debiaiServer.debiai_gui_utils import data_folder_path
 
-
-DATA_PATH = pkg_resources.resource_filename("debiaiServer", "data/pythonDataProvider/")
+DATA_PATH = data_folder_path + "/pythonDataProvider/"
 
 DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 
 
 # Init, called at the server start
 def init():
-    # Create the projects data directory
-    try:
-        os.makedirs(DATA_PATH)
-    except FileExistsError:
-        # Data already initiated
-        pass
+    # Create the folder if it does not exist
+    if not os.path.exists(DATA_PATH):
+        os.mkdir(DATA_PATH)
 
 
 # File name verifications

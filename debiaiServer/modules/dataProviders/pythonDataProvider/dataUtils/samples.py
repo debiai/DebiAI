@@ -4,7 +4,6 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
     hash,
 )
 
-DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
 # ID list

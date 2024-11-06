@@ -7,8 +7,8 @@ kubernetes.yaml
 LICENSE
 
 # Back
+debiai_data/
 debiaiServer/__pycache__/
-debiaiServer/data/
 debiaiServer/tests/
 debiaiServer/dist/
 debiaiServer/.gitignore

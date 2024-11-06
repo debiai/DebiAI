@@ -1,10 +1,11 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+venv/
 
 # Build and packaging
 dist/
 build/
-*data/
+debiai_data/
 *.egg-info/
 
 # Dependency directories
