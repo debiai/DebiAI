@@ -3,7 +3,7 @@
     class="algorithm item"
     @click="$emit('selected')"
   >
-    <!-- Top: Title, controls -->
+    <!-- Top: Title, version, controls -->
     <div class="top">
       <div class="title">
         <inline-svg
@@ -37,8 +37,9 @@
       </div>
     </div>
 
-    <!-- version, author -->
+    <!-- Tags, author, creation and update date -->
     <div class="header">
+      <!-- Tags -->
       <div class="tags">
         <div
           class="tag"
@@ -49,17 +50,40 @@
         </div>
       </div>
 
+      <!-- Author & Creation and update date  -->
       <div
-        class="author"
-        v-if="algorithm.author"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          align-items: center;
+          justify-content: flex-end;
+        "
       >
-        Created by {{ algorithm.author }}
-      </div>
-      <div
-        class="author"
-        v-else
-      >
-        No author
+        <div
+          class="author"
+          v-if="algorithm.author"
+        >
+          Created by {{ algorithm.author }}
+        </div>
+        <div
+          class="author"
+          v-else
+        >
+          No author
+        </div>
+        <div
+          class="date"
+          v-if="algorithm.creationDate"
+        >
+          {{ new Date(algorithm.creationDate).toLocaleDateString() }}
+        </div>
+        <div
+          class="date"
+          v-if="algorithm.updateDate && algorithm.updateDate !== algorithm.creationDate"
+        >
+          updated {{ new Date(algorithm.updateDate).toLocaleDateString() }}
+        </div>
       </div>
     </div>
 
