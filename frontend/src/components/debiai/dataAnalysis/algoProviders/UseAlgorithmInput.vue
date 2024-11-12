@@ -163,8 +163,9 @@
         Manual input, separated by commas:
         <input
           type="text"
-          v-model="value"
           placeholder="1,2,3"
+          v-model="manualValue"
+          @input="valueChanged"
         />
       </div>
 
@@ -213,6 +214,7 @@ export default {
   data: () => {
     return {
       value: null,
+      manualValue: null,
       projectId: null,
 
       // Array input
@@ -245,6 +247,10 @@ export default {
   methods: {
     valueChanged() {
       // This function is called when the value of the input changes
+      // For manual input for array, we convert the string to an array of numbers
+      if (this.input.type === "array" && this.selectedArrayInputOption === "manual")
+        this.value = this.manualValue.split(",");
+
       // Check if the value is correct and send it to the parent
       if (!this.valueMatchInputType) return;
 
@@ -292,7 +298,7 @@ export default {
           } else if (this.selectedArrayInputOption === "column") {
             return value;
           } else if (this.selectedArrayInputOption === "manual") {
-            return value.split(",").map((v) => Number(v));
+            return value.map((v) => Number(v));
           }
         } else {
           // we don't need to convert the values
