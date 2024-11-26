@@ -6,7 +6,6 @@ from scipy.stats import pearsonr, spearmanr
 from scipy.special import digamma
 import scipy.spatial as ss
 from scipy.spatial import cKDTree
-from sklearn.neighbors import NearestNeighbors
 from math import log, fabs, sqrt
 
 
@@ -240,6 +239,8 @@ def mixed_mutual_information(c, d, n_neighbors, base=10):
     --------
     Output: The mutual information value
     """
+    from sklearn.neighbors import NearestNeighbors
+
     n_samples = c.shape[0]
     c = c.reshape((-1, 1))
 

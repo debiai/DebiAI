@@ -9,6 +9,9 @@ from threading import Timer
 from termcolor import colored
 from debiaiServer.config.init_config import DEBUG_COLOR, SUCCESS_COLOR
 
+import sys
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 data_folder_path = "debiai_data"  # The path to the DebiAI data folder
 DEFAULT_PORT = 3000  # default port
@@ -104,7 +107,7 @@ def create_folder(path=None):
             return os.path.abspath(path)  # Return the existing full path
 
         # If the folder does not exist, ask the user if they want to create it
-        create_folder_answer = input(
+        create_folder_answer = gather_user_input(
             "The folder does not exist. Do you want to create it? (Y/n): "
         )
         if create_folder_answer == "Y" or create_folder_answer == "":
@@ -125,6 +128,15 @@ def create_folder(path=None):
             raise e
 
     return os.path.abspath(path)
+
+
+def gather_user_input(message):
+    try:
+        user_input = input(message)
+        return user_input
+    except KeyboardInterrupt:
+        print("\nGoodbye!")
+        exit()
 
 
 def bash_info():
@@ -152,7 +164,7 @@ def bash_info():
     )
 
 
-def run():
+def run(start=False):
     # Parse the arguments
     parser = argparse.ArgumentParser(description="Run the DebiAI GUI")
     parser.add_argument("command", nargs="?", help="Start the DebiAI GUI server")
@@ -176,7 +188,7 @@ def run():
         version = get_app_version()
         print("DebiAI Version:" + colored(version, SUCCESS_COLOR))
 
-    elif args.command == "start":
+    elif args.command == "start" or start:
         global data_folder_path
 
         print(welcome_logo)
@@ -190,7 +202,7 @@ def run():
 
             # Ask the user for the data folder path
             print("DebiAI requires a data folder to store the data.")
-            data_folder_path_input = input(
+            data_folder_path_input = gather_user_input(
                 f"Enter the path of the DebiAI data folder ({default_folder}): "
             )
             if data_folder_path_input == "":
