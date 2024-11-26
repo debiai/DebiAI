@@ -107,7 +107,7 @@ def create_folder(path=None):
             return os.path.abspath(path)  # Return the existing full path
 
         # If the folder does not exist, ask the user if they want to create it
-        create_folder_answer = input(
+        create_folder_answer = gather_user_input(
             "The folder does not exist. Do you want to create it? (Y/n): "
         )
         if create_folder_answer == "Y" or create_folder_answer == "":
@@ -128,6 +128,15 @@ def create_folder(path=None):
             raise e
 
     return os.path.abspath(path)
+
+
+def gather_user_input(message):
+    try:
+        user_input = input(message)
+        return user_input
+    except KeyboardInterrupt:
+        print("\nGoodbye!")
+        exit()
 
 
 def bash_info():
@@ -193,7 +202,7 @@ def run(start=False):
 
             # Ask the user for the data folder path
             print("DebiAI requires a data folder to store the data.")
-            data_folder_path_input = input(
+            data_folder_path_input = gather_user_input(
                 f"Enter the path of the DebiAI data folder ({default_folder}): "
             )
             if data_folder_path_input == "":
