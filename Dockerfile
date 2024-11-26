@@ -1,5 +1,5 @@
 # DebiAI Vuejs Frontend
-FROM node:16.13-alpine as build-stage
+FROM node:16.13-alpine AS build-stage
 WORKDIR /frontend
 COPY frontend/ .
 RUN npm install
