@@ -39,6 +39,6 @@ check:
 	cd frontend && npm run prettier:check
 
 	# -----  Validating CSpell errors
-	cspell --no-progress .
+	cspell .
 
 	# ----- The code is formatted correctly

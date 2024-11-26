@@ -72,9 +72,10 @@
     ".vscode/*",
     "debiaiServer/requirements.txt",
     "debiai_data/*",
+    "dist/",
+    "venv/",
     "__pycache__/",
-    "frontend/dist",
-    "frontend/node_modules",
+    "node_modules/",
     "./setup.py",
     "TODO"
   ]

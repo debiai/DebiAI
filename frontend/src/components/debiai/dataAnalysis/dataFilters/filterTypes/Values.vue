@@ -126,10 +126,13 @@ export default {
   methods: {
     addValue(closeAfter) {
       // Convert the value to the right type
-      let valueToAdd =
-        this.filter.column.typeText === "Num" ? parseFloat(this.newValue) : this.newValue;
-
-      if (valueToAdd === "" || isNaN(valueToAdd)) valueToAdd = null;
+      let valueToAdd = this.newValue;
+      if (this.filter.column.typeText === "Num") {
+        valueToAdd = parseFloat(this.newValue);
+        if (isNaN(valueToAdd)) valueToAdd = null;
+      } else {
+        if (valueToAdd === "") valueToAdd = null;
+      }
 
       // Add the value to the filter in the store
       this.$store.commit("addValueToFilter", {
