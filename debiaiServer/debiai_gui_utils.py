@@ -9,6 +9,9 @@ from threading import Timer
 from termcolor import colored
 from debiaiServer.config.init_config import DEBUG_COLOR, SUCCESS_COLOR
 
+import sys
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 data_folder_path = "debiai_data"  # The path to the DebiAI data folder
 DEFAULT_PORT = 3000  # default port
@@ -152,7 +155,7 @@ def bash_info():
     )
 
 
-def run():
+def run(start=False):
     # Parse the arguments
     parser = argparse.ArgumentParser(description="Run the DebiAI GUI")
     parser.add_argument("command", nargs="?", help="Start the DebiAI GUI server")
@@ -176,7 +179,7 @@ def run():
         version = get_app_version()
         print("DebiAI Version:" + colored(version, SUCCESS_COLOR))
 
-    elif args.command == "start":
+    elif args.command == "start" or start:
         global data_folder_path
 
         print(welcome_logo)
