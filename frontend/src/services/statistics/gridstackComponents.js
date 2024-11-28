@@ -31,10 +31,10 @@ const BASE_LAYOUT = {
   x: 0,
   y: 0,
   width: 12,
-  minWidth: 2,
+  minWidth: 3,
   maxWidth: 15,
   height: 6,
-  minHeight: 2,
+  minHeight: 3,
   maxHeight: 15,
 };
 

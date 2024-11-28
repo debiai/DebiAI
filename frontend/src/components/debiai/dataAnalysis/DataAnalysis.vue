@@ -97,15 +97,15 @@
         v-for="component in components"
         :key="component.id"
         :id="component.id"
-        :data-gs-id="component.id"
-        :data-gs-x="component.layout.x"
-        :data-gs-y="component.layout.y"
-        :data-gs-width="component.layout.width"
-        :data-gs-min-width="component.layout.minWidth"
-        :data-gs-max-width="component.layout.maxWidth"
-        :data-gs-height="component.layout.height"
-        :data-gs-min-height="component.layout.minHeight"
-        :data-gs-max-height="component.layout.maxHeight"
+        :gs-id="component.id"
+        :gs-x="component.layout.x"
+        :gs-y="component.layout.y"
+        :gs-w="component.layout.width"
+        :gs-min-w="component.layout.minWidth"
+        :gs-max-w="component.layout.maxWidth"
+        :gs-h="component.layout.height"
+        :gs-min-h="component.layout.minHeight"
+        :gs-max-h="component.layout.maxHeight"
       >
         <Widget
           :data="data"
@@ -341,7 +341,7 @@ export default {
     let gridStackOptions = {
       minRow: 25, // don't collapse when empty
       cellHeight: 100,
-      disableOneColumnMode: true,
+      disableOneColumnMode: false,
       animate: true,
       float: false,
       resizable: {
@@ -573,8 +573,8 @@ export default {
         requestBody.layout.push({
           x: component.x,
           y: component.y,
-          width: component.width,
-          height: component.height,
+          width: component.w,
+          height: component.h,
           widgetKey: component.widgetKey,
           config: component.config,
           localFilters: component.localFilters,
@@ -761,10 +761,6 @@ export default {
   padding-top: 60px; /* Height of Header */
 }
 
-/* Grid stack */
-.grid-stack-item {
-  top: 0px;
-}
 </style>
 
 <style>
@@ -797,21 +793,11 @@ export default {
   font-weight: bold;
 }
 
-/* Grid stack background item placeholder */
+/* Grid stack Customization */
 .grid-stack-placeholder {
-  border: none;
-  transition: all 0.2s !important;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-
-  background-color: var(--greyDark);
-  opacity: 0.5;
-  border-radius: 3px;
-  /* Artificial padding: */
-  transform: scale(0.95);
-  transform-origin: center;
+  opacity: 0.8 !important;
+  /* Transition when position changes */
+  transition: top 0.3s, left 0.3s, width 0.3s, height 0.3s !important;
 }
 
 /* Grid stack handles */

@@ -14,7 +14,7 @@
     "config.js": "^0.1.0",
     "core-js": "^3.6.4",
     "file-saver": "^2.0.5",
-    "gridstack": "^2.0.0",
+    "gridstack": "^11.1.0",
     "jszip": "^3.10.1",
     "mathjs": "^7.6.0",
     "plotly.js": "^2.18.1",
