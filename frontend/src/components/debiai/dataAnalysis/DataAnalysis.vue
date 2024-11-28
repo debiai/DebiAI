@@ -760,7 +760,6 @@ export default {
 #dataAnalysis {
   padding-top: 60px; /* Height of Header */
 }
-
 </style>
 
 <style>
