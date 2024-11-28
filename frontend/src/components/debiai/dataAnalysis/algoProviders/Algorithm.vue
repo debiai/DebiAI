@@ -3,19 +3,25 @@
     class="algorithm item"
     @click="$emit('selected')"
   >
-    <!-- Top: Tags, controls -->
-    <div
-      class="top"
-      v-if="algorithm.tags"
-    >
-      <div class="tags">
-        <div
-          class="tag"
-          v-for="(tag, i) in algorithm.tags"
-          :key="i"
+    <!-- Top: Title, version, controls -->
+    <div class="top">
+      <div class="title">
+        <inline-svg
+          :src="require('@/assets/svg/algorithm.svg')"
+          width="15"
+          height="15"
+        />
+        <h4 :title="'Id: ' + algorithm.id">
+          {{
+            algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
+          }}
+        </h4>
+        <p
+          class="version tag"
+          v-if="algorithm.version !== null && algorithm.version !== undefined"
         >
-          {{ tag }}
-        </div>
+          {{ algorithm.version }}
+        </p>
       </div>
 
       <div class="controls">
@@ -31,43 +37,57 @@
       </div>
     </div>
 
-    <!-- Name, version, description, author -->
+    <!-- Tags, author, creation and update date -->
     <div class="header">
-      <inline-svg
-        :src="require('@/assets/svg/algorithm.svg')"
-        width="15"
-        height="15"
-      />
-      <h4
-        class="title"
-        :title="'Id: ' + algorithm.id"
-      >
-        {{
-          algorithm.name !== null && algorithm.name !== undefined ? algorithm.name : algorithm.id
-        }}
-      </h4>
-      <p
-        class="version tag"
-        v-if="algorithm.version !== null && algorithm.version !== undefined"
-      >
-        {{ algorithm.version }}
-      </p>
-      <p class="description">
-        {{ algorithm.description }}
-      </p>
-      <div
-        class="author"
-        v-if="algorithm.author"
-      >
-        Created by {{ algorithm.author }}
+      <!-- Tags -->
+      <div class="tags">
+        <div
+          class="tag"
+          v-for="(tag, i) in algorithm.tags"
+          :key="i"
+        >
+          {{ tag }}
+        </div>
       </div>
+
+      <!-- Author & Creation and update date  -->
       <div
-        class="author"
-        v-else
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          align-items: center;
+          justify-content: flex-end;
+        "
       >
-        No author
+        <div
+          class="author"
+          v-if="algorithm.author"
+        >
+          Created by {{ algorithm.author }}
+        </div>
+        <div
+          class="author"
+          v-else
+        >
+          No author
+        </div>
+        <div
+          class="date"
+          v-if="algorithm.creationDate"
+        >
+          {{ new Date(algorithm.creationDate).toLocaleDateString() }}
+        </div>
+        <div
+          class="date"
+          v-if="algorithm.updateDate && algorithm.updateDate !== algorithm.creationDate"
+        >
+          updated {{ new Date(algorithm.updateDate).toLocaleDateString() }}
+        </div>
       </div>
     </div>
+
+    <p class="description">{{ algorithm.description }}</p>
 
     <!-- Displays the different parameters and results -->
     <div class="content">
@@ -91,10 +111,7 @@
                 v-else
                 >{{ input.type }}</span
               >
-              <DocumentationBlock
-                :followCursor="true"
-                v-if="inputDetail(input)"
-              >
+              <DocumentationBlock v-if="inputDetail(input)">
                 <div v-html="inputDetail(input)"></div>
               </DocumentationBlock>
             </div>
@@ -182,7 +199,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .algorithm {
   border: 1px solid var(--greyDark);
   border-radius: 4px;
@@ -191,93 +208,108 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-}
 
-/* Top */
-.top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  /* Top */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-.top .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
-}
+    .title {
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
 
-/* Header */
-.header {
-  margin: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding-bottom: 30px;
-  flex-wrap: wrap;
-}
-.header .title {
-  margin-top: 1px;
-}
-.header .version {
-  margin: 0;
-}
-.header .description {
-  flex: 5;
-  color: var(--fontColorLight);
-  min-width: 200px;
-  margin: 0;
-}
-.header .author {
-  color: var(--fontColorLight);
-  padding: 5px;
-}
+      .version {
+        margin: 0;
+        margin-left: 10px;
+      }
+    }
+  }
 
-/* Content */
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
+  /* Header */
+  .header {
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
 
-.content .section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.content .section-title {
-  width: 50px;
-}
-.content .section .description {
-  color: var(--fontColorLight);
-}
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
 
-.parameter-list {
-  display: flex;
-  gap: 10px;
-  overflow: auto;
-  padding-bottom: 10px;
-}
-.parameter {
-  border: 1px solid var(--greyDark);
-  border-radius: 4px;
-  padding: 6px;
-  min-width: 150px;
-}
-.parameter .name {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 5px;
-  padding: 5px;
-}
-.parameter .name #DocumentationBlock {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-.parameter p {
-  margin: 4px;
+    .author {
+      color: var(--fontColorLight);
+      padding: 5px;
+    }
+  }
+
+  .description {
+    color: var(--fontColorLight);
+    white-space: pre-wrap;
+    min-width: 200px;
+    margin: 0;
+  }
+
+  /* Content */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    gap: 5px;
+
+    .section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .section-title {
+        width: 50px;
+      }
+
+      .description {
+        color: var(--fontColorLight);
+      }
+    }
+  }
+
+  .parameter-list {
+    display: flex;
+    gap: 10px;
+    overflow: auto;
+    padding-bottom: 10px;
+
+    .parameter {
+      border: 1px solid var(--greyDark);
+      border-radius: 4px;
+      padding: 6px;
+      min-width: 200px;
+
+      .name {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        padding: 5px;
+
+        #DocumentationBlock {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+
+      p {
+        margin: 4px;
+      }
+    }
+  }
 }
 </style>

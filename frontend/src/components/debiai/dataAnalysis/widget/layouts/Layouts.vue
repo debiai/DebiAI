@@ -70,7 +70,7 @@
           <div id="right">
             <!-- LayoutVisualization -->
             <LayoutViewer
-              :layout="current_layout"
+              :layout="currentLayout"
               bigger
             />
           </div>
@@ -99,7 +99,10 @@
     </span>
 
     <!-- Layout list -->
-    <div id="savedLayouts">
+    <div
+      id="savedLayouts"
+      v-if="savedLayouts !== null"
+    >
       <!-- Project layouts -->
       <div>
         <h4 class="layoutList">Project layouts:</h4>
@@ -141,6 +144,13 @@
         </div>
       </div>
     </div>
+
+    <div
+      v-else
+      style="flex: 1; display: flex; justify-content: center; align-items: center"
+    >
+      <LoadingAnimation />
+    </div>
   </div>
 </template>
 
@@ -161,8 +171,8 @@ export default {
   },
   data: () => {
     return {
-      current_layout: [],
-      savedLayouts: [],
+      currentLayout: [],
+      savedLayouts: null,
 
       showNewLayoutModal: false,
       layoutName: "New layout",
@@ -170,9 +180,12 @@ export default {
     };
   },
   mounted() {
+    // Load the saved layouts
+    this.loadLayouts();
+
     // Get the current layout from the gridstack
     let gsPos = this.gridstack.save();
-    this.current_layout = [];
+    this.currentLayout = [];
     gsPos.forEach((gsComp) => {
       const gridComponent = this.components.find((c) => gsComp.id == c.id);
       if (!gridComponent) return;
@@ -181,11 +194,8 @@ export default {
       gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
 
-      this.current_layout.push(gsComp);
+      this.currentLayout.push(gsComp);
     });
-
-    // Load the saved layouts
-    this.loadLayouts();
   },
   methods: {
     loadLayouts() {
@@ -201,6 +211,11 @@ export default {
         })
         .catch((e) => {
           console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't load the layouts",
+          });
+          this.savedLayouts = [];
         });
     },
     save(e) {
@@ -212,7 +227,9 @@ export default {
       this.showNewLayoutModal = false;
       this.layoutName = "New layout";
       this.layoutDescription = "";
-      this.loadLayouts();
+      this.savedLayouts = null;
+      // The layout is saved in the parent component,
+      // the parent will call this.loadLayouts() when the layout is saved
     },
     deleteLayout(layoutId) {
       this.$backendDialog
@@ -238,6 +255,8 @@ export default {
       return this.layoutName.length > 0;
     },
     sameProjectLayouts() {
+      if (!this.savedLayouts) return [];
+
       const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
       const projectId = this.$store.state.ProjectPage.projectId;
 
@@ -246,6 +265,8 @@ export default {
       );
     },
     otherLayouts() {
+      if (!this.savedLayouts) return [];
+
       const dataProviderId = this.$store.state.ProjectPage.dataProviderId;
       const projectId = this.$store.state.ProjectPage.projectId;
 
@@ -260,6 +281,7 @@ export default {
 <style scoped lang="scss">
 #layouts {
   min-width: 800px;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   align-items: stretch;

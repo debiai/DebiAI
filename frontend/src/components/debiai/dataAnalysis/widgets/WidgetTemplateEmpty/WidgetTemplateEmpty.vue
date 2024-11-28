@@ -16,7 +16,6 @@ export default {
   props: {
     data: { type: Object, required: true },
     index: { type: String, required: true },
-    selectedData: { type: Array, required: true },
   },
   created() {},
   mounted() {},

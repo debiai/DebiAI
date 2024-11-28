@@ -105,7 +105,7 @@ export default {
   computed: {
     filtersWithColumns() {
       return this.filters.map((filter) => {
-        filter.column = this.data.columns[filter.columnIndex];
+        filter.column = this.data.getColumn(filter.columnIndex);
         return filter;
       });
     },

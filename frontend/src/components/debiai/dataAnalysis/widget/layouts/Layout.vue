@@ -1,7 +1,7 @@
 <template>
   <div
     class="layout item selectable"
-    @click="(event) => click(event)"
+    @click="layoutSelected"
   >
     <div class="left">
       <div
@@ -21,28 +21,28 @@
       >
         Created {{ $services.prettyTimeStamp(layout.creationDate) }}
       </span>
-    </div>
 
-    <div class="center">
-      <div class="description">
-        <div
-          class="coloredColumn"
-          v-if="layout.selectedColorColumn"
-        >
-          Colored column:
-          <u>
-            {{ layout.selectedColorColumn }}
-          </u>
-        </div>
-        <div>{{ layout.description }}</div>
+      <div
+        class="coloredColumn"
+        v-if="layout.selectedColorColumn"
+      >
+        Colored column:
+        <u>
+          {{ layout.selectedColorColumn }}
+        </u>
       </div>
-      <LayoutViewer :layout="layout.layout" />
+
+      <p class="description">
+        {{ layout.description }}
+      </p>
     </div>
 
     <div class="right">
+      <LayoutViewer :layout="layout.layout" />
+
       <button
         class="red"
-        @click="(event) => deleteLayout(event)"
+        @click="deleteLayout"
       >
         Delete
       </button>
@@ -81,7 +81,7 @@ export default {
           });
         });
     },
-    click(event) {
+    layoutSelected(event) {
       event.stopPropagation();
       this.$emit("selected");
     },
@@ -89,58 +89,59 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .layout {
   display: flex;
   align-items: stretch;
   gap: 30px;
   padding: 5px;
-}
 
-.layout .left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  max-width: 100px;
-  padding: 10px;
-  text-align: left;
-}
-.layout .left .tag {
-  margin-bottom: 5px;
-  font-size: 0.8em;
-}
-.layout .center {
-  flex: 1;
-  display: flex;
-  justify-content: space-evenly;
-  gap: 20px;
-}
-.layout .center .description {
-  padding: 10px;
-}
-.layout .right {
-  display: flex;
-  align-items: center;
-}
-.layout .creationDate {
-  text-align: right;
-  font-size: 0.7em;
-  opacity: 0.7;
-}
-.layout .description {
-  flex: 1;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-width: 300px;
-  font-size: 0.8em;
-  color: var(--fontColorLight);
-}
-.layout .description .coloredColumn {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-.layout .value {
-  text-align: left;
+  .left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    text-align: left;
+
+    .tag {
+      margin-bottom: 5px;
+      font-size: 0.8em;
+    }
+  }
+
+  .center {
+    flex: 1;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+
+    .description {
+      padding: 10px;
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+  }
+
+  .creationDate {
+    color: var(--fontColorLight);
+  }
+
+  .coloredColumn {
+    color: var(--fontColorLight);
+  }
+
+  .description {
+    max-width: 300px;
+    color: var(--fontColorLight);
+    margin-top: 10px;
+  }
+
+  .value {
+    text-align: left;
+  }
 }
 </style>

@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./debiai_data:/backend/data
+      - ./debiai_data:/debiaiServer/data
     environment:
       # Data providers (DEBIAI_DATA_PROVIDER_<name>=<url>) Ref: https://debiai.irt-systemx.fr/dataInsertion/dataProviders/
       # - DEBIAI_WEB_DATA_PROVIDER_my-web-provider1=http://localhost:3010/debiai

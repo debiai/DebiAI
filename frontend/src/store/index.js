@@ -113,8 +113,13 @@ const StatisticalAnalysis = {
     experiments: {}, // Format: { algoProviderName: { algoId: [experiment]} }
     nbExperiments: 0, // To help with reactivity
 
-    // Open widget id
+    // Opened menu id
     openedWidgetMenuId: null,
+    openedColumnMenuId: null,
+
+    // Columns
+    unfoldCounter: 0, // To trigger reactivity
+    unfoldedColumnIndex: null,
   },
   mutations: {
     setColoredColumnIndex(state, index) {
@@ -228,7 +233,6 @@ const StatisticalAnalysis = {
       experiment.nb = state.nbExperiments;
       state.experiments[algoProviderName][algoId].push(experiment);
     },
-
     deleteExperiment(state, experimentId) {
       // Delete experiment
       for (let algoProviderName in state.experiments) {
@@ -242,10 +246,25 @@ const StatisticalAnalysis = {
       // Update for reactivity
       state.experiments = { ...state.experiments };
     },
+    deleteAllExperiments(state) {
+      state.experiments = {};
+      state.nbExperiments = 0;
+    },
 
-    // Open widget id
+    // Opened menu
     setOpenedWidgetMenuId(state, widgetId) {
       state.openedWidgetMenuId = widgetId;
+      state.openedColumnMenuId = null;
+    },
+    setOpenedColumnMenuId(state, columnId) {
+      state.openedColumnMenuId = columnId;
+      state.openedWidgetMenuId = null;
+    },
+
+    // Columns
+    unfoldColumn(state, columnIndex) {
+      state.unfoldCounter++;
+      state.unfoldedColumnIndex = columnIndex;
     },
   },
   getters: {

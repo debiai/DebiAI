@@ -1,0 +1,1914 @@
+swagger: "2.0"
+info:
+  version: 0.30.2
+  title: DebiAI_BACKEND_API
+  description: DebiAI backend api
+  contact:
+    email: debiai@irt-systemx.fr
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /version:
+    get:
+      summary: Ping to check if the backend is running
+      operationId: debiaiServer.controller.projects.ping
+      responses:
+        200:
+          description: The server is online
+
+  # Data providers
+  /data-providers:
+    get:
+      summary: Get data providers list and status
+      tags: [Data Providers]
+      operationId: debiaiServer.controller.dataProviders.get_data_providers
+      responses:
+        200:
+          description: List of data providers
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/dataProvider"
+
+    post:
+      summary: Add data provider to data providers list
+      tags: [Data Providers]
+      operationId: debiaiServer.controller.dataProviders.post_data_providers
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - name
+              - type
+            properties:
+              name:
+                type: string
+                description: The name of the data Provider
+              type:
+                type: string
+                description: Type of the data Provider (Web)
+              url:
+                type: string
+                description: The url of the new data Provider if type is Web
+      responses:
+        204:
+          description: Data provider added to the list
+        400:
+          description: Bad request on data
+
+  /data-providers/{dataProviderId}:
+    delete:
+      summary: Delete data providers from the list
+      tags: [Data Providers]
+      operationId: debiaiServer.controller.dataProviders.delete_data_providers
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: Data provider deleted
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+
+    get:
+      summary: Get general informations about a data provider, like his version or the max number sample for each type of request
+      tags: [Data Providers]
+      operationId: debiaiServer.controller.dataProviders.get_data_provider_info
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The info of the data provider
+          schema:
+            type: object
+            required:
+              - version
+            properties:
+              version:
+                type: string
+              maxSampleIdByRequest:
+                type: integer
+              maxSampleDataByRequest:
+                type: integer
+              maxResultByRequest:
+                type: integer
+
+              canDelete:
+                type: object
+                description: Information about what can be deleted by DebiAI
+                properties:
+                  projects:
+                    type: boolean
+                    default: true
+                  selections:
+                    type: boolean
+                    default: true
+                  models:
+                    type: boolean
+                    default: true
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+
+  # Projects
+  /projects:
+    get:
+      summary: Get the projects overview
+      tags: [Project]
+      operationId: debiaiServer.controller.projects.get_projects
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectOverview"
+
+    post:
+      summary: Post a new project
+      tags: [Project]
+      operationId: debiaiServer.controller.pythonModuleDp.post_project
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - projectName
+            properties:
+              projectName:
+                type: string
+                description: The project name
+              blockLevelInfo:
+                type: array
+                items:
+                  $ref: "#/definitions/blockLevelInfo"
+                description: List of the block level info
+
+      responses:
+        200:
+          description: project created, the project ID is returned
+          schema:
+            type: object
+            required:
+              - projectId
+            properties:
+              projectId:
+                type: string
+        400:
+          description: The project name must not be null
+        401:
+          description: The project name is too long
+        402:
+          description: The project name contain invalid characters
+        403:
+          description: A project with the same name already exist
+
+  /data-providers/{dataProviderId}/projects:
+    get:
+      summary: Get the projects overview for a data provider
+      tags: [Project]
+      operationId: debiaiServer.controller.projects.get_data_providers_project
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectOverview"
+
+  /data-providers/{dataProviderId}/projects/{projectId}:
+    get:
+      summary: Get project name, nb of models & nb of selections (overviews of a project)
+      tags: [Project]
+      operationId: debiaiServer.controller.projects.get_project
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
+    delete:
+      summary: remove a project from ID
+      tags: [Project]
+      operationId: debiaiServer.controller.projects.delete_project
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project deleted
+        404:
+          description: project doesn't exist
+
+  /data-providers/{dataProviderId}/projects/{projectId}/dataIdList:
+    post:
+      summary: Get the project data id list
+      tags: [Project]
+      operationId: debiaiServer.controller.projects.get_data_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestParameters
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - analysis
+              - from
+              - to
+            properties:
+              from:
+                type: integer
+                description: The index of the first data to return
+                x-nullable: true
+              to:
+                type: integer
+                description: The index of the last data to return
+                x-nullable: true
+              analysis:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    description: Id of the analysis
+                  start:
+                    type: boolean
+                    description: If true, this is the first request of the analysis
+                  end:
+                    type: boolean
+                    description: If true, this is the last request of the analysis
+
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
+  # BlockLevels
+  /data-providers/{dataProviderId}/projects/{projectId}/blocklevels:
+    post:
+      summary: add a new data blocks level structure
+      tags: [Project]
+      operationId: debiaiServer.controller.pythonModuleDp.post_block_levels
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: block_levels
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                groundTruth:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                inputs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                contexts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+              minItems: 1
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Block tructure added, the block structure is returned
+
+  /data-providers/{dataProviderId}/projects/{projectId}/resultsStructure:
+    post:
+      summary: add a new expected results structure
+      tags: [Project]
+      operationId: debiaiServer.controller.pythonModuleDp.post_resultsStructure
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: resultStructure
+          in: body
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                name:
+                  type:
+                    - number
+                    - string
+                type:
+                  type: string
+                  description: text, number or bool
+                default:
+                  type:
+                    - number
+                    - string
+                    - boolean
+                group:
+                  type: string
+                  description: Optional group name, used to group the results columns in the UI
+          required: true
+      responses:
+        200:
+          schema:
+            type: object
+          description: Results structure added, the resultStructure is returned
+        404:
+          description: The project does not exist
+        403:
+          description: The result structure already exist
+
+  # Models
+  /data-providers/{dataProviderId}/projects/{projectId}/models:
+    post:
+      summary: add a model
+      tags: [Model]
+      operationId: debiaiServer.controller.models.post_model
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              metadata:
+                type: object
+                description: Model metadata - key value list
+          required: true
+      responses:
+        200:
+          description: Model added
+        409:
+          description: Warning - Model already exist
+        402:
+          description: Model name contain invalid characters
+        404:
+          description: Project not found
+
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}:
+    get:
+      summary: Get a model results id list
+      tags: [Model]
+      operationId: debiaiServer.controller.models.get_model_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: model or project doesn't exist
+
+    delete:
+      summary: remove a model
+      tags: [Model]
+      operationId: debiaiServer.controller.models.delete_model
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model deleted
+        404:
+          description: model or project doesn't exist
+
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/resultsDict:
+    post:
+      summary: Add a results to a model
+      tags: [Model]
+      operationId: debiaiServer.controller.pythonModuleDp.add_results_dict
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          description: Tree object with existing block references, the end of the tree need to include the expected results in the block structure
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - results
+            properties:
+              results:
+                type: object
+              expected_results_order:
+                description: order of the given results array, by default is the project result structure
+                type: array
+
+      responses:
+        200:
+          description: model results added
+        403:
+          description: Block not found
+        404:
+          description: model or project doesn't exist
+
+  /data-providers/{dataProviderId}/projects/{projectId}/models/{modelId}/getModelResults:
+    post:
+      summary: Get the model results from a sample list
+      tags: [Model]
+      operationId: debiaiServer.controller.models.get_results
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                description: List of sample ID
+                items:
+                  type: [string, integer, number]
+      responses:
+        200:
+          description: model results
+          schema:
+            type: object
+            additionalProperties:
+              type: array
+              description: List of results ordered the same way as the project expected results
+        404:
+          description: model or project doesn't exist
+
+  # Blocks
+  /data-providers/{dataProviderId}/projects/{projectId}/blocks:
+    post:
+      summary: add a tree to an existing project block tree
+      tags: [Block]
+      operationId: debiaiServer.controller.pythonModuleDp.post_block_tree
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - blockTree
+            properties:
+              blockTree:
+                $ref: "#/definitions/blockTree"
+          required: true
+
+      responses:
+        200:
+          description: Block tree added
+        403:
+          description: Invalid parameters
+        404:
+          description: Project not found
+
+  /data-providers/{dataProviderId}/projects/{projectId}/blocksFromSampleIds:
+    post:
+      summary: get a project tree form a sample list
+      tags: [Block]
+      operationId: debiaiServer.controller.data.get_data
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                type: array
+                items:
+                  type: [string, integer, number]
+
+              analysis:
+                description: Informations about the analysis to help data-providers with data management
+                $ref: "#/definitions/analysis"
+
+      responses:
+        200:
+          description: Block tree with sample
+          schema:
+            type: object
+        404:
+          description: Project or one of the models not found
+
+  # Selections
+  /data-providers/{dataProviderId}/projects/{projectId}/selections/:
+    get:
+      summary: Get the project selections
+      tags: [Selection]
+      operationId: debiaiServer.controller.selection.get_selections
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selections
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/selection"
+
+    post:
+      summary: add a selection
+      tags: [Selection]
+      operationId: debiaiServer.controller.selection.post_selection
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selection sample id (hash)
+              selectionName:
+                type: string
+              requestDescription:
+                type: string
+                x-nullable: true
+              requestId:
+                type: string
+                description: Id of the request that has created the selection.
+                x-nullable: true
+      responses:
+        200:
+          description: selection added
+          schema:
+            type: object
+
+  /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
+    get:
+      summary: Get a project selection id list
+      tags: [Selection]
+      operationId: debiaiServer.controller.selection.get_selection_id_list
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selection id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: Selection, project or data provider not found
+
+    delete:
+      summary: delete a selection
+      tags: [Selection]
+      operationId: debiaiServer.controller.selection.delete_selection
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: selection deleted
+
+  # Analysis layouts
+  /app/layouts/:
+    get:
+      summary: Get all layouts
+      tags: [Layouts]
+      operationId: debiaiServer.controller.layouts.get_layouts
+      responses:
+        200:
+          description: Layouts for all projects
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectLayout"
+
+    post:
+      summary: Add a layout
+      tags: [Layouts]
+      operationId: debiaiServer.controller.layouts.post_layout
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - dataProviderId
+              - layout
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
+              description:
+                type: string
+              layout:
+                $ref: "#/definitions/dashboardLayout"
+              lastLayoutSaved:
+                type: boolean
+                description: If true, the layout will be loaded by default
+                  If a layout with lastLayoutSaved=true already exists, it will
+                  be replaced by the new one
+                default: false
+              selectedColorColumn:
+                type: string
+                description: Column selected to be used as color
+                x-nullable: true
+
+      responses:
+        204:
+          description: Dashboard layout saved
+
+  /app/layouts/{id}:
+    delete:
+      summary: Delete a layout
+      tags: [Layouts]
+      operationId: debiaiServer.controller.layouts.delete_layout
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: Id of the layout to delete
+          minLength: 1
+      responses:
+        204:
+          description: Layout deleted
+        404:
+          description: Layout not found
+
+  # Widget configuration
+  /app/widget-configurations/:
+    get:
+      summary: Get all widget configurations overview,
+        return the number of configurations for each widget
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.get_all_configurations
+      responses:
+        200:
+          description: Widget configurations number for each widget
+          schema:
+            type: object
+            description: Object with widget title as key and number of
+              configurations as value
+            additionalProperties:
+              type: integer
+              minimum: 0
+
+  /app/widgets/{widgetKey}/configurations:
+    get:
+      summary: Get the widget configurations
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.get_widget_configurations
+      parameters:
+        - name: widgetKey
+          in: path
+          description: Title of the wigdet linked to the configuration
+          type: string
+          required: true
+          minLength: 1
+      responses:
+        200:
+          description: Widget configurations list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - name
+                - projectId
+                - dataProviderId
+                - configuration
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                projectId:
+                  type: string
+                  description: Id of the project linked to the configuration
+                dataProviderId:
+                  type: string
+                  description: Id of the data provider linked to the project id
+                creationDate:
+                  type: string
+                configuration:
+                  type: object
+                  description: Key value list with the configuration, specific to the widget
+    post:
+      summary: Add a widget configuration
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.post_configuration
+      parameters:
+        - name: widgetKey
+          in: path
+          required: true
+          type: string
+          minLength: 1
+
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - dataProviderId
+              - configuration
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
+              description:
+                type: string
+              configuration:
+                type: object
+                description: Key value list with the configuration, specific to the widget
+                maxProperties: 15
+
+      responses:
+        204:
+          description: Widget configuration saved
+
+  /app/widgets/{widgetKey}/configurations/{id}:
+    delete:
+      summary: Delete a widget configuration
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.delete_configuration
+      parameters:
+        - name: widgetKey
+          in: path
+          type: string
+          required: true
+          minLength: 1
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: Id of the configuration to delete
+          minLength: 1
+      responses:
+        204:
+          description: Widget configuration saved
+        404:
+          description: Widget title or configuration not found
+
+  # Data export
+  /app/exportMethods:
+    get:
+      summary: Get the application export methods
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.get_export_methods
+      responses:
+        200:
+          description: Export method list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - name
+                - parameters
+                - parameterNames
+              properties:
+                type:
+                  type: string
+                  description: Export method type
+                name:
+                  type: string
+                  description: Export method name
+                  minLength: 1
+                parameters:
+                  type: array
+                  description: Export method parameters
+                parametersNames:
+                  type: array
+                  description: Name of the export method parameters according to the export type
+
+    post:
+      summary: Create an export method for the app
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.post_export_method
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - type
+              - name
+              - parameters
+            properties:
+              type:
+                type: string
+                description: Export method type
+              name:
+                type: string
+                description: Export method name
+                minLength: 1
+              parameters:
+                type: array
+                description: Export method parameters, can be anything as long as the export method type can read it
+          required: true
+      responses:
+        200:
+          description: Export method added
+        400:
+          description: Wrong type or parameters
+
+  /app/exportMethods/{exportMethodId}:
+    delete:
+      summary: Remove an export method for the app
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.delete_export_method
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Export method removed
+        404:
+          description: Unknown export method
+
+  /app/exportMethods/{exportMethodId}/exportData:
+    post:
+      summary: Export data with an export method
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.exportData
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Data exported
+
+  /data-providers/{dataProviderId}/projects/{projectId}/exportSelection:
+    post:
+      summary: Export a selected sample id list from an export method
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.exportSelection
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+              - exportMethodId
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selected sample id (hash)
+              selectionName:
+                type: string
+              exportMethodId:
+                type: string
+              annotationValue:
+                type: string
+                description: Any value set by the user
+      responses:
+        200:
+          description: Selection exported
+
+  # Algo providers
+  /app/algo-providers:
+    get:
+      summary: Get all Algo providers and their algorithms
+      tags: [AlgoProviders]
+      operationId: debiaiServer.controller.algoProviders.get_algo_providers
+      responses:
+        200:
+          description: Algorithms list
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: "#/definitions/algoProvider"
+
+    post:
+      summary: Add an Algo provider
+      tags: [AlgoProviders]
+      operationId: debiaiServer.controller.algoProviders.post_algo_provider
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - url
+            properties:
+              name:
+                type: string
+                description: Name of the Algo provider
+                maxLength: 100
+                minLength: 1
+              url:
+                type: string
+                description: Url of the Algo provider
+
+      responses:
+        204:
+          description: Algorithm saved
+
+  /app/algo-providers/{name}:
+    delete:
+      summary: Delete an Algo provider
+      tags: [AlgoProviders]
+      operationId: debiaiServer.controller.algoProviders.delete_algo_provider
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to delete
+          minLength: 1
+      responses:
+        204:
+          description: Algo provider deleted
+        404:
+          description: Algo provider not found
+
+  /app/algo-providers/{algoProviderName}/algorithms/use/{algoId}:
+    post:
+      summary: Use an algorithm of an Algo provider
+      tags: [AlgoProviders]
+      operationId: debiaiServer.controller.algoProviders.use_algo
+      parameters:
+        - name: algoProviderName
+          in: path
+          type: string
+          required: true
+          description: Name of the Algo provider to use
+          minLength: 1
+        - name: algoId
+          in: path
+          type: string
+          required: true
+          description: Id of the algorithm to use
+          minLength: 1
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - inputs
+            properties:
+              inputs:
+                type: array
+                description: Inputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the input,
+                        must be the same as the one defined in the input list
+                    value:
+                      description: Value of the input, depending on the input type
+
+      responses:
+        200:
+          description: Algorithm result
+          schema:
+            type: object
+            required:
+              - outputs
+            properties:
+              outputs:
+                type: array
+                description: Outputs of the algorithm
+                items:
+                  type: object
+                  required:
+                    - name
+                    - value
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the output,
+                        must be the same as the one defined in the output list
+                    value:
+                      description: Value of the output, depending on the output type
+
+  # Statistical operations
+  /statisticalOperations/pearsonCorrelation:
+    post:
+      summary: Calculate pearson correlation between rows
+      tags: [Statistical operations]
+      operationId: debiaiServer.controller.statisticalOperations.pearsonCorrelation
+      parameters:
+        - name: data
+          in: body
+          description: Array of rows with the same sizes (discrete & continuous)
+          schema:
+            type: array
+            items:
+              type: array
+
+      responses:
+        200:
+          description: pearson correlation matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/spearmanCorrelation:
+    post:
+      summary: Calculate spearman correlation between rows
+      tags: [Statistical operations]
+      operationId: debiaiServer.controller.statisticalOperations.spearmanCorrelation
+      parameters:
+        - name: data
+          in: body
+          description: Array of rows with the same sizes (discrete & continuous)
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+
+      responses:
+        200:
+          description: spearman correlation matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/continuousMutualInformation:
+    post:
+      summary: Calculate mutual informations
+      tags: [Statistical operations]
+      operationId: debiaiServer.controller.statisticalOperations.mutualInformation
+      parameters:
+        - name: data
+          in: body
+          description: mutual information matrix
+          schema:
+            type: object
+            required:
+              - list_continuous
+              - list_discrete
+            properties:
+              k:
+                type: integer
+                description: number of neighbors
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+              list_continuous:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (continuous only)
+              list_discrete:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (dicrete only)
+              normalise:
+                type: string
+                default: "max"
+                description: This parameter is used to normalise the mutual information coefficient, it takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+
+      responses:
+        200:
+          description: mutual information matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+        403:
+          description: Invalid Input array, not the same size
+
+  /statisticalOperations/higherDimensionMutualInformation:
+    post:
+      summary: Calculate the mutual information between variables
+      tags: [Statistical operations]
+      operationId: debiaiServer.controller.statisticalOperations.higherDimensionMutualInformation
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - X
+              - k
+            properties:
+              k:
+                type: integer
+                description: number of neighbors (must be < to len(X))
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+                default: 2
+              X:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: list of list of the variables, it can take more than 2 variables
+
+      responses:
+        200:
+          description: mutual information between the variables
+          schema:
+            type: number
+        403:
+          description: Invalid Input
+
+  /statisticalOperations/continuousAndHigherDimensionMutualInformation:
+    post:
+      summary: Calculate matrix mutual informations and the higher Dimension
+      tags: [Statistical operations]
+      operationId: debiaiServer.controller.statisticalOperations.mutualAndHigherInformation
+      parameters:
+        - name: data
+          in: body
+          description: mutual information matrix
+          schema:
+            type: object
+            required:
+              - list_continuous
+              - list_discrete
+              - k
+            properties:
+              k:
+                type: integer
+                description: number of neighbors
+              base:
+                type: integer
+                description: takes 2 (unit =bits), 10 (unit= nats)
+              list_continuous:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (continuous only)
+              list_discrete:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                description: Array of rows with the same sizes (dicrete only)
+              normalise:
+                type: string
+                default: "max"
+                description: This parameter is used to normalise the mutual information coefficient, it takes either 'max' or 'min' or 'square root' or 'mean' or 'none'
+
+      responses:
+        200:
+          description: mutual information matrix
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+        403:
+          description: Invalid Input array, not the same size
+
+definitions:
+  # Projects
+  projectOverview:
+    type: object
+    required:
+      - id
+      - dataProviderId
+      - name
+    properties:
+      id:
+        type: string
+        description: project ID
+
+      dataProviderId:
+        type: string
+        description: project data provider ID
+
+      name:
+        type: string
+        description: project name
+
+      nbModels:
+        type: integer
+        description: number of Models
+
+      nbSelections:
+        type: integer
+        description: number of selections
+
+      creationDate:
+        type: string
+        format: date-time
+        description: creation date
+
+      updateDate:
+        type: string
+        format: date-time
+        description: last update date
+
+  project:
+    allOf:
+      - $ref: "#/definitions/projectOverview"
+      - type: object
+        required:
+          - columns
+          - resultsStructure
+        properties:
+          columns:
+            description: list of the projects columns that will be used to display the data
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+          resultsStructure:
+            description: list of the projects columns that will be used to display the model results
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+  column:
+    description: column information, for data or model results
+    type: object
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        description: column name
+      category:
+        type: string
+        description: column category, by default it is 'other' or 'result' for model results
+        enum:
+          - other
+          - context
+          - input
+          - groundtruth
+      type:
+        type: string
+        description: column type
+        enum:
+          - auto
+          - text
+          - number
+          - boolean
+
+      group:
+        type: string
+        description: column group, used to group columns in the UI
+
+  blockLevelInfo:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: block level name
+
+  # Artefact
+  artefact:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      creationDate:
+        type: string
+        format: date-time
+      updateDate:
+        type: string
+        format: date-time
+      version:
+        type: string
+      metadata:
+        type: object
+        additionalProperties:
+          type: string
+        example:
+          meteo: soleil
+          temperature: 50
+
+  # Models
+  modelOverview:
+    type: object
+    required:
+      - name
+      - id
+    properties:
+      name:
+        type: string
+      id:
+        type: string
+      nbEvaluatedSamples:
+        type: integer
+      updateDate:
+        type: string
+        format: date-time
+      creationDate:
+        type: string
+        format: date-time
+      metadata:
+        type: object
+
+  model:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          hyperParameters:
+            type: array
+            items:
+              type: string
+          trainingLogs:
+            type: array
+            items:
+              type: string
+
+  # Selections and requests
+  selection:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          nbSamples:
+            type: integer
+          metadata:
+            type: object
+
+  request:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        required:
+          - filters
+        properties:
+          filters:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - columnLabel
+              properties:
+                type:
+                  type: string
+                columnLabel:
+                  type: string
+            description: Can be of type 'values' of 'intervals', 'values'
+              filters have a 'values' key that is a list of text or numbers
+              , 'intervals' filters have an 'interval' key that is a list of
+              {min, max} intervals
+
+  # DataTypes
+  dataType:
+    type: object
+    properties:
+      gdtList:
+        type: array
+        items:
+          type: object
+        description: list of ground thruth (key - value)
+
+      inputList:
+        type: array
+        items:
+          type: object
+        description: list of inputs (key - value)
+
+      contextList:
+        type: array
+        items:
+          type: object
+        description: list of context (key - value)
+
+  # block & sample
+  block:
+    allOf:
+      - $ref: "#/definitions/dataType"
+      - type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+
+  blockOverview:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: name of the block
+
+  sample:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+
+  blockTree:
+    type: array
+    items:
+      $ref: "#/definitions/block"
+
+  # Data providers
+  dataProvider:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      status:
+        type: boolean
+        description: True if the data provider is up and running
+      type:
+        type: string
+
+  # Analysis
+  analysis:
+    type: object
+    description: Data for the current analysis
+    required:
+      - id
+    properties:
+      id:
+        type: string
+        description: Unique ID generated for the analysis, it will be the same in this analysis requests
+      start:
+        type: boolean
+        description: True if this is the first request of the analysis
+      end:
+        type: boolean
+        description: True if this is the last request of the analysis
+
+  # Layout
+  projectLayout:
+    description: Project layout, information about a dashboard layout
+    type: object
+    required:
+      - id
+      - name
+      - projectId
+      - dataProviderId
+      - layout
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      projectId:
+        type: string
+        description: Id of the project linked to the layout
+      dataProviderId:
+        type: string
+        description: Id of the data provider linked to the project id
+      creationDate:
+        type: string
+        format: date-time
+      layout:
+        $ref: "#/definitions/dashboardLayout"
+      lastLayoutSaved:
+        type: boolean
+        description: True if this is the last layout saved
+      selectedColorColumn:
+        type: string
+        description: Column selected to be used as color
+        x-nullable: true
+
+  dashboardLayout:
+    description: Dashboard layout, list of widgets with their
+      position and configuration
+
+    type: array
+    items:
+      type: object
+      required:
+        - widgetKey
+        - x
+        - y
+        - width
+        - height
+      properties:
+        widgetKey:
+          type: string
+          description: Key of the widget
+        x:
+          type: integer
+          description: x position of the widget
+        y:
+          type: integer
+          description: y position of the widget
+        width:
+          type: integer
+          description: width of the widget
+        height:
+          type: integer
+          description: height of the widget
+        config:
+          type: object
+          description: Configuration of the widget
+          x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object
+
+  # Algo providers
+  algoProvider:
+    description: Informations about an AlgoProvider
+    required:
+      - url
+      - name
+      - status
+      - algorithms
+    properties:
+      name:
+        type: string
+        description: Name of the AlgoProvider
+        minLength: 1
+      url:
+        type: string
+        description: Url of the AlgoProvider
+        minLength: 1
+      status:
+        type: boolean
+        description: True if the algo provider is up and running
+      algorithms:
+        type: array
+        description: List of algorithms provided by the AlgoProvider
+        items:
+          type: object
+          description: Informations about an algorithm
+          required:
+            - id
+            - inputs
+            - outputs
+          properties:
+            id:
+              type: string
+              description: The id of the algorithm, must be unique, will be used to identify the algorithm
+              example: "my-algorithm-01"
+            name:
+              type: string
+              description: The name of the algorithm
+              example: "My algorithm 01"
+            description:
+              type: string
+              description: The description of the algorithm
+              example: "This algorithm is used to do something"
+            tags:
+              type: array
+              description: The list of tags of the algorithm
+              items:
+                type: string
+              example: ["tag1", "tag2"]
+            author:
+              type: string
+              description: The author of the algorithm
+              example: "Ada Lovelace"
+            creationDate:
+              type: string
+              description: The creation date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-01-01"
+              format: date
+              x-nullable: true
+            updateDate:
+              type: string
+              description: The last update date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-03-20"
+              format: date
+              x-nullable: true
+            version:
+              type: string
+              description: The version of the algorithm
+              example: "0.1.0"
+            inputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoInputOutput"
+            outputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoInputOutput"
+
+  algoInputOutput:
+    type: object
+    description: Informations about an input or an output of an algorithm
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        description: The name of the input or output
+        example: "Input_A"
+      type:
+        type: string
+        enum:
+          - string
+          - number
+          - boolean
+          - array
+
+      # Next is useless for outputs
+      availableValues:
+        type: array
+        description: The list of available values for this input
+        example: ["my value", "my other value"]
+      default:
+        description: The default value for this input
+        example: "my value"
+      min:
+        type: number
+        description: The minimum value for number inputs
+        example: 0
+      max:
+        type: number
+        description: The maximum value for number inputs
+        example: 10
+      arrayType:
+        type: string
+        description: For array inputs, specify type of the array
+        enum:
+          - string
+          - number
+          - boolean
+      lengthMin:
+        type: number
+        description: The minimum length of the array for array inputs
+        example: 0
+      lengthMax:
+        type: number
+        description: The maximum length of the array for array inputs
+        example: 10

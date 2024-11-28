@@ -1,17 +1,19 @@
-let convertPlotlySelectionsToFilters = (data, intervals) => {
-  let filters = [];
+const convertPlotlySelectionsToFilters = (data, intervals) => {
+  const filters = [];
 
   intervals.forEach((inter) => {
     if (inter.constraintrange !== undefined) {
-      let col = data.columns.find((col) => col.label == inter.label);
-      let cr = inter.constraintrange;
+      const col = data.getColumnByLabel(inter.label);
+      if (!col) return;
+
+      const cr = inter.constraintrange;
       if (Array.isArray(cr[0]))
         cr.forEach((subInter) => {
-          let newFilter = addIntervalSelection(col, subInter[0], subInter[1]);
+          const newFilter = addIntervalSelection(col, subInter[0], subInter[1]);
           updateIntervals(filters, newFilter);
         });
       else {
-        let newFilter = addIntervalSelection(col, cr[0], cr[1]);
+        const newFilter = addIntervalSelection(col, cr[0], cr[1]);
         updateIntervals(filters, newFilter);
       }
     }
@@ -23,9 +25,9 @@ export default {
   convertPlotlySelectionsToFilters,
 };
 
-let addIntervalSelection = (col, from, to) => {
+const addIntervalSelection = (col, from, to) => {
   if (col.type == String) {
-    let selectedString = col.uniques.filter((val, i) => i >= from && i <= to);
+    const selectedString = col.uniques.filter((val, i) => i >= from && i <= to);
     return {
       type: "values",
       columnIndex: col.index,
@@ -41,9 +43,9 @@ let addIntervalSelection = (col, from, to) => {
   };
 };
 
-let updateIntervals = (filters, newFilter) => {
+const updateIntervals = (filters, newFilter) => {
   // Construct an interval list from a filter and the created filters
-  let createdFilter = filters.find((filter) => filter.columnIndex === newFilter.columnIndex);
+  const createdFilter = filters.find((filter) => filter.columnIndex === newFilter.columnIndex);
 
   if (!createdFilter) {
     if (newFilter.type === "interval")

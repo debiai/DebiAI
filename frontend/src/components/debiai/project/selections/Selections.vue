@@ -40,11 +40,8 @@
             A <b> selection </b> is a list of samples, it can be created from the analysis
             dashboard.
             <br />
-            <!-- A <b> selection </b> is a list of samples, it can be created from a request from the
-            <b> requests menu </b> or from the analysis dashboard.
-            <br />
             Selections are used to start analysis on a specific subset of the data project, they can
-            be extracted with the python library as a dataframe or as a numpy array. -->
+            be extracted by the DebiAI python library.
           </DocumentationBlock>
         </span>
 

@@ -26,8 +26,10 @@
   --dangerDark: #a82734;
 
   /* Data Type */
-  --number: #92cee6;
-  --class: #ffc107;
+  --number: #1ea5ff;
+  --class: #f19100;
+  --array: #8455e0;
+  --dict: #3ebb3e;
 
   /* Categories */
   --undefined: #e0a9ae;
@@ -84,6 +86,7 @@ button {
 
   svg {
     fill: black;
+    stroke: black;
   }
 
   &.green {
@@ -148,6 +151,15 @@ button {
 
     svg {
       fill: var(--fontColorLight);
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &:hover {
+      filter: brightness(1);
     }
   }
 
@@ -356,7 +368,7 @@ button + button {
 }
 
 .date {
-  opacity: 0.6;
+  color: var(--fontColorLight);
 }
 .tag {
   border: solid 1px var(--fontColorLight);
@@ -364,6 +376,7 @@ button + button {
   padding: 2px 4px;
   font-size: 0.9em;
   color: var(--fontColorLight);
+  white-space: nowrap;
 
   svg {
     fill: var(--fontColorLight);
@@ -383,7 +396,6 @@ button + button {
 // Inputs
 input {
   &.search {
-    height: 26px;
     border-radius: 5px;
     border: 1px solid var(--greyDarker);
     margin: 2px;

@@ -1,9 +1,10 @@
 <template>
   <div class="input">
+    <!-- Title and description -->
     <div class="top">
-      <p>
+      <h4>
         {{ input.name }}
-      </p>
+      </h4>
 
       <!-- Input type -->
       <span
@@ -17,18 +18,24 @@
         >{{ input.type }}</span
       >
 
-      <!-- description -->
-      <p class="description">{{ input.description }}</p>
+      <!-- Description -->
+      <div class="description">{{ input.description }}</div>
+    </div>
 
+    <!-- Input method selection & input value form -->
+    <div class="middle">
       <!-- Values -->
       <div
         v-if="input.type === 'number' || input.type === 'string'"
         title="Value of the input that will be sent to the Algo Provider"
       >
+        Select a value:
+
         <input
           :type="input.type"
           v-model="value"
           :readonly="isProjectId"
+          @input="valueChanged"
         />
       </div>
 
@@ -37,7 +44,10 @@
         v-if="input.availableValues && input.availableValues.length > 0"
         title="Values suggested by the Algo Provider"
       >
-        <select v-model="value">
+        <select
+          v-model="value"
+          @change="valueChanged"
+        >
           <option
             v-for="(value, index) in input.availableValues.slice(0, 100)"
             :key="index"
@@ -61,120 +71,179 @@
         title="Maximum value accepted by the Algo Provider"
         :class="'tag ' + (value > input.max ? 'error' : 'success')"
       >
-        {{ "<=" }} {{ input.max }}
+        &lt; {{ input.max }}
+        <!-- &lt; is <= -->
       </div>
 
-      <!-- Array input type-->
+      <!-- Array input type, select how to input the array values -->
       <div
         v-if="input.type === 'array' && !isIdList"
         class="arrayInputType"
       >
+        <span style="display: flex; align-items: center; padding-right: 10px">
+          Array input methods
+          <documentationBlock>
+            Select how you want to input the array values.
+            <br />
+            <br />
+            <b>Manual</b>: <br />Input the values manually, separated by commas.
+            <br />
+            <br />
+            <b>Complete Column data</b>: <br />Select a column from the data to use as input.
+            <br />
+            <br />
+            <b>Selected Column data</b>:<br />
+            Select a column from the data and only use the selected values as input. </documentationBlock
+          >:
+        </span>
+
         <!-- input options -->
         <button
-          :class="'radioBtn ' + (selectedArrayInputOption == 'manual' ? 'selected' : '')"
-          @click="selectedArrayInputOption = 'manual'"
+          :class="'radioBtn ' + (selectedInputOption == 'manual' ? 'selected' : '')"
+          @click="selectedInputOption = 'manual'"
         >
           Manual
         </button>
         <button
-          :class="'radioBtn ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
+          :class="'radioBtn ' + (selectedInputOption == 'column' ? 'selected' : '')"
           @click="
-            selectedArrayInputOption = 'column';
+            selectedInputOption = 'column';
             columnSelected(columnIndex);
-            columnSelection = true;
           "
         >
           Complete Column data
         </button>
         <button
-          :class="
-            'radioBtn ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')
-          "
+          :class="'radioBtn ' + (selectedInputOption == 'columnSelectedData' ? 'selected' : '')"
           @click="
-            selectedArrayInputOption = 'columnSelectedData';
+            selectedInputOption = 'columnSelectedData';
             columnSelected(columnIndex);
-            columnSelection = true;
           "
         >
           Selected Column data
         </button>
       </div>
+
+      <!-- Array input type for idList -->
       <div
-        v-if="input.type === 'array' && isIdList"
+        v-else-if="input.type === 'array' && isIdList"
         class="arrayInputType"
       >
         <!-- input options -->
         <button
-          :class="'radioBtn ' + (selectedArrayInputOption == 'column' ? 'selected' : '')"
+          :class="'radioBtn ' + (selectedInputOption == 'column' ? 'selected' : '')"
           @click="
-            selectedArrayInputOption = 'column';
-            idListSelected('column');
+            selectedInputOption = 'column';
+            idListInputTypeSelected('column');
           "
         >
           Complete project Id List
         </button>
         <button
-          :class="
-            'radioBtn ' + (selectedArrayInputOption == 'columnSelectedData' ? 'selected' : '')
-          "
+          :class="'radioBtn ' + (selectedInputOption == 'columnSelectedData' ? 'selected' : '')"
           @click="
-            selectedArrayInputOption = 'columnSelectedData';
-            idListSelected('columnSelectedData');
+            selectedInputOption = 'columnSelectedData';
+            idListInputTypeSelected('columnSelectedData');
           "
         >
           Selected Id List
         </button>
       </div>
+
+      <!-- Any input type, select how to input the values -->
+      <div
+        v-else-if="input.type === 'any'"
+        class="arrayInputType"
+      >
+        <span style="display: flex; align-items: center; padding-right: 10px">
+          Input methods
+          <documentationBlock>
+            Select how you want to provide the input values.
+            <br />
+            <br />
+            <b>Manual</b>: <br />provide the input manually.
+            <br />
+            <br />
+            <b>Complete Column data</b>: <br />Select a column from the data to use as input.
+            <br />
+            <br />
+            <b>Selected Column data</b>:<br />
+            Select a column from the data and only use the selected values as input. </documentationBlock
+          >:
+        </span>
+
+        <!-- input options -->
+        <button
+          :class="'radioBtn ' + (selectedInputOption == 'manual' ? 'selected' : '')"
+          @click="selectedInputOption = 'manual'"
+        >
+          Manual
+        </button>
+        <button
+          :class="'radioBtn ' + (selectedInputOption == 'column' ? 'selected' : '')"
+          @click="
+            selectedInputOption = 'column';
+            columnSelected(columnIndex);
+          "
+        >
+          Complete Column data
+        </button>
+        <button
+          :class="'radioBtn ' + (selectedInputOption == 'columnSelectedData' ? 'selected' : '')"
+          @click="
+            selectedInputOption = 'columnSelectedData';
+            columnSelected(columnIndex);
+          "
+        >
+          Selected Column data
+        </button>
+      </div>
     </div>
     <div class="bot">
-      <!-- Array input type-->
+      <!-- Array manual input type-->
       <div
-        v-if="input.type === 'array' && selectedArrayInputOption == 'manual'"
+        v-if="input.type === 'array' && selectedInputOption == 'manual'"
         class="arrayInput"
       >
         Manual input, separated by commas:
         <input
           type="text"
-          v-model="value"
           placeholder="1,2,3"
+          v-model="manualValue"
+          @input="valueChanged"
         />
       </div>
 
-      <!-- Column selection Modal -->
-      <modal
-        v-if="columnSelection"
-        @close="columnSelection = false"
+      <!-- Any manual input type-->
+      <div
+        v-if="input.type === 'any' && selectedInputOption == 'manual'"
+        class="arrayInput"
       >
-        <ColumnSelection
-          :title="'Select a column to use as input for ' + input.name"
-          :data="data"
-          :validateRequired="false"
-          :colorSelection="false"
-          :defaultSelected="[columnIndex]"
-          v-on:cancel="columnSelection = false"
-          v-on:colSelect="columnSelected"
+        Manual input:
+        <input
+          type="text"
+          placeholder="123Abc"
+          v-model="manualValue"
+          @input="valueChanged"
         />
-      </modal>
+      </div>
+
+      <!-- Column selection -->
       <div
         v-if="
-          input.type === 'array' &&
-          ['column', 'columnSelectedData'].includes(selectedArrayInputOption)
+          ['array', 'any'].includes(input.type) &&
+          ['column', 'columnSelectedData'].includes(selectedInputOption)
         "
       >
         <div class="arrayInput">
           <div v-if="!isIdList">
-            <Column
-              v-if="columnIndex !== null"
-              :column="data.columns.find((c) => c.index == columnIndex)"
+            <ColumnSelectionButton
+              :data="data"
+              :defaultColumnIndex="columnIndex"
+              :title="'Select a column to use as input for ' + input.name"
               :colorSelection="false"
-              v-on:selected="columnSelection = true"
+              v-on:selected="columnSelected"
             />
-            <button
-              v-else
-              @click="columnSelection = true"
-            >
-              Select a column
-            </button>
           </div>
           <div
             class="nbValues"
@@ -189,71 +258,114 @@
 </template>
 
 <script>
-// components
-import ColumnSelection from "../common/ColumnSelection.vue";
-import Column from "../common/Column";
+import ColumnSelectionButton from "../common/ColumnSelectionButton.vue";
 
 export default {
   name: "UseAlgo",
   components: {
-    ColumnSelection,
-    Column,
+    ColumnSelectionButton,
   },
   props: {
     input: { type: Object, required: true },
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
       value: null,
+      manualValue: null,
       projectId: null,
 
       // Array input
-      selectedArrayInputOption: "manual",
+      selectedInputOption: "column",
       columnIndex: null,
-      columnSelection: false,
     };
   },
   mounted() {
+    // Default values setup
+    // Set the projectId as the default value if the input is projectId
     if (this.isProjectId) this.value = this.$store.state.ProjectPage.projectId;
-    if (this.isIdList) {
-      this.idColumnsIndex = this.data.columns.findIndex((c) => c.label === "Data ID");
-      this.selectedArrayInputOption = "column";
-      this.value = this.data.columns[this.idColumnsIndex].values;
+
+    // Set the idList as the default value if the input is idList
+    if (this.isIdList && this.data.columnExists("Data ID")) {
+      const idColumn = this.data.getColumnByLabel("Data ID");
+      this.idColumnsIndex = idColumn.index;
+      this.selectedInputOption = "column";
+      this.value = this.data.getColumn(this.idColumnsIndex).values;
     }
 
+    // Set the default value if it exists
     if (this.input.default !== null && this.input.default !== undefined)
       this.value = this.input.default;
+    // Else, set the first available value as the default value
     else if (this.input.availableValues && this.input.availableValues.length > 0)
       this.value = this.input.availableValues[0];
-    this.$emit("inputValueUpdate", this.value);
+
+    this.$emit("inputValueUpdate", { value: this.value, columnLabel: null });
   },
   methods: {
+    valueChanged() {
+      // This function is called when the value of the input changes
+      // For manual input for array, we convert the string to an array of numbers
+      if (this.input.type === "array" && this.selectedInputOption === "manual")
+        this.value = this.manualValue.split(",");
+      if (this.input.type === "any" && this.selectedInputOption === "manual")
+        this.value = this.manualValue;
+
+      // Check if the value is correct and send it to the parent
+      if (!this.valueMatchInputType) return;
+
+      this.$emit("inputValueUpdate", { value: this.getGoodType(this.value), columnLabel: null });
+    },
     columnSelected(index) {
+      // This function is called when the user selects a column to use as input
       if (index === null) return;
 
-      this.columnSelection = false;
       this.columnIndex = index;
-      if (this.selectedArrayInputOption === "columnSelectedData") {
-        this.value = this.selectedData.map((id) => {
-          return this.data.columns[index].values[id];
-        });
-      } else {
-        this.value = this.data.columns[index].values;
-      }
-      this.$emit("inputValueUpdate", this.value);
+
+      if (!this.data.columnExists(index)) return;
+
+      const column = this.data.getColumn(index);
+      const dataValues = column.values;
+
+      // Convert to the good type and send to parent
+      let value = null;
+      if (this.selectedInputOption === "columnSelectedData")
+        value = this.getGoodType(this.data.selectedData.map((id) => dataValues[id]));
+      else value = this.getGoodType(dataValues);
+
+      this.$emit("inputValueUpdate", { value: value, columnLabel: column.label });
     },
-    idListSelected(type) {
-      if (type == "column") {
-        this.value = this.data.columns[this.idColumnsIndex].values;
-      } else {
-        const selectedValues = this.selectedData.map((id) => {
-          return this.data.columns[this.idColumnsIndex].values[id];
-        });
-        this.value = selectedValues;
+    idListInputTypeSelected(type) {
+      // This function is called when the user selects the type of input for the idList
+      // Set the value of the idList according to the selected type
+      const idColumn = this.data.getColumn(this.idColumnsIndex);
+      if (!idColumn) return;
+
+      let dataIdValues = null;
+      if (type == "column") dataIdValues = idColumn.values;
+      else dataIdValues = this.data.selectedData.map((id) => dataIdValues[id]);
+
+      this.$emit("inputValueUpdate", { value: dataIdValues, columnLabel: idColumn.label });
+    },
+    getGoodType(value) {
+      if (this.input.type === "number") {
+        return Number(value);
       }
-      this.$emit("inputValueUpdate", this.value);
+      if (this.input.type === "array" && value !== null) {
+        if (this.input.arrayType === "number") {
+          if (this.selectedInputOption === "columnSelectedData") {
+            return value;
+          } else if (this.selectedInputOption === "column") {
+            return value;
+          } else if (this.selectedInputOption === "manual") {
+            return value.map((v) => Number(v));
+          }
+        } else {
+          // we don't need to convert the values
+          return value;
+        }
+      }
+      return value;
     },
   },
   computed: {
@@ -263,21 +375,6 @@ export default {
       else if (this.input.type === "array") return Array.isArray(this.value);
       else return true;
     },
-    valueWithGoodType() {
-      if (this.input.type === "number") return Number(this.value);
-      if (this.input.type === "array" && this.value !== null) {
-        if (this.input.arrayType === "number") {
-          if (this.selectedArrayInputOption === "columnSelectedData") return this.value;
-          else if (this.selectedArrayInputOption === "column") return this.value;
-          else if (this.selectedArrayInputOption === "manual") {
-            return this.value.split(",").map((v) => Number(v));
-          }
-        } else {
-          // we don't need to convert the values
-          return this.value;
-        }
-      } else return this.value;
-    },
     isIdList: function () {
       return this.input.type === "array" && this.input.name === "idList";
     },
@@ -285,60 +382,70 @@ export default {
       return this.input.type === "string" && this.input.name === "projectId";
     },
   },
-  watch: {
-    valueWithGoodType: function (val) {
-      this.$emit("inputValueUpdate", val);
-    },
-  },
+  watch: {},
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .input {
-  border: 1px solid var(--greyDark);
-  border-radius: 4px;
-  padding: 0px 20px;
-  font-size: 1.2em;
+  border-bottom: 1px solid var(--greyDark);
+  padding: 30px 10px;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   transition: 0.2s;
-}
-.top {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 5px;
-}
-.description {
-  color: var(--fontColorLight);
-  padding-right: 30px;
-}
-
-input,
-select {
-  border: 1px solid var(--greyDark);
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 1em;
-  width: 100px;
-}
-
-.bot {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 5px;
-}
-.arrayInput {
-  flex: 1;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
   gap: 10px;
-}
-.arrayInput input {
-  flex: 1;
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    .description {
+      text-align: left;
+      color: var(--fontColorLight);
+    }
+  }
+
+  .middle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+
+    .arrayInputType {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 5px;
+    }
+  }
+
+  .bot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+
+    .arrayInput {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+
+      input {
+        flex: 1;
+      }
+    }
+  }
+
+  input,
+  select {
+    border: 1px solid var(--greyDark);
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 1em;
+    width: 100px;
+  }
 }
 </style>

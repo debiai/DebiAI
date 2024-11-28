@@ -11,7 +11,7 @@
 
       <div class="right">
         <!-- Configuration details -->
-        <DocumentationBlock :followCursor="true">
+        <DocumentationBlock>
           <h4>Configuration details</h4>
           <table class="confDetails">
             <tr

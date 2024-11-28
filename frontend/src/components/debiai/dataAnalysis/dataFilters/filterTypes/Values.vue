@@ -41,7 +41,7 @@
 
         <select
           v-model="newValue"
-          v-if="filter.column.uniques"
+          v-if="filter.column.uniques && filter.column.uniques.length < 30"
         >
           <option
             v-for="unValues in filter.column.uniques"
@@ -54,18 +54,8 @@
 
       <!-- #controls -->
       <div class="aligned centered">
-        <button
-          @click="addValue(false)"
-          :disabled="newValue === null || newValue === ''"
-        >
-          Add
-        </button>
-        <button
-          @click="addValue(true)"
-          :disabled="newValue === null || newValue === ''"
-        >
-          Add and close
-        </button>
+        <button @click="addValue(false)">Add</button>
+        <button @click="addValue(true)">Add and close</button>
         <button
           class="red"
           @click="addValuePanel = false"
@@ -88,7 +78,15 @@
         @click="removeValue(value)"
         title="Remove the value form the filter"
       >
-        {{ value }}
+        <span v-if="value !== null">
+          {{ value }}
+        </span>
+        <span
+          v-else
+          style="opacity: 0.7"
+        >
+          Null
+        </span>
       </button>
       <button
         @click="addValuePanel = true"
@@ -128,8 +126,13 @@ export default {
   methods: {
     addValue(closeAfter) {
       // Convert the value to the right type
-      const valueToAdd =
-        this.filter.column.typeText === "Num" ? parseFloat(this.newValue) : this.newValue;
+      let valueToAdd = this.newValue;
+      if (this.filter.column.typeText === "Num") {
+        valueToAdd = parseFloat(this.newValue);
+        if (isNaN(valueToAdd)) valueToAdd = null;
+      } else {
+        if (valueToAdd === "") valueToAdd = null;
+      }
 
       // Add the value to the filter in the store
       this.$store.commit("addValueToFilter", {

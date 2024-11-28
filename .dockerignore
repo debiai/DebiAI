@@ -7,12 +7,12 @@ kubernetes.yaml
 LICENSE
 
 # Back
-backend/__pycache__/
-backend/data/
-backend/tests/
-backend/dist/
-backend/.gitignore
-backend/README.md
+debiai_data/
+debiaiServer/__pycache__/
+debiaiServer/tests/
+debiaiServer/dist/
+debiaiServer/.gitignore
+debiaiServer/README.md
 
 # Front
 frontend/node_modules/

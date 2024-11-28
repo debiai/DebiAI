@@ -71,7 +71,6 @@
         :algoProvider="selectedAlgoProvider"
         :algorithm="algoToUse"
         :data="data"
-        :selectedData="selectedData"
         @cancel="algoToUse = null"
         @use="useAlgo(selectedAlgoProvider, algoToUse)"
       />
@@ -174,7 +173,6 @@ export default {
   },
   props: {
     data: { type: Object, required: true },
-    selectedData: { type: Array, required: true },
   },
   data: () => {
     return {
@@ -274,6 +272,7 @@ export default {
         return {
           name: input.name,
           value: input.value,
+          columnLabel: input.columnLabel,
         };
       });
       this.$backendDialog
@@ -285,14 +284,30 @@ export default {
           });
           this.algoToUse = null;
 
+          if (typeof results === "string") {
+            try {
+              // Convert to object if it's a string
+              // Replace 'Infinity' to avoid JSON.parse error
+              results = results
+                .replace(/ -Infinity/g, '"-Infinity"')
+                .replace(/ Infinity/g, '"Infinity"');
+              results = JSON.parse(results);
+            } catch (error) {
+              throw new Error("Results are not a valid JSON object");
+            }
+          }
+
           const experiment = {
             results,
             inputs,
           };
 
           // Add the selected data to the experiment
-          if (this.selectedData.length > 0 && this.selectedData.length < this.data.nbLines) {
-            experiment.selectedData = this.selectedData;
+          if (
+            this.data.selectedData.length > 0 &&
+            this.data.selectedData.length < this.data.nbLines
+          ) {
+            experiment.selectedData = this.data.selectedData;
           }
 
           this.$store.commit("addExperiment", {

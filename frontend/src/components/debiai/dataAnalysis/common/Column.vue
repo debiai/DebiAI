@@ -1,43 +1,64 @@
 <template>
   <div id="column">
-    <!-- Label display -->
+    <!-- Label button -->
     <button
-      v-if="column.type !== undefined && !disabled"
-      :class="(selected ? 'label selected ' : 'label ') + (column.label.length > 20 ? 'long' : '')"
+      id="labelButton"
+      :class="getColumnClass()"
       @click="select"
-      :title="selected ? 'Unselect ' + column.label : 'Select ' + column.label"
+      @contextmenu.prevent="handleRightClick"
+      :title="getColumnLabelTitle()"
     >
+      <span v-if="columnValidStatus.status === 'warning'"> ⚠️ </span>
+
       {{ column.label }}
     </button>
-    <div
-      v-else-if="column.type == undefined"
-      class="label disabled"
-    >
-      {{ column.label }}
-    </div>
-    <div
-      v-else
-      class="label"
-    >
-      {{ column.label }}
-    </div>
 
-    <!-- Number of uniques values display -->
-    <div
-      v-if="disabled || (!reduced && (!colorSelection || column.type == undefined))"
-      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
-      title="Number of uniques values"
-    >
-      {{ column.nbOccurrence }}
-    </div>
+    <!-- Number of uniques values -->
+    <!-- Clickable -->
     <button
-      v-else-if="!reduced"
-      :class="selectedAsColor ? 'nbOccurrence color btn' : 'nbOccurrence btn'"
+      v-if="canDisplayNbOccurrence && colorSelection"
+      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
       title="Number of uniques values
 Click to set column as the main color"
       @click="selectAsColor"
     >
       {{ column.nbOccurrence }}
+    </button>
+
+    <!-- Un-clickable -->
+    <div
+      v-else-if="canDisplayNbOccurrence"
+      :class="selectedAsColor ? 'nbOccurrence color' : 'nbOccurrence'"
+      class="nbOccurrence"
+      title="Number of uniques values"
+    >
+      {{ column.nbOccurrence }}
+    </div>
+    <!-- Expand column button -->
+    <button
+      v-else-if="column.typeText === 'Dict' || column.typeText === 'Array'"
+      :class="'nbOccurrence ' + (column.unfolded || column.unfoldedHorizontally ? 'color' : '')"
+      :title="'Fold or unfold the ' + column.typeText + ' column'"
+      @click="unfoldColumn"
+    >
+      <inline-svg
+        v-if="column.arrayColumnSizeNumber && !column.unfoldedHorizontally && !column.unfolded"
+        :src="require('@/assets/svg/expand.svg')"
+        height="14"
+        width="14"
+      />
+      <inline-svg
+        v-else-if="column.typeText === 'Dict' || column.unfoldedHorizontally"
+        :src="require('@/assets/svg/expandSide.svg')"
+        height="18"
+        width="18"
+      />
+      <inline-svg
+        v-else
+        :src="require('@/assets/svg/expandUp.svg')"
+        height="18"
+        width="18"
+      />
     </button>
 
     <!-- Type display -->
@@ -47,29 +68,175 @@ Click to set column as the main color"
     >
       {{ column.typeText }}
     </div>
+
+    <!-- Nb null values pie chart -->
+    <div
+      class="nbNullValues"
+      v-if="column.nbNullValues > 0"
+      :title="column.nbNullValues + ' null values'"
+    >
+      <div
+        class="pie"
+        :style="{ '--p': (column.nbNullValues / column.originalValues.length) * 100 }"
+      />
+      {{ Math.ceil((column.nbNullValues / column.originalValues.length) * 100) }}%
+    </div>
+
+    <!-- Menu -->
+    <transition name="fade">
+      <dropdown-menu
+        v-if="showMenu"
+        :menu="getColumnMenu()"
+        :position="{ x: this.mousePos.x, y: this.mousePos.y }"
+        @close="showMenu = false"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
+import columnsFiltering from "@/services/statistics/columnsFiltering";
+import DropdownMenu from "@/components/common/DropdownMenu";
+
 export default {
+  components: {
+    DropdownMenu,
+  },
   props: {
     column: { type: Object, required: true },
     selected: { type: Boolean, default: true },
-    reduced: { type: Boolean, default: false },
     colorSelection: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
+    validColumnsProperties: { type: Object, default: () => ({}) }, // Valid properties for the column
+  },
+  data() {
+    return {
+      // Menu
+      showMenu: false,
+      mousePos: { x: 0, y: 0 },
+
+      columnTypesWithNoNbOccurrence: ["undefined", "Dict", "Array"],
+    };
   },
   methods: {
-    select() {
-      this.$emit("selected", this.column.index);
+    getColumnClass() {
+      return {
+        warning: this.columnValidStatus["status"] === "warning",
+        selected: this.selected,
+        long: this.column.label.length > 20,
+        disabled: this.columnValidStatus["status"] === "invalid",
+      };
     },
-    selectAsColor() {
+    getColumnLabelTitle() {
+      if (
+        this.columnValidStatus["status"] === "warning" ||
+        this.columnValidStatus["status"] === "invalid"
+      )
+        return this.columnValidStatus["reason"];
+      else if (this.selected) return "Unselect " + this.column.label;
+      else return "Select " + this.column.label;
+    },
+    getUnfoldIcon() {
+      if (
+        this.column.arrayColumnSizeNumber &&
+        !this.column.unfoldedHorizontally &&
+        !this.column.unfolded
+      )
+        return "expand";
+      else if (this.column.typeText === "Dict" || this.column.unfoldedHorizontally)
+        return "expandSide";
+      else return "expandUp";
+    },
+    select(event) {
+      event.stopPropagation();
+      if (this.columnValidStatus["status"] !== "invalid") this.$emit("selected", this.column.index);
+    },
+    selectAsColor(event) {
+      event?.stopPropagation();
       this.$store.commit("setColoredColumnIndex", this.column.index);
+    },
+    unfoldColumn(event) {
+      event?.stopPropagation();
+      this.$store.commit("unfoldColumn", this.column.index);
+    },
+    deleteColumn() {
+      this.column.delete();
+    },
+    addArrayLength() {
+      this.column.addArrayLength();
+    },
+
+    // Column menu
+    getColumnMenu() {
+      const menu = [];
+
+      // Select as color
+      if (this.canDisplayNbOccurrence)
+        menu.push({
+          name: this.selectedAsColor ? "Unselect as color" : "Select as color",
+          action: this.selectAsColor,
+        });
+
+      // Unfold column vertically
+      if (this.column.typeText === "Dict" || this.column.typeText === "Array")
+        menu.push({
+          name: this.column.unfolded || this.column.unfoldedHorizontally ? "Fold" : "Unfold",
+          action: this.unfoldColumn,
+          icon: this.getUnfoldIcon(),
+        });
+
+      // Add array metrics
+      if (this.column.typeText === "Array" && this.column.canAddArrayLength())
+        menu.push({
+          name: "Add values length",
+          action: this.addArrayLength,
+          icon: "gear",
+        });
+
+      // Add the delete column button
+      if (this.column.canBeDeleted())
+        menu.push({
+          name: "Delete column",
+          action: this.deleteColumn,
+          icon: "close",
+        });
+
+      return menu;
+    },
+    handleRightClick(event) {
+      // Get the widget position x and y on screen
+      let widgetX = this.$el.getBoundingClientRect().x;
+      let widgetY = this.$el.getBoundingClientRect().y;
+
+      // Get the mouse position relative to the widget
+      this.mousePos.x = event.clientX - widgetX;
+      this.mousePos.y = event.clientY - widgetY;
+
+      this.showMenu = true;
+
+      // Store the data for the menu
+      this.$store.commit("setOpenedColumnMenuId", this.column.index);
+      event.stopPropagation();
     },
   },
   computed: {
     selectedAsColor: function () {
       return this.$store.state.StatisticalAnalysis.coloredColumnIndex == this.column.index;
+    },
+    canDisplayNbOccurrence: function () {
+      return !this.columnTypesWithNoNbOccurrence.includes(this.column.typeText);
+    },
+    columnValidStatus: function () {
+      return columnsFiltering.getColumnStatus(this.column, this.validColumnsProperties);
+    },
+    // Dropdown menu
+    openedColumnMenuId() {
+      return this.$store.state.StatisticalAnalysis.openedColumnMenuId;
+    },
+  },
+
+  watch: {
+    openedColumnMenuId() {
+      if (this.openedColumnMenuId !== this.column.index) this.showMenu = false;
     },
   },
 };
@@ -77,6 +244,7 @@ export default {
 
 <style lang="scss" scoped>
 #column {
+  position: relative;
   display: flex;
   margin: 5px;
   transition: all 0.3s;
@@ -85,38 +253,43 @@ export default {
   border-radius: 4px;
 
   /* Label  */
-  .label {
-    width: 200px;
+
+  #labelButton {
+    display: flex;
+    gap: 5px;
     justify-content: center;
     align-items: center;
-
     border: none;
     font-weight: bold;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: "...";
-
+    width: 180px;
+    text-overflow: ellipsis;
     color: var(--fontColorLight);
+
+    &.long {
+      .label {
+        font-size: 0.75em;
+      }
+    }
+
+    &.selected {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    &.warning {
+      // Striped background
+      background: repeating-linear-gradient(
+        125deg,
+        var(--greyLight),
+        var(--greyLight) 10px,
+        #f6f6f6 10px,
+        #f6f6f6 20px
+      );
+      color: var(--fontColorLight);
+    }
   }
 
-  .long {
-    font-size: 0.75em;
-  }
-
-  button.selected {
-    background-color: var(--secondary);
-    color: white;
-  }
-
-  .disabled {
-    cursor: not-allowed;
-    width: 120px;
-
-    background-color: var(--undefined);
-    color: rgb(27, 27, 27);
-  }
-
-  /* Occurrence */
   .nbOccurrence {
     min-width: 40px;
     padding: 4px;
@@ -124,13 +297,21 @@ export default {
     justify-content: center;
     align-items: center;
     border: none;
+
+    /* Colored column */
+    &.color {
+      color: white;
+      background-color: var(--secondary);
+      font-weight: bold;
+      svg {
+        stroke: white;
+      }
+    }
   }
 
-  /* Colored column */
-  .nbOccurrence.color {
-    border: solid 2px var(--secondary);
-    color: var(--secondary);
-    font-weight: bold;
+  div.nbOccurrence {
+    margin-left: 3px;
+    padding: 2px;
   }
 
   /* Type  */
@@ -142,21 +323,54 @@ export default {
     margin: 5px;
     padding-left: 7px;
     padding-right: 7px;
-    border-radius: 5px;
 
     color: black;
 
     &.Num {
-      border: solid var(--number) 2px;
       color: var(--number);
     }
+
     &.Class {
-      border: solid var(--class) 2px;
       color: var(--class);
     }
+
+    &.Array {
+      color: var(--array);
+    }
+
+    &.Dict {
+      color: var(--dict);
+    }
+
     &.undefined {
-      border: solid var(--undefined) 2px;
       color: var(--undefined);
+    }
+  }
+
+  /* Pie chart */
+  .nbNullValues {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8em;
+    color: var(--greyDarker);
+    font-weight: bold;
+
+    .pie {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      display: inline-grid;
+      place-content: center;
+      border-radius: 50%;
+      background: var(--greyLight);
+    }
+    .pie:before {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 0;
+      background: conic-gradient(var(--greyDarker) calc(var(--p) * 1%), #0000 0);
     }
   }
 }
