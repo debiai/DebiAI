@@ -100,12 +100,22 @@ def start_server(port, reloader=True, is_dev=True):
         flush=True,
     )
     app = create_app(is_dev)
+
     if is_dev:
         # Use flask server for development
         app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
     else:
         # Use waitress for production
-        serve(app, host="0.0.0.0", port=port, threads=6)
+        try:
+            serve(app, host="0.0.0.0", port=port, threads=6)
+        except OSError:
+            print(
+                colored(
+                    f"Port {port} is already in use. Please try another port.",
+                    "red",
+                ),
+                flush=True,
+            )
 
     # Print goodbye message
     print("\n====================================================", flush=True)
