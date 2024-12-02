@@ -693,13 +693,6 @@ paths:
                 description: List of the selection sample id (hash)
               selectionName:
                 type: string
-              requestDescription:
-                type: string
-                x-nullable: true
-              requestId:
-                type: string
-                description: Id of the request that has created the selection.
-                x-nullable: true
       responses:
         200:
           description: selection added
@@ -1586,7 +1579,7 @@ definitions:
             items:
               type: string
 
-  # Selections and requests
+  # Selections
   selection:
     allOf:
       - $ref: "#/definitions/artefact"
@@ -1596,30 +1589,6 @@ definitions:
             type: integer
           metadata:
             type: object
-
-  request:
-    allOf:
-      - $ref: "#/definitions/artefact"
-      - type: object
-        required:
-          - filters
-        properties:
-          filters:
-            type: array
-            items:
-              type: object
-              required:
-                - type
-                - columnLabel
-              properties:
-                type:
-                  type: string
-                columnLabel:
-                  type: string
-            description: Can be of type 'values' of 'intervals', 'values'
-              filters have a 'values' key that is a list of text or numbers
-              , 'intervals' filters have an 'interval' key that is a list of
-              {min, max} intervals
 
   # DataTypes
   dataType:

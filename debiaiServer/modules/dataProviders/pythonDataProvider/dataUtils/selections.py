@@ -35,9 +35,6 @@ def create_selection(project_id, selection_name, sample_ids, request_id=None):
         "samples": sample_ids,
     }
 
-    if request_id is not None:
-        selectionInfo["requestId"] = request_id
-
     os.mkdir(DATA_PATH + project_id + "/selections/" + selection_id)
     pythonModuleUtils.writeJsonFile(selectionInfoFilePath, selectionInfo)
     projects.update_project(project_id)
@@ -73,10 +70,6 @@ def get_selection(project_id, selectionId):
             "updateDate": data["updateDate"],
             "nbSamples": len(data["samples"]),
         }
-
-        # Add the request Id if it exist
-        if "requestId" in data:
-            ret["requestId"] = data["requestId"]
 
         return ret
 

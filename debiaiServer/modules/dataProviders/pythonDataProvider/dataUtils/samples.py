@@ -94,36 +94,3 @@ def _block_to_array_recur(block):
             ret[i] = values + child_values[i]
 
         return ret
-
-
-# def projectSamplesGenerator(projectId):
-#     """
-#     Generator used to iterate over all samples in a project.
-#     Used by the 'createSelectionFromRequest' method
-#     """
-
-#     # Get the project block structure
-#     projectBlockStructure = projects.get_project_block_level_info(projectId)
-#     sampleLevel = len(projectBlockStructure) - 1
-
-#     rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")
-#     for rootBlock in rootBlocks:
-#         path = DATA_PATH + projectId + "/blocks/" + rootBlock + "/"
-#         yield from yieldSample(path,  0, [], sampleLevel, projectBlockStructure)
-#     print("end")
-
-
-# def yieldSample(path, level, sampleInfo, sampleLevel, blockLevelInfo):
-#     # TODO : optimizations : add in parameters the block that we need to open
-#     blockInfo = utils.readJsonFile(path + "info.json")
-#     sampleInfo.append(getBlockInfo(blockLevelInfo[level], blockInfo))
-
-#     if level == sampleLevel:
-#         # merge the dict into one
-#         yield {k: v for x in sampleInfo for k, v in x.items()}, blockInfo["id"]
-#     else:
-#         childrenBlockNames = utils.listDir(path)
-#         for name in childrenBlockNames:
-#             yield from yieldSample(path + name + "/",
-#                                    level + 1, sampleInfo, sampleLevel, blockLevelInfo)
-#             del sampleInfo[-1]

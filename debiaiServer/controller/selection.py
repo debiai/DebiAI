@@ -35,7 +35,6 @@ def post_selection(dataProviderId, projectId, data):
             projectId,
             data["selectionName"],
             data["sampleHashList"],
-            data["requestId"] if "requestId" in data else None,
         )
         return "Selection added", 200
     except DataProviderException as e:
