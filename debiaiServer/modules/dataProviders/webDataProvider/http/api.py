@@ -91,7 +91,8 @@ def get_samples(url, id_project, analysis, id_list):
         if analysis:
             rurl = (
                 url
-                + "/projects/{}/data?analysisId={}&analysisStart={}&analysisEnd={}".format(
+                + "/projects/{}/data?analysisId={}&\
+analysisStart={}&analysisEnd={}".format(
                     id_project,
                     analysis["id"],
                     str(analysis["start"]).lower(),
