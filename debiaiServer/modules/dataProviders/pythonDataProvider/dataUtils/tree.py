@@ -79,24 +79,6 @@ def add_block_tree(projectId, data):
     return str(len(blockToAdd)) + " added blocks"
 
 
-def getBlockInfo(blockLevel, blockInfo):
-    """
-    Convert the block info to fill the sampleInfo list with a colonName:value dict
-    """
-    print("get block info")
-    print(blockLevel)
-    print(blockInfo)
-    ret = {}
-    ret[blockLevel["name"]] = blockInfo["name"]
-
-    for dataType in pythonModuleUtils.DATA_TYPES:
-        if dataType in blockLevel:
-            for i, column in enumerate(blockLevel[dataType]):
-                ret[column["name"]] = blockInfo[dataType][i]
-
-    return ret
-
-
 def getBlockTreeFromSamples(projectId, samples: list):
     blocksData = []
     addedBlocks = []

@@ -54,11 +54,8 @@ def get_id_list_from_selection(url, cache, project_id, selection_id):
     return id_list
 
 
-def create_selection(url, project_id, name, id_list, request_id):
+def create_selection(url, project_id, name, id_list):
     data = {"idList": id_list, "name": name}
-
-    if request_id is not None:
-        data["request"]: request_id
 
     return api.post_selection(url, project_id, data)
 

@@ -6,9 +6,8 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
 
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
+
 # ID list
-
-
 def get_all_samples_id_list(project_id, _from=None, _to=None):
     """
     Return a list of all samples id in a project
@@ -24,6 +23,28 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
         samples = samples[_from : _to + 1]  # noqa
 
     return samples
+
+
+def get_non_existing_ids(project_id, id_list):
+    """
+    Return a list of all samples id that do not exist in a project
+    """
+    # Get the hashmap
+    hashmap = hash.getHashmap(project_id)
+
+    # Get all samples
+    samples = list(hashmap.keys())
+
+    # Get non existing samples
+    non_existing_samples = []
+    for sample_id in id_list:
+        if sample_id not in samples:
+            non_existing_samples.append(sample_id)
+
+        if len(non_existing_samples) > 30:
+            break
+
+    return non_existing_samples
 
 
 # Get data
@@ -94,36 +115,3 @@ def _block_to_array_recur(block):
             ret[i] = values + child_values[i]
 
         return ret
-
-
-# def projectSamplesGenerator(projectId):
-#     """
-#     Generator used to iterate over all samples in a project.
-#     Used by the 'createSelectionFromRequest' method
-#     """
-
-#     # Get the project block structure
-#     projectBlockStructure = projects.get_project_block_level_info(projectId)
-#     sampleLevel = len(projectBlockStructure) - 1
-
-#     rootBlocks = utils.listDir(DATA_PATH + projectId + "/blocks/")
-#     for rootBlock in rootBlocks:
-#         path = DATA_PATH + projectId + "/blocks/" + rootBlock + "/"
-#         yield from yieldSample(path,  0, [], sampleLevel, projectBlockStructure)
-#     print("end")
-
-
-# def yieldSample(path, level, sampleInfo, sampleLevel, blockLevelInfo):
-#     # TODO : optimizations : add in parameters the block that we need to open
-#     blockInfo = utils.readJsonFile(path + "info.json")
-#     sampleInfo.append(getBlockInfo(blockLevelInfo[level], blockInfo))
-
-#     if level == sampleLevel:
-#         # merge the dict into one
-#         yield {k: v for x in sampleInfo for k, v in x.items()}, blockInfo["id"]
-#     else:
-#         childrenBlockNames = utils.listDir(path)
-#         for name in childrenBlockNames:
-#             yield from yieldSample(path + name + "/",
-#                                    level + 1, sampleInfo, sampleLevel, blockLevelInfo)
-#             del sampleInfo[-1]

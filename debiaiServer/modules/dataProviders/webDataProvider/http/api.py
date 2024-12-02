@@ -88,15 +88,19 @@ def get_id_list(url, id_project, analysis, _from=None, _to=None):
 
 def get_samples(url, id_project, analysis, id_list):
     try:
-        rurl = (
-            url
-            + "/projects/{}/data?analysisId={}&analysisStart={}&analysisEnd={}".format(
-                id_project,
-                analysis["id"],
-                str(analysis["start"]).lower(),
-                str(analysis["end"]).lower(),
+        if analysis:
+            rurl = (
+                url
+                + "/projects/{}/data?analysisId={}&\
+analysisStart={}&analysisEnd={}".format(
+                    id_project,
+                    analysis["id"],
+                    str(analysis["start"]).lower(),
+                    str(analysis["end"]).lower(),
+                )
             )
-        )
+        else:
+            rurl = url + "/projects/{}/data".format(id_project)
 
         r = requests.post(rurl, json=id_list)
         return get_http_response(r)

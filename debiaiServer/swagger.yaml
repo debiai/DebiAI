@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.30.2
+  version: 0.30.3
   title: DebiAI_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -278,6 +278,7 @@ paths:
                   end:
                     type: boolean
                     description: If true, this is the last request of the analysis
+                x-nullable: true
 
       responses:
         200:
@@ -633,6 +634,7 @@ paths:
               analysis:
                 description: Informations about the analysis to help data-providers with data management
                 $ref: "#/definitions/analysis"
+                x-nullable: true
 
       responses:
         200:
@@ -693,18 +695,11 @@ paths:
                 description: List of the selection sample id (hash)
               selectionName:
                 type: string
-              requestDescription:
-                type: string
-                x-nullable: true
-              requestId:
-                type: string
-                description: Id of the request that has created the selection.
-                x-nullable: true
       responses:
         200:
-          description: selection added
+          description: selection added, return the selection
           schema:
-            type: object
+            $ref: "#/definitions/selection"
 
   /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
     get:
@@ -1586,7 +1581,7 @@ definitions:
             items:
               type: string
 
-  # Selections and requests
+  # Selections
   selection:
     allOf:
       - $ref: "#/definitions/artefact"
@@ -1596,30 +1591,6 @@ definitions:
             type: integer
           metadata:
             type: object
-
-  request:
-    allOf:
-      - $ref: "#/definitions/artefact"
-      - type: object
-        required:
-          - filters
-        properties:
-          filters:
-            type: array
-            items:
-              type: object
-              required:
-                - type
-                - columnLabel
-              properties:
-                type:
-                  type: string
-                columnLabel:
-                  type: string
-            description: Can be of type 'values' of 'intervals', 'values'
-              filters have a 'values' key that is a list of text or numbers
-              , 'intervals' filters have an 'interval' key that is a list of
-              {min, max} intervals
 
   # DataTypes
   dataType:

@@ -6,6 +6,7 @@ venv/
 dist/
 build/
 debiai_data/
+debiai_data_test/
 *.egg-info/
 
 # Dependency directories
