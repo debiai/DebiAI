@@ -103,10 +103,8 @@ class WebDataProvider(DataProvider):
             self.url, self.cache, project_id, selection_id
         )
 
-    def create_selection(self, project_id, name, id_list, request_id=None):
-        return useCaseSelections.create_selection(
-            self.url, project_id, name, id_list, request_id
-        )
+    def create_selection(self, project_id, name, id_list):
+        return useCaseSelections.create_selection(self.url, project_id, name, id_list)
 
     def delete_selection(self, project_id, selection_id):
         return useCaseSelections.delete_selection(self.url, project_id, selection_id)

@@ -278,6 +278,7 @@ paths:
                   end:
                     type: boolean
                     description: If true, this is the last request of the analysis
+                x-nullable: true
 
       responses:
         200:
@@ -633,6 +634,7 @@ paths:
               analysis:
                 description: Informations about the analysis to help data-providers with data management
                 $ref: "#/definitions/analysis"
+                x-nullable: true
 
       responses:
         200:
@@ -695,9 +697,9 @@ paths:
                 type: string
       responses:
         200:
-          description: selection added
+          description: selection added, return the selection
           schema:
-            type: object
+            $ref: "#/definitions/selection"
 
   /data-providers/{dataProviderId}/projects/{projectId}/selections/{selectionId}:
     get:

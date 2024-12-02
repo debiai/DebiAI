@@ -10,7 +10,7 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 # Selections
-def create_selection(project_id, selection_name, sample_ids, request_id=None):
+def create_selection(project_id, selection_name, sample_ids):
     selection_id = pythonModuleUtils.clean_filename(selection_name)
     if len(selection_id) == 0:
         selection_id = pythonModuleUtils.timeNow()

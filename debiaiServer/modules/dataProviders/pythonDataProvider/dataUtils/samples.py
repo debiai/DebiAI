@@ -6,9 +6,8 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
 
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
+
 # ID list
-
-
 def get_all_samples_id_list(project_id, _from=None, _to=None):
     """
     Return a list of all samples id in a project
@@ -24,6 +23,28 @@ def get_all_samples_id_list(project_id, _from=None, _to=None):
         samples = samples[_from : _to + 1]  # noqa
 
     return samples
+
+
+def get_non_existing_ids(project_id, id_list):
+    """
+    Return a list of all samples id that do not exist in a project
+    """
+    # Get the hashmap
+    hashmap = hash.getHashmap(project_id)
+
+    # Get all samples
+    samples = list(hashmap.keys())
+
+    # Get non existing samples
+    non_existing_samples = []
+    for sample_id in id_list:
+        if sample_id not in samples:
+            non_existing_samples.append(sample_id)
+
+        if len(non_existing_samples) > 30:
+            break
+
+    return non_existing_samples
 
 
 # Get data
