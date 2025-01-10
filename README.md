@@ -40,6 +40,12 @@ DebiAI has a Web Graphical User Interface with a complete data visualization too
 
 The dashboard is highly customizable and can be used for large and small projects. Learn more about the [widgets and how to use them](https://debiai.irt-systemx.fr/dashboard/widgets/).
 
+<p align="center">
+  <a href="https://github.com/debiai/DebiAI/discussions/categories/show-and-tell">
+    <img src="https://img.shields.io/badge/Gallery-Show%20and%20tell-0077de.svg">
+  </a>
+</p>
+
 ## Data
 
 DebiAI is designed to be used for any kind of projects and data, it is particularly useful for projects that involve many contextual data.
