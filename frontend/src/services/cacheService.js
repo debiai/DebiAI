@@ -129,7 +129,7 @@ async function saveSamples(timestamp, samples) {
 
       // Save all sample
       Object.entries(samples).forEach(([sampleId, sample]) =>
-        sampleStore.put({ sampleId, data: sample })
+        sampleStore.put({ sampleId: sampleId.toString(), data: sample })
       );
     });
   } catch (error) {
@@ -149,7 +149,7 @@ async function getSamplesByIds(timestamp, sampleIds) {
 
       console.time("Loading data from cache");
       sampleIds.forEach((sampleId, i) => {
-        let resultRequest = sampleStore.get(sampleId);
+        let resultRequest = sampleStore.get(sampleId.toString());
         resultRequest.onsuccess = () => {
           if (resultRequest.result) samples[sampleId] = resultRequest.result.data;
           if (i == lastSample - 1) {
