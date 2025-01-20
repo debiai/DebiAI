@@ -161,32 +161,20 @@ export default {
       this.calculate();
     },
     async fillMatrix() {
-      // Loading handling
-      this.loading = true;
-
       // Creating data to send
-      var columnsData = [];
+      const columnsData = [];
       this.selectedColumns.forEach((c) => {
+        if (!c) return;
         if (c.type == String) columnsData.push(this.data.selectedData.map((i) => c.valuesIndex[i]));
         else columnsData.push(this.data.selectedData.map((i) => c.values[i]));
       });
 
-      // Sending request
-      return this.$backendDialog
-        .correlationMatrix(columnsData, this.selectedMatrixType)
-        .finally(() => {
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error);
-          this.error = true;
-          setTimeout(() => {
-            this.error = false;
-          }, 5000);
-        })
-        .then((data) => {
-          return data;
-        });
+      // Calculating matrix
+      if (this.selectedMatrixType == "spearman") {
+        return this.$services.spearmanCorrelationMatrix(columnsData);
+      } else {
+        return this.$services.pearsonCorrelationMatrix(columnsData);
+      }
     },
     calculate() {
       this.fillMatrix().then((matrix) => {
@@ -221,7 +209,7 @@ export default {
       }
       var data = [
         {
-          z: this.matrix.map((r) => r.map((c) => c[0])),
+          z: this.matrix.map((r) => r.map((c) => c)),
           x: this.selectedColumns.map((col) => col.label),
           y: this.selectedColumns.map((col) => col.label),
           zmin: -1,
@@ -252,18 +240,18 @@ export default {
 
       for (let i = 0; i < this.matrix.length; i++) {
         for (let j = 0; j < this.matrix[i].length; j++) {
-          let value = this.matrix[i][j][0];
+          let value = this.matrix[i][j];
           layout.annotations.push({
             text: this.significativeOnly
               ? Math.abs(value) > 0.8
-                ? Math.round(value * 100) / 100 + "<br>" + "&#9733;".repeat(this.matrix[i][j][1])
+                ? Math.round(value * 100) / 100
                 : ""
-              : Math.round(value * 100) / 100 + "<br>" + "&#9733;".repeat(this.matrix[i][j][1]),
+              : Math.round(value * 100) / 100,
             x: i,
             y: j,
             showarrow: false,
             font: {
-              color: this.matrix[i][j][0] < -0.5 ? "white" : "black",
+              color: this.matrix[i][j] < -0.5 ? "white" : "black",
             },
           });
         }
@@ -305,8 +293,6 @@ export default {
       }
       if ("selectedMatrixType" in conf) this.selectedMatrixType = conf.selectedMatrixType;
       if ("significativeOnly" in conf) this.significativeOnly = conf.significativeOnly;
-
-      this.calculate();
     },
 
     // Export
