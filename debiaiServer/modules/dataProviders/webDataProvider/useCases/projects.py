@@ -109,9 +109,9 @@ def get_project_columns(project):
     #     { "name": "label", "category": "groundtruth", group: "image" },
     #     { "name": "type" }, # category is not specified, it will be "other"
     # ]
-    
+
     project_columns = []
-    
+
     if "columns" in project:
         for column in project["columns"]:
             col = {"name": column["name"]}
