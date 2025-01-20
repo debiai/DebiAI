@@ -60,24 +60,6 @@
             </button>
           </div>
         </div>
-        <div class="data">
-          <div class="name">Significative only</div>
-          <div class="value">
-            <input
-              type="checkbox"
-              :id="'significativeOnly' + index"
-              class="customCbx"
-              v-model="significativeOnly"
-              style="display: none"
-            />
-            <label
-              :for="'significativeOnly' + index"
-              class="toggle"
-            >
-              <span></span>
-            </label>
-          </div>
-        </div>
       </div>
     </div>
     <transition name="fade">
@@ -112,11 +94,9 @@ export default {
   data() {
     return {
       selectedColumns: [],
-      matrix: [],
 
       // Settings
       settings: true,
-      significativeOnly: false,
       matrixDrawn: false,
       axisSelection: false,
       selectedMatrixType: "pearson",
@@ -160,7 +140,9 @@ export default {
 
       this.calculate();
     },
-    async fillMatrix() {
+    async calculate() {
+      this.clearMatrix();
+      this.loading = true;
       // Creating data to send
       const columnsData = [];
       this.selectedColumns.forEach((c) => {
@@ -171,45 +153,37 @@ export default {
 
       // Calculating matrix
       if (this.selectedMatrixType == "spearman") {
-        return this.$services.spearmanCorrelationMatrix(columnsData);
+        return this.$services.spearmanCorrelationMatrix(
+          columnsData,
+          this.updateMatrix,
+          this.calculationEnd
+        );
       } else {
-        return this.$services.pearsonCorrelationMatrix(columnsData);
+        return this.$services.pearsonCorrelationMatrix(
+          columnsData,
+          this.updateMatrix,
+          this.calculationEnd
+        );
       }
     },
-    calculate() {
-      this.fillMatrix().then((matrix) => {
-        this.matrix = matrix;
-        if (typeof this.matrix === "object") {
-          this.drawMatrix();
-          // Might change data description
-        } else {
-          console.error("Unexpected backend matrix type " + typeof this.matrix);
-          this.error = true;
-          setTimeout(() => {
-            this.error = false;
-          }, 5000);
-        }
-      });
+    calculationEnd() {
+      this.loading = false;
     },
-    drawMatrix() {
-      var colorscale = [
+    clearMatrix() {
+      this.matrixDrawn = false;
+      this.loading = false;
+      this.error = false;
+      Plotly.purge(this.divHeatMapPlot);
+    },
+    updateMatrix(matrix) {
+      const colorscale = [
         [0, "rgb(0,0,255)"],
         [0.5, "rgb(255,255,255)"],
         [1, "rgb(255,0,0)"],
       ];
-      if (this.significativeOnly) {
-        colorscale = [
-          [0, "rgb(0,0,255)"],
-          [0.1, "rgb(0,0,255)"],
-          [0.1, "rgb(255,255,255)"],
-          [0.9, "rgb(255,255,255)"],
-          [0.9, "rgb(255,0,0)"],
-          [1, "rgb(255,0,0)"],
-        ];
-      }
-      var data = [
+      const data = [
         {
-          z: this.matrix.map((r) => r.map((c) => c)),
+          z: matrix,
           x: this.selectedColumns.map((col) => col.label),
           y: this.selectedColumns.map((col) => col.label),
           zmin: -1,
@@ -224,7 +198,7 @@ export default {
         },
       ];
 
-      var layout = {
+      const layout = {
         zaxis: {
           range: [-1, 1],
         },
@@ -238,20 +212,16 @@ export default {
         annotations: [],
       };
 
-      for (let i = 0; i < this.matrix.length; i++) {
-        for (let j = 0; j < this.matrix[i].length; j++) {
-          let value = this.matrix[i][j];
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+          let value = matrix[i][j];
           layout.annotations.push({
-            text: this.significativeOnly
-              ? Math.abs(value) > 0.8
-                ? Math.round(value * 100) / 100
-                : ""
-              : Math.round(value * 100) / 100,
+            text: Math.round(value * 100) / 100,
             x: i,
             y: j,
             showarrow: false,
             font: {
-              color: this.matrix[i][j] < -0.5 ? "white" : "black",
+              color: matrix[i][j] < -0.5 ? "white" : "black",
             },
           });
         }
@@ -268,9 +238,8 @@ export default {
     // Conf
     getConf() {
       let conf = {
-        selectedColumns: this.selectedColumns.map((c) => c.index),
+        selectedColumns: this.selectedColumns.map((c) => c.label),
         selectedMatrixType: this.selectedMatrixType,
-        significativeOnly: this.significativeOnly,
       };
 
       return conf;
@@ -279,12 +248,12 @@ export default {
       if (!conf) return;
       if ("selectedColumns" in conf) {
         this.selectedColumns = conf.selectedColumns
-          .map((colId) => {
-            const column = this.data.getColumn(colId);
+          .map((colLabel) => {
+            const column = this.data.getColumnByLabel(colLabel);
             if (!column) {
               this.$store.commit("sendMessage", {
                 title: "warning",
-                msg: "The selected column " + colId + " hasn't been found",
+                msg: "The selected column " + colLabel + " hasn't been found",
               });
             }
             return column;
@@ -292,7 +261,6 @@ export default {
           .filter((column) => column && column.nbOccurrence > 1);
       }
       if ("selectedMatrixType" in conf) this.selectedMatrixType = conf.selectedMatrixType;
-      if ("significativeOnly" in conf) this.significativeOnly = conf.significativeOnly;
     },
 
     // Export
@@ -313,9 +281,6 @@ export default {
     selectedDataUpdate() {
       this.matrixDrawn = false;
       this.$parent.selectedDataWarning = true;
-    },
-    significativeOnly() {
-      this.drawMatrix();
     },
   },
 };

@@ -1,44 +1,58 @@
-// Returns an MxM matrix of Pearson correlation coefficients between each pair of columns in data (NxM).
-function pearsonCorrelationMatrix(data) {
-  const m = data.length;
-  const matrix = Array.from({ length: m }, () => Array(m).fill(0));
-
-  // Pearson between two arrays
-  function pearson(x, y) {
-    let sumX = 0,
-      sumY = 0,
-      sumXY = 0,
-      sumX2 = 0,
-      sumY2 = 0;
-    const len = x.length;
-    for (let i = 0; i < len; i++) {
-      sumX += x[i];
-      sumY += y[i];
-      sumXY += x[i] * y[i];
-      sumX2 += x[i] ** 2;
-      sumY2 += y[i] ** 2;
-    }
-    const numerator = len * sumXY - sumX * sumY;
-    const denominator = Math.sqrt((len * sumX2 - sumX ** 2) * (len * sumY2 - sumY ** 2));
-    return denominator === 0 ? 0 : numerator / denominator;
+// Pearson between two arrays
+function pearson(x, y) {
+  let sumX = 0,
+    sumY = 0,
+    sumXY = 0,
+    sumX2 = 0,
+    sumY2 = 0;
+  const len = x.length;
+  for (let i = 0; i < len; i++) {
+    sumX += x[i];
+    sumY += y[i];
+    sumXY += x[i] * y[i];
+    sumX2 += x[i] ** 2;
+    sumY2 += y[i] ** 2;
   }
+  const numerator = len * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((len * sumX2 - sumX ** 2) * (len * sumY2 - sumY ** 2));
+  return denominator === 0 ? 0 : numerator / denominator;
+}
+
+// Returns an MxM matrix of Pearson correlation coefficients between each pair of columns in data (NxM).
+function pearsonCorrelationMatrix(data, updateCallback, endCallback) {
+  const m = data.length;
+  const matrix = Array.from({ length: m }, () => Array(m).fill(null));
 
   // Build matrix
-  for (let i = 0; i < m; i++) {
-    for (let j = i; j < m; j++) {
-      const correlation = pearson(data[i], data[j]);
-      matrix[i][j] = correlation;
-      matrix[j][i] = correlation; // Mirror value
+  let i = 0;
+  let j = 0;
+  function computeNext() {
+    if (i < m) {
+      if (j < m) {
+        const correlation = pearson(data[i], data[j]);
+        matrix[i][j] = correlation;
+        matrix[j][i] = correlation; // Mirror value
+        j++;
+        setTimeout(computeNext, 0); // Async to prevent blocking
+      } else {
+        i++;
+        j = i;
+        setTimeout(computeNext, 0);
+      }
     }
+
+    // End condition
+    if (i == j) updateCallback(matrix);
+    if (i == m) endCallback(matrix);
   }
 
-  return matrix;
+  computeNext();
 }
 
 // Returns an MxM matrix of Spearman correlation coefficients between each pair of columns in data (NxM).
-function spearmanCorrelationMatrix(data) {
+function spearmanCorrelationMatrix(data, updateCallback, endCallback) {
   const m = data.length;
-  const matrix = Array.from({ length: m }, () => Array(m).fill(0));
+  const matrix = Array.from({ length: m }, () => Array(m).fill(null));
 
   // Rank an array
   function rank(arr) {
@@ -56,37 +70,32 @@ function spearmanCorrelationMatrix(data) {
     return ranks;
   }
 
-  // Simple Pearson helper for ranks
-  function pearson(x, y) {
-    let sumX = 0,
-      sumY = 0,
-      sumXY = 0,
-      sumX2 = 0,
-      sumY2 = 0;
-    const len = x.length;
-    for (let i = 0; i < len; i++) {
-      sumX += x[i];
-      sumY += y[i];
-      sumXY += x[i] * y[i];
-      sumX2 += x[i] ** 2;
-      sumY2 += y[i] ** 2;
+  // Build matrix by ranking each column then computing Pearson
+  let i = 0;
+  let j = 0;
+  function computeNext() {
+    if (i < m) {
+      const ri = rank(data[i]);
+      if (j < m) {
+        const rj = rank(data[j]);
+        const correlation = pearson(ri, rj);
+        matrix[i][j] = correlation;
+        matrix[j][i] = correlation; // Mirror value
+        j++;
+        setTimeout(computeNext, 0); // Async to prevent blocking
+      } else {
+        i++;
+        j = i;
+        setTimeout(computeNext, 0);
+      }
     }
-    const numerator = len * sumXY - sumX * sumY;
-    const denominator = Math.sqrt((len * sumX2 - sumX ** 2) * (len * sumY2 - sumY ** 2));
-    return denominator === 0 ? 0 : numerator / denominator;
+
+    // End condition
+    if (i == j) updateCallback(matrix);
+    if (i == m) endCallback(matrix);
   }
 
-  // Build matrix by ranking each column then computing Pearson
-  for (let i = 0; i < m; i++) {
-    const ri = rank(data[i]);
-    for (let j = i; j < m; j++) {
-      const rj = rank(data[j]);
-      const correlation = pearson(ri, rj);
-      matrix[i][j] = correlation;
-      matrix[j][i] = correlation; // Mirror value
-    }
-  }
-  return matrix;
+  computeNext();
 }
 
 // Example export
