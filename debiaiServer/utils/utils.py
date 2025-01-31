@@ -1,6 +1,10 @@
 import time
 import pkg_resources
 from urllib.parse import urlparse
+from itertools import cycle
+from shutil import get_terminal_size
+from threading import Thread
+from time import sleep
 
 
 def get_app_version():
@@ -51,11 +55,6 @@ def is_valid_name(name):
 
 
 class Loader:
-    from itertools import cycle
-    from shutil import get_terminal_size
-    from threading import Thread
-    from time import sleep
-
     def __init__(self, desc="Loading...", end="Done!", timeout=0.1):
         """
         A loader-like context manager
