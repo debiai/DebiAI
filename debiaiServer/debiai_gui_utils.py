@@ -104,21 +104,22 @@ def debiai_gui_start(path, port):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="""DebiAI GUI Command Line. 
-Learn more about DebiAI at https://debiai.irt-systemx.fr/""",
-        add_help=True,
+        description="""DebiAI GUI Command Line.
+Learn more about DebiAI at https://debiai.irt-systemx.fr/"""
     )
 
-    # Version and help
+    # Version flag
     parser.add_argument(
         "-v", "--version", action="store_true", help="Print DebiAI version number"
     )
 
-    # Start command
+    # Commands
     subparsers = parser.add_subparsers(
-        dest="command", title="Command", help="Start the DebiAI GUI", metavar="start"
+        dest="command", title="DebiAI-GUI", help="Available commands", metavar="[command]"
     )
-    start_parser = subparsers.add_parser("start")
+
+    # Start command
+    start_parser = subparsers.add_parser("start", help="Start the DebiAI GUI")
     start_parser.add_argument(
         "-d", "--data-folder", type=str, help="Path to the data folder"
     )
