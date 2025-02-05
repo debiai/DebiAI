@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 from debiaiServer.utils.utils import get_app_version
 
-
-VERSION = get_app_version()
+try:
+    VERSION = get_app_version()
+except ModuleNotFoundError:
+    VERSION = "0.0.0"
 
 setup(
     name="debiai-gui",
