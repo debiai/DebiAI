@@ -1,7 +1,5 @@
-import psutil
 import requests
 import connexion
-import webbrowser
 from flask_cors import CORS
 from waitress import serve
 from termcolor import colored
@@ -68,25 +66,7 @@ def create_app(is_dev):
     return app
 
 
-def is_browser_open():
-    """Check if a browser process is running."""
-    browser_keywords = ["chrome", "firefox", "safari", "edge", "opera"]
-    for proc in psutil.process_iter(["pid", "name"]):
-        for keyword in browser_keywords:
-            if keyword in proc.info["name"].lower():
-                return True
-    return False
-
-
-def open_browser(port):
-    url = f"http://localhost:{port}"
-    if is_browser_open():
-        webbrowser.open_new_tab(url)
-    else:
-        webbrowser.open(url)
-
-
-def start_server(port, reloader=True, is_dev=True):
+def start_server(port, data_providers=[], reloader=True, is_dev=True):
     # Run DebiAI init
     print(
         "================= DebiAI " + get_app_version() + " ====================",
