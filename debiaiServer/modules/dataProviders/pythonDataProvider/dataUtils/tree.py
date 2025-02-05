@@ -12,12 +12,12 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 DATA_TYPES = pythonModuleUtils.DATA_TYPES
 
 # def getFirstLevelBlock(projectId, blockId):
-#     blockList = os.listdir(DATA_PATH + projectId + '/blocks')
+#     blockList = os.listdir(DATA_PATH() + projectId + '/blocks')
 
 #     if (blockId not in blockList):
 #         return -1
 
-#     with open(DATA_PATH + projectId + '/blocks/' + blockId + '/info.json')\
+#     with open(DATA_PATH() + projectId + '/blocks/' + blockId + '/info.json')\
 #             as json_file:
 #         data = json.load(json_file)
 
@@ -127,7 +127,7 @@ def __getBlockTreeFromSample(projectId, blockPath, addedBlocks):
     addedBlocks.append(blockPath)
 
     with open(
-        DATA_PATH + projectId + "/blocks/" + blockPath + "/info.json"
+        DATA_PATH() + projectId + "/blocks/" + blockPath + "/info.json"
     ) as sampleData:
         info = json.load(sampleData)
 
@@ -212,7 +212,7 @@ def addBlockTree(projectId, block, blockLevelInfo, blockToAdd, level, parentPath
 
 
 def findBlockInfo(projectId, blockPath):
-    curPath = DATA_PATH + projectId + "/blocks/" + blockPath
+    curPath = DATA_PATH() + projectId + "/blocks/" + blockPath
 
     if not os.path.isdir(curPath):
         return None
@@ -302,9 +302,9 @@ def __createBlock(projectId, block, level, parentPath):
 def addBlock(projectId, block):
     # create the block folder and his info.json file
     try:
-        os.mkdir(DATA_PATH + projectId + "/blocks/" + block["path"])
+        os.mkdir(DATA_PATH() + projectId + "/blocks/" + block["path"])
         pythonModuleUtils.writeJsonFile(
-            DATA_PATH + projectId + "/blocks/" + block["path"] + "/info.json", block
+            DATA_PATH() + projectId + "/blocks/" + block["path"] + "/info.json", block
         )
     except FileExistsError:
         print(

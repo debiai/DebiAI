@@ -2,9 +2,8 @@ import os
 import json
 import debiaiServer.utils.utils as utils
 import uuid
-from debiaiServer.debiai_gui_utils import data_folder_path
 
-CONF_PATH = data_folder_path + "/widgetConfigurations.json"
+CONF_PATH = None
 
 # Configuration file structure
 # {
@@ -24,7 +23,10 @@ CONF_PATH = data_folder_path + "/widgetConfigurations.json"
 # }
 
 
-def setup_widget_configurations():
+def setup_widget_configurations(data_folder_path):
+    global CONF_PATH
+    CONF_PATH = data_folder_path + "/widgetConfigurations.json"
+
     # Create the file if it does not exist
     if not os.path.exists(CONF_PATH):
         _save_configurations({})

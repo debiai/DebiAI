@@ -22,7 +22,7 @@ def create_selection(project_id, selection_name, sample_ids):
 
     # Save the selection
     selectionInfoFilePath = (
-        DATA_PATH + project_id + "/selections/" + selection_id + "/info.json"
+        DATA_PATH() + project_id + "/selections/" + selection_id + "/info.json"
     )
     now = pythonModuleUtils.timeNow()
 
@@ -35,7 +35,7 @@ def create_selection(project_id, selection_name, sample_ids):
         "samples": sample_ids,
     }
 
-    os.mkdir(DATA_PATH + project_id + "/selections/" + selection_id)
+    os.mkdir(DATA_PATH() + project_id + "/selections/" + selection_id)
     pythonModuleUtils.writeJsonFile(selectionInfoFilePath, selectionInfo)
     projects.update_project(project_id)
     return selectionInfo
@@ -50,16 +50,16 @@ def get_selections(project_id):
 
 
 def get_selection_ids(project_id):
-    return os.listdir(DATA_PATH + project_id + "/selections/")
+    return os.listdir(DATA_PATH() + project_id + "/selections/")
 
 
 def selection_exist(project_id, selectionId):
-    return os.path.exists(DATA_PATH + project_id + "/selections/" + selectionId)
+    return os.path.exists(DATA_PATH() + project_id + "/selections/" + selectionId)
 
 
 def get_selection(project_id, selectionId):
     with open(
-        DATA_PATH + project_id + "/selections/" + selectionId + "/info.json"
+        DATA_PATH() + project_id + "/selections/" + selectionId + "/info.json"
     ) as json_file:
         data = json.load(json_file)
         ret = {
@@ -79,7 +79,7 @@ def get_selection_id_list(project_id, selectionId):
         raise Exception("Selection " + selectionId + " doesn't exist")
 
     with open(
-        DATA_PATH + project_id + "/selections/" + selectionId + "/info.json"
+        DATA_PATH() + project_id + "/selections/" + selectionId + "/info.json"
     ) as json_file:
         data = json.load(json_file)
         return data["samples"]
@@ -105,5 +105,7 @@ def get_selection_id_list(project_id, selectionId):
 
 
 def delete_selection(project_id, selection_id):
-    pythonModuleUtils.deleteDir(DATA_PATH + project_id + "/selections/" + selection_id)
+    pythonModuleUtils.deleteDir(
+        DATA_PATH() + project_id + "/selections/" + selection_id
+    )
     projects.update_project(project_id)

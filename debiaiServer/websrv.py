@@ -66,18 +66,20 @@ def create_app(is_dev):
     return app
 
 
-def start_server(port, data_providers=[], reloader=True, is_dev=True):
+def start_server(
+    port,
+    data_folder_path: str = None,
+    parameters: dict = {},
+    reloader: bool = True,
+    is_dev: bool = True,
+):
     # Run DebiAI init
-    print(
-        "================= DebiAI " + get_app_version() + " ====================",
-        flush=True,
-    )
-    init()
-    print("======================== RUN =======================", flush=True)
+    print("================= DebiAI " + get_app_version() + " ====================")
+    init(data_folder_path, parameters)
+    print("======================== RUN =======================")
     print(
         "   DebiAI is available at "
-        + colored("http://localhost:" + str(port), DEBUG_COLOR),
-        flush=True,
+        + colored("http://localhost:" + str(port), DEBUG_COLOR)
     )
     app = create_app(is_dev)
 
@@ -91,15 +93,12 @@ def start_server(port, data_providers=[], reloader=True, is_dev=True):
         except OSError:
             print(
                 colored(
-                    f"Port {port} is already in use. Please try another port.",
-                    "red",
-                ),
-                flush=True,
+                    f"Port {port} is already in use. Please try another port.", "red"
+                )
             )
 
     # Print goodbye message
-    print("\n====================================================", flush=True)
-    print("\nGoodbye!")
+    print("\n\n  Goodbye!")
     print("Thank you for using DebiAI.\n")
 
 

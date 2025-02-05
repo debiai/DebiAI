@@ -11,11 +11,11 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
 def project_exist(projectId):
-    return projectId in os.listdir(DATA_PATH)
+    return projectId in os.listdir(DATA_PATH())
 
 
 def _get_project_info(projectId):
-    file_path = DATA_PATH + projectId + "/info.json"
+    file_path = DATA_PATH() + projectId + "/info.json"
     if not os.path.exists(file_path):
         delete_project(projectId)
         raise Exception("The project info file is missing")
@@ -45,19 +45,19 @@ def get_project(projectId):
         updateDate = data["updateDate"]
 
         # Nb models
-        if not os.path.exists(DATA_PATH + projectId + "/models/"):
+        if not os.path.exists(DATA_PATH() + projectId + "/models/"):
             raise Exception('The "models" folder is missing')
 
-        nbModels = len(os.listdir(DATA_PATH + projectId + "/models/"))
+        nbModels = len(os.listdir(DATA_PATH() + projectId + "/models/"))
 
         # Nb selection
-        if not os.path.exists(DATA_PATH + projectId + "/selections/"):
+        if not os.path.exists(DATA_PATH() + projectId + "/selections/"):
             raise Exception('The "selections" folder is missing')
 
-        nbSelection = len(os.listdir(DATA_PATH + projectId + "/selections/"))
+        nbSelection = len(os.listdir(DATA_PATH() + projectId + "/selections/"))
 
         # Nb samples
-        if not os.path.exists(DATA_PATH + projectId + "/samplesHashmap.json"):
+        if not os.path.exists(DATA_PATH() + projectId + "/samplesHashmap.json"):
             raise Exception('The "samplesHashmap.json" file is missing')
 
         nbSamples = len(hash.getHashmap(projectId))
@@ -95,7 +95,7 @@ def get_project(projectId):
 def get_projects():
     project = []
 
-    for projectId in os.listdir(DATA_PATH):
+    for projectId in os.listdir(DATA_PATH()):
         project.append(get_project(projectId))
 
     return project
@@ -103,10 +103,10 @@ def get_projects():
 
 def create_project(projectId, projectName):
     # Create the project files and folders
-    os.mkdir(DATA_PATH + projectId)
-    os.mkdir(DATA_PATH + projectId + "/blocks")
-    os.mkdir(DATA_PATH + projectId + "/models")
-    os.mkdir(DATA_PATH + projectId + "/selections")
+    os.mkdir(DATA_PATH() + projectId)
+    os.mkdir(DATA_PATH() + projectId + "/blocks")
+    os.mkdir(DATA_PATH() + projectId + "/models")
+    os.mkdir(DATA_PATH() + projectId + "/selections")
 
     now = pythonModuleUtils.timeNow()
     projectInfo = {
@@ -117,8 +117,10 @@ def create_project(projectId, projectName):
         "blockLevelInfo": [],
     }
 
-    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/info.json", projectInfo)
-    pythonModuleUtils.writeJsonFile(DATA_PATH + projectId + "/samplesHashmap.json", {})
+    pythonModuleUtils.writeJsonFile(DATA_PATH() + projectId + "/info.json", projectInfo)
+    pythonModuleUtils.writeJsonFile(
+        DATA_PATH() + projectId + "/samplesHashmap.json", {}
+    )
 
     return projectInfo
 
@@ -126,7 +128,9 @@ def create_project(projectId, projectName):
 def update_project(projectId):
     # Change the update date of the project to now
     pythonModuleUtils.updateJsonFile(
-        DATA_PATH + projectId + "/info.json", "updateDate", pythonModuleUtils.timeNow()
+        DATA_PATH() + projectId + "/info.json",
+        "updateDate",
+        pythonModuleUtils.timeNow(),
     )
 
 
@@ -228,7 +232,7 @@ def get_result_structure(projectId):
 def delete_project(projectId):
     # Delete the project files and folders
     try:
-        shutil.rmtree(DATA_PATH + projectId)
+        shutil.rmtree(DATA_PATH() + projectId)
     except Exception as e:
         print(e)
         raise "Something went wrong when deleting the project"
@@ -237,7 +241,7 @@ def delete_project(projectId):
 def update_block_structure(projectId, blockStructure):
     try:
         pythonModuleUtils.updateJsonFile(
-            DATA_PATH + projectId + "/info.json", "blockLevelInfo", blockStructure
+            DATA_PATH() + projectId + "/info.json", "blockLevelInfo", blockStructure
         )
 
         update_project(projectId)
@@ -250,7 +254,7 @@ def update_results_structure(projectId, resultStructure):
     try:
         # save resultStructure
         pythonModuleUtils.updateJsonFile(
-            DATA_PATH + projectId + "/info.json", "resultStructure", resultStructure
+            DATA_PATH() + projectId + "/info.json", "resultStructure", resultStructure
         )
         update_project(projectId)
         return resultStructure, 200

@@ -52,7 +52,12 @@ def setup_data_providers():
             add(data_provider)
 
             if data_provider.is_alive():
-                print(colored("   [SUCCESS]", SUCCESS_COLOR) + " Data Provider ready")
+                print(
+                    colored("   [SUCCESS]", SUCCESS_COLOR)
+                    + " Data Provider "
+                    + colored(name, SUCCESS_COLOR)
+                    + " ready"
+                )
             else:
                 raise DataProviderException()
         except DataProviderException:

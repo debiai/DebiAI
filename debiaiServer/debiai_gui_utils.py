@@ -10,8 +10,8 @@ from debiaiServer.utils.utils import Loader
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-data_folder_path = "debiai_data"  # The path to the DebiAI data folder
-DEFAULT_PORT = 3000  # default port
+DEFAULT_PORT = 3000
+DEFAULT_DATA_FOLDER = "debiai_data"
 
 welcome_logo = """
                                                     █████████████            
@@ -70,19 +70,18 @@ def gather_user_input(message):
         exit()
 
 
-def setup_data_folder(arg_path):
-    global data_folder_path
-
-    if arg_path:
-        data_folder_path = create_folder(arg_path)
+def setup_data_folder(data_folder_path: str = None):
+    if data_folder_path:
+        created_data_folder_path = create_folder(data_folder_path)
     else:
         print("DebiAI requires a folder to store the data.")
-        data_folder_path = create_folder(
-            gather_user_input(f"Enter data folder path ({data_folder_path}): ")
-            or data_folder_path
+        created_data_folder_path = create_folder(
+            gather_user_input(f"Enter data folder path ({DEFAULT_DATA_FOLDER}): ")
+            or DEFAULT_DATA_FOLDER
         )
         print("use --data-folder to specify the data folder path")
-    print("Data folder path:", data_folder_path, "\n")
+    print("Data folder path:", created_data_folder_path, "\n")
+    return created_data_folder_path
 
 
 def open_browser(port):
@@ -110,13 +109,13 @@ def open_browser(port):
         )
 
 
-def debiai_gui_start(path, port, no_browser=False, data_providers=[]):
+def debiai_gui_start(path, port, no_browser=False, parameters: dict = {}):
     # Display welcome message
     print(welcome_logo)
     print("   Welcome!\n")
 
     # Ask for the data folder path
-    setup_data_folder(path)
+    data_folder_path = setup_data_folder(path)
 
     # Import the DebiAI GUI with a loading animation
     start_loading_animation = Loader("Starting the DebiAI GUI", "")
@@ -132,10 +131,29 @@ def debiai_gui_start(path, port, no_browser=False, data_providers=[]):
     # Start the DebiAI GUI
     start_server(
         port=port,
-        data_providers=data_providers,
+        data_folder_path=data_folder_path,
+        parameters=parameters,
         reloader=False,
         is_dev=False,
     )
+
+
+def build_parameters(args):
+    # Transform the command line arguments into a config compatible dictionary
+    # Similar to the one used in the config file and environment variables
+    parameters = {}
+    if args.data_provider and type(args.data_provider) is list:
+        for i, data_provider in enumerate(args.data_provider):
+            if data_provider:
+                dp_name = f"DataProvider-{i}"
+                parameters[f"DEBIAI_WEB_DATA_PROVIDER_{dp_name}"] = data_provider
+    if args.algo_provider and type(args.algo_provider) is list:
+        for i, algo_provider in enumerate(args.algo_provider):
+            if algo_provider:
+                ap_name = f"AlgoProvider-{i}"
+                parameters[f"DEBIAI_ALGO_PROVIDER_{ap_name}"] = algo_provider
+
+    return parameters
 
 
 def main():
@@ -183,7 +201,14 @@ Learn more about DebiAI at https://debiai.irt-systemx.fr/"""
         "--data-provider",
         type=str,
         nargs="+",  # 1 or more arguments
-        help="One or more data provider URLs",
+        help="One or more data-provider URLs",
+    )
+    start_parser.add_argument(
+        "-ap",
+        "--algo-provider",
+        type=str,
+        nargs="+",  # 1 or more arguments
+        help="One or more algo-provider URLs",
     )
 
     # Parse the arguments
@@ -197,7 +222,7 @@ Learn more about DebiAI at https://debiai.irt-systemx.fr/"""
             path=args.data_folder,
             port=args.port,
             no_browser=args.no_browser,
-            data_providers=args.data_provider,
+            parameters=build_parameters(args),
         )
     else:
         parser.print_help()
