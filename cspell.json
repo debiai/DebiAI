@@ -74,6 +74,7 @@
     "debiai_data/*",
     "dist/",
     "venv/",
+    "build/",
     "__pycache__/",
     "node_modules/",
     "./setup.py",

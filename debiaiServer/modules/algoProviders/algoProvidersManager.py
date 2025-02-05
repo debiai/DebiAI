@@ -47,7 +47,12 @@ def setup_algo_providers():
             algo_providers.append(algo_provider)
 
             if algo_provider.is_alive():
-                print(colored("   [SUCCESS]", SUCCESS_COLOR) + " AlgoProvider ready")
+                print(
+                    colored("   [SUCCESS]", SUCCESS_COLOR)
+                    + " AlgoProvider "
+                    + colored(name, SUCCESS_COLOR)
+                    + " ready"
+                )
             else:
                 raise AlgoProviderException()
 

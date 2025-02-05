@@ -12,16 +12,16 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 DATA_PATH = pythonModuleUtils.DATA_PATH
 
 
-#  Models
+# Models
 def get_model_ids(project_id):
-    return os.listdir(DATA_PATH + project_id + "/models/")
+    return os.listdir(DATA_PATH() + project_id + "/models/")
 
 
 def get_models(project_id):
     ret = []
-    for model in os.listdir(DATA_PATH + project_id + "/models/"):
+    for model in os.listdir(DATA_PATH() + project_id + "/models/"):
         with open(
-            DATA_PATH + project_id + "/models/" + model + "/info.json"
+            DATA_PATH() + project_id + "/models/" + model + "/info.json"
         ) as json_file:
             info = json.load(json_file)
             ret.append(
@@ -57,7 +57,7 @@ def create_model(project_id, model_name, metadata=None):
         metadata = {}
 
     # model
-    modelFolderPath = DATA_PATH + project_id + "/models/" + model_id
+    modelFolderPath = DATA_PATH() + project_id + "/models/" + model_id
     os.mkdir(modelFolderPath)
 
     now = pythonModuleUtils.timeNow()
@@ -78,12 +78,12 @@ def create_model(project_id, model_name, metadata=None):
 
 
 def delete_model(project_id, model_id):
-    pythonModuleUtils.deleteDir(DATA_PATH + project_id + "/models/" + model_id)
+    pythonModuleUtils.deleteDir(DATA_PATH() + project_id + "/models/" + model_id)
 
 
 def write_model_results(project_id, model_id, results):
     pythonModuleUtils.writeJsonFile(
-        DATA_PATH + project_id + "/models/" + model_id + "/results.json", results
+        DATA_PATH() + project_id + "/models/" + model_id + "/results.json", results
     )
     projects.update_project(project_id)
 
@@ -97,7 +97,7 @@ def get_model_results(project_id, model_id, sample_ids):
 
     # Get model results
     with open(
-        DATA_PATH + project_id + "/models/" + model_id + "/results.json", "r"
+        DATA_PATH() + project_id + "/models/" + model_id + "/results.json", "r"
     ) as jsonFile:
         model_results = json.load(jsonFile)
 
@@ -123,7 +123,7 @@ def get_model_results(project_id, model_id, sample_ids):
 def get_model_id_list(project_id, model_id) -> list:
     # Get model results
     with open(
-        DATA_PATH + project_id + "/models/" + model_id + "/results.json", "r"
+        DATA_PATH() + project_id + "/models/" + model_id + "/results.json", "r"
     ) as jsonFile:
         model_results = json.load(jsonFile)
         return dict.keys(model_results)
@@ -216,11 +216,11 @@ def add_results_dict(project_id, modelId, data):
 
     # The given tree is compliant, let's add the results
     newResults = pythonModuleUtils.addToJsonFIle(
-        DATA_PATH + project_id + "/models/" + modelId + "/results.json", resultsToAdd
+        DATA_PATH() + project_id + "/models/" + modelId + "/results.json", resultsToAdd
     )
 
     pythonModuleUtils.addToJsonFIle(
-        DATA_PATH + project_id + "/models/" + modelId + "/info.json",
+        DATA_PATH() + project_id + "/models/" + modelId + "/info.json",
         {"nbResults": len(newResults), "updateDate": pythonModuleUtils.timeNow()},
     )
     projects.update_project(project_id)

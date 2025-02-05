@@ -1,7 +1,5 @@
 import os
 
-from debiaiServer.debiai_gui_utils import data_folder_path
-
 from debiaiServer.modules.dataProviders import (
     dataProviderManager,
 )
@@ -22,12 +20,12 @@ from debiaiServer.config import (
 )
 
 
-def init():
-    # Create the folder if it does not exist
-    os.makedirs(data_folder_path, exist_ok=True)
-
+def init(data_folder_path: str = None, parameters: dict = {}):
     # Init config file
-    config.init_config()
+    config.init_config(data_folder_path, parameters)
+
+    # Create the folder if it does not exist
+    os.makedirs(config.get_data_folder_path(), exist_ok=True)
 
     # Init data providers
     dataProviderManager.setup_data_providers()
@@ -39,7 +37,7 @@ def init():
     exportUtils.load_export_methods()
 
     # Init widget configurations
-    widgetConfUtils.setup_widget_configurations()
+    widgetConfUtils.setup_widget_configurations(config.get_data_folder_path())
 
     # Init layouts
-    layoutsUtils.setup_layouts()
+    layoutsUtils.setup_layouts(config.get_data_folder_path())

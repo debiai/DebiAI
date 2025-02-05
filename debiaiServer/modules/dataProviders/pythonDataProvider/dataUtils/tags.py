@@ -9,9 +9,9 @@ DATA_PATH = pythonModuleUtils.DATA_PATH
 
 def getTagsIds(projectId):
     try:
-        return os.listdir(DATA_PATH + projectId + "/tags")
+        return os.listdir(DATA_PATH() + projectId + "/tags")
     except FileNotFoundError:
-        os.mkdir(DATA_PATH + projectId + "/tags")
+        os.mkdir(DATA_PATH() + projectId + "/tags")
         return []
 
 
@@ -33,7 +33,7 @@ def getTagById(projectId, tagId):
         return None
 
     return pythonModuleUtils.readJsonFile(
-        DATA_PATH + projectId + "/tags/" + tagId + "/info.json"
+        DATA_PATH() + projectId + "/tags/" + tagId + "/info.json"
     )
 
 
@@ -65,7 +65,7 @@ def updateTag(projectId, tagName, tagHash):
 
         tag["updateDate"] = pythonModuleUtils.timeNow()
         pythonModuleUtils.writeJsonFile(
-            DATA_PATH + projectId + "/tags/" + tag["id"] + "/info.json", tag
+            DATA_PATH() + projectId + "/tags/" + tag["id"] + "/info.json", tag
         )
         return tag, 200
     else:
@@ -81,7 +81,7 @@ def updateTag(projectId, tagName, tagHash):
             nbTag += 1
 
         # Save tag
-        os.mkdir(DATA_PATH + projectId + "/tags/" + tagId)
+        os.mkdir(DATA_PATH() + projectId + "/tags/" + tagId)
         now = pythonModuleUtils.timeNow()
         tagInfo = {
             "id": tagId,
@@ -92,14 +92,14 @@ def updateTag(projectId, tagName, tagHash):
         }
 
         pythonModuleUtils.writeJsonFile(
-            DATA_PATH + projectId + "/tags/" + tagId + "/info.json", tagInfo
+            DATA_PATH() + projectId + "/tags/" + tagId + "/info.json", tagInfo
         )
 
         return tagInfo, 200
 
 
 def deleteTag(projectId, tagId):
-    pythonModuleUtils.deleteDir(DATA_PATH + projectId + "/tags/" + tagId)
+    pythonModuleUtils.deleteDir(DATA_PATH() + projectId + "/tags/" + tagId)
 
 
 def getSamplesHash(projectId, tagId, tagValue):
