@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-gui=debiaiServer.debiai_gui_utils:run",
+            "debiai-gui=debiaiServer.debiai_gui_utils:main",
         ],
     },
     author="IRT-Systemx",
