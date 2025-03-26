@@ -193,6 +193,10 @@ export default {
       // Add the widgetKey and config to the layout
       gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
+      gsComp.width = gsComp.w;
+      delete gsComp.w;
+      gsComp.height = gsComp.h;
+      delete gsComp.h;
 
       this.currentLayout.push(gsComp);
     });
