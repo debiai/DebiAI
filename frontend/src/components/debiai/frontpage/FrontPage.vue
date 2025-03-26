@@ -250,7 +250,10 @@
       v-if="displayDataProviders"
       @close="displayDataProviders = false"
     >
-      <dataProviders @cancel="displayDataProviders = false" @refresh="loadProjects" />
+      <dataProviders
+        @cancel="displayDataProviders = false"
+        @refresh="loadProjects"
+      />
     </modal>
   </div>
 </template>
