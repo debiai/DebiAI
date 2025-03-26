@@ -257,6 +257,28 @@
             </label>
           </div>
         </div>
+        <!-- Preserve scale -->
+        <div
+          class="data"
+          title="Preserve the same scale for both axes when adjusting the axis range."
+        >
+          <span class="name"> Preserve scale </span>
+          <div class="value">
+            <input
+              type="checkbox"
+              :id="'preserveScale' + index"
+              class="customCbx"
+              v-model="preserveScale"
+              style="display: none"
+            />
+            <label
+              :for="'preserveScale' + index"
+              class="toggle"
+            >
+              <span></span>
+            </label>
+          </div>
+        </div>
         <!-- Fixe ranges -->
         <button
           style="margin: 2px"
@@ -350,6 +372,7 @@ export default {
       axisYAuto: true,
       axisYMin: 0,
       axisYMax: 1,
+      preserveScale: false,
 
       // === Other ===
       pointPlotDrawn: false,
@@ -410,6 +433,7 @@ export default {
         // Line plot settings
         averageAsBar: this.averageAsBar,
         bins: this.bins,
+        preserveScale: this.preserveScale,
       };
 
       if (!this.averageAsBar) conf.displayNull = this.displayNull;
@@ -485,7 +509,7 @@ export default {
         this.axisYAuto = false;
         this.axisYMax = conf.axisYMax;
       }
-
+      if ("preserveScale" in conf) this.preserveScale = conf.preserveScale;
       if (options.onStartup !== true) this.settings = true;
     },
     defConfChangeUpdate() {
@@ -508,6 +532,7 @@ export default {
           vm.axisYAuto,
           vm.axisYMin,
           vm.axisYMax,
+          vm.preserveScale,
           Date.now()
         ),
         () => {
@@ -893,6 +918,7 @@ export default {
           title: {
             text: colX.label,
           },
+          scaleanchor: this.preserveScale ? "y" : undefined,
         },
         yaxis: {
           title: {
@@ -1238,6 +1264,11 @@ export default {
     },
     redrawRequired(o, n) {
       this.$parent.colorWarning = n;
+    },
+    preserveScale() {
+      if (this.pointPlotDrawn || this.linePlotDrawn) {
+        this.updateTraces(); // Redraw the plot when the toggle changes
+      }
     },
   },
 };
