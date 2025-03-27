@@ -39,6 +39,7 @@ export default {
   data: () => {
     return {
       analysisMaxX: 12,
+      analysisMinY: 8,
     };
   },
   methods: {},
@@ -50,7 +51,7 @@ export default {
           lowestY = component.y + component.height;
         }
       });
-      return lowestY + 0.5;
+      return Math.max(lowestY + 0.5, this.analysisMinY);
     },
   },
 };
