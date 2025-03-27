@@ -5,7 +5,7 @@
       id="title"
       class="aligned spaced"
     >
-      <h2>Creating a new data provider</h2>
+      <h2>Add a data provider</h2>
       <div id="controls">
         <button
           class="red"
@@ -19,36 +19,36 @@
     <!-- Data provider list -->
     <div class="itemList marged">
       <!-- Web data provider -->
-      <div class="dataProvider item">
+      <form
+        class="dataProvider item"
+        @submit.prevent="createWebDataProvider"
+      >
         <b> Web data provider </b>
-        <div class="info">
-          <div class="head">
-            Data provider name
+        <div class="fields">
+          <div class="field">
+            Name:
             <input
               type="text"
               v-model="dpName"
             />
           </div>
-          <div class="data">
-            <div>
-              Data provider URL
-              <input
-                type="text"
-                v-model="dpUrl"
-              />
-            </div>
+          <div class="field">
+            URL:
+            <input
+              type="text"
+              v-model="dpUrl"
+            />
           </div>
         </div>
-        <!-- actions -->
         <div class="controls">
           <button
-            @click="createWebDataProvider"
+            type="submit"
             :disabled="!canCreate"
           >
             Save
           </button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -56,9 +56,15 @@
 <script>
 export default {
   name: "NewDataProvider",
+  props: {
+    suggestedName: {
+      type: String,
+      default: "Data Provider",
+    },
+  },
   data() {
     return {
-      dpName: "New data provider",
+      dpName: this.suggestedName,
       dpUrl: "http://",
     };
   },
@@ -97,11 +103,14 @@ export default {
 };
 </script>
 
-<style scoped>
-#title h2 {
-  text-align: left;
-  width: 300px;
+<style lang="scss" scoped>
+#title {
+  h2 {
+    text-align: left;
+    width: 300px;
+  }
 }
+
 #controls {
   display: flex;
   gap: 0.5rem;
@@ -114,23 +123,19 @@ export default {
   margin: 0.5rem 0;
   justify-content: space-between;
   gap: 1rem;
-}
-.dataProvider .info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.dataProvider .data {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 0.5rem;
-}
 
-.dataProvider .controls {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3rem;
+  .data {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+  }
 }
 </style>
