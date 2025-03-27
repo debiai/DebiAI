@@ -87,6 +87,7 @@
       @close="newDataProviderModal = false"
     >
       <NewDataProvider
+        :suggestedName="suggestedDataProviderName"
         @cancel="newDataProviderModal = false"
         @done="
           newDataProviderModal = false;
@@ -109,6 +110,20 @@ export default {
       dataProviders: null,
       newDataProviderModal: false,
     };
+  },
+  computed: {
+    suggestedDataProviderName() {
+      if (!this.dataProviders) return "Data Provider";
+
+      // Look for the first available name
+      const baseName = "Data Provider";
+      if (!this.dataProviders.some((dp) => dp.name === baseName)) return baseName;
+
+      // Look for the first available name with a number
+      let index = 2;
+      while (this.dataProviders.some((dp) => dp.name === `${baseName} ${index}`)) index++;
+      return `${baseName} ${index}`;
+    },
   },
   created() {
     this.getDataProviders();
