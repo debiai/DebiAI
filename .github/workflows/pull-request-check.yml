@@ -121,7 +121,7 @@ jobs:
             exit 1
           fi
 
-          if [[ $PREVIOUS_VERSION > $BRANCH_VERSION ]]; then
+          if [[ $(printf "%s\n%s" "$PREVIOUS_VERSION" "$BRANCH_VERSION" | sort -V | head -n 1) != "$PREVIOUS_VERSION" ]]; then
             echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' > branch version '$BRANCH_VERSION'."
             exit 1
           fi
