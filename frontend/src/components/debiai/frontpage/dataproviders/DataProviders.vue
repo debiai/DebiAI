@@ -9,7 +9,7 @@
       <div id="controls">
         <button
           class="warning"
-          @click="getDataProviders"
+          @click="getDataProviders(true)"
         >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
@@ -91,7 +91,7 @@
         @cancel="newDataProviderModal = false"
         @done="
           newDataProviderModal = false;
-          getDataProviders();
+          getDataProviders(true);
         "
       />
     </modal>
@@ -129,10 +129,11 @@ export default {
     this.getDataProviders();
   },
   methods: {
-    getDataProviders() {
+    getDataProviders(refresh = false) {
       this.dataProviders = null;
       this.$backendDialog.getDataProviders().then((dataProviders) => {
         this.dataProviders = dataProviders;
+        if (refresh) this.$emit("refresh");
       });
     },
     deleteDataProvider(name) {
@@ -143,7 +144,7 @@ export default {
             title: "success",
             msg: "Data provider deleted",
           });
-          this.getDataProviders();
+          this.getDataProviders(true);
         })
         .catch((error) => {
           console.log(error);
