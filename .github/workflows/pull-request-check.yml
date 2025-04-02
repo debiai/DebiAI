@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.8
+      - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.10.16
       - name: Install dependencies and check black format
         run: |
           cd debiaiServer
@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.8
+      - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.10.16
       - name: Install dependencies and check flake8 format
         run: |
           cd debiaiServer
@@ -121,7 +121,7 @@ jobs:
             exit 1
           fi
 
-          if [[ $PREVIOUS_VERSION > $BRANCH_VERSION ]]; then
+          if [[ $(printf "%s\n%s" "$PREVIOUS_VERSION" "$BRANCH_VERSION" | sort -V | head -n 1) != "$PREVIOUS_VERSION" ]]; then
             echo "Version not upgraded: frontend/package.json version '$PREVIOUS_VERSION' > branch version '$BRANCH_VERSION'."
             exit 1
           fi

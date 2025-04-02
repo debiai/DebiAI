@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 from debiaiServer.utils.utils import get_app_version
 
-
-VERSION = get_app_version()
+try:
+    VERSION = get_app_version()
+except ModuleNotFoundError:
+    VERSION = "0.0.0"
 
 setup(
     name="debiai-gui",
@@ -15,10 +17,7 @@ setup(
         "connexion==2.6.0",
         "requests==2.25.1",
         "swagger-ui-bundle==0.0.5",
-        "pandas==1.5.1",
-        "scipy==1.9.3",
         "ujson==5.8.0",
-        "sklearn==0.0",
         "kafka-python==2.0.2",
         "openapi_spec_validator==0.2.8",
         "PyYAML==6.0",
@@ -30,7 +29,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "debiai-gui=debiaiServer.debiai_gui_utils:run",
+            "debiai-gui=debiaiServer.debiai_gui_utils:main",
         ],
     },
     author="IRT-Systemx",

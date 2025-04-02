@@ -103,8 +103,13 @@
               {{ input.name }}
               <span
                 class="parameterType tag"
-                v-if="input.type == 'array'"
+                v-if="input.type == 'array' && input.arrayType"
                 >Array of {{ input.arrayType }}s</span
+              >
+              <span
+                class="parameterType tag"
+                v-else-if="input.type == 'array'"
+                >Array</span
               >
               <span
                 class="parameterType tag"

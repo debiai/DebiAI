@@ -140,15 +140,26 @@ class PythonDataProvider(DataProvider):
         return selections.get_selection_id_list(project_id, selection_id)
 
     @project_must_exist
-    def create_selection(self, project_id, name, id_list, request_id=None):
+    def create_selection(self, project_id, name, id_list):
         # Check config
         config = get_config()
         creation_allowed = config["INTEGRATED_DATA_PROVIDER"]["allow_create_selections"]
         if not creation_allowed:
             raise DataProviderException("Selection creation is not allowed", 403)
 
+        # All id must exist
+        non_existing_ids = samples.get_non_existing_ids(project_id, id_list)
+        if len(non_existing_ids) > 0:
+            if len(non_existing_ids) > 10:
+                message = f"{len(non_existing_ids)} out of {len(id_list)} ids do\
+ not exist (first 10: {non_existing_ids[:10]})"
+            else:
+                message = f"{len(non_existing_ids)} out of {len(id_list)} ids do\
+ not exist: {non_existing_ids}"
+            raise DataProviderException(message, 400)
+
         # Selection creation
-        return selections.create_selection(project_id, name, id_list, request_id)
+        return selections.create_selection(project_id, name, id_list)
 
     @project_must_exist
     def delete_selection(self, project_id, selection_id):

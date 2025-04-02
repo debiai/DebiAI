@@ -5,18 +5,24 @@ import unicodedata
 import string
 import shutil
 import time
-from debiaiServer.debiai_gui_utils import data_folder_path
+from debiaiServer.config.init_config import get_data_folder_path
 
-DATA_PATH = data_folder_path + "/pythonDataProvider/"
-
+_DATA_PATH = None
 DATA_TYPES = ["groundTruth", "contexts", "inputs", "others"]
 
 
 # Init, called at the server start
 def init():
+    global _DATA_PATH
+    _DATA_PATH = get_data_folder_path() + "/pythonDataProvider/"
+
     # Create the folder if it does not exist
-    if not os.path.exists(DATA_PATH):
-        os.mkdir(DATA_PATH)
+    if not os.path.exists(_DATA_PATH):
+        os.mkdir(_DATA_PATH)
+
+
+def DATA_PATH():
+    return _DATA_PATH
 
 
 # File name verifications

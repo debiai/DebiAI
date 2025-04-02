@@ -31,13 +31,12 @@ def get_selection_id_list(dataProviderId, projectId, selectionId):
 def post_selection(dataProviderId, projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-        data_provider.create_selection(
+        new_selection = data_provider.create_selection(
             projectId,
             data["selectionName"],
             data["sampleHashList"],
-            data["requestId"] if "requestId" in data else None,
         )
-        return "Selection added", 200
+        return new_selection, 200
     except DataProviderException as e:
         return e.message, e.status_code
 

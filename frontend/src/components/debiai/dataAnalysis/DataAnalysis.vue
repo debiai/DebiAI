@@ -548,6 +548,8 @@ export default {
         gsComp.widgetKey = gridComponent.widgetKey;
         gsComp.config = gridComponent.config;
         gsComp.localFilters = gridComponent.localFilters;
+        gsComp.w = gsComp.w || gsComp.minW;
+        gsComp.h = gsComp.h || gsComp.minH;
 
         layout.push(gsComp);
       });

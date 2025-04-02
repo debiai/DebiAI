@@ -1,7 +1,5 @@
-import psutil
 import requests
 import connexion
-import webbrowser
 from flask_cors import CORS
 from waitress import serve
 from termcolor import colored
@@ -68,48 +66,39 @@ def create_app(is_dev):
     return app
 
 
-def is_browser_open():
-    """Check if a browser process is running."""
-    browser_keywords = ["chrome", "firefox", "safari", "edge", "opera"]
-    for proc in psutil.process_iter(["pid", "name"]):
-        for keyword in browser_keywords:
-            if keyword in proc.info["name"].lower():
-                return True
-    return False
-
-
-def open_browser(port):
-    url = f"http://localhost:{port}"
-    if is_browser_open():
-        webbrowser.open_new_tab(url)
-    else:
-        webbrowser.open(url)
-
-
-def start_server(port, reloader=True, is_dev=True):
+def start_server(
+    port,
+    data_folder_path: str = None,
+    parameters: dict = {},
+    reloader: bool = True,
+    is_dev: bool = True,
+):
     # Run DebiAI init
-    print(
-        "================= DebiAI " + get_app_version() + " ====================",
-        flush=True,
-    )
-    init()
-    print("======================== RUN =======================", flush=True)
+    print("================= DebiAI " + get_app_version() + " ====================")
+    init(data_folder_path, parameters)
+    print("======================== RUN =======================")
     print(
         "   DebiAI is available at "
-        + colored("http://localhost:" + str(port), DEBUG_COLOR),
-        flush=True,
+        + colored("http://localhost:" + str(port), DEBUG_COLOR)
     )
     app = create_app(is_dev)
+
     if is_dev:
         # Use flask server for development
         app.run(port, debug=True, host="0.0.0.0", use_reloader=reloader)
     else:
         # Use waitress for production
-        serve(app, host="0.0.0.0", port=port, threads=6)
+        try:
+            serve(app, host="0.0.0.0", port=port, threads=6)
+        except OSError:
+            print(
+                colored(
+                    f"Port {port} is already in use. Please try another port.", "red"
+                )
+            )
 
     # Print goodbye message
-    print("\n====================================================", flush=True)
-    print("\nGoodbye!")
+    print("\n\n  Goodbye!")
     print("Thank you for using DebiAI.\n")
 
 

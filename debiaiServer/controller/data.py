@@ -14,7 +14,7 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 def get_data(dataProviderId, projectId, data):
     # return a project data from a list of ids
     sampleIds = data["sampleIds"]
-    analysis = data["analysis"]
+    analysis = data["analysis"] if "analysis" in data else None
 
     try:
         # Find the data provider

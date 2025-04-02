@@ -22,14 +22,14 @@ def __createProjectHashMap(projectId, blockPath, hashmap, sampleLevel, currentLe
 
         # Update the sample
         pythonModuleUtils.updateJsonFile(
-            DATA_PATH + projectId + "/blocks/" + blockPath + "info.json",
+            DATA_PATH() + projectId + "/blocks/" + blockPath + "info.json",
             "id",
             sampleHash,
         )
         return
 
     for children in pythonModuleUtils.listDir(
-        DATA_PATH + projectId + "/blocks/" + blockPath
+        DATA_PATH() + projectId + "/blocks/" + blockPath
     ):
         __createProjectHashMap(
             projectId, blockPath + children, hashmap, sampleLevel, currentLevel + 1
@@ -37,18 +37,18 @@ def __createProjectHashMap(projectId, blockPath, hashmap, sampleLevel, currentLe
 
 
 def addToSampleHashmap(projectId, hashMap):
-    with open(DATA_PATH + projectId + "/samplesHashmap.json") as json_file:
+    with open(DATA_PATH() + projectId + "/samplesHashmap.json") as json_file:
         existingHm = json.load(json_file)
 
     existingHm.update(hashMap)
 
     pythonModuleUtils.writeJsonFile(
-        DATA_PATH + projectId + "/samplesHashmap.json", existingHm
+        DATA_PATH() + projectId + "/samplesHashmap.json", existingHm
     )
 
 
 def getHashmap(projectId):
-    with open(DATA_PATH + projectId + "/samplesHashmap.json") as json_file:
+    with open(DATA_PATH() + projectId + "/samplesHashmap.json") as json_file:
         existingHm = json.load(json_file)
 
     return existingHm

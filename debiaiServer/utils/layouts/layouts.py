@@ -2,10 +2,8 @@ import os
 import json
 import debiaiServer.utils.utils as utils
 import uuid
-from debiaiServer.debiai_gui_utils import data_folder_path
 
-
-LAYOUTS_PATH = data_folder_path + "/layouts.json"
+LAYOUTS_PATH = None
 
 
 # Layouts file structure
@@ -36,7 +34,10 @@ LAYOUTS_PATH = data_folder_path + "/layouts.json"
 # ]
 
 
-def setup_layouts():
+def setup_layouts(data_folder_path):
+    global LAYOUTS_PATH
+    LAYOUTS_PATH = data_folder_path + "/layouts.json"
+
     # Create the file if it does not exist
     if not os.path.exists(LAYOUTS_PATH):
         with open(LAYOUTS_PATH, "w") as json_file:

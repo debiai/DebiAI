@@ -187,12 +187,16 @@ export default {
     let gsPos = this.gridstack.save();
     this.currentLayout = [];
     gsPos.forEach((gsComp) => {
+      delete gsComp.content;
       const gridComponent = this.components.find((c) => gsComp.id == c.id);
       if (!gridComponent) return;
 
       // Add the widgetKey and config to the layout
       gsComp.widgetKey = gridComponent.widgetKey;
       gsComp.config = gridComponent.config;
+
+      gsComp.width = gsComp.w || gsComp.minW;
+      gsComp.height = gsComp.h || gsComp.minH;
 
       this.currentLayout.push(gsComp);
     });

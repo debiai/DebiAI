@@ -12,6 +12,8 @@ ERROR_COLOR = "light_red"
 SUCCESS_COLOR = "green"
 
 # Default config
+DATA_FOLDER_PATH = "debiai_data"  # The path to the DebiAI data config folder
+
 config = {
     "DATA_PROVIDERS_CONFIG": {
         "creation": True,
@@ -94,42 +96,37 @@ LIST_CONFIG_SECTIONS = {
 changes_made = False
 
 
-def get_config_value(section, key, config_parser):
-    # Return the value of the key in the section of the config_parser
-    # Or return the ENV_VAR if it exists
+def get_config_value(section, key, parameters, config_parser):
+    # Config priority order: parameters > config file > env var > default value
 
-    value = None
+    # Get the value from the parameters
+    if key in parameters:
+        return str.lower(parameters[key])
+
+    # Get the value from the environment variables
     ENV_VAR = ENV_VAR_MAPPING[section][key]
+    if ENV_VAR in os.environ:
+        return str.lower(os.environ[ENV_VAR])
 
     # Get the value from the config file
     if section in config_parser and key in config_parser[section]:
-        value = str.lower(config_parser[section][key])
+        return str.lower(config_parser[section][key])
 
-    # Get the value from the environment variables
-    if ENV_VAR in os.environ:
-        value = str.lower(os.environ[ENV_VAR])
-
-    if value is None:
-        print(
-            " - Missing "
-            + colored(section, DEBUG_SECONDARY_COLOR)
-            + " / "
-            + colored(key, DEBUG_SECONDARY_COLOR)
-            + " in config or in "
-            + colored(ENV_VAR, DEBUG_SECONDARY_COLOR)
-            + " env var, using default"
-        )
-        return None
-
-    return value
+    print(
+        " - Missing "
+        + colored(section, DEBUG_SECONDARY_COLOR)
+        + " / "
+        + colored(key, DEBUG_SECONDARY_COLOR)
+        + " in config or in "
+        + colored(ENV_VAR, DEBUG_SECONDARY_COLOR)
+        + " env var, using default"
+    )
 
 
-def get_config_values(section, config_parser):
-    # Return a dict of the values of the section of the config_parser
-    # Or return the ENV_VAR if it exists
+def get_config_values(section, parameters, config_parser):
+    # Config priority order: parameters > config file > env var > default value
 
     values = {}
-    ENV_VAR = LIST_CONFIG_SECTIONS[section]
 
     # Get the value from the config file
     if section in config_parser:
@@ -138,11 +135,19 @@ def get_config_values(section, config_parser):
 
     # Get the value from the environment variables
     # iterate over the keys of the env var
+    ENV_VAR = LIST_CONFIG_SECTIONS[section]
     for key in os.environ.keys():
         if key.startswith(ENV_VAR):
             # Get the key name without the env var prefix
             key_name = key[len(ENV_VAR) :]  # noqa
             values[key_name] = str.lower(os.environ[key])
+
+    # Get the value from the parameters
+    for key in parameters:
+        if key.startswith(ENV_VAR):
+            # Get the key name without the env var prefix
+            key_name = key[len(ENV_VAR) :]  # noqa
+            values[key_name] = str.lower(parameters[key])
 
     return values
 
@@ -166,10 +171,14 @@ def set_config_value(section, key, value):
             )
 
 
-def init_config():
-    global config
+def init_config(data_folder_path: str = None, parameters: dict = {}):
+    global DATA_FOLDER_PATH, config
 
     print("===================== CONFIG =======================")
+
+    # Apply the given data_folder_path
+    if data_folder_path:
+        DATA_FOLDER_PATH = data_folder_path
 
     # Read the config file
     config_parser.read(config_path)
@@ -178,7 +187,7 @@ def init_config():
         # Deal with boolean, integer and string values
         for key in config[section].keys():
             # Get the value from the config file or the environment variables
-            value = get_config_value(section, key, config_parser)
+            value = get_config_value(section, key, parameters, config_parser)
 
             if value is None:
                 continue
@@ -217,7 +226,7 @@ def init_config():
 
         # Deal with list based config elements
         if section in LIST_CONFIG_SECTIONS:
-            elements = get_config_values(section, config_parser)
+            elements = get_config_values(section, parameters, config_parser)
 
             for element_name in elements:
                 print(
@@ -234,6 +243,10 @@ def init_config():
 
     if not changes_made:
         print("   Default config used")
+
+
+def get_data_folder_path():
+    return DATA_FOLDER_PATH
 
 
 def get_config():

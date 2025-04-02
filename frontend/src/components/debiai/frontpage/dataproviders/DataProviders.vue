@@ -9,7 +9,7 @@
       <div id="controls">
         <button
           class="warning"
-          @click="getDataProviders"
+          @click="getDataProviders(true)"
         >
           <inline-svg
             :src="require('@/assets/svg/update.svg')"
@@ -87,10 +87,11 @@
       @close="newDataProviderModal = false"
     >
       <NewDataProvider
+        :suggestedName="suggestedDataProviderName"
         @cancel="newDataProviderModal = false"
         @done="
           newDataProviderModal = false;
-          getDataProviders();
+          getDataProviders(true);
         "
       />
     </modal>
@@ -110,14 +111,29 @@ export default {
       newDataProviderModal: false,
     };
   },
+  computed: {
+    suggestedDataProviderName() {
+      if (!this.dataProviders) return "Data Provider";
+
+      // Look for the first available name
+      const baseName = "Data Provider";
+      if (!this.dataProviders.some((dp) => dp.name === baseName)) return baseName;
+
+      // Look for the first available name with a number
+      let index = 2;
+      while (this.dataProviders.some((dp) => dp.name === `${baseName} ${index}`)) index++;
+      return `${baseName} ${index}`;
+    },
+  },
   created() {
     this.getDataProviders();
   },
   methods: {
-    getDataProviders() {
+    getDataProviders(refresh = false) {
       this.dataProviders = null;
       this.$backendDialog.getDataProviders().then((dataProviders) => {
         this.dataProviders = dataProviders;
+        if (refresh) this.$emit("refresh");
       });
     },
     deleteDataProvider(name) {
@@ -128,7 +144,7 @@ export default {
             title: "success",
             msg: "Data provider deleted",
           });
-          this.getDataProviders();
+          this.getDataProviders(true);
         })
         .catch((error) => {
           console.log(error);
