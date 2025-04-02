@@ -226,7 +226,36 @@
           @click.ctrl.exact="selectProject(project.dataProviderId, project.id, true)"
         >
           <!-- Project name -->
-          <div class="name">{{ project.name }}</div>
+          <div class="name">
+            {{ project.name }}
+
+            <!-- Description -->
+            <div
+              class="description"
+              v-if="project.name === 'Welding quality detection challenge'"
+            >
+              This dataset is part of the
+              <a
+                @click.stop
+                href="https://confianceai.github.io/Welding-Quality-Detection-Challenge/"
+                target="_blank"
+              >
+                Welding quality detection challenge
+              </a>
+              , organized by the Confiance.ai community and IRT SystemX, with support from the
+              Renault Group. Its mission is to promote responsible industrial AI and make
+              Confiance.ai methodologies a European and global benchmark for trustworthy AI.
+              <br />
+              This dataset was created with the
+              <a
+                @click.stop
+                href="https://github.com/debiai/use-cases/blob/main/weldingQuality/README.md"
+                target="_blank"
+              >
+                DebiAI Data-Provider Python module
+              </a>
+            </div>
+          </div>
 
           <!-- Project items -->
           <div class="items">
@@ -598,6 +627,21 @@ export default {
       align-items: flex-start;
       font-weight: bold;
       text-align: left;
+      display: flex;
+      flex-direction: column;
+
+      .description {
+        color: var(--fontColorLight);
+        font-weight: normal;
+
+        a {
+          color: var(--blue);
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
     /* Items */
