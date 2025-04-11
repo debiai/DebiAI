@@ -8,8 +8,10 @@ from termcolor import colored
 from debiaiServer.init import init
 from debiaiServer.utils.utils import get_app_version
 from debiaiServer.config.init_config import DEBUG_COLOR
+from debiaiServer.controller.projects import router as projects_router
 
-DEV_FRONTEND_URL = "http://localhost:8080/"
+FRONTEND_DIST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist")
+
 app = FastAPI()
 
 # Add CORS middleware
@@ -21,61 +23,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files in production
-if not os.path.exists("dist"):
-    os.makedirs("dist")
-app.mount("/static", StaticFiles(directory="dist"), name="static")
+# Include the projects router
+app.include_router(projects_router, prefix="/api")
 
 
-def send_frontend(path: str, is_dev: bool):
+def send_frontend(path: str):
     if path == "/":
         path = "index.html"
 
-    # If production, serve the "dist" folder
-    if not is_dev:
-        file_path = os.path.join("dist", path)
-        if os.path.exists(file_path):
-            return FileResponse(file_path)
-        else:
-            raise HTTPException(status_code=404, detail="File not found")
-
-    # In development, proxy requests to the DEV_FRONTEND_URL
+    # For production, serve the "dist" folder
+    file_path = os.path.join(FRONTEND_DIST_PATH, path)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
     else:
-        try:
-            resp = requests.get(f"{DEV_FRONTEND_URL}{path}")
-            return JSONResponse(
-                content=resp.content.decode("utf-8"),
-                status_code=resp.status_code,
-                headers=dict(resp.headers),
-            )
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-            return JSONResponse(
-                content={
-                    "error": f"You are in a development environment and the DebiAI frontend is not available at {DEV_FRONTEND_URL}"
-                },
-                status_code=503,
-            )
+        raise HTTPException(status_code=404, detail="File not found")
 
 
-@app.get("/{path:path}")
-async def serve_frontend(path: str, request: Request):
-    is_dev = request.headers.get("X-Environment", "development") == "development"
-    return send_frontend(path, is_dev)
-
-
-@app.get("/")
-async def serve_index(request: Request):
-    is_dev = request.headers.get("X-Environment", "development") == "development"
-    return send_frontend("/", is_dev)
-
-
-def start_server(
-    port: int,
-    data_folder_path: str = None,
-    parameters: dict = {},
-    reloader: bool = True,
-    is_dev: bool = True,
-):
+def start_server(port: int, data_folder_path: str = None, parameters: dict = {}):
     # Run DebiAI init
     print("================= DebiAI " + get_app_version() + " ====================")
     init(data_folder_path, parameters)
@@ -84,21 +48,45 @@ def start_server(
         "   DebiAI is available at " + colored(f"http://localhost:{port}", DEBUG_COLOR)
     )
 
-    # Start the FastAPI server
-    import uvicorn
 
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=port,
-        reload=reloader,
-        log_level="info",
-    )
+def start_server_dev():
+    start_server(port=3000)
+    return app
 
+
+def stop_server():
     # Print goodbye message
     print("\n\n  Goodbye!")
     print("Thank you for using DebiAI.\n")
 
 
+def start_server_prod(
+    port: int = 3000, data_folder_path: str = None, parameters: dict = {}
+):
+    start_server(port, data_folder_path, parameters)
+
+    # Serve static files in production
+    app.mount("/static", StaticFiles(directory=FRONTEND_DIST_PATH), name="static")
+
+    # Serve the frontend files
+    @app.get("/")
+    async def serve_index():
+        return send_frontend("/")
+
+    @app.get("/{path:path}")
+    async def serve_frontend(path: str):
+        return send_frontend(path)
+
+    import uvicorn
+
+    # Start the server
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+
+    stop_server()
+
+
 if __name__ == "__main__":
-    start_server(port=3000, reloader=False, is_dev=True)
+    raise Exception(
+        "This file is not meant to be run directly. Use the\
+ `debiai/run_debiai_server_dev.py` script instead."
+    )
