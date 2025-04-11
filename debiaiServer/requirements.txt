@@ -1,8 +1,9 @@
 fastapi == 0.115.12 
-uvicorn == 0.34.0
+uvicorn == 0.33.0
 ujson == 5.8.0
 kafka-python == 2.0.2
 cacheout == 0.14.1
 termcolor==2.3.0
 werkzeug == 2.2.2
 psutil == 6.0.0
+requests == 2.25.1
