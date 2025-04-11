@@ -8,6 +8,7 @@ on:
       - reopened
 
 jobs:
+  # First batch of jobs: Code quality checks
   black-format-check: # Check that the debiaiServer codebase is formatted with black
     name: Black format check
     runs-on: ubuntu-latest
@@ -76,15 +77,13 @@ jobs:
       - name: Check that the version in debiaiServer and frontend are the same
         id: version-check
         run: |
-          cd frontend
-          FRONTEND_VERSION=$(cat package.json | grep -m1 version | cut -d '"' -f 4)
-          cd ../debiaiServer
-          BACKEND_VERSION=$(cat swagger.yaml | grep -m1 version | cut -d ':' -f 2 | sed 's/ //g')
+          FRONTEND_VERSION=$(cat frontend/package.json | grep -m1 version | cut -d '"' -f 4)
+          BACKEND_VERSION=$(grep -m1 "VERSION =" debiaiServer/version.py | cut -d '"' -f 2)
           if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/version.py version '$BACKEND_VERSION'."
             exit 1
           fi
-          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/version.py version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
@@ -127,6 +126,29 @@ jobs:
           fi
 
           echo "Version upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
+
+  # Second batch of jobs: Tests
+  python-module-install: # Install the debiaiServer module
+    name: Python module install
+    needs:
+      [black-format-check, prettier-check, cspell-check, version-upgrade-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.10.16
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+      - name: Run debiai-gui command to check that the module is installed
+        run: |
+          debiai-gui --help
+          debiai-gui --version
+          mkdir data
+          timeout 3s debiai-gui start -d ./data -nb || echo "debiai-gui start command successfully timed out"
 
   python-tests: # Install dependencies and run tests with pytest
     name: Python tests

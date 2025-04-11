@@ -1,5 +1,17 @@
 # This file is used to run the debiai-gui server in development mode
 
-from debiaiServer import websrv
+from debiaiServer.websrv import stop_server
 
-websrv.start_server(port=3000, reloader=True, is_dev=True)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "debiaiServer.websrv:start_server_dev",
+        host="0.0.0.0",
+        port=3000,
+        reload=True,
+        log_level="info",
+        factory=True,
+    )
+    stop_server()

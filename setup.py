@@ -1,10 +1,5 @@
 from setuptools import setup, find_packages
-from debiaiServer.utils.utils import get_app_version
-
-try:
-    VERSION = get_app_version()
-except ModuleNotFoundError:
-    VERSION = "0.0.0"
+from debiaiServer.version import VERSION
 
 setup(
     name="debiai-gui",
@@ -12,20 +7,15 @@ setup(
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
     install_requires=[
-        "Flask==2.0.3",
-        "flask_cors==3.0.8",
-        "connexion==2.6.0",
-        "requests==2.25.1",
-        "swagger-ui-bundle==0.0.5",
-        "ujson==5.8.0",
-        "kafka-python==2.0.2",
-        "openapi_spec_validator==0.2.8",
-        "PyYAML==6.0",
-        "cacheout==0.14.1",
+        "fastapi == 0.115.12",
+        "uvicorn == 0.33.0",
+        "ujson == 5.8.0",
+        "kafka-python == 2.0.2",
+        "cacheout == 0.14.1",
         "termcolor==2.3.0",
-        "werkzeug==2.2.2",
-        "psutil==6.0.0",
-        "waitress==3.0.0",
+        "werkzeug == 2.2.2",
+        "psutil == 6.0.0",
+        "requests == 2.25.1",
     ],
     entry_points={
         "console_scripts": [

@@ -1,26 +1,17 @@
 import time
-import pkg_resources
 from urllib.parse import urlparse
 from itertools import cycle
 from shutil import get_terminal_size
 from threading import Thread
 from time import sleep
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 
 def get_app_version():
-    import yaml
-    from yaml.loader import SafeLoader
+    from debiaiServer.version import VERSION
 
-    # Read the version from the API YAML file
-    yaml_path = pkg_resources.resource_filename("debiaiServer", "swagger.yaml")
-
-    try:
-        with open(yaml_path, "r") as f:
-            data = yaml.load(f, Loader=SafeLoader)
-            return data["info"]["version"]
-    except Exception as e:
-        print(e)
-        return "?.?.?"
+    return VERSION
 
 
 # Date
@@ -95,3 +86,11 @@ class Loader:
     def __exit__(self, exc_type, exc_value, tb):
         # handle exceptions with those variables ^
         self.stop()
+
+
+class SuppressLogsMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # Suppress logs for specific paths
+        if request.url.path in ["/", "/{path:path}"]:
+            return Response(content="")
+        return await call_next(request)
