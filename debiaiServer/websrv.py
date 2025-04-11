@@ -1,12 +1,11 @@
 import os
-import requests
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from termcolor import colored
 from debiaiServer.init import init
-from debiaiServer.utils.utils import get_app_version
+from debiaiServer.utils.utils import get_app_version, SuppressLogsMiddleware
 from debiaiServer.config.init_config import DEBUG_COLOR
 from debiaiServer.controller.projects import router as projects_router
 
@@ -25,6 +24,9 @@ app.add_middleware(
 
 # Include the projects router
 app.include_router(projects_router, prefix="/api")
+
+# Set the logger middleware
+app.add_middleware(SuppressLogsMiddleware)
 
 
 def send_frontend(path: str):

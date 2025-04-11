@@ -120,7 +120,7 @@ def debiai_gui_start(path, port, no_browser=False, parameters: dict = {}):
     # Import the DebiAI GUI with a loading animation
     start_loading_animation = Loader("Starting the DebiAI GUI", "")
     start_loading_animation.start()
-    from debiaiServer.websrv import start_server
+    from debiaiServer.websrv import start_server_prod
 
     start_loading_animation.stop()
 
@@ -129,12 +129,10 @@ def debiai_gui_start(path, port, no_browser=False, parameters: dict = {}):
         Timer(0.5, open_browser, args=[port]).start()
 
     # Start the DebiAI GUI
-    start_server(
+    start_server_prod(
         port=port,
         data_folder_path=data_folder_path,
         parameters=parameters,
-        reloader=False,
-        is_dev=False,
     )
 
 
