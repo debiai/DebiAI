@@ -1,5 +1,4 @@
 import time
-import pkg_resources
 from urllib.parse import urlparse
 from itertools import cycle
 from shutil import get_terminal_size
@@ -10,19 +9,9 @@ from starlette.responses import Response
 
 
 def get_app_version():
-    import yaml
-    from yaml.loader import SafeLoader
+    from debiaiServer.version import VERSION
 
-    # Read the version from the API YAML file
-    yaml_path = pkg_resources.resource_filename("debiaiServer", "swagger.yaml")
-
-    try:
-        with open(yaml_path, "r") as f:
-            data = yaml.load(f, Loader=SafeLoader)
-            return data["info"]["version"]
-    except Exception as e:
-        print(e)
-        return "?.?.?"
+    return VERSION
 
 
 # Date

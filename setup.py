@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
-
-VERSION = "0.30.11"
+from debiaiServer.version import VERSION
 
 setup(
     name="debiai-gui",

@@ -78,12 +78,12 @@ jobs:
         id: version-check
         run: |
           FRONTEND_VERSION=$(cat frontend/package.json | grep -m1 version | cut -d '"' -f 4)
-          BACKEND_VERSION=$(grep -m1 "VERSION =" setup.py | cut -d '"' -f 2)
+          BACKEND_VERSION=$(grep -m1 "VERSION =" debiaiServer/version.py | cut -d '"' -f 2)
           if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
-            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
+            echo "Version mismatch: frontend/package.json version '$FRONTEND_VERSION' != debiaiServer/version.py version '$BACKEND_VERSION'."
             exit 1
           fi
-          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/swagger.yaml version '$BACKEND_VERSION'."
+          echo "Version match: frontend/package.json version '$FRONTEND_VERSION' == debiaiServer/version.py version '$BACKEND_VERSION'."
           echo "BRANCH_VERSION=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
