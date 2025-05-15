@@ -523,12 +523,6 @@ export default {
         white-space: nowrap;
       }
     }
-
-    .createdDate {
-    }
-
-    .updatedDate {
-    }
   }
 }
 
