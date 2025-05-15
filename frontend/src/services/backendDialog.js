@@ -28,6 +28,10 @@ function projectId() {
 }
 
 export default {
+  startRequest,
+  endRequest,
+  dataProviderId,
+  projectId,
   // ====== Menu
 
   // Projects

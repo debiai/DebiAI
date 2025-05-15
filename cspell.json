@@ -33,6 +33,7 @@
     "numpy",
     "openapi",
     "pearsonr",
+    "pickledb",
     "plotly",
     "psutil",
     "pval",

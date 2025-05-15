@@ -1,3 +1,4 @@
 export default {
-  API_URL: "/"
-}
+  API_URL: "/",
+  EXPLORATION_API_URL: "/exploration/",
+};

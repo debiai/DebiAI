@@ -55,24 +55,6 @@
           <inline-svg :src="require('@/assets/svg/data.svg')" />
           {{ project.nbSamples }} samples
         </div>
-
-        <!-- Nb selections -->
-        <div
-          class="item nbSelections"
-          title="Project selections"
-        >
-          <inline-svg :src="require('@/assets/svg/loop.svg')" />
-          {{ project.nbSelections }} selections
-        </div>
-
-        <!-- Nb models -->
-        <div
-          class="item nbModel"
-          title="Model added to the project"
-        >
-          <inline-svg :src="require('@/assets/svg/gear.svg')" />
-          {{ project.nbModels }} models
-        </div>
       </div>
     </div>
 
