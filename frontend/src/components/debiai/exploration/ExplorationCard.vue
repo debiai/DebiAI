@@ -11,7 +11,7 @@
     <div class="actions">
       <button
         class="red"
-        @click="onDelete"
+        @click.stop="onDelete"
       >
         Delete
       </button>

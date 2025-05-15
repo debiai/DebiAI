@@ -51,39 +51,42 @@
       </form>
     </Modal>
 
+    <!-- Header & new explorations btn -->
+    <div class="explorations-header">
+      <h2>Explorations</h2>
+      <button
+        class="green"
+        @click="newExploration = true"
+      >
+        Create new exploration
+      </button>
+    </div>
+
     <!-- Explorations -->
     <transition name="fade">
       <div
-        class="explorations"
+        class="explorations itemList"
         v-if="project && explorations"
       >
-        <!-- Header & new explorations btn -->
-        <div class="explorations-header">
-          <h2>Explorations</h2>
-          <button
-            class="green"
-            @click="newExploration = true"
-          >
-            Create new exploration
-          </button>
-        </div>
-        <div class="explorations-list itemList">
-          <exploration-card
-            v-for="exploration in explorations"
-            :key="exploration.id"
-            :exploration="exploration"
-            :projectId="projectId"
-          />
-        </div>
-        <div
-          v-if="!explorations || explorations.length === 0"
-          class="no-explorations"
-        >
-          <p>No explorations found.</p>
-          <p>Click the button above to create a new exploration.</p>
-        </div>
+        <exploration-card
+          v-for="exploration in explorations"
+          :key="exploration.id"
+          :exploration="exploration"
+          :projectId="projectId"
+          @edit="editExploration"
+          @delete="deleteExploration"
+        />
       </div>
     </transition>
+
+    <!-- No explorations -->
+    <div
+      v-if="explorations !== null && explorations.length === 0"
+      class="no-explorations"
+    >
+      <p>No explorations found.</p>
+      <p>Click the button above to create a new exploration.</p>
+    </div>
   </div>
 </template>
 
@@ -213,6 +216,53 @@ export default {
           });
         });
     },
+    editExploration({ explorationId, isMiddleClick }) {
+      if (isMiddleClick) {
+        this.$explorationDialog
+          .getExploration(this.projectId, explorationId)
+          .then((exploration) => {
+            this.$store.commit("setExploration", exploration);
+            this.$router.push({
+              name: "exploration",
+              params: {
+                dataProviderId: this.dataProviderId,
+                projectId: this.projectId,
+                explorationId: exploration.id,
+              },
+            });
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        this.$router.push({
+          name: "exploration",
+          params: {
+            dataProviderId: this.dataProviderId,
+            projectId: this.projectId,
+            explorationId: explorationId,
+          },
+        });
+      }
+    },
+    deleteExploration(explorationId) {
+      this.$explorationDialog
+        .deleteExploration(this.projectId, explorationId)
+        .then(() => {
+          this.loadExplorations();
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Exploration deleted successfully",
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Error while deleting exploration",
+          });
+        });
+    },
   },
   computed: {
     newExplorationFormValid() {
@@ -230,30 +280,30 @@ export default {
   width: 100%;
   height: 100%;
 
+  .explorations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1000px;
+    padding-top: 30px;
+
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  }
+
   .explorations {
     padding: 20px;
-    margin-top: 20px;
-    max-width: 1000px;
     width: 100%;
+    max-width: 1000px;
 
-    .explorations-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-
-      h2 {
-        font-size: 24px;
-        font-weight: bold;
-      }
-    }
-
-    .explorations-list {
-      .no-explorations {
-        text-align: center;
-        font-size: 18px;
-        color: #666;
-      }
+    .no-explorations {
+      text-align: center;
+      font-size: 18px;
+      color: #666;
     }
   }
 }

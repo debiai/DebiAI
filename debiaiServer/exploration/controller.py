@@ -38,8 +38,20 @@ def get_exploration_config(project_id, exploration_id):
     return None
 
 
-def delete_exploration():
-    pass
+def delete_exploration(project_id, exploration_id):
+    # Get current explorations
+    explorations = project_explorations_db.get(project_id) or []
+
+    # Filter out the exploration to delete
+    explorations = [
+        exploration
+        for exploration in explorations
+        if exploration.get("id") != exploration_id
+    ]
+
+    # Update the database
+    project_explorations_db.set(project_id, explorations)
+    return explorations
 
 
 def update_exploration():
