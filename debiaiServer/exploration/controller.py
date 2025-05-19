@@ -29,6 +29,7 @@ def create_exploration(project_id, body):
 
     # Update the database
     project_explorations_db.set(project_id, explorations)
+    project_explorations_db.save()
 
 
 def get_exploration(project_id, exploration_id):
@@ -52,6 +53,7 @@ def delete_exploration(project_id, exploration_id):
 
     # Update the database
     project_explorations_db.set(project_id, explorations)
+    project_explorations_db.save()
     return explorations
 
 
