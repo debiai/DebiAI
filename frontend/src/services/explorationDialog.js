@@ -43,4 +43,36 @@ export default {
         return response.data;
       });
   },
+  deleteExploration(projectId, explorationId) {
+    let code = b.startRequest("Deleting exploration");
+    return axios
+      .delete(`${apiURL}explorations/${explorationId}`, {
+        params: {
+          project_id: projectId,
+        },
+      })
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+
+  // Exploration
+  getExploration(projectId, explorationId) {
+    let code = b.startRequest("Getting exploration");
+    return axios
+      .get(`${apiURL}explorations/${explorationId}`, {
+        params: {
+          project_id: projectId,
+        },
+      })
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  }
 };

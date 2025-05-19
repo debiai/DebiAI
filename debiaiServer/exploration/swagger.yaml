@@ -89,6 +89,29 @@ paths:
                   $ref: "#/components/schemas/ExplorationMetric"
 
   /explorations/{exploration_id}:
+    get:
+      tags:
+        - Explorations
+      summary: Get exploration data and configuration
+      operationId: debiaiServer.exploration.controller.get_exploration
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Exploration configuration retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplorationWithConfig"
     delete:
       tags:
         - Explorations
@@ -139,29 +162,6 @@ paths:
                 $ref: "#/components/schemas/Exploration"
 
   /explorations/{exploration_id}/config:
-    get:
-      tags:
-        - Explorations
-      summary: Get exploration configuration
-      operationId: debiaiServer.exploration.controller.get_exploration_config
-      parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: exploration_id
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Exploration configuration retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ExplorationConfig"
     put:
       tags:
         - Explorations
@@ -242,9 +242,19 @@ components:
         combinaison_file:
           type: string
           format: uri
+
     # Configuration
+    ExplorationWithConfig:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Exploration"
+        - properties:
+            config:
+              $ref: "#/components/schemas/ExplorationConfig"
+
     ExplorationConfig:
       type: object
+      description: Configuration for the exploration. Specify the columns to be used in the exploration, and any global metrics to be applied.
       required: [columns]
       properties:
         columns:
@@ -257,6 +267,7 @@ components:
           items:
             type: string
           nullable: true
+
     ColumnConfig:
       type: object
       required: [label]
@@ -265,9 +276,7 @@ components:
           description: Label of the column
           type: string
         aggregation:
-          description: Optional configuration for the column aggregation
           $ref: "#/components/schemas/AggregationConfig"
-          nullable: true
         column_metrics:
           description: List of metrics to be applied to the column, must be one of the available column metrics
           type: array
@@ -282,6 +291,7 @@ components:
           description: ID of the aggregation to be applied to the column, must be one of the available aggregations
           type: string
       additionalProperties: true
+      nullable: true
     # Metrics and Aggregations
     ExplorationMetric:
       type: object

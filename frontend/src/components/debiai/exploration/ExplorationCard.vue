@@ -31,7 +31,7 @@ export default {
   methods: {
     onEdit(isMiddleClick) {
       this.$emit("edit", {
-        id: this.exploration.id,
+        explorationId: this.exploration.id,
         isMiddleClick,
       });
     },

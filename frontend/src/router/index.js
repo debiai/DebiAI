@@ -25,9 +25,14 @@ let router = new Router({
     },
     // === Exploration
     {
-      name: "exploration",
+      name: "explorations",
       path: "/dataprovider/:dataProviderId/project/:projectId/exploration",
       component: () => import("../components/debiai/exploration/Explorations"),
+    },
+    {
+      name: "exploration",
+      path: "/dataprovider/:dataProviderId/project/:projectId/exploration/:explorationId",
+      component: () => import("../components/debiai/exploration/Exploration"),
     },
   ],
 });

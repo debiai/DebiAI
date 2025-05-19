@@ -20,7 +20,7 @@
         <!-- Project name -->
         <div
           id="projectName"
-          v-if="project"
+          v-if="project && exploration"
         >
           <a
             @click.exact="backToProjects()"
@@ -38,11 +38,19 @@
           >
             {{ project.name }}
           </a>
-          / Exploration
+          /
+          <a
+            @click.exact="backToExplorations()"
+            @click.middle.exact="backToExplorations(true)"
+            @click.ctrl.exact="backToExplorations(true)"
+          >
+            Explorations
+          </a>
+          /
+          {{ exploration.name }}
         </div>
       </div>
     </div>
-
     <div id="right">
       <!-- Project items -->
       <div
@@ -100,7 +108,7 @@
 <script>
 export default {
   name: "Header",
-  props: { project: { type: Object } },
+  props: { project: { type: Object }, exploration: { type: Object } },
   emits: ["settings", "refresh", "deleteProject"],
   data: () => {
     return {};
@@ -126,6 +134,24 @@ export default {
       else
         this.$router.push({
           name: "project",
+          params: {
+            dataProviderId: this.$store.state.ProjectPage.dataProviderId,
+            projectId: this.project.id,
+          },
+        });
+    },
+    backToExplorations(newTab) {
+      const route = this.$router.resolve({
+        name: "explorations",
+        params: {
+          dataProviderId: this.$store.state.ProjectPage.dataProviderId,
+          projectId: this.project.id,
+        },
+      });
+      if (newTab) window.open(route.href, "_blank");
+      else
+        this.$router.push({
+          name: "explorations",
           params: {
             dataProviderId: this.$store.state.ProjectPage.dataProviderId,
             projectId: this.project.id,

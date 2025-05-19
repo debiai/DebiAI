@@ -38,7 +38,6 @@
           <textarea
             id="exploration-description"
             v-model="explorationDescription"
-            required
           ></textarea>
         </div>
         <button
@@ -218,22 +217,14 @@ export default {
     },
     editExploration({ explorationId, isMiddleClick }) {
       if (isMiddleClick) {
-        this.$explorationDialog
-          .getExploration(this.projectId, explorationId)
-          .then((exploration) => {
-            this.$store.commit("setExploration", exploration);
-            this.$router.push({
-              name: "exploration",
-              params: {
-                dataProviderId: this.dataProviderId,
-                projectId: this.projectId,
-                explorationId: exploration.id,
-              },
-            });
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+        this.$router.push({
+          name: "exploration",
+          params: {
+            dataProviderId: this.dataProviderId,
+            projectId: this.projectId,
+            explorationId: explorationId,
+          },
+        });
       } else {
         this.$router.push({
           name: "exploration",

@@ -306,12 +306,12 @@ export default {
       if (newTab) {
         const routeData = this.$router.resolve({
           path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
-          name: "exploration",
+          name: "explorations",
         });
         window.open(routeData.href, "_blank");
       } else {
         this.$router.push({
-          name: "exploration",
+          name: "explorations",
         });
       }
     },

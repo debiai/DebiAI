@@ -23,6 +23,7 @@ def create_exploration(project_id, body):
             "id": str(uuid.uuid4()),
             "name": body.get("name"),
             "description": body.get("description", ""),
+            "config": {},
         }
     )
 
@@ -30,7 +31,7 @@ def create_exploration(project_id, body):
     project_explorations_db.set(project_id, explorations)
 
 
-def get_exploration_config(project_id, exploration_id):
+def get_exploration(project_id, exploration_id):
     explorations = project_explorations_db.get(project_id) or []
     for exploration in explorations:
         if exploration.get("id") == exploration_id:
