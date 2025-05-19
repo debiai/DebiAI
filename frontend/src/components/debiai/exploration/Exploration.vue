@@ -8,8 +8,53 @@
     />
 
     <!-- Content -->
-    {{ explorationId }}
-    {{ exploration }}
+    <transition
+      name="fade"
+      mode="out-in"
+    >
+      <div
+        id="content"
+        v-if="project && exploration"
+      >
+        <div
+          id="columns"
+          class="card"
+        >
+          <div class="title">
+            <h2>Project columns</h2>
+          </div>
+          <div class="content">
+            {{ project.blockLevelInfo[0] }}
+            <div class="category">
+            </div>
+          </div>
+        </div>
+        <div id="right">
+          <div
+            id="combinations"
+            class="card"
+          >
+            <div class="title">
+              <h2>Combinations</h2>
+            </div>
+            <div class="content">
+              <p>Combinations content goes here.</p>
+            </div>
+          </div>
+          <div
+            id="metrics"
+            class="card"
+          >
+            <div class="title">
+              <h2>Metrics</h2>
+            </div>
+            <div class="content">
+              <p>Metrics content goes here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -113,7 +158,6 @@ export default {
           this.$router.push("/");
         });
     },
-
     async loadExploration() {
       this.exploration = null;
       return this.$explorationDialog
@@ -147,8 +191,34 @@ export default {
 #Exploration {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   height: 100%;
+
+  #content {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    overflow: hidden;
+
+    #columns {
+      flex: 1;
+    }
+
+    #right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      #combinations {
+        flex: 1;
+      }
+      #metrics {
+        flex: 1;
+      }
+    }
+    .card {
+      border-radius: 5px;
+    }
+  }
 }
 </style>
