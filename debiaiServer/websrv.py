@@ -12,7 +12,14 @@ from flask import send_from_directory, request, Response
 DEV_FRONTEND_URL = "http://localhost:8080/"
 app = connexion.App(__name__)
 app.add_api("swagger.yaml", strict_validation=True)
-app.add_api("exploration/swagger.yaml", strict_validation=True, base_path="/exploration")
+app.add_api(
+    "exploration/swagger.yaml", strict_validation=True, base_path="/exploration"
+)
+app.add_api(
+    "exploration_statistics/swagger.yaml",
+    strict_validation=True,
+    base_path="/exploration/statistics",
+)
 CORS(app.app)
 
 

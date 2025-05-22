@@ -74,5 +74,20 @@ export default {
       .then((response) => {
         return response.data;
       });
-  }
+  },
+
+  // Statistics
+  getColumnsStatistics(dataProviderId, projectId) {
+    let code = b.startRequest("Loading columns statistics");
+    return axios
+      .get(
+        `${apiURL}statistics/data-providers/${dataProviderId}/projects/${projectId}/columnsStatistics`
+      )
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };

@@ -24,9 +24,8 @@
             <h2>Project columns</h2>
           </div>
           <div class="content">
-            {{ project.blockLevelInfo[0] }}
-            <div class="category">
-            </div>
+            {{ columns_statistics }}
+            <div class="category"></div>
           </div>
         </div>
         <div id="right">
@@ -77,6 +76,7 @@ export default {
       // Exploration
       explorationId: null,
       exploration: null,
+      columns_statistics: null,
     };
   },
   created() {
@@ -121,7 +121,11 @@ export default {
   methods: {
     async loadProjectAndExploration() {
       try {
-        await Promise.all([this.loadProject(), this.loadExploration()]);
+        await Promise.all([
+          this.loadProject(),
+          this.loadExploration(),
+          this.loadColumnsStatistics(),
+        ]);
       } catch (e) {
         console.log(e);
       }
@@ -177,6 +181,17 @@ export default {
               },
             });
           }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    async loadColumnsStatistics() {
+      this.columns_statistics = null;
+      return this.$explorationDialog
+        .getColumnsStatistics(this.projectId, this.explorationId)
+        .then((columns_statistics) => {
+          this.columns_statistics = columns_statistics;
         })
         .catch((e) => {
           console.log(e);
