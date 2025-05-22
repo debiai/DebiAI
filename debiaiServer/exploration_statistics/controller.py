@@ -19,6 +19,33 @@ def canCalculate(column):
     return False
 
 
+def setColumnType(column) -> str:
+    # Return mixed if the column has more than one type
+    # Except if the column has numbers and text
+    nb_types = 0
+    if column["hasNumbers"] or column["hasText"]:
+        nb_types += 1
+    if column["hasList"]:
+        nb_types += 1
+    if column["hasDict"]:
+        nb_types += 1
+    if nb_types > 1:
+        return "mixed"
+
+    # Return the type of the column
+    # text overrides number
+    if column["hasText"]:
+        return "text"
+    if column["hasNumbers"]:
+        return "number"
+    if column["hasList"]:
+        return "list"
+    if column["hasDict"]:
+        return "dict"
+
+    return "other"
+
+
 def get_columns_statistics(dataProviderId, projectId):
     SAMPLES_PER_PAGE = 500
 
@@ -27,10 +54,16 @@ def get_columns_statistics(dataProviderId, projectId):
     # Find the data provider
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
+    # Check if we already have the statistics
+    project_columns_statistics_db_key = f"{dataProviderId}_{projectId}"
+    existing = project_explorations_db.get(project_columns_statistics_db_key)
+    if existing:
+        print(" - Statistics already exist")
+        return {"columns": existing}, 200
+
     # Get the project columns structure
     print(" - Getting columns structure")
     columns_structure = data_provider.get_project(projectId)["columns"]
-    print(columns_structure)
     # [
     #     {"name": "image", "category": "other", "type": "auto"},
     #     {"name": "objects", "category": "groundtruth", "type": "list"},
@@ -142,14 +175,20 @@ def get_columns_statistics(dataProviderId, projectId):
         if len(data_id_list) < SAMPLES_PER_PAGE:
             break
 
-    # Add the nb unique values to the column statistics
+    # Final processing of the columns statistics
     for column in columns_statistics:
+        # Set the unique values nb
         # Skip the columns that are not of type number or text
-        if column["hasDict"] or column["hasList"] or column["hasOther"]:
-            continue
-
-        # Get the unique values
-        if column["name"] in unique_values_map:
+        if column["name"] in unique_values_map and not (
+            column["hasDict"] or column["hasList"] or column["hasOther"]
+        ):
             column["nbUniqueValues"] = len(unique_values_map[column["name"]])
+
+        # Set the type of the column
+        column["type"] = setColumnType(column)
+
+    # Save the statistics in the database
+    project_explorations_db.set(project_columns_statistics_db_key, columns_statistics)
+    project_explorations_db.save()
 
     return {"columns": columns_statistics}, 200
