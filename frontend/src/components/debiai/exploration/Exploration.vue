@@ -40,23 +40,45 @@
             </div>
             <div class="content">
               <div class="projectNbSamples">
-                <div>
-                  <strong>Project</strong>
-                </div>
-                <div>{{ project.nbSamples }} samples</div>
+                <inline-svg
+                  :src="require('@/assets/svg/data.svg')"
+                  width="30"
+                  height="30"
+                />
+                <strong>{{ project.nbSamples }} </strong>
+                <div>Project samples</div>
               </div>
-              <div class="theoreticalCombinations">
+              <div class="combinationsDisplay theoreticalCombinations">
                 <div>
-                  <strong>Theoretical combinations</strong>
+                  <inline-svg
+                    :src="require('@/assets/svg/theoreticalCombinations.svg')"
+                    width="30"
+                    height="30"
+                  />
+                  <transition name="highlight">
+                    <strong :key="theoreticalCombinations">{{ theoreticalCombinations }}</strong>
+                  </transition>
+                  <div>Theoretical combinations</div>
                 </div>
-                <div>{{ theoreticalCombinations }} combinations</div>
+                <button
+                  :disabled="reasonNotReadyToComputeRealCombinations"
+                  :title="reasonNotReadyToComputeRealCombinations"
+                >
+                  Compute real combinations
+                </button>
               </div>
-              <div class="realCombinations">
+              <div class="combinationsDisplay realCombinations">
                 <div>
-                  <strong>Real combinations</strong>
+                  <inline-svg
+                    :src="require('@/assets/svg/realCombinations.svg')"
+                    width="30"
+                    height="30"
+                  />
+                  <strong v-if="realCombinations === null">?</strong>
+                  <strong v-else>{{ realCombinations }} combinations</strong>
+                  <div>Real combinations</div>
                 </div>
-                <div v-if="realCombinations === null">?</div>
-                <div v-else>{{ realCombinations }} combinations</div>
+                <button :disabled="!realCombinations">Start combination analysis</button>
               </div>
             </div>
           </div>
@@ -239,6 +261,12 @@ export default {
       }
       return combinations;
     },
+    reasonNotReadyToComputeRealCombinations() {
+      if (this.theoreticalCombinations <= 0) return "No columns selected";
+      if (this.theoreticalCombinations > 10000) return "Too many combinations";
+      if (this.theoreticalCombinations >= this.project.nbSamples) return "Too many combinations";
+      return null;
+    },
   },
 };
 </script>
@@ -266,7 +294,29 @@ export default {
       flex-direction: column;
 
       #combinations {
-        flex: 1;
+        .projectNbSamples {
+          display: flex;
+          justify-content: flex-start;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          margin: 0.5rem;
+        }
+
+        .combinationsDisplay {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.5rem 1rem;
+          margin: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+
+          div {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0.5rem;
+          }
+        }
       }
       #metrics {
         flex: 1;
@@ -275,6 +325,19 @@ export default {
     .card {
       border-radius: 5px;
     }
+  }
+}
+
+.highlight-enter-active {
+  animation: highlightChange 0.5s ease-in-out;
+}
+
+@keyframes highlightChange {
+  0% {
+    transform: scale(1.3) translateY(-2px) rotate(5deg);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
