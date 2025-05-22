@@ -18,7 +18,7 @@ frontend/node_modules/
 # Scripts
 build_and_run.sh
 
-# Deployement
+# Deployment
 deployment/
 
 # VSCODE

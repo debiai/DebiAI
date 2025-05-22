@@ -189,7 +189,7 @@ export default {
     async loadColumnsStatistics() {
       this.columns_statistics = null;
       return this.$explorationDialog
-        .getColumnsStatistics(this.projectId, this.explorationId)
+        .getColumnsStatistics(this.dataProviderId, this.projectId)
         .then((columns_statistics) => {
           this.columns_statistics = columns_statistics;
         })
