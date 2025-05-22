@@ -70,21 +70,27 @@ export default {
       type: Object,
       required: true,
     },
-    columns_statistics: {
+    columnsStatistics: {
+      type: Array,
+      required: true,
+    },
+    selectedColumns: {
       type: Array,
       required: true,
     },
   },
   data() {
     return {
-      selectedColumns: [],
     };
   },
   methods: {
     selectColumn(column) {
       const columnName = column.name;
       if (this.selectedColumns.includes(columnName)) {
-        this.selectedColumns = this.selectedColumns.filter((name) => name !== columnName);
+        this.selectedColumns.splice(
+          this.selectedColumns.indexOf(columnName),
+          1
+        );
       } else {
         this.selectedColumns.push(columnName);
       }
@@ -96,7 +102,7 @@ export default {
   },
   computed: {
     columnsGroupedByCategory() {
-      const columns = this.columns_statistics;
+      const columns = this.columnsStatistics;
       const columnsGroupedByCategory = {};
 
       for (const column of columns) {
@@ -109,7 +115,7 @@ export default {
       return columnsGroupedByCategory;
     },
     unsupportedColumns() {
-      const columns = this.columns_statistics;
+      const columns = this.columnsStatistics;
       return columns.filter((column) => this.isUnsupported(column));
     },
   },

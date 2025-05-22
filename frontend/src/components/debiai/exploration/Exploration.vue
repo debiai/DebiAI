@@ -14,7 +14,7 @@
     >
       <div
         id="content"
-        v-if="project && exploration && columns_statistics"
+        v-if="project && exploration && columnsStatistics"
       >
         <div
           id="columns"
@@ -26,8 +26,8 @@
           <columns
             :project="project"
             :exploration="exploration"
-            :columns_statistics="columns_statistics"
-            v-on:refresh="loadProjectAndExploration"
+            :columnsStatistics="columnsStatistics"
+            :selectedColumns="selectedColumns"
           />
         </div>
         <div id="right">
@@ -39,7 +39,25 @@
               <h2>Combinations</h2>
             </div>
             <div class="content">
-              <p>Combinations content goes here.</p>
+              <div class="projectNbSamples">
+                <div>
+                  <strong>Project</strong>
+                </div>
+                <div>{{ project.nbSamples }} samples</div>
+              </div>
+              <div class="theoreticalCombinations">
+                <div>
+                  <strong>Theoretical combinations</strong>
+                </div>
+                <div>{{ theoreticalCombinations }} combinations</div>
+              </div>
+              <div class="realCombinations">
+                <div>
+                  <strong>Real combinations</strong>
+                </div>
+                <div v-if="realCombinations === null">?</div>
+                <div v-else>{{ realCombinations }} combinations</div>
+              </div>
             </div>
           </div>
           <div
@@ -50,7 +68,7 @@
               <h2>Metrics</h2>
             </div>
             <div class="content">
-              <p>Metrics content goes here.</p>
+              <div>Metrics content goes here.</div>
             </div>
           </div>
         </div>
@@ -80,8 +98,12 @@ export default {
       // Exploration
       explorationId: null,
       exploration: null,
-      columns_statistics: null,
-      columns_statistics_status: null,
+      columnsStatistics: null,
+      columnsStatisticsStatus: null,
+      selectedColumns: [],
+
+      // Combinations
+      realCombinations: null,
     };
   },
   created() {
@@ -192,20 +214,32 @@ export default {
         });
     },
     async loadColumnsStatistics() {
-      this.columns_statistics = null;
+      this.columnsStatistics = null;
       return this.$explorationDialog
         .getColumnsStatistics(this.dataProviderId, this.projectId)
-        .then((columns_statistics_result) => {
-          if (columns_statistics_result.columns)
-            this.columns_statistics = columns_statistics_result.columns;
-          else this.columns_statistics_status = columns_statistics_result.status;
+        .then((columnsStatisticsResult) => {
+          if (columnsStatisticsResult.columns)
+            this.columnsStatistics = columnsStatisticsResult.columns;
+          else this.columnsStatistics_status = columnsStatisticsResult.status;
         })
         .catch((e) => {
           console.log(e);
         });
     },
   },
-  computed: {},
+  computed: {
+    theoreticalCombinations() {
+      if (this.selectedColumns.length === 0) return 0;
+      let combinations = 1;
+      for (let i = 0; i < this.selectedColumns.length; i++) {
+        const columnNbUniqueValues = this.columnsStatistics.find(
+          (column) => column.name === this.selectedColumns[i]
+        ).nbUniqueValues;
+        combinations *= columnNbUniqueValues;
+      }
+      return combinations;
+    },
+  },
 };
 </script>
 
