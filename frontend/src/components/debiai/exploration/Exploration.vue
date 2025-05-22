@@ -14,7 +14,7 @@
     >
       <div
         id="content"
-        v-if="project && exploration"
+        v-if="project && exploration && columns_statistics"
       >
         <div
           id="columns"
@@ -23,10 +23,12 @@
           <div class="title">
             <h2>Project columns</h2>
           </div>
-          <div class="content">
-            {{ columns_statistics }}
-            <div class="category"></div>
-          </div>
+          <columns
+            :project="project"
+            :exploration="exploration"
+            :columns_statistics="columns_statistics"
+            v-on:refresh="loadProjectAndExploration"
+          />
         </div>
         <div id="right">
           <div
@@ -59,12 +61,14 @@
 
 <script>
 import ExplorationHeader from "./ExplorationHeader";
+import Columns from "./Columns";
 
 export default {
   name: "Exploration",
   props: {},
   components: {
     ExplorationHeader,
+    Columns,
   },
   data: () => {
     return {
@@ -77,6 +81,7 @@ export default {
       explorationId: null,
       exploration: null,
       columns_statistics: null,
+      columns_statistics_status: null,
     };
   },
   created() {
@@ -190,8 +195,10 @@ export default {
       this.columns_statistics = null;
       return this.$explorationDialog
         .getColumnsStatistics(this.dataProviderId, this.projectId)
-        .then((columns_statistics) => {
-          this.columns_statistics = columns_statistics;
+        .then((columns_statistics_result) => {
+          if (columns_statistics_result.columns)
+            this.columns_statistics = columns_statistics_result.columns;
+          else this.columns_statistics_status = columns_statistics_result.status;
         })
         .catch((e) => {
           console.log(e);

@@ -204,6 +204,14 @@ button {
     color: white;
     font-weight: bold;
   }
+
+  &.selected {
+    background-color: var(--primary);
+    border: solid 1px var(--primary);
+    color: white;
+    font-weight: bold;
+  }
+  
 }
 
 button + button {
