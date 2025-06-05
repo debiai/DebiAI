@@ -33,14 +33,15 @@ export default {
   },
 
   timeStampToTime(ts) {
-    var a = new Date(ts);
-    var hour = a.getHours() - 1; // GMT+1
-    var min = a.getMinutes();
-    var sec = a.getSeconds() + 1; // To end on a full second
-    var time = sec + "s";
+    const a = new Date(ts);
+    const day = a.getDay();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds() + 1; // To end on a full second
+    let time = sec + "s";
     if (min > 0) time = min + "m" + time;
     if (hour > 0) time = hour + "h " + time;
-
+    if (day > 0) time = day + "d " + time;
     return time;
   },
 
@@ -70,13 +71,23 @@ export default {
     return time;
   },
 
-  timeStampToHourAndMinute(ts) {
-    var a = new Date(ts);
-    var hour = a.getHours();
-    var min = a.getMinutes();
+  timeStampToRemainingTime(ts) {
+    console.log("TimeStamp to remaining time", ts);
+    
+    const a = new Date(ts);
+    console.log(a);
+    
+    let day = a.getDay();
+    let hour = a.getHours();
+    let min = a.getMinutes();
+    let sec = a.getSeconds() + 1; // To end on a full second
+    console.log("Day:", day, "Hour:", hour, "Min:", min, "Sec:", sec);
+    
     if (min < 10) min = "0" + min;
     if (hour < 10) hour = "0" + hour;
-    var time = hour + "h" + min;
+    let time = hour + "h" + min;
+    if (day > 0) time = day + "d " + time;
+
     return time;
   },
 

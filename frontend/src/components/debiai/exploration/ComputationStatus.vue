@@ -40,7 +40,7 @@
             height="20"
           />
           <span>
-            {{ $services.timeStampToTime(exploration.remaining_time * 1000) }}
+            {{ $services.timeStampToRemainingTime(exploration.remaining_time) }}
           </span>
         </div>
       </div>

@@ -35,7 +35,7 @@
         >
           Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br />
           <span v-if="req.remaining > 60000">
-            Time of arrival: ~{{ $services.timeStampToHourAndMinute(req.timeArrival + 60000) }}
+            Time of arrival: ~{{ $services.timeStampToRemainingTime(req.timeArrival + 60000) }}
           </span>
         </div>
 

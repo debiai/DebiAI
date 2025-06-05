@@ -280,6 +280,13 @@ export default {
       return this.explorationName;
     },
   },
+  beforeDestroy() {
+    // Clear the explorations refresh interval if it exists
+    if (this.explorationsRefreshInterval) {
+      clearInterval(this.explorationsRefreshInterval);
+      this.explorationsRefreshInterval = null;
+    }
+  },
 };
 </script>
 
