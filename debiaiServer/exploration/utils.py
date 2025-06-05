@@ -1,4 +1,8 @@
 from pickledb import PickleDB
+from ..exploration_statistics.controller import get_samples_batch
+from ..modules.dataProviders.dataProviderManager import (
+    get_single_data_provider_for_project_id,
+)
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorations.db")
@@ -38,16 +42,35 @@ def start_exploration_real_combination_computation(project_id, exploration_id):
     from time import sleep, time
     from random import randint
 
+    # Get the exploration from the database
     exploration = get_exploration_by_id(project_id, exploration_id)
     if exploration is None:
         return
 
+    # Get the data-provider for the given project
+    data_provider = get_single_data_provider_for_project_id(project_id)
+    print(f"Starting exploration {exploration_id} on project {project_id}")
+    print(f"Using data provider: {data_provider.name}")
+
+    batch = get_samples_batch(
+        data_provider,
+        project_id,
+        "aa",
+        0,
+        10,  # Assuming we want to start with the first 1000 samples
+    )
+    print(f"Fetched {len(batch)} samples from the data provider")
+    print(batch)
+
     # Set the exploration as started
     exploration["state"] = "ongoing"
     exploration["real_combinations"] = 0
+    exploration["started_at"] = time()
+    exploration["current_sample"] = 0
+    exploration["remaining_time"] = None
     update_exploration(project_id, exploration)
 
-    time_started = time()
+    # Combinations computation
 
     nb_iter = 15
     for i in range(nb_iter):
@@ -62,9 +85,9 @@ def start_exploration_real_combination_computation(project_id, exploration_id):
         exploration["real_combinations"] += randint(1, 50)
 
         # Calculate the estimated time remaining
-        elapsed_time = time() - time_started
+        elapsed_time = time() - exploration["started_at"]
         estimated_total_time = elapsed_time / (i + 1) * nb_iter
-        exploration["remaining_time"] = estimated_total_time - elapsed_time * 10000
+        exploration["remaining_time"] = estimated_total_time - elapsed_time
 
         # Update the exploration in the database
         print(

@@ -17,7 +17,9 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
     DataProviderException,
 )
 
-data_providers_list = []
+from debiaiServer.modules.dataProviders.DataProvider import DataProvider
+
+data_providers_list: list[DataProvider] = []
 python_data_provider_disabled = True
 
 
@@ -110,6 +112,7 @@ def get_data_provider_list():
 
 
 def get_single_data_provider(name) -> WebDataProvider:
+
     # Check if the data provider is not disabled
     if name == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
         raise DataProviderException("Python module data provider is disabled", 403)
@@ -120,6 +123,15 @@ def get_single_data_provider(name) -> WebDataProvider:
             return d
 
     raise DataProviderException("Data provider not found", 404)
+
+
+def get_single_data_provider_for_project_id(project_id) -> WebDataProvider:
+    # Return the first data provider that supports the project_id
+    for d in data_providers_list:
+        if d.supports_project_id(project_id):
+            return d
+
+    raise DataProviderException("Data provider not found for project", 404)
 
 
 def delete(name):
