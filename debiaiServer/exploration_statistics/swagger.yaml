@@ -43,7 +43,10 @@ paths:
                           description: The name of the column.
                         type:
                           type: string
-                          description: The type of the column (e.g., string, integer).
+                          description: The type of the column (e.g., text, number).
+                        categoty:
+                          type: string
+                          description: The category of the column (e.g., groundtruth, context).
                         nbUniqueValues:
                           type: integer
                           description: The number of unique values in the column.

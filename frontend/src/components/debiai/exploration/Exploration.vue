@@ -217,6 +217,10 @@ export default {
         .getExploration(this.projectId, this.explorationId)
         .then((exploration) => {
           this.exploration = exploration;
+          if (this.exploration.config) {
+            this.selectedColumns = this.exploration.config.selectedColumns || [];
+          }
+
           if (!this.exploration) {
             this.$store.commit("sendMessage", {
               title: "error",
@@ -248,6 +252,20 @@ export default {
           console.log(e);
         });
     },
+    async updateExplorationConfig() {
+      if (!this.exploration) return;
+      this.exploration.config.selectedColumns = this.selectedColumns;
+      return this.$explorationDialog
+        .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Error while updating exploration",
+          });
+        });
+    },
   },
   computed: {
     theoreticalCombinations() {
@@ -266,6 +284,14 @@ export default {
       if (this.theoreticalCombinations > 10000) return "Too many combinations";
       if (this.theoreticalCombinations >= this.project.nbSamples) return "Too many combinations";
       return null;
+    },
+  },
+  watch: {
+    selectedColumns: {
+      handler() {
+        this.updateExplorationConfig();
+      },
+      deep: true,
     },
   },
 };

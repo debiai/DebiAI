@@ -75,6 +75,22 @@ export default {
         return response.data;
       });
   },
+  updateExplorationConfig(projectId, explorationId, config) {
+    let code = b.startRequest("Updating exploration config");
+    return axios
+      .put(`${apiURL}explorations/${explorationId}`, config, {
+        params: {
+          project_id: projectId,
+          action: "updateConfig",
+        },
+      })
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 
   // Statistics
   getColumnsStatistics(dataProviderId, projectId) {

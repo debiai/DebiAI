@@ -71,9 +71,9 @@ def get_id_list(url, id_project, analysis, _from=None, _to=None):
                 + "/data-id-list?analysisId={}".format(analysis["id"])
             )
 
-        if analysis["start"]:
+        if "start" in analysis and analysis["start"]:
             url += "&analysisStart={}".format(str(analysis["start"]).lower())
-        if analysis["end"]:
+        if "end" in analysis and analysis["end"]:
             url += "&analysisEnd={}".format(str(analysis["end"]).lower())
 
         r = requests.get(url)
@@ -95,8 +95,8 @@ def get_samples(url, id_project, analysis, id_list):
 analysisStart={}&analysisEnd={}".format(
                     id_project,
                     analysis["id"],
-                    str(analysis["start"]).lower(),
-                    str(analysis["end"]).lower(),
+                    str(analysis["start"]).lower() if "start" in analysis else "false",
+                    str(analysis["end"]).lower() if "end" in analysis else "false",
                 )
             )
         else:

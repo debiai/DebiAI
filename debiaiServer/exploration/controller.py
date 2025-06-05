@@ -57,8 +57,25 @@ def delete_exploration(project_id, exploration_id):
     return explorations
 
 
-def update_exploration():
-    pass
+def update_exploration(project_id, exploration_id, action, body):
+    exploration = get_exploration(project_id, exploration_id)
+    if exploration is None:
+        return None
+
+    # Perform action based on the request
+    if action == "start":
+        return
+    elif action == "stop":
+        return
+    elif action == "updateConfig":
+        # Update exploration config
+        exploration["config"] = body
+        print("Updated exploration config:", exploration["config"])
+        project_explorations_db.set(project_id, project_explorations_db.get(project_id))
+        project_explorations_db.save()
+        return exploration
+    else:
+        raise ValueError(f"Unknown action: {action}")
 
 
 def update_exploration_config():

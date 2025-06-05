@@ -152,7 +152,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [start, stop]
+            enum: [updateConfig, start, stop]
       responses:
         "200":
           description: Exploration created
