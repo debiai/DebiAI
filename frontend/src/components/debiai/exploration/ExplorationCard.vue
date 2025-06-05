@@ -8,6 +8,16 @@
     <div class="description">
       {{ exploration.description }}
     </div>
+
+    <!-- Ongoing exploration display -->
+    <ComputationStatus
+      v-if="exploration.state === 'ongoing'"
+      :exploration="exploration"
+      :project="project"
+      @cancelled="$emit('refresh')"
+    />
+
+    <!-- actions -->
     <div class="actions">
       <button
         class="red"
@@ -20,10 +30,19 @@
 </template>
 
 <script>
+import ComputationStatus from "./ComputationStatus.vue";
+
 export default {
   name: "ExplorationCard",
+  components: {
+    ComputationStatus,
+  },
   props: {
     exploration: {
+      type: Object,
+      required: true,
+    },
+    project: {
       type: Object,
       required: true,
     },

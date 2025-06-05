@@ -49,7 +49,7 @@ def start_exploration_real_combination_computation(project_id, exploration_id):
 
     time_started = time()
 
-    nb_iter = 5
+    nb_iter = 15
     for i in range(nb_iter):
         # Check if the stop signal is set
         if stop_flags.get(exploration_id):
@@ -74,7 +74,7 @@ def start_exploration_real_combination_computation(project_id, exploration_id):
             f"Estimated Remaining Time: {exploration['remaining_time']:.2f} seconds"
         )
         update_exploration(project_id, exploration)
-        sleep(5 / nb_iter)
+        sleep(20 / nb_iter)
 
     # Set the exploration status to "completed"
     exploration["state"] = "completed"

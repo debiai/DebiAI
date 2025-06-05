@@ -71,9 +71,10 @@
           v-for="exploration in explorations"
           :key="exploration.id"
           :exploration="exploration"
-          :projectId="projectId"
+          :project="project"
           @edit="editExploration"
           @delete="deleteExploration"
+          @refresh="loadExplorations"
         />
       </div>
     </transition>
@@ -114,6 +115,7 @@ export default {
 
       // Explorations
       explorations: null,
+      explorationsRefreshInterval: null,
     };
   },
   created() {
@@ -188,7 +190,25 @@ export default {
         .getExplorations(this.projectId)
         .then((explorations) => {
           this.explorations = explorations;
+
+          if (this.explorationsRefreshInterval) clearInterval(this.explorationsRefreshInterval);
+
+          // Check if explorations are ongoing and set an interval to refresh them
+          if (this.explorations.some((exploration) => exploration.state === "ongoing")) {
+            this.explorationsRefreshInterval = setInterval(() => {
+              this.$explorationDialog.getExplorations(this.projectId).then((explorations) => {
+                this.explorations = explorations;
+
+                // If no ongoing explorations, clear the interval
+                if (!this.explorations.some((exploration) => exploration.state === "ongoing")) {
+                  clearInterval(this.explorationsRefreshInterval);
+                  this.explorationsRefreshInterval = null;
+                }
+              });
+            }, 1000);
+          }
         })
+
         .catch((e) => {
           console.log(e);
         });

@@ -1,7 +1,15 @@
 <template>
   <div class="computation-status">
     <!-- Progress bar & time + samples left -->
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
+      "
+    >
       <!-- Progress bar -->
       <div class="progressBar">
         <div
@@ -37,6 +45,7 @@
         </div>
       </div>
     </div>
+
     <!-- Ongoing text & control -->
     <div
       style="display: flex; justify-content: flex-end; align-items: center; width: 100%; gap: 10px"
@@ -71,7 +80,9 @@ export default {
     },
   },
   methods: {
-    cancelExplorationComputation() {
+    cancelExplorationComputation(event) {
+      event.stopPropagation();
+
       if (this.cancellationLoading) return;
       this.cancellationLoading = true;
       this.$explorationDialog
@@ -107,6 +118,7 @@ export default {
   align-items: center;
   margin-top: 0.5rem;
   gap: 1rem;
+  width: 100%;
 
   .progressBar {
     width: 100%;
