@@ -219,10 +219,10 @@ components:
         state:
           type: string
           enum: [completed, ongoing, not_started, upcoming]
-        theoretical_computations:
+        theoretical_combinations:
           type: integer
           nullable: true
-        real_computations:
+        real_combinations:
           type: integer
           nullable: true
         remaining_time:
@@ -232,14 +232,14 @@ components:
         current_sample:
           type: integer
           nullable: true
-        combinaison:
+        combinaisons:
           type: array
           items:
             type: array
             items:
               type: string
           nullable: true
-        combinaison_file:
+        combinaisons_file:
           type: string
           format: uri
 

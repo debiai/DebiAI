@@ -1,8 +1,14 @@
-from pickledb import PickleDB
 import uuid
-
-# Create or load a database
-project_explorations_db = PickleDB("projectsExplorations.db")
+import threading
+from .utils import (
+    project_explorations_db,
+    start_exploration_real_combination_computation,
+    get_exploration_by_id,
+    update_explorations,
+    update_exploration as update_exploration_db,
+    computation_threads,
+    stop_flags,
+)
 
 
 def get_exploration_available_config():
@@ -23,21 +29,17 @@ def create_exploration(project_id, body):
             "id": str(uuid.uuid4()),
             "name": body.get("name"),
             "description": body.get("description", ""),
+            "state": "not_started",
             "config": {},
         }
     )
 
     # Update the database
-    project_explorations_db.set(project_id, explorations)
-    project_explorations_db.save()
+    update_explorations(project_id, explorations)
 
 
 def get_exploration(project_id, exploration_id):
-    explorations = project_explorations_db.get(project_id) or []
-    for exploration in explorations:
-        if exploration.get("id") == exploration_id:
-            return exploration
-    return None
+    return get_exploration_by_id(project_id, exploration_id)
 
 
 def delete_exploration(project_id, exploration_id):
@@ -52,27 +54,52 @@ def delete_exploration(project_id, exploration_id):
     ]
 
     # Update the database
-    project_explorations_db.set(project_id, explorations)
-    project_explorations_db.save()
+    update_explorations(project_id, explorations)
     return explorations
 
 
 def update_exploration(project_id, exploration_id, action, body):
     exploration = get_exploration(project_id, exploration_id)
     if exploration is None:
+        print("Exploration not found:", exploration_id)
         return None
 
     # Perform action based on the request
     if action == "start":
-        return
+        # Check if the exploration is already running
+        if exploration.get("state") == "ongoing":
+            print("Exploration is already running:", exploration_id)
+            return exploration
+
+        # Start the exploration computation in a separate thread
+        thread = threading.Thread(
+            target=start_exploration_real_combination_computation,
+            args=(project_id, exploration_id),
+            daemon=True,
+        )
+        thread.start()
+
+        # Save the thread in the global dictionary
+        computation_threads[exploration_id] = thread
+
+        return exploration
+
     elif action == "stop":
-        return
+        # Stop the exploration computation
+        if exploration_id in computation_threads:
+            # Set the stop flag
+            stop_flags[exploration_id] = True
+
+            # Wait for the thread to finish
+            computation_threads[exploration_id].join()
+            del computation_threads[exploration_id]
+            del stop_flags[exploration_id]
+
+        return exploration
     elif action == "updateConfig":
         # Update exploration config
         exploration["config"] = body
-        print("Updated exploration config:", exploration["config"])
-        project_explorations_db.set(project_id, project_explorations_db.get(project_id))
-        project_explorations_db.save()
+        update_exploration_db(project_id, exploration)
         return exploration
     else:
         raise ValueError(f"Unknown action: {action}")

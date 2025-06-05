@@ -75,13 +75,32 @@ export default {
         return response.data;
       });
   },
-  updateExplorationConfig(projectId, explorationId, config) {
+  updateExplorationConfig(projectId, explorationId, config, action = "updateConfig") {
     let code = b.startRequest("Updating exploration config");
     return axios
       .put(`${apiURL}explorations/${explorationId}`, config, {
         params: {
           project_id: projectId,
-          action: "updateConfig",
+          action,
+        },
+      })
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  computeRealCombinations(projectId, explorationId, config) {
+    return this.updateExplorationConfig(projectId, explorationId, config, "start");
+  },
+  cancelRealCombinationsComputation(projectId, explorationId) {
+    let code = b.startRequest("Cancelling real combinations computation");
+    return axios
+      .put(`${apiURL}explorations/${explorationId}`, null, {
+        params: {
+          project_id: projectId,
+          action: "stop",
         },
       })
       .finally(() => {

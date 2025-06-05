@@ -16,6 +16,7 @@
         id="content"
         v-if="project && exploration && columnsStatistics"
       >
+        <!-- Columns -->
         <div
           id="columns"
           class="card"
@@ -30,7 +31,9 @@
             :selectedColumns="selectedColumns"
           />
         </div>
+        <!-- Combinations and Metrics -->
         <div id="right">
+          <!-- Combinations -->
           <div
             id="combinations"
             class="card"
@@ -39,6 +42,7 @@
               <h2>Combinations</h2>
             </div>
             <div class="content">
+              <!-- Nb samples -->
               <div class="projectNbSamples">
                 <inline-svg
                   :src="require('@/assets/svg/data.svg')"
@@ -48,40 +52,61 @@
                 <strong>{{ project.nbSamples }} </strong>
                 <div>Project samples</div>
               </div>
-              <div class="combinationsDisplay theoreticalCombinations">
-                <div>
-                  <inline-svg
-                    :src="require('@/assets/svg/theoreticalCombinations.svg')"
-                    width="30"
-                    height="30"
-                  />
-                  <transition name="highlight">
-                    <strong :key="theoreticalCombinations">{{ theoreticalCombinations }}</strong>
-                  </transition>
-                  <div>Theoretical combinations</div>
+              <!-- Theoretical -->
+              <div class="theoreticalCombinations">
+                <!-- Icon, title & number -->
+                <div class="combinationsDisplay">
+                  <div>
+                    <inline-svg
+                      :src="require('@/assets/svg/theoreticalCombinations.svg')"
+                      width="30"
+                      height="30"
+                    />
+                    <transition name="highlight">
+                      <strong :key="theoreticalCombinations">{{ theoreticalCombinations }}</strong>
+                    </transition>
+                    <div>Theoretical combinations</div>
+                  </div>
+
+                  <button
+                    :disabled="reasonNotReadyToComputeRealCombinations"
+                    :title="reasonNotReadyToComputeRealCombinations"
+                    @click="computeRealCombinations"
+                  >
+                    Compute real combinations
+                  </button>
                 </div>
-                <button
-                  :disabled="reasonNotReadyToComputeRealCombinations"
-                  :title="reasonNotReadyToComputeRealCombinations"
-                >
-                  Compute real combinations
-                </button>
+
+                <!-- Ongoing exploration display -->
+                <ComputationStatus
+                  v-if="exploration.state === 'ongoing'"
+                  :exploration="exploration"
+                  :project="project"
+                  @cancelled="loadExploration()"
+                />
               </div>
-              <div class="combinationsDisplay realCombinations">
+
+              <!-- Real Combinations -->
+              <div class="realCombinations">
                 <div>
                   <inline-svg
                     :src="require('@/assets/svg/realCombinations.svg')"
                     width="30"
                     height="30"
                   />
-                  <strong v-if="realCombinations === null">?</strong>
-                  <strong v-else>{{ realCombinations }} combinations</strong>
+                  <strong v-if="exploration.real_combinations === null">?</strong>
+                  <strong v-else>{{ exploration.real_combinations }} combinations</strong>
                   <div>Real combinations</div>
                 </div>
-                <button :disabled="!realCombinations">Start combination analysis</button>
+                <button
+                  :disabled="!exploration.real_combinations || exploration.state !== 'completed'"
+                >
+                  Start combination analysis
+                </button>
               </div>
             </div>
           </div>
+          <!-- Metrics -->
           <div
             id="metrics"
             class="card"
@@ -101,6 +126,7 @@
 
 <script>
 import ExplorationHeader from "./ExplorationHeader";
+import ComputationStatus from "./ComputationStatus";
 import Columns from "./Columns";
 
 export default {
@@ -108,6 +134,7 @@ export default {
   props: {},
   components: {
     ExplorationHeader,
+    ComputationStatus,
     Columns,
   },
   data: () => {
@@ -126,6 +153,9 @@ export default {
 
       // Combinations
       realCombinations: null,
+
+      // Other
+      explorationRefreshInterval: null,
     };
   },
   created() {
@@ -211,8 +241,9 @@ export default {
           this.$router.push("/");
         });
     },
-    async loadExploration() {
-      this.exploration = null;
+    async loadExploration(clearPrevious = true) {
+      if (clearPrevious) this.exploration = null;
+
       return this.$explorationDialog
         .getExploration(this.projectId, this.explorationId)
         .then((exploration) => {
@@ -266,6 +297,39 @@ export default {
           });
         });
     },
+    async computeRealCombinations() {
+      try {
+        const exploration = await this.$explorationDialog.computeRealCombinations(
+          this.projectId,
+          this.explorationId,
+          this.exploration.config
+        );
+        this.exploration = exploration;
+
+        // Refresh the exploration data every second
+        if (this.explorationRefreshInterval) clearInterval(this.explorationRefreshInterval);
+        this.explorationRefreshInterval = setInterval(() => {
+          this.loadExploration(false).then(() => {
+            if (this.exploration.state !== "ongoing") {
+              clearInterval(this.explorationRefreshInterval);
+              this.explorationRefreshInterval = null;
+            }
+          });
+        }, 1000);
+
+        // Send message
+        this.$store.commit("sendMessage", {
+          title: "success",
+          msg: "The real combinations hare been computed",
+        });
+      } catch (e) {
+        console.log(e);
+        this.$store.commit("sendMessage", {
+          title: "error",
+          msg: "Error while computing real combinations",
+        });
+      }
+    },
   },
   computed: {
     theoreticalCombinations() {
@@ -283,6 +347,8 @@ export default {
       if (this.theoreticalCombinations <= 0) return "No columns selected";
       if (this.theoreticalCombinations > 10000) return "Too many combinations";
       if (this.theoreticalCombinations >= this.project.nbSamples) return "Too many combinations";
+      if (this.exploration.state === "ongoing")
+        return "Exploration is ongoing, please wait until it is finished";
       return null;
     },
   },
@@ -293,6 +359,9 @@ export default {
       },
       deep: true,
     },
+  },
+  beforeDestroy() {
+    if (this.explorationRefreshInterval) clearInterval(this.explorationRefreshInterval);
   },
 };
 </script>
@@ -328,7 +397,31 @@ export default {
           margin: 0.5rem;
         }
 
-        .combinationsDisplay {
+        .theoreticalCombinations {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          margin: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+
+          .combinationsDisplay {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            div {
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              gap: 0.5rem;
+            }
+          }
+        }
+        .realCombinations {
           display: flex;
           justify-content: space-between;
           padding: 0.5rem 1rem;
