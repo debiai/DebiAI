@@ -196,15 +196,17 @@ export default {
           // Check if explorations are ongoing and set an interval to refresh them
           if (this.explorations.some((exploration) => exploration.state === "ongoing")) {
             this.explorationsRefreshInterval = setInterval(() => {
-              this.$explorationDialog.getExplorations(this.projectId).then((explorations) => {
-                this.explorations = explorations;
+              this.$explorationDialog
+                .getExplorations(this.projectId, false)
+                .then((explorations) => {
+                  this.explorations = explorations;
 
-                // If no ongoing explorations, clear the interval
-                if (!this.explorations.some((exploration) => exploration.state === "ongoing")) {
-                  clearInterval(this.explorationsRefreshInterval);
-                  this.explorationsRefreshInterval = null;
-                }
-              });
+                  // If no ongoing explorations, clear the interval
+                  if (!this.explorations.some((exploration) => exploration.state === "ongoing")) {
+                    clearInterval(this.explorationsRefreshInterval);
+                    this.explorationsRefreshInterval = null;
+                  }
+                });
             }, 1000);
           }
         })

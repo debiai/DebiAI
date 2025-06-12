@@ -241,16 +241,15 @@ export default {
           this.$router.push("/");
         });
     },
-    async loadExploration(clearPrevious = true) {
+    async loadExploration(clearPrevious = true, updateColumns = true) {
       if (clearPrevious) this.exploration = null;
 
       return this.$explorationDialog
-        .getExploration(this.projectId, this.explorationId)
+        .getExploration(this.projectId, this.explorationId, updateColumns)
         .then((exploration) => {
           this.exploration = exploration;
-          if (this.exploration.config) {
+          if (this.exploration.config && updateColumns)
             this.selectedColumns = this.exploration.config.selectedColumns || [];
-          }
 
           if (!this.exploration) {
             this.$store.commit("sendMessage", {
@@ -265,6 +264,9 @@ export default {
               },
             });
           }
+
+          // If the exploration is ongoing, start the refresh interval
+          if (this.exploration.state === "ongoing") this.startExplorationRefreshInterval();
         })
         .catch((e) => {
           console.log(e);
@@ -306,16 +308,8 @@ export default {
         );
         this.exploration = exploration;
 
-        // Refresh the exploration data every second
-        if (this.explorationRefreshInterval) clearInterval(this.explorationRefreshInterval);
-        this.explorationRefreshInterval = setInterval(() => {
-          this.loadExploration(false).then(() => {
-            if (this.exploration.state !== "ongoing") {
-              clearInterval(this.explorationRefreshInterval);
-              this.explorationRefreshInterval = null;
-            }
-          });
-        }, 1000);
+        // Start the exploration refresh interval to update the exploration data
+        this.startExplorationRefreshInterval();
 
         // Send message
         this.$store.commit("sendMessage", {
@@ -329,6 +323,19 @@ export default {
           msg: "Error while computing real combinations",
         });
       }
+    },
+    startExplorationRefreshInterval() {
+      // Refresh the exploration data every second
+      if (this.explorationRefreshInterval) clearInterval(this.explorationRefreshInterval);
+      this.explorationRefreshInterval = setInterval(() => {
+        this.loadExploration(false, false).then(() => {
+          // Stop refreshing if the exploration computation is done
+          if (this.exploration.state !== "ongoing") {
+            clearInterval(this.explorationRefreshInterval);
+            this.explorationRefreshInterval = null;
+          }
+        });
+      }, 1000);
     },
   },
   computed: {

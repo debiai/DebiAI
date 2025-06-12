@@ -60,8 +60,10 @@ export default {
   },
 
   // Exploration
-  getExploration(projectId, explorationId) {
-    let code = b.startRequest("Getting exploration");
+  getExploration(projectId, explorationId, displayMessage = true) {
+    let code;
+    if (displayMessage) code = b.startRequest("Getting exploration");
+
     return axios
       .get(`${apiURL}explorations/${explorationId}`, {
         params: {
@@ -69,7 +71,7 @@ export default {
         },
       })
       .finally(() => {
-        b.endRequest(code);
+        if (displayMessage) b.endRequest(code);
       })
       .then((response) => {
         return response.data;
