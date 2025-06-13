@@ -1,8 +1,12 @@
 from pickledb import PickleDB
-from ..exploration_statistics.controller import get_samples_batch
+from ..exploration_statistics.utils import get_tuples_batch
 from ..modules.dataProviders.dataProviderManager import (
     get_single_data_provider_for_project_id,
 )
+from uuid import uuid4
+from time import time
+import traceback
+from collections import Counter
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorations.db")
@@ -39,28 +43,35 @@ def update_exploration(project_id, exploration):
 
 # Processing functions
 def start_exploration_real_combination_computation(project_id, exploration_id):
-    from time import sleep, time
-    from random import randint
+    try:
+        _start_exploration_real_combination_computation(project_id, exploration_id)
+    except Exception as e:
+        print(f"Error during exploration computation: {e}")
+        traceback.print_exc()
+        exploration = get_exploration_by_id(project_id, exploration_id)
+        if exploration:
+            exploration["state"] = "error"
+            update_exploration(project_id, exploration)
+        return
 
+
+def _start_exploration_real_combination_computation(project_id, exploration_id):
     # Get the exploration from the database
     exploration = get_exploration_by_id(project_id, exploration_id)
     if exploration is None:
+        return
+    selected_columns = exploration.get("config", {}).get("selectedColumns", [])
+    if not selected_columns:
+        print(
+            f"No selected columns for exploration {exploration_id} on project {project_id}"
+        )
         return
 
     # Get the data-provider for the given project
     data_provider = get_single_data_provider_for_project_id(project_id)
     print(f"Starting exploration {exploration_id} on project {project_id}")
     print(f"Using data provider: {data_provider.name}")
-
-    batch = get_samples_batch(
-        data_provider,
-        project_id,
-        "aa",
-        0,
-        10,  # Assuming we want to start with the first 1000 samples
-    )
-    print(f"Fetched {len(batch)} samples from the data provider")
-    print(batch)
+    columns_structure = data_provider.get_project(project_id)["columns"]
 
     # Set the exploration as started
     exploration["state"] = "ongoing"
@@ -71,33 +82,52 @@ def start_exploration_real_combination_computation(project_id, exploration_id):
     update_exploration(project_id, exploration)
 
     # Combinations computation
-
-    nb_iter = 15
-    for i in range(nb_iter):
-        # Check if the stop signal is set
+    combinations = Counter()
+    selected_columns_unique_values = {column: set() for column in selected_columns}
+    NB_SAMPLES = 1000
+    current_sample = 0
+    computation_id = str(uuid4())
+    while True:
+        # Check if the stop signal is set, stop the exploration if it is
         if stop_flags.get(exploration_id):
             print(f"Stopping exploration {exploration_id}")
             exploration["state"] = "not_started"
             update_exploration(project_id, exploration)
             return
 
-        exploration["current_sample"] = i * 10 + 1
-        exploration["real_combinations"] += randint(1, 50)
+        # Fetch the next batch of samples
+        batch = get_tuples_batch(
+            data_provider,
+            project_id,
+            computation_id,
+            current_sample,
+            current_sample + NB_SAMPLES,
+            columns_structure,
+            selected_columns,
+        )
+        combinations.update(batch)
+        print(list(combinations.items()))
+
+        # Update the exploration progression status
+        current_sample += len(batch)
+        exploration["current_sample"] = current_sample
+        exploration["real_combinations"] = len(combinations)
 
         # Calculate the estimated time remaining
         elapsed_time = time() - exploration["started_at"]
-        estimated_total_time = elapsed_time / (i + 1) * nb_iter
-        exploration["remaining_time"] = estimated_total_time - elapsed_time
+        if exploration["current_sample"] > 0:
+            estimated_total_time = (
+                elapsed_time * NB_SAMPLES / exploration["current_sample"]
+            )
+            exploration["remaining_time"] = estimated_total_time - elapsed_time
 
         # Update the exploration in the database
-        print(
-            f"Iteration {i + 1}/{nb_iter}, "
-            f"Current Sample: {exploration['current_sample']}, "
-            f"Real Combinations: {exploration['real_combinations']}, "
-            f"Estimated Remaining Time: {exploration['remaining_time']:.2f} seconds"
-        )
         update_exploration(project_id, exploration)
-        sleep(20 / nb_iter)
+
+        # If the batch is less than the requested size, we assume we reached the end
+        if len(batch) < NB_SAMPLES:
+            print("Reached the end of the data provider samples.")
+            break
 
     # Set the exploration status to "completed"
     exploration["state"] = "completed"

@@ -11,7 +11,6 @@
 
     <!-- Ongoing exploration display -->
     <ComputationStatus
-      v-if="exploration.state === 'ongoing'"
       :exploration="exploration"
       :project="project"
       @cancelled="$emit('refresh')"

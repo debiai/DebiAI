@@ -1,62 +1,79 @@
 <template>
-  <div class="computation-status">
-    <!-- Progress bar & time + samples left -->
+  <div>
     <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        gap: 20px;
-      "
+      class="ongoing computation-status"
+      v-if="exploration.state === 'ongoing'"
     >
-      <!-- Progress bar -->
-      <div class="progressBar">
-        <div
-          class="progress"
-          :style="{
-            width:
-              project.nbSamples > 0
-                ? (exploration.current_sample / project.nbSamples) * 100 + '%'
-                : '0%',
-          }"
-        ></div>
+      <!-- Progress bar & time + samples left -->
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          gap: 20px;
+        "
+      >
+        <!-- Progress bar -->
+        <div class="progressBar">
+          <div
+            class="progress"
+            :style="{
+              width:
+                project.nbSamples > 0
+                  ? (exploration.current_sample / project.nbSamples) * 100 + '%'
+                  : '0%',
+            }"
+          ></div>
+        </div>
+
+        <!-- Time & samples left -->
+        <div style="display: flex; flex-direction: column; width: 300px">
+          <div class="samplesLeft">
+            <inline-svg
+              :src="require('@/assets/svg/data.svg')"
+              width="20"
+              height="20"
+            />
+            <span> Sample {{ exploration.current_sample }} / {{ project.nbSamples }} </span>
+          </div>
+          <div class="timeLeft">
+            <inline-svg
+              :src="require('@/assets/svg/time.svg')"
+              width="20"
+              height="20"
+            />
+            <span>
+              {{ $services.timeStampToRemainingTime(exploration.remaining_time) }}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <!-- Time & samples left -->
-      <div style="display: flex; flex-direction: column; width: 300px">
-        <div class="samplesLeft">
-          <inline-svg
-            :src="require('@/assets/svg/data.svg')"
-            width="20"
-            height="20"
-          />
-          <span> Sample {{ exploration.current_sample }} / {{ project.nbSamples }} </span>
-        </div>
-        <div class="timeLeft">
-          <inline-svg
-            :src="require('@/assets/svg/time.svg')"
-            width="20"
-            height="20"
-          />
-          <span>
-            {{ $services.timeStampToRemainingTime(exploration.remaining_time) }}
-          </span>
-        </div>
+      <!-- Ongoing text & control -->
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          width: 100%;
+          gap: 10px;
+        "
+      >
+        <span>Exploration is ongoing</span>
+        <button
+          @click="cancelExplorationComputation"
+          :disabled="cancellationLoading"
+        >
+          Cancel
+        </button>
       </div>
     </div>
-
-    <!-- Ongoing text & control -->
     <div
-      style="display: flex; justify-content: flex-end; align-items: center; width: 100%; gap: 10px"
+      class="error computation-status"
+      v-else-if="exploration.state === 'error'"
     >
-      <span>Exploration is ongoing</span>
-      <button
-        @click="cancelExplorationComputation"
-        :disabled="exploration.state !== 'ongoing' || cancellationLoading"
-      >
-        Cancel
-      </button>
+      <span>Exploration computation failed</span>
     </div>
   </div>
 </template>

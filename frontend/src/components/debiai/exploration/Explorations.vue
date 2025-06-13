@@ -11,7 +11,7 @@
       v-if="newExploration"
       @close="newExploration = false"
     >
-      <h2 class="aligned spaced">
+      <h2 class="aligned spaced" style="padding-bottom: 20px;">
         New exploration
         <button
           class="red"
@@ -210,7 +210,6 @@ export default {
             }, 1000);
           }
         })
-
         .catch((e) => {
           console.log(e);
         });

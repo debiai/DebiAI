@@ -1,7 +1,6 @@
 from pickledb import PickleDB
 import uuid
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
-from debiaiServer.modules.dataProviders.DataProvider import DataProvider
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorationsStatistics.db")
@@ -195,16 +194,3 @@ def get_columns_statistics(dataProviderId, projectId):
     return {"columns": columns_statistics}, 200
 
 
-def get_samples_batch(data_provider: DataProvider, projectId, analysis, start, end):
-    # Get the samples id list
-    data_id_list = data_provider.get_id_list(
-        projectId,
-        analysis,
-        start,
-        end,
-    )
-
-    # Load the samples
-    data = data_provider.get_samples(projectId, analysis, data_id_list)
-
-    return data

@@ -24,12 +24,14 @@
           <div class="title">
             <h2>Project columns</h2>
           </div>
-          <columns
-            :project="project"
-            :exploration="exploration"
-            :columnsStatistics="columnsStatistics"
-            :selectedColumns="selectedColumns"
-          />
+          <div class="columns">
+            <columns
+              :project="project"
+              :exploration="exploration"
+              :columnsStatistics="columnsStatistics"
+              :selectedColumns="selectedColumns"
+            />
+          </div>
         </div>
         <!-- Combinations and Metrics -->
         <div id="right">
@@ -79,7 +81,6 @@
 
                 <!-- Ongoing exploration display -->
                 <ComputationStatus
-                  v-if="exploration.state === 'ongoing'"
                   :exploration="exploration"
                   :project="project"
                   @cancelled="loadExploration()"
@@ -310,17 +311,11 @@ export default {
 
         // Start the exploration refresh interval to update the exploration data
         this.startExplorationRefreshInterval();
-
-        // Send message
-        this.$store.commit("sendMessage", {
-          title: "success",
-          msg: "The real combinations hare been computed",
-        });
       } catch (e) {
         console.log(e);
         this.$store.commit("sendMessage", {
           title: "error",
-          msg: "Error while computing real combinations",
+          msg: "Error while starting the real combinations computation",
         });
       }
     },
@@ -333,6 +328,18 @@ export default {
           if (this.exploration.state !== "ongoing") {
             clearInterval(this.explorationRefreshInterval);
             this.explorationRefreshInterval = null;
+
+            if (this.exploration.state === "completed") {
+              this.$store.commit("sendMessage", {
+                title: "success",
+                msg: "Exploration computation completed successfully",
+              });
+            } else if (this.exploration.state === "error") {
+              this.$store.commit("sendMessage", {
+                title: "error",
+                msg: "Exploration computation failed",
+              });
+            }
           }
         });
       }, 1000);
@@ -352,7 +359,7 @@ export default {
     },
     reasonNotReadyToComputeRealCombinations() {
       if (this.theoreticalCombinations <= 0) return "No columns selected";
-      if (this.theoreticalCombinations > 10000) return "Too many combinations";
+      if (this.theoreticalCombinations > 100000) return "Too many combinations";
       if (this.theoreticalCombinations >= this.project.nbSamples) return "Too many combinations";
       if (this.exploration.state === "ongoing")
         return "Exploration is ongoing, please wait until it is finished";
@@ -388,6 +395,10 @@ export default {
 
     #columns {
       flex: 1;
+
+      .columns {
+        overflow-y: auto;
+      }
     }
 
     #right {

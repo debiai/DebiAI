@@ -83,7 +83,6 @@ def update_exploration(project_id, exploration_id, action, body):
         computation_threads[exploration_id] = thread
 
         return exploration
-
     elif action == "stop":
         # Stop the exploration computation
         if exploration_id in computation_threads:
@@ -94,9 +93,17 @@ def update_exploration(project_id, exploration_id, action, body):
             computation_threads[exploration_id].join()
             del computation_threads[exploration_id]
             del stop_flags[exploration_id]
+        elif exploration.get("state") == "ongoing":
+            # Exploration is ongoing but no thread found, set state to not_started
+            exploration["state"] = "not_started"
 
         return exploration
     elif action == "updateConfig":
+        # Do not update the exploration if it is running
+        if exploration.get("state") == "ongoing":
+            print("Cannot update config while exploration is running:", exploration_id)
+            return exploration
+
         # Update exploration config
         exploration["config"] = body
         update_exploration_db(project_id, exploration)
