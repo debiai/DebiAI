@@ -1,12 +1,12 @@
 from pickledb import PickleDB
-from ..exploration_statistics.utils import get_tuples_batch
+from ..exploration_statistics.utils import get_data_batch
 from ..modules.dataProviders.dataProviderManager import (
     get_single_data_provider_for_project_id,
 )
 from uuid import uuid4
 from time import time
 import traceback
-from collections import Counter
+from collections import defaultdict
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorations.db")
@@ -82,8 +82,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     update_exploration(project_id, exploration)
 
     # Combinations computation
-    combinations = Counter()
-    selected_columns_unique_values = {column: set() for column in selected_columns}
+    combinations = defaultdict(list)
     NB_SAMPLES = 1000
     current_sample = 0
     computation_id = str(uuid4())
@@ -96,7 +95,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             return
 
         # Fetch the next batch of samples
-        batch = get_tuples_batch(
+        batch = get_data_batch(
             data_provider,
             project_id,
             computation_id,
@@ -105,13 +104,15 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             columns_structure,
             selected_columns,
         )
-        combinations.update(batch)
-        print(list(combinations.items()))
+
+        for data_id, values in batch.items():
+            key = tuple(values)
+            combinations[key].append(data_id)
 
         # Update the exploration progression status
         current_sample += len(batch)
         exploration["current_sample"] = current_sample
-        exploration["real_combinations"] = len(combinations)
+        exploration["real_combinations"] = len(combinations.keys())
 
         # Calculate the estimated time remaining
         elapsed_time = time() - exploration["started_at"]

@@ -74,7 +74,7 @@ def get_samples_batch_by_columns(
     return data_columns
 
 
-def get_tuples_batch(
+def get_data_batch(
     data_provider: DataProvider,
     projectId,
     analysis,
@@ -84,8 +84,8 @@ def get_tuples_batch(
     selected_columns: list,
 ) -> dict:
     """
-    Returns a batch of tuples:
-    [('x', 'u', 'p'), ('x', 'v', 'p')],
+    Returns a batch of dict:
+    {'data_4': [1, 2, 3], 'data_5': [4, 5, 6], 'data_6': [7, 8, 9]},
     """
 
     # Get the samples arrays
@@ -109,13 +109,11 @@ def get_tuples_batch(
         if column["name"] in selected_columns
     }
 
-    # Convert to a dictionary with column names as keys
-    tuples = []
-    for sample_data in data.values():
-        tuple_data = tuple(
-            sample_data[column_indices[column_name]]
-            for column_name in selected_columns
-        )
-        tuples.append(tuple_data)
+    # Convert to a dictionary with data id as keys
+    data_columns = {}
+    for data_id, sample_data in data.items():
+        data_columns[data_id] = [
+            sample_data[column_indices[column_name]] for column_name in selected_columns
+        ]
 
-    return tuples
+    return data_columns
