@@ -360,7 +360,6 @@ export default {
     reasonNotReadyToComputeRealCombinations() {
       if (this.theoreticalCombinations <= 0) return "No columns selected";
       if (this.theoreticalCombinations > 1000000) return "Too many combinations";
-      if (this.theoreticalCombinations >= this.project.nbSamples) return "Too many combinations";
       if (this.exploration.state === "ongoing")
         return "Exploration is ongoing, please wait until it is finished";
       return null;

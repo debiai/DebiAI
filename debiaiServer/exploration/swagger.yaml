@@ -233,6 +233,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
         current_sample:
           type: integer
           nullable: true

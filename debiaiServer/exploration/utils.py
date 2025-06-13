@@ -132,4 +132,6 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
 
     # Set the exploration status to "completed"
     exploration["state"] = "completed"
+    exploration["finished_at"] = time()
+
     update_exploration(project_id, exploration)

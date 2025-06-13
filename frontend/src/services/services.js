@@ -91,6 +91,20 @@ export default {
     return time;
   },
 
+  timeSpentBetween(startTs, endTs) {
+    const diffInSeconds = (endTs - startTs);
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = Math.floor(diffInSeconds % 60);
+
+    let result = "";
+    if (hours > 0) result += `${hours}h `;
+    if (minutes > 0 || hours > 0) result += `${minutes}m `;
+    result += `${seconds}s`;
+
+    return result.trim();
+  },
+
   getTimestamp() {
     return Date.now();
   },

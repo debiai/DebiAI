@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="computation-status">
+    <!-- Ongoing Computation -->
     <div
-      class="ongoing computation-status"
+      class="ongoing"
       v-if="exploration.state === 'ongoing'"
     >
       <!-- Progress bar & time + samples left -->
@@ -69,11 +70,31 @@
         </button>
       </div>
     </div>
+    <!-- Error Computation -->
     <div
-      class="error computation-status"
+      class="error"
       v-else-if="exploration.state === 'error'"
     >
       <span>Exploration computation failed</span>
+    </div>
+    <!-- Completed Computation -->
+    <div
+      class="completed"
+      v-else-if="exploration.state === 'completed'"
+    >
+      <h3>Exploration computation completed ✔️</h3>
+      <!-- Finished at -->
+      <div class="finishedAt">
+        <inline-svg
+          :src="require('@/assets/svg/time.svg')"
+          width="20"
+          height="20"
+        />
+        <span>
+          Duration:
+          {{ $services.timeSpentBetween(exploration.started_at, exploration.finished_at) }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -129,13 +150,36 @@ export default {
 
 <style scoped lang="scss">
 .computation-status {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.5rem;
-  gap: 1rem;
   width: 100%;
+
+  .ongoing,
+  .error {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .completed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    width: 100%;
+
+    h3 {
+      color: green;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+  }
 
   .progressBar {
     width: 100%;
