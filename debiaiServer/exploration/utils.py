@@ -106,8 +106,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
         )
 
         for data_id, values in batch.items():
-            key = tuple(values)
-            combinations[key].append(data_id)
+            combinations[tuple(values)].append(data_id)
 
         # Update the exploration progression status
         current_sample += len(batch)
@@ -130,7 +129,15 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             print("Reached the end of the data provider samples.")
             break
 
+        print(f"Time: {time() - exploration['started_at']:.2f}s, ")
+
+    # Convert combinations to JSON format
+    combinations_json = []
+    for key, value in combinations.items():
+        combinations_json.append({"sample_ids": value, "combination": list(key)})
+
     # Set the exploration status to "completed"
+    exploration["combinations"] = combinations_json
     exploration["state"] = "completed"
     exploration["finished_at"] = time()
 

@@ -48,7 +48,7 @@
               <div class="projectNbSamples">
                 <inline-svg
                   :src="require('@/assets/svg/data.svg')"
-                  width="30"
+                  width="33"
                   height="30"
                 />
                 <strong>{{ project.nbSamples }} </strong>
@@ -61,7 +61,7 @@
                   <div>
                     <inline-svg
                       :src="require('@/assets/svg/theoreticalCombinations.svg')"
-                      width="30"
+                      width="35"
                       height="30"
                     />
                     <transition name="highlight">
@@ -92,7 +92,7 @@
                 <div>
                   <inline-svg
                     :src="require('@/assets/svg/realCombinations.svg')"
-                    width="30"
+                    width="35"
                     height="30"
                   />
                   <strong v-if="exploration.real_combinations === null">?</strong>
@@ -101,12 +101,14 @@
                 </div>
                 <button
                   :disabled="!exploration.real_combinations || exploration.state !== 'completed'"
+                  @click="startCombinationAnalysis"
                 >
                   Start combination analysis
                 </button>
               </div>
             </div>
           </div>
+
           <!-- Metrics -->
           <div
             id="metrics"
@@ -343,6 +345,19 @@ export default {
           }
         });
       }, 1000);
+    },
+    startCombinationAnalysis() {
+      if (this.exploration.state !== "completed" || !this.exploration.combinations) return;
+
+      this.$router.push({
+        name: "dataAnalysis",
+        query: {
+          dataProviderId: this.dataProviderId,
+          projectId: this.projectId,
+          explorationId: this.exploration.id,
+        },
+        params: { exploration: this.exploration },
+      });
     },
   },
   computed: {

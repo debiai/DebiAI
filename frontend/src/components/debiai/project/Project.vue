@@ -75,8 +75,8 @@
 
           <button
             id="startExplorationBtn"
-            @click="startExploration(false)"
-            @mousedown.middle="startExploration(true)"
+            @click="openExplorations(false)"
+            @mousedown.middle="openExplorations(true)"
             :disabled="!readyToAnalyze"
           >
             Explorations
@@ -302,19 +302,6 @@ export default {
         });
       }
     },
-    startExploration(newTab) {
-      if (newTab) {
-        const routeData = this.$router.resolve({
-          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
-          name: "explorations",
-        });
-        window.open(routeData.href, "_blank");
-      } else {
-        this.$router.push({
-          name: "explorations",
-        });
-      }
-    },
 
     loadData({
       dataProviderId,
@@ -451,6 +438,19 @@ export default {
         });
       } else {
         this.$router.push("/");
+      }
+    },
+    openExplorations(newTab) {
+      if (newTab) {
+        const routeData = this.$router.resolve({
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
+          name: "explorations",
+        });
+        window.open(routeData.href, "_blank");
+      } else {
+        this.$router.push({
+          name: "explorations",
+        });
       }
     },
   },

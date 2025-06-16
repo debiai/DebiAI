@@ -171,6 +171,7 @@ import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 
 // Services
 import Data from "@/services/statistics/data";
+import ExplorationData from "@/services/exploration/explorationData";
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
 import { getAnalysisExport } from "@/services/statistics/analysisExport";
 
@@ -301,7 +302,25 @@ export default {
   },
   created() {
     // check data integrity
-    if (!this.$route.params.data) {
+    if (this.$route.params.data) {
+      // Load provided data and set selected data to 100%
+      this.data = new Data.Data(this.$route.params.data);
+
+      // Load available Widgets from the widget folder
+      this.loadWidgets();
+
+      // Load saved layout
+      this.loadLastLayout();
+    } else if (this.$route.params.exploration) {
+      // Load provided explorations combinations data
+      this.data = new ExplorationData.ExplorationData(this.$route.params.exploration);
+
+      // Load available Widgets from the widget folder
+      this.loadWidgets();
+
+      // Load saved layout
+      this.loadLastLayout();
+    } else {
       // No data sended, checking url references
       let dataProviderId = this.$route.query.dataProviderId;
       let projectId = this.$route.query.projectId;
@@ -325,15 +344,6 @@ export default {
           },
         });
       } else this.$router.push("/");
-    } else {
-      // Load provided data and set selected data to 100%
-      this.data = new Data.Data(this.$route.params.data);
-
-      // Load available Widgets from the widget folder
-      this.loadWidgets();
-
-      // Load saved layout
-      this.loadLastLayout();
     }
   },
   mounted() {

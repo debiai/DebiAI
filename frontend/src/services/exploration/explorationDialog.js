@@ -1,6 +1,6 @@
 import axios from "axios";
-import config from "../../config";
-import b from "./backendDialog";
+import config from "../../../config";
+import b from "../backendDialog";
 
 const apiURL = config.EXPLORATION_API_URL;
 
