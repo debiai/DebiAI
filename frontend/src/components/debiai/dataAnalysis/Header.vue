@@ -57,7 +57,7 @@
               : $store.state.ProjectPage.projectId
           }}</router-link
         >
-        / Analysis
+        / {{ data.mode ? $services.uppercaseFirstLetter(data.mode) : "Analysis" }}
       </div>
     </div>
 

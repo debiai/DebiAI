@@ -43,6 +43,7 @@ class ExplorationData extends Data.Data {
     super(dataBuilder);
 
     this.combinations = explorationObject.combinations;
+    this.mode = "exploration";
   }
 }
 
