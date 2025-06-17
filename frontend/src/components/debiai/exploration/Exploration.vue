@@ -380,7 +380,11 @@ export default {
       for (let i = 0; i < this.selectedColumns.length; i++) {
         const column = this.selectedColumns[i];
         // If the column has an aggregation, use the number of chunks
-        if (column.aggregation) combinations *= column.aggregation.nbChunks;
+        if (column.aggregation) {
+          if (column.aggregation.nbChunks) combinations *= column.aggregation.nbChunks;
+          if (column.aggregation.nbCharacters)
+            combinations *= 36 ** column.aggregation.nbCharacters;
+        }
         // Use the nb unique values
         else {
           const columnNbUniqueValues = this.columnsStatistics.find(
@@ -393,7 +397,7 @@ export default {
     },
     reasonNotReadyToComputeRealCombinations() {
       if (this.theoreticalCombinations <= 0) return "No columns selected";
-      if (this.theoreticalCombinations > 1000000) return "Too many combinations";
+      // if (this.theoreticalCombinations > 1000000) return "Too many combinations";
       if (this.exploration.state === "ongoing")
         return "Exploration is ongoing, please wait until it is finished";
       return null;

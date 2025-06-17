@@ -11,7 +11,10 @@
       v-if="newExploration"
       @close="newExploration = false"
     >
-      <h2 class="aligned spaced" style="padding-bottom: 20px;">
+      <h2
+        class="aligned spaced"
+        style="padding-bottom: 20px"
+      >
         New exploration
         <button
           class="red"
@@ -110,7 +113,7 @@ export default {
 
       // NewExploration
       newExploration: false,
-      explorationName: "",
+      explorationName: "New Exploration",
       explorationDescription: "",
 
       // Explorations
@@ -221,7 +224,7 @@ export default {
         .then(() => {
           this.loadExplorations();
           this.newExploration = false;
-          this.explorationName = "";
+          this.explorationName = "New Exploration";
           this.explorationDescription = "";
           this.$store.commit("sendMessage", {
             title: "success",

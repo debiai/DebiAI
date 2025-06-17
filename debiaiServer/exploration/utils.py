@@ -1,5 +1,5 @@
 from pickledb import PickleDB
-from ..exploration_statistics.utils import get_data_batch
+from ..exploration_statistics.utils import get_data_batch, get_columns_statistics
 from ..modules.dataProviders.dataProviderManager import (
     get_single_data_provider_for_project_id,
 )
@@ -59,10 +59,18 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     # Get the exploration from the database
     exploration = get_exploration_by_id(project_id, exploration_id)
     if exploration is None:
-        return
-    selected_columns = exploration.get("config", {}).get("selectedColumns", [])
+        raise ValueError(
+            f"Exploration with ID {exploration_id} not found in project {project_id}"
+        )
+    selected_columns = exploration.get("config", {}).get("columns", [])
     if not selected_columns:
-        return
+        raise ValueError(
+            "No selected columns for exploration. Please select columns to explore."
+        )
+    selected_columns_labels = [col["label"] for col in selected_columns]
+    selected_columns_aggregations = {
+        col["label"]: col.get("aggregation", "none") for col in selected_columns
+    }
 
     # Get the data-provider for the given project
     data_provider = get_single_data_provider_for_project_id(project_id)
@@ -77,6 +85,12 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     exploration["current_sample"] = 0
     exploration["remaining_time"] = None
     update_exploration(project_id, exploration)
+
+    # Load the columns statistics
+    columns_statistics = get_columns_statistics(data_provider.name, project_id)[
+        "columns"
+    ]
+    columns_statistics_dict = {col["name"]: col for col in columns_statistics}
 
     # Set the metrics up
     metrics_values = {"Nb Samples": {"values": []}}
@@ -104,9 +118,11 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             project_id,
             computation_id,
             current_sample,
-            current_sample + NB_SAMPLES,
+            current_sample + NB_SAMPLES - 1,
             columns_structure,
-            selected_columns,
+            selected_columns_labels,
+            selected_columns_aggregations,
+            columns_statistics_dict,
         )
 
         # Update the combinations

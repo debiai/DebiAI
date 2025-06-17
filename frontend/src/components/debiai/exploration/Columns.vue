@@ -70,7 +70,7 @@
             <!-- Aggregation -->
             <button
               @click="openColumnAggregationModal(column)"
-              v-if="column.type === 'number' && !hasColumnAggregation(column.name)"
+              v-if="!hasColumnAggregation(column.name)"
               title="Reduce the number dimensions with aggregation"
               class="borderlessHover"
             >
@@ -87,18 +87,23 @@
               v-if="hasColumnAggregation(column.name)"
               class="aggregation"
             >
-              <inline-svg
-                :src="require('@/assets/svg/aggregation.svg')"
-                height="16"
-                width="16"
-              />
-              <span>
-                {{ hasColumnAggregation(column.name).nbChunks }} chunks
+              <button
+                class="borderlessHover"
+                @click="openColumnAggregationModal(column)"
+              >
+                <inline-svg
+                  :src="require('@/assets/svg/aggregation.svg')"
+                  height="16"
+                  width="16"
+                />
 
-                <!-- ({{
-                  column.aggregation.type === "evenQuantity" ? "Even quantity" : "Even range"
-                }}) -->
-              </span>
+                <span v-if="column.type === 'number'">
+                  {{ hasColumnAggregation(column.name).nbChunks }} chunks
+                </span>
+                <span v-if="column.type === 'text'">
+                  {{ hasColumnAggregation(column.name).nbCharacters }} characters
+                </span>
+              </button>
               <button
                 class="red"
                 @click="removeAggregation(column.name)"
@@ -188,8 +193,8 @@
             id="aggregationType"
             v-model="aggregationType"
           >
-            <option value="evenQuantity">Even quantity</option>
             <option value="evenRange">Even range</option>
+            <option value="evenQuantity">Even quantity</option>
           </select>
         </div>
 
@@ -199,6 +204,78 @@
             class="green"
             @click="applyAggregation"
             :disabled="!selectedColumnForAggregation || nbChunks < 1"
+          >
+            Apply aggregation
+          </button>
+        </div>
+      </form>
+    </Modal>
+
+    <!-- String column aggregation modal -->
+    <Modal
+      v-if="selectedColumnForAggregation && selectedColumnForAggregation.type === 'text'"
+      @close="selectedColumnForAggregation = null"
+      leftAlign
+    >
+      <!-- Title -->
+      <h2
+        class="aligned spaced gapped"
+        style="padding-bottom: 20px"
+      >
+        Reduce the '{{ selectedColumnForAggregation.name }}' text column <br />
+        dimensions with aggregation
+        <button
+          class="red"
+          @click="selectedColumnForAggregation = false"
+        >
+          Close
+        </button>
+      </h2>
+
+      <p>Aggregate the column to reduce the text of unique values</p>
+
+      <form
+        action=""
+        @submit.prevent
+      >
+        <!-- Number of first letters -->
+        <div class="form-group">
+          <label for="nbChunks">Aggregate by first characters</label>
+          <input
+            type="number"
+            id="nbCharacters"
+            v-model.number="nbCharacters"
+            min="1"
+            max="3"
+            style="width: 50px; margin: 0 10px"
+            required
+          />
+          <span>characters</span>
+          <DocumentationBlock> e.g. 'Hello' and 'Hi' will be aggregated to 'H' </DocumentationBlock>
+        </div>
+
+        <!-- Number of characters skipped -->
+        <div class="form-group">
+          <label for="nbCharacters">Number of characters to skip:</label>
+          <input
+            type="number"
+            id="nbCharacters"
+            v-model.number="nbCharactersSkip"
+            min="0"
+            style="width: 50px; margin: 0 10px"
+            required
+          />
+          <DocumentationBlock>
+            e.g. 'Hello' will be considered has 'llo' if set to 2
+          </DocumentationBlock>
+        </div>
+
+        <!-- Apply button -->
+        <div class="controls">
+          <button
+            class="green"
+            @click="applyAggregation"
+            :disabled="nbCharacters < 1"
           >
             Apply aggregation
           </button>
@@ -234,7 +311,10 @@ export default {
       // Number column aggregation
       selectedColumnForAggregation: null,
       nbChunks: 5,
-      aggregationType: "evenQuantity",
+      aggregationType: "evenRange",
+      // String column aggregation
+      nbCharacters: 1,
+      nbCharactersSkip: 0,
     };
   },
   methods: {
@@ -273,9 +353,16 @@ export default {
     },
     openColumnAggregationModal(column) {
       this.selectedColumnForAggregation = column;
-      // Reset form to default value
-      this.nbChunks = 5;
-      this.aggregationType = "evenQuantity";
+
+      const existingAggregation = this.hasColumnAggregation(column.name);
+
+      if (column.type === "text") {
+        this.nbCharacters = existingAggregation?.nbCharacters || 1;
+        this.nbCharactersSkip = existingAggregation?.nbCharactersSkip || 0;
+      } else if (column.type === "number") {
+        this.nbChunks = existingAggregation.nbChunks || 5;
+        this.aggregationType = existingAggregation.type || "evenRange";
+      }
     },
     applyAggregation() {
       if (!this.selectedColumnForAggregation) return;
@@ -291,10 +378,18 @@ export default {
       if (columnIndex === -1) return;
 
       // Update the selected column with aggregation details
-      this.selectedColumns[columnIndex].aggregation = {
-        type: this.aggregationType,
-        nbChunks: this.nbChunks,
-      };
+      if (this.selectedColumnForAggregation.type === "number") {
+        this.selectedColumns[columnIndex].aggregation = {
+          type: this.aggregationType,
+          nbChunks: this.nbChunks,
+        };
+      } else if (this.selectedColumnForAggregation.type === "text") {
+        this.selectedColumns[columnIndex].aggregation = {
+          type: "firstCharacters",
+          nbCharacters: this.nbCharacters,
+          nbCharactersSkip: this.nbCharactersSkip,
+        };
+      }
 
       this.selectedColumnForAggregation = null;
     },
@@ -415,6 +510,23 @@ form {
     justify-content: flex-end;
     gap: 1rem;
     padding-top: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      width: 100px;
+      padding: 0.2rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
   }
 }
 </style>

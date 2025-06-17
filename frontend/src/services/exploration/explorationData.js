@@ -17,7 +17,11 @@ class ExplorationData extends Data.Data {
     //       ...
     //     }
     // config: Object { … }
-    //  -> selectedColumns: Array(7) [ "Record", "Car", "person", … ]
+    //  -> columns: Array(7) [ {…}, {…}, {…}, … ]
+    //       -> {
+    //            label: "Year",
+    //            aggregation: {...},
+    //          }
 
     const dataBuilder = {
       columns: [],
@@ -25,22 +29,19 @@ class ExplorationData extends Data.Data {
     };
 
     // Make some columns from the explorationObject config
-    dataBuilder.columns = explorationObject.config.selectedColumns.map((colLabel, colIndex) => {
+    dataBuilder.columns = explorationObject.config.columns.map((col, colIndex) => {
       // Build the column values for the combinations
       const colValues = explorationObject.combinations.map((combination) => {
         return combination.combination[colIndex];
       });
       return {
-        label: colLabel,
+        label: col.label,
         values: colValues,
-        category: "context", 
+        category: "context",
         typeIn: null,
         group: null,
       };
     });
-
-    // Set the labels from the sample_ids
-    dataBuilder.labels = explorationObject.config.selectedColumns;
 
     // Add the metrics columns
     for (const metricLabel in explorationObject.metrics) {
