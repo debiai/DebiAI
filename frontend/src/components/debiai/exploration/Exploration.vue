@@ -6,7 +6,6 @@
       :exploration="exploration"
       v-on:refresh="loadProjectAndExploration"
     />
-
     <!-- Content -->
     <transition
       name="fade"
@@ -259,7 +258,7 @@ export default {
         .then((exploration) => {
           this.exploration = exploration;
           if (this.exploration.config && updateColumns) {
-            this.selectedColumns = this.exploration.config.selectedColumns || [];
+            this.selectedColumns = this.exploration.config.columns || [];
             this.selectedSampleMetrics = this.exploration.config.selectedSampleMetrics || [
               "Nb Samples",
             ];
@@ -301,8 +300,10 @@ export default {
     },
     async updateExplorationConfig() {
       if (!this.exploration) return;
-      this.exploration.config.selectedColumns = this.selectedColumns;
-      this.exploration.config.selectedSampleMetrics = this.selectedSampleMetrics;
+
+      this.exploration.config.columns = this.selectedColumns;
+      this.exploration.config.global_metrics = this.selectedSampleMetrics;
+
       return this.$explorationDialog
         .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
         .then(() => {})
@@ -377,10 +378,16 @@ export default {
       if (this.selectedColumns.length === 0) return 0;
       let combinations = 1;
       for (let i = 0; i < this.selectedColumns.length; i++) {
-        const columnNbUniqueValues = this.columnsStatistics.find(
-          (column) => column.name === this.selectedColumns[i]
-        ).nbUniqueValues;
-        combinations *= columnNbUniqueValues;
+        const column = this.selectedColumns[i];
+        // If the column has an aggregation, use the number of chunks
+        if (column.aggregation) combinations *= column.aggregation.nbChunks;
+        // Use the nb unique values
+        else {
+          const columnNbUniqueValues = this.columnsStatistics.find(
+            (col) => col.name === column.label
+          ).nbUniqueValues;
+          combinations *= columnNbUniqueValues;
+        }
       }
       return combinations;
     },

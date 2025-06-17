@@ -288,6 +288,7 @@ components:
           type: string
         aggregation:
           $ref: "#/components/schemas/AggregationConfig"
+          nullable: true
         column_metrics:
           description: List of metrics to be applied to the column, must be one of the available column metrics
           type: array

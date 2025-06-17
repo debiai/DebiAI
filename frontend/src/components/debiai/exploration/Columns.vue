@@ -16,16 +16,19 @@
         >
           <!-- Name, type & unique values -->
           <div>
+            <!-- Btn -->
             <button
               @click="selectColumn(column)"
               :class="{
-                selected: selectedColumns.includes(column.name) || column.aggregation,
-                disabled: column.aggregation,
+                selected: isColumnSelected(column),
+                disabled: hasColumnAggregation(column.name),
               }"
             >
               {{ column.name }}
             </button>
+            <!-- Unique values -->
             <div class="nbUnique">{{ column.nbUniqueValues }}</div>
+            <!-- Type -->
             <div
               class="type"
               :class="[column.type]"
@@ -34,12 +37,40 @@
             </div>
           </div>
 
+          <!-- Statistics -->
+          <div class="statistics">
+            <!-- min -->
+            <span
+              v-if="column.type === 'number'"
+              class="label"
+              >Min:</span
+            >
+            <span
+              v-if="column.type === 'number'"
+              class="value"
+              :title="column.min"
+              >{{ $services.prettyNumber(column.min) }}</span
+            >
+            <!-- max -->
+            <span
+              v-if="column.type === 'number'"
+              class="label"
+              >Max:</span
+            >
+            <span
+              v-if="column.type === 'number'"
+              class="value"
+              :title="column.max"
+              >{{ $services.prettyNumber(column.max) }}</span
+            >
+          </div>
+
           <!-- Controls -->
           <div class="controls">
             <!-- Aggregation -->
             <button
               @click="openColumnAggregationModal(column)"
-              v-if="column.type === 'number' && !column.aggregation"
+              v-if="column.type === 'number' && !hasColumnAggregation(column.name)"
               title="Reduce the number dimensions with aggregation"
               class="borderlessHover"
             >
@@ -48,12 +79,12 @@
                 height="16"
                 width="16"
               />
-              Aggregate column
+              Aggregate
             </button>
 
             <!-- Aggregation info -->
             <div
-              v-if="column.aggregation"
+              v-if="hasColumnAggregation(column.name)"
               class="aggregation"
             >
               <inline-svg
@@ -62,16 +93,15 @@
                 width="16"
               />
               <span>
-                {{ column.aggregation.nbChunks }} chunks ({{
+                {{ hasColumnAggregation(column.name).nbChunks }} chunks
+
+                <!-- ({{
                   column.aggregation.type === "evenQuantity" ? "Even quantity" : "Even range"
-                }})
+                }}) -->
               </span>
               <button
                 class="red"
-                @click="
-                  column.aggregation = null;
-                  $forceUpdate();
-                "
+                @click="removeAggregation(column.name)"
                 title="Remove aggregation"
               >
                 x
@@ -213,14 +243,17 @@ export default {
       if (column.aggregation) return;
 
       const columnName = column.name;
-      if (this.selectedColumns.includes(columnName)) {
-        this.selectedColumns.splice(this.selectedColumns.indexOf(columnName), 1);
-      } else this.selectedColumns.push(columnName);
+      const existingColumn = this.selectedColumns.find((selected) => selected.label === columnName);
+
+      if (existingColumn) {
+        // If the column is already selected, unselect it
+        this.selectedColumns.splice(this.selectedColumns.indexOf(existingColumn), 1);
+      } else {
+        this.selectedColumns.push({ label: columnName, aggregation: null, column_metrics: [] });
+      }
     },
-    unselectColumn(column) {
-      if (this.isUnsupported(column)) return;
-      const columnName = column.name;
-      const index = this.selectedColumns.indexOf(columnName);
+    unselectColumn(columnLabel) {
+      const index = this.selectedColumns.findIndex((selected) => selected.label === columnLabel);
       if (index !== -1) this.selectedColumns.splice(index, 1);
     },
     isUnsupported(column) {
@@ -228,6 +261,15 @@ export default {
       // return unsupportedTypes.includes(column.type);
       const supportedTypes = ["text", "number"];
       return !supportedTypes.includes(column.type);
+    },
+    isColumnSelected(column) {
+      if (column.aggregation) return true; // Aggregated columns are considered selected
+      return this.selectedColumns.some((selected) => selected.label === column.name);
+    },
+    hasColumnAggregation(columnLabel) {
+      const column = this.selectedColumns.find((selected) => selected.label === columnLabel);
+      if (!column) return false;
+      return column.aggregation;
     },
     openColumnAggregationModal(column) {
       this.selectedColumnForAggregation = column;
@@ -238,13 +280,31 @@ export default {
     applyAggregation() {
       if (!this.selectedColumnForAggregation) return;
 
-      this.selectedColumnForAggregation.aggregation = {
+      // Select the column if not already selected
+      if (!this.isColumnSelected(this.selectedColumnForAggregation))
+        this.selectColumn(this.selectedColumnForAggregation);
+
+      // Find the column in the selectedColumns array
+      const columnIndex = this.selectedColumns.findIndex(
+        (selected) => selected.label === this.selectedColumnForAggregation.name
+      );
+      if (columnIndex === -1) return;
+
+      // Update the selected column with aggregation details
+      this.selectedColumns[columnIndex].aggregation = {
         type: this.aggregationType,
         nbChunks: this.nbChunks,
       };
 
-      this.unselectColumn(this.selectedColumnForAggregation);
       this.selectedColumnForAggregation = null;
+    },
+    removeAggregation(columnLabel) {
+      const column = this.selectedColumns.find((selected) => selected.label === columnLabel);
+      if (column) column.aggregation = null; // Remove aggregation
+
+      // Unselect the column
+      this.unselectColumn(columnLabel);
+      this.$forceUpdate();
     },
   },
   computed: {
@@ -319,6 +379,14 @@ export default {
             &.dict {
               color: var(--dict);
             }
+          }
+        }
+
+        .statistics {
+          color: var(--fontColorLight);
+
+          .label {
+            font-weight: bold;
           }
         }
       }
