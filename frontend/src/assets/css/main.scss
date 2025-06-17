@@ -154,6 +154,18 @@ button {
     }
   }
 
+  &.borderlessHover {
+    @extend .borderless;
+    border-radius: 0;
+    border-bottom: solid 1px transparent;
+    padding-bottom: 3px;
+    transition: border-bottom 0.1s ease;
+
+    &:hover {
+      border-bottom: solid 1px var(--fontColorLight);
+    }
+  }
+
   &.disabled {
     cursor: not-allowed;
     opacity: 0.6;
@@ -211,7 +223,6 @@ button {
     color: white;
     font-weight: bold;
   }
-  
 }
 
 button + button {

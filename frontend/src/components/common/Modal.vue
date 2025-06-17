@@ -3,7 +3,10 @@
     id="modal"
     @click="outsideClick"
   >
-    <div id="Panel">
+    <div
+      id="Panel"
+      :class="{ 'left-align': leftAlign }"
+    >
       <slot />
     </div>
 
@@ -48,6 +51,7 @@ export default {
     errorMessages: { type: Array, default: () => [] },
     warningMessages: { type: Array, default: () => [] },
     preventBodyScroll: { type: Boolean, default: true },
+    leftAlign: { type: Boolean, default: false },
   },
   mounted() {
     // When the modal is opened, we want to disable scrolling on the body
@@ -97,18 +101,21 @@ export default {
   &:hover {
     cursor: pointer;
   }
-}
 
-#Panel {
-  max-height: 90vh;
-  max-width: 90vw;
-  padding: 30px;
-  background-color: white;
-  border-radius: 4px;
-  overflow: auto;
+  #Panel {
+    max-height: 90vh;
+    max-width: 90vw;
+    padding: 30px;
+    background-color: white;
+    border-radius: 4px;
+    overflow: auto;
 
-  &:hover {
-    cursor: default;
+    &:hover {
+      cursor: default;
+    }
+    &.left-align {
+      text-align: left;
+    }
   }
 }
 
