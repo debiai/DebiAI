@@ -11,27 +11,29 @@ class ExplorationData extends Data.Data {
     //       sample_ids: Array(87) [ "A", "B", "C", … ]
     //     }
     //  The computed combinations of the exploration.
+    // metrics: Object { … }
+    //  -> {
+    //       "Nb Samples": { values: Array(109) [ 87, 87, 87, … ] },
+    //       ...
+    //     }
     // config: Object { … }
     //  -> selectedColumns: Array(7) [ "Record", "Car", "person", … ]
 
     const dataBuilder = {
       columns: [],
-      categories: [""],
       nbLines: explorationObject.combinations.length,
     };
 
     // Make some columns from the explorationObject config
     dataBuilder.columns = explorationObject.config.selectedColumns.map((colLabel, colIndex) => {
       // Build the column values for the combinations
-      console.log("Building column:", colLabel, "at index:", colIndex);
-
       const colValues = explorationObject.combinations.map((combination) => {
         return combination.combination[colIndex];
       });
       return {
         label: colLabel,
         values: colValues,
-        category: "context",
+        category: "context", 
         typeIn: null,
         group: null,
       };
@@ -40,6 +42,19 @@ class ExplorationData extends Data.Data {
     // Set the labels from the sample_ids
     dataBuilder.labels = explorationObject.config.selectedColumns;
 
+    // Add the metrics columns
+    for (const metricLabel in explorationObject.metrics) {
+      const metricValues = explorationObject.metrics[metricLabel].values;
+      dataBuilder.columns.push({
+        label: metricLabel,
+        values: metricValues,
+        category: "metric",
+        typeIn: null,
+        group: null,
+      });
+    }
+
+    // Setup the Data class
     super(dataBuilder);
 
     this.combinations = explorationObject.combinations;

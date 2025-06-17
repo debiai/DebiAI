@@ -8,9 +8,6 @@ Vue.use(Vuex);
 
 const Dashboard = {
   state: {
-    // Global variables
-    categoryList: ["input", "groundtruth", "context", "other"],
-
     // Dashboard
     isLoading: false,
     messages: [], // List of messages for the user

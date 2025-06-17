@@ -118,7 +118,11 @@
               <h2>Metrics</h2>
             </div>
             <div class="content">
-              <div>Metrics content goes here.</div>
+              <Metrics
+                :project="project"
+                :exploration="exploration"
+                :selectedSampleMetrics="selectedSampleMetrics"
+              />
             </div>
           </div>
         </div>
@@ -131,6 +135,7 @@
 import ExplorationHeader from "./ExplorationHeader";
 import ComputationStatus from "./ComputationStatus";
 import Columns from "./Columns";
+import Metrics from "./Metrics.vue";
 
 export default {
   name: "Exploration",
@@ -139,6 +144,7 @@ export default {
     ExplorationHeader,
     ComputationStatus,
     Columns,
+    Metrics,
   },
   data: () => {
     return {
@@ -153,6 +159,7 @@ export default {
       columnsStatistics: null,
       columnsStatisticsStatus: null,
       selectedColumns: [],
+      selectedSampleMetrics: ["Nb Samples"],
 
       // Combinations
       realCombinations: null,
@@ -251,8 +258,12 @@ export default {
         .getExploration(this.projectId, this.explorationId, updateColumns)
         .then((exploration) => {
           this.exploration = exploration;
-          if (this.exploration.config && updateColumns)
+          if (this.exploration.config && updateColumns) {
             this.selectedColumns = this.exploration.config.selectedColumns || [];
+            this.selectedSampleMetrics = this.exploration.config.selectedSampleMetrics || [
+              "Nb Samples",
+            ];
+          }
 
           if (!this.exploration) {
             this.$store.commit("sendMessage", {
@@ -291,6 +302,7 @@ export default {
     async updateExplorationConfig() {
       if (!this.exploration) return;
       this.exploration.config.selectedColumns = this.selectedColumns;
+      this.exploration.config.selectedSampleMetrics = this.selectedSampleMetrics;
       return this.$explorationDialog
         .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
         .then(() => {})

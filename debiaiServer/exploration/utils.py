@@ -62,9 +62,6 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
         return
     selected_columns = exploration.get("config", {}).get("selectedColumns", [])
     if not selected_columns:
-        print(
-            f"No selected columns for exploration {exploration_id} on project {project_id}"
-        )
         return
 
     # Get the data-provider for the given project
@@ -80,6 +77,13 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     exploration["current_sample"] = 0
     exploration["remaining_time"] = None
     update_exploration(project_id, exploration)
+
+    # Set the metrics up
+    metrics_values = {"Nb Samples": {"values": []}}
+    for selectedSampleMetric in exploration.get("config", {}).get(
+        "selectedSampleMetrics", []
+    ):
+        metrics_values[selectedSampleMetric] = {"values": []}
 
     # Combinations computation
     combinations = defaultdict(list)
@@ -105,8 +109,16 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             selected_columns,
         )
 
+        # Update the combinations
         for data_id, values in batch.items():
             combinations[tuple(values)].append(data_id)
+
+        # Process the metrics for the current batch
+        process_combination_metrics(
+            current_combinations=combinations,
+            new_data_batch=batch,
+            metrics=metrics_values,
+        )
 
         # Update the exploration progression status
         current_sample += len(batch)
@@ -138,7 +150,18 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
 
     # Set the exploration status to "completed"
     exploration["combinations"] = combinations_json
+    exploration["metrics"] = metrics_values
     exploration["state"] = "completed"
     exploration["finished_at"] = time()
 
     update_exploration(project_id, exploration)
+
+
+def process_combination_metrics(current_combinations, new_data_batch, metrics):
+    if "Nb Samples" in metrics:
+        # For each combination, count the number of samples
+        metrics["Nb Samples"]["values"] = []
+        for combination in current_combinations:
+            metrics["Nb Samples"]["values"].append(
+                len(current_combinations[combination])
+            )

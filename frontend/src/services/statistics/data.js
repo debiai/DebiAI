@@ -4,7 +4,6 @@ import samplesFiltering from "./samplesFiltering";
 
 class Data {
   constructor(data) {
-    this.categories = data.categories;
     this.nbLinesOriginal = data.nbLines;
     this.sampleIdList = data.sampleIdList;
 
@@ -370,7 +369,6 @@ class Data {
   // Other
   clean() {
     // Nullify references to arrays and objects to help garbage collection
-    this.categories = null;
     this.nbLinesOriginal = null;
     this.sampleIdList = null;
 

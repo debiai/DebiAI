@@ -179,48 +179,15 @@ export default {
     },
   },
   computed: {
-    categories: function () {
-      return {
-        Others: this.data.columns.filter(
-          (c) =>
-            c.category === "other" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Contexts: this.data.columns.filter(
-          (c) =>
-            c.category === "context" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Inputs: this.data.columns.filter(
-          (c) =>
-            c.category === "input" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        GroundTruth: this.data.columns.filter(
-          (c) =>
-            c.category === "groundtruth" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Results: this.data.columns.filter(
-          (c) =>
-            c.category === "results" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Virtual: this.data.columns.filter(
-          (c) =>
-            c.category === "virtual" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        Tag: this.data.columns.filter(
-          (c) =>
-            c.category === "tag" && c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-        AlgorithmOutput: this.data.columns.filter(
-          (c) =>
-            c.category === "Algorithm output" &&
-            c.label.toLowerCase().includes(this.searchFilter.toLowerCase())
-        ),
-      };
+    categories() {
+      const categoriesMap = {};
+      this.data.columns.forEach((column) => {
+        const category = column.category || "Uncategorized";
+        if (!categoriesMap[category]) categoriesMap[category] = [];
+        if (column.label.toLowerCase().includes(this.searchFilter.toLowerCase()))
+          categoriesMap[category].push(column);
+      });
+      return categoriesMap;
     },
   },
   watch: {
