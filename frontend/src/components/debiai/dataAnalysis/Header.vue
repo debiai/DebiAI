@@ -57,7 +57,34 @@
               : $store.state.ProjectPage.projectId
           }}</router-link
         >
-        / {{ data.mode ? $services.uppercaseFirstLetter(data.mode) : "Analysis" }}
+        /
+        <span v-if="data.mode === 'exploration'">
+          <router-link
+            :to="
+              '/dataprovider/' +
+              $store.state.ProjectPage.dataProviderId +
+              '/project/' +
+              $store.state.ProjectPage.projectId +
+              '/exploration'
+            "
+            >Explorations</router-link
+          >
+          /
+          <router-link
+            :to="
+              '/dataprovider/' +
+              $store.state.ProjectPage.dataProviderId +
+              '/project/' +
+              $store.state.ProjectPage.projectId +
+              '/exploration/' +
+              data.explorationId
+            "
+            >{{ data.explorationName }}</router-link
+          >
+        </span>
+        <span v-else>
+          {{ data.mode ? $services.uppercaseFirstLetter(data.mode) : "Analysis" }}
+        </span>
       </div>
     </div>
 

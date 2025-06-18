@@ -57,6 +57,8 @@ class ExplorationData extends Data.Data {
     super(dataBuilder);
 
     this.mode = "exploration";
+    this.explorationId = explorationObject.id
+    this.explorationName = explorationObject.name
     this.combinations = explorationObject.combinations;
     this.nbExplorationSelectedSamples = 0;
     this.nbSamplesMetric = explorationObject.metrics["Nb Samples"]["values"];
