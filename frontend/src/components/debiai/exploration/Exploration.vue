@@ -179,6 +179,9 @@ export default {
       ? this.$route.params.explorationId
       : this.$route.query.explorationId;
 
+    // Check if we need to start analysis right away
+    let startAns = this.$route.query.startAnalysis;
+
     if (dataProviderId && projectId) {
       this.dataProviderId = dataProviderId;
       this.projectId = projectId;
@@ -201,7 +204,9 @@ export default {
       });
 
       // Load the project and exploration data
-      this.loadProjectAndExploration();
+      this.loadProjectAndExploration().then(() => {
+        if (startAns) this.startCombinationAnalysis();
+      });
     } else {
       this.$router.push("/");
     }

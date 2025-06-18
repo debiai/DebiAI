@@ -322,27 +322,41 @@ export default {
       this.loadLastLayout();
     } else {
       // No data sended, checking url references
-      let dataProviderId = this.$route.query.dataProviderId;
-      let projectId = this.$route.query.projectId;
-      let selectionIds = this.$route.query.selectionIds;
-      let selectionIntersection = this.$route.query.selectionIntersection;
-      let modelIds = this.$route.query.modelIds;
-      let commonModelResults = this.$route.query.commonModelResults;
+      const dataProviderId = this.$route.query.dataProviderId;
+      const projectId = this.$route.query.projectId;
+      const selectionIds = this.$route.query.selectionIds;
+      const selectionIntersection = this.$route.query.selectionIntersection;
+      const modelIds = this.$route.query.modelIds;
+      const commonModelResults = this.$route.query.commonModelResults;
+      const explorationId = this.$route.query.explorationId;
 
       if (dataProviderId && projectId) {
-        // Go back to project page to start an analysis immediately
-        this.$router.push({
-          path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-          query: {
-            projectId: projectId,
-            dataProviderId: dataProviderId,
-            selectionIds: selectionIds,
-            selectionIntersection: selectionIntersection,
-            modelIds: modelIds,
-            commonModelResults: commonModelResults,
-            startAnalysis: true,
-          },
-        });
+        if (explorationId) {
+          // Go back to the exploration page to start an analysis immediately
+          this.$router.push({
+            path: "/dataprovider/" + dataProviderId + "/project/" + projectId + "/exploration/" + explorationId,
+            query: {
+              projectId: projectId,
+              dataProviderId: dataProviderId,
+              explorationId: explorationId,
+              startAnalysis: true,
+            },
+          });
+        } else {
+          // Go back to project page to start an analysis immediately
+          this.$router.push({
+            path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+            query: {
+              projectId: projectId,
+              dataProviderId: dataProviderId,
+              selectionIds: selectionIds,
+              selectionIntersection: selectionIntersection,
+              modelIds: modelIds,
+              commonModelResults: commonModelResults,
+              startAnalysis: true,
+            },
+          });
+        }
       } else this.$router.push("/");
     }
   },
