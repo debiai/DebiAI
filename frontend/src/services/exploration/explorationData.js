@@ -2,8 +2,6 @@ import Data from "@/services/statistics/data";
 
 class ExplorationData extends Data.Data {
   constructor(explorationObject) {
-    console.log("Creating ExplorationData with explorationObject", explorationObject);
-
     // ExplorationObject important fields:
     // combinations: Array(109) [ {…}, {…}, {…}, … ]
     //  -> {
@@ -58,8 +56,25 @@ class ExplorationData extends Data.Data {
     // Setup the Data class
     super(dataBuilder);
 
-    this.combinations = explorationObject.combinations;
     this.mode = "exploration";
+    this.combinations = explorationObject.combinations;
+    this.nbExplorationSelectedSamples = 0;
+    this.nbSamplesMetric = explorationObject.metrics["Nb Samples"]["values"];
+    this.projectNbSamples = this.nbSamplesMetric.reduce((acc, nbSamples) => acc + nbSamples, 0);
+    this.calculateNbSelectedSamples();
+  }
+
+  calculateNbSelectedSamples() {
+    // Count the 'Nb Samples' values of all of the selected combinations
+    this.nbExplorationSelectedSamples = this.selectedData.reduce((acc, combinationIndex) => {
+      return acc + this.nbSamplesMetric[combinationIndex];
+    }, 0);
+  }
+
+  updateFilters(ignoreCache = false) {
+    super.updateFilters(ignoreCache);
+
+    this.calculateNbSelectedSamples();
   }
 }
 

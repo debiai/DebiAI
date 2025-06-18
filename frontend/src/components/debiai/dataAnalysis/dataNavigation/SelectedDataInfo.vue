@@ -1,25 +1,5 @@
 <template>
   <div id="SelectedDataInfo">
-    <!-- Original selected samples -->
-    <div
-      id="originalSelectedSamples"
-      class="selectedSamples"
-      :title="'Selected samples: ' + (nbOriginalSelectedData / data.nbLinesOriginal) * 100 + '%'"
-    >
-      <div id="selectedBar">
-        <div
-          id="selectedBarValue"
-          :style="'width:' + (nbOriginalSelectedData / data.nbLinesOriginal) * 100 + '%'"
-        ></div>
-      </div>
-      <div id="bottom">
-        <div id="nbSelected">{{ nbOriginalSelectedData }} / {{ data.nbLinesOriginal }}</div>
-        <div id="percentSelect">
-          {{ Math.round((nbOriginalSelectedData / data.nbLinesOriginal) * 10000) / 100 }} %
-        </div>
-      </div>
-    </div>
-
     <!-- Unfolded selected samples -->
     <Transition name="fade">
       <div
@@ -42,6 +22,82 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Exploration selected samples -->
+    <div
+      id="explorationsSelectedSamples"
+      class="selectedSamples"
+      v-if="data.mode === 'exploration'"
+    >
+      <div id="sampleText">
+        <inline-svg
+          :src="require('@/assets/svg/data.svg')"
+          width="10"
+          height="10"
+        />
+        Selected samples
+      </div>
+      <div id="selectedBar">
+        <div
+          id="selectedBarValue"
+          :style="
+            'width:' + (data.nbExplorationSelectedSamples / data.projectNbSamples) * 100 + '%'
+          "
+        ></div>
+      </div>
+      <div id="bottom">
+        <div id="nbSelected">
+          {{ data.nbExplorationSelectedSamples }} / {{ data.projectNbSamples }}
+        </div>
+        <div id="percentSelect">
+          {{
+            Math.round((data.nbExplorationSelectedSamples / data.projectNbSamples) * 10000) / 100
+          }}
+          %
+        </div>
+      </div>
+    </div>
+
+    <!-- Original selected samples -->
+    <div
+      id="originalSelectedSamples"
+      class="selectedSamples"
+    >
+      <div
+        id="sampleText"
+        v-if="data.mode !== 'exploration'"
+      >
+        <inline-svg
+          :src="require('@/assets/svg/data.svg')"
+          width="10"
+          height="10"
+        />
+        Selected samples
+      </div>
+      <div
+        id="sampleText"
+        v-else
+      >
+        <inline-svg
+          :src="require('@/assets/svg/realCombinations.svg')"
+          width="10"
+          height="10"
+        />
+        Selected combinations
+      </div>
+      <div id="selectedBar">
+        <div
+          id="selectedBarValue"
+          :style="'width:' + (nbOriginalSelectedData / data.nbLinesOriginal) * 100 + '%'"
+        ></div>
+      </div>
+      <div id="bottom">
+        <div id="nbSelected">{{ nbOriginalSelectedData }} / {{ data.nbLinesOriginal }}</div>
+        <div id="percentSelect">
+          {{ Math.round((nbOriginalSelectedData / data.nbLinesOriginal) * 10000) / 100 }} %
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,7 +124,7 @@ export default {
 #SelectedDataInfo {
   display: flex;
   align-items: center;
-  flex-direction: row-reverse;
+  flex-direction: row;
   height: 100%;
 
   .selectedSamples {
@@ -96,6 +152,10 @@ export default {
         vertical-align: middle;
       }
     }
+    #sampleText {
+      color: var(--fontColorLight);
+      font-size: 0.8em;
+    }
 
     #selectedBar {
       height: 5px;
@@ -114,6 +174,8 @@ export default {
 
   #unfoldedSelectedSamples {
     color: var(--success);
+    fill: var(--success);
+
     #percentSelect {
       color: var(--success) !important;
     }
@@ -122,6 +184,9 @@ export default {
     }
     #selectedBarValue {
       background: var(--success) !important;
+    }
+    #sampleText {
+      color: var(--success) !important;
     }
   }
 }

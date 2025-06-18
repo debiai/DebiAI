@@ -1,6 +1,6 @@
 <template>
   <div id="Header">
-    <!-- colored column selection modal -->
+    <!-- Colored column selection modal -->
     <modal
       v-if="selectColoredCol"
       @close="selectColoredCol = false"
@@ -110,7 +110,6 @@
       id="filtersAndSelectedData"
       :class="$store.state.StatisticalAnalysis.filters.length ? 'filters' : ''"
     >
-      <!-- Filters panel button -->
       <!-- Selected data info -->
       <SelectedDataInfo :data="data" />
 
