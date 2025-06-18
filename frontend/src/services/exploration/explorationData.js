@@ -35,7 +35,7 @@ class ExplorationData extends Data.Data {
       return {
         label: col.label,
         values: colValues,
-        category: "context",
+        category: category,
         typeIn: null,
         group: null,
       };
