@@ -32,6 +32,11 @@ class ExplorationData extends Data.Data {
       const colValues = explorationObject.combinations.map((combination) => {
         return combination.combination[colIndex];
       });
+
+      // Define the category of the column
+      let category = "project column"
+      if (col.aggregation) category = "aggregation"
+
       return {
         label: col.label,
         values: colValues,
