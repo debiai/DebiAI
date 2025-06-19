@@ -29,6 +29,7 @@
               :exploration="exploration"
               :columnsStatistics="columnsStatistics"
               :selectedColumns="selectedColumns"
+              :selectedColumnMetrics="selectedColumnMetrics"
             />
           </div>
         </div>
@@ -121,6 +122,7 @@
                 :project="project"
                 :exploration="exploration"
                 :selectedSampleMetrics="selectedSampleMetrics"
+                :selectedColumnMetrics="selectedColumnMetrics"
               />
             </div>
           </div>
@@ -158,6 +160,7 @@ export default {
       columnsStatistics: null,
       columnsStatisticsStatus: null,
       selectedColumns: [],
+      selectedColumnMetrics: [],
       selectedSampleMetrics: ["Nb Samples"],
 
       // Combinations
@@ -264,9 +267,8 @@ export default {
           this.exploration = exploration;
           if (this.exploration.config && updateColumns) {
             this.selectedColumns = this.exploration.config.columns || [];
-            this.selectedSampleMetrics = this.exploration.config.selectedSampleMetrics || [
-              "Nb Samples",
-            ];
+            this.selectedSampleMetrics = this.exploration.config.global_metrics || ["Nb Samples"];
+            this.selectedColumnMetrics = this.exploration.config.column_metrics || [];
           }
 
           if (!this.exploration) {
@@ -308,6 +310,7 @@ export default {
 
       this.exploration.config.columns = this.selectedColumns;
       this.exploration.config.global_metrics = this.selectedSampleMetrics;
+      this.exploration.config.column_metrics = this.selectedColumnMetrics;
 
       return this.$explorationDialog
         .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
@@ -390,6 +393,10 @@ export default {
           if (column.aggregation.nbCharacters)
             combinations *= 36 ** column.aggregation.nbCharacters;
         }
+        // If the column has metrics, we ignore it
+        else if (column.metrics && column.metrics !== {}) {
+          combinations *= 1; // No change in combinations
+        }
         // Use the nb unique values
         else {
           const columnNbUniqueValues = this.columnsStatistics.find(
@@ -398,6 +405,7 @@ export default {
           combinations *= columnNbUniqueValues;
         }
       }
+
       return combinations;
     },
     reasonNotReadyToComputeRealCombinations() {
@@ -410,6 +418,18 @@ export default {
   },
   watch: {
     selectedColumns: {
+      handler() {
+        this.updateExplorationConfig();
+      },
+      deep: true,
+    },
+    selectedSampleMetrics: {
+      handler() {
+        this.updateExplorationConfig();
+      },
+      deep: true,
+    },
+    selectedColumnMetrics: {
       handler() {
         this.updateExplorationConfig();
       },
@@ -451,6 +471,7 @@ export default {
       #combinations {
         .projectNbSamples {
           display: flex;
+          align-items: center;
           justify-content: flex-start;
           gap: 0.5rem;
           padding: 0.5rem 1rem;

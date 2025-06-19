@@ -20,6 +20,36 @@
           <span class="description">{{ metric.description }}</span>
         </div>
       </div>
+
+      <h3>Column Metrics</h3>
+      <div class="columnsMetrics">
+        <div
+          v-for="columnMetric in selectedColumnMetrics"
+          :key="columnMetric.columnLabel"
+          class="metricColumn"
+        >
+          <div class="columnName">{{ columnMetric.columnLabel }}:</div>
+          <div class="columnMetrics">
+            <div
+              v-for="metric in columnMetric.metrics"
+              :key="metric"
+              class="metric"
+            >
+              {{ metric }}
+              <button
+                class="remove red"
+                @click="removeMetricFromColumn(columnMetric.columnLabel, metric)"
+                :disabled="metric === 'Nb Samples'"
+              >
+                &times;
+              </button>
+              <span v-if="columnMetric.metrics.indexOf(metric) !== columnMetric.metrics.length - 1"
+                >,</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -39,6 +69,11 @@ export default {
     selectedSampleMetrics: {
       type: Array,
       required: true,
+    },
+    selectedColumnMetrics: {
+      type: Array,
+      required: true,
+      // [{columnLabel: "Column Name", metrics: ["Metric1", "Metric2"]}, ...]
     },
   },
   data() {
@@ -61,7 +96,19 @@ export default {
         // Metric is not selected, add it
         this.selectedSampleMetrics.push(metric.name);
       }
-      this.$emit("selectSampleMetrics", this.selectedSampleMetrics);
+    },
+    removeMetricFromColumn(columnLabel, metric) {
+      const column = this.selectedColumnMetrics.find((col) => col.columnLabel === columnLabel);
+      if (column) {
+        const index = column.metrics.indexOf(metric);
+        if (index > -1) column.metrics.splice(index, 1);
+      }
+
+      // If the column has no metrics left, we could remove the column entirely if needed
+      if (column && column.metrics.length === 0) {
+        const columnIndex = this.selectedColumnMetrics.indexOf(column);
+        if (columnIndex > -1) this.selectedColumnMetrics.splice(columnIndex, 1);
+      }
     },
   },
   computed: {},
@@ -97,6 +144,32 @@ export default {
         display: flex;
         gap: 0.5rem;
         align-items: center;
+      }
+    }
+  }
+
+  .columnsMetrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .metricColumn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .columnName {
+        font-weight: bold;
+      }
+
+      .columnMetrics {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        border-radius: 4px;
       }
     }
   }

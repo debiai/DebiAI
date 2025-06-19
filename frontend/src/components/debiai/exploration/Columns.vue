@@ -1,6 +1,6 @@
 <template>
   <div class="categories">
-    <!-- Columns category -->
+    <!-- Column categories -->
     <div
       v-for="(columns, category) in columnsGroupedByCategory"
       :key="category"
@@ -20,8 +20,8 @@
             <button
               @click="selectColumn(column)"
               :class="{
-                selected: isColumnSelected(column),
-                disabled: hasColumnAggregation(column.name),
+                selected: isColumnSelected(column) && !hasColumnMetrics(column.name),
+                disabled: hasColumnAggregation(column.name) || hasColumnMetrics(column.name),
               }"
             >
               {{ column.name }}
@@ -35,51 +35,72 @@
             >
               {{ column.type }}
             </div>
-          </div>
 
-          <!-- Statistics -->
-          <div class="statistics">
-            <!-- min -->
-            <span
-              v-if="column.type === 'number'"
-              class="label"
-              >Min:</span
-            >
-            <span
-              v-if="column.type === 'number'"
-              class="value"
-              :title="column.min"
-              >{{ $services.prettyNumber(column.min) }}</span
-            >
-            <!-- max -->
-            <span
-              v-if="column.type === 'number'"
-              class="label"
-              >Max:</span
-            >
-            <span
-              v-if="column.type === 'number'"
-              class="value"
-              :title="column.max"
-              >{{ $services.prettyNumber(column.max) }}</span
-            >
+            <!-- Statistics -->
+            <div class="statistics">
+              <!-- min -->
+              <span
+                v-if="column.type === 'number'"
+                class="label"
+                >Min:</span
+              >
+              <span
+                v-if="column.type === 'number'"
+                class="value"
+                :title="column.min"
+                >{{ $services.prettyNumber(column.min) }}</span
+              >
+              <!-- max -->
+              <span
+                v-if="column.type === 'number'"
+                class="label"
+                >Max:</span
+              >
+              <span
+                v-if="column.type === 'number'"
+                class="value"
+                :title="column.max"
+                >{{ $services.prettyNumber(column.max) }}</span
+              >
+            </div>
           </div>
 
           <!-- Controls -->
           <div class="controls">
+            <!-- Metric -->
+            <button
+              v-if="!hasColumnAggregation(column.name) && column.type === 'number'"
+              @click="openColumnMetricsModal(column)"
+              title="Add combination metrics to this column"
+              class="borderlessHover metrics"
+            >
+              <inline-svg
+                :src="require('@/assets/svg/barPlot.svg')"
+                height="20"
+                width="20"
+              />
+              Metrics
+              <span
+                class="badge"
+                v-if="hasColumnMetrics(column.name)"
+              >
+                {{ Object.keys(hasColumnMetrics(column.name)).length }}
+              </span>
+            </button>
+
             <!-- Aggregation -->
             <button
               @click="openColumnAggregationModal(column)"
-              v-if="!hasColumnAggregation(column.name)"
+              v-if="!hasColumnAggregation(column.name) && !hasColumnMetrics(column.name)"
               title="Reduce the number dimensions with aggregation"
-              class="borderlessHover"
+              class="borderlessHover aggregation"
             >
               <inline-svg
                 :src="require('@/assets/svg/aggregation.svg')"
-                height="16"
-                width="16"
+                height="17"
+                width="17"
               />
-              Aggregate
+              Aggregation
             </button>
 
             <!-- Aggregation info -->
@@ -109,7 +130,7 @@
                 @click="removeAggregation(column.name)"
                 title="Remove aggregation"
               >
-                x
+                &times;
               </button>
             </div>
           </div>
@@ -145,6 +166,61 @@
       </div>
     </div>
 
+    <!-- Modals -->
+    <!-- Number column metrics modal -->
+    <Modal
+      v-if="selectedColumnForMetrics"
+      @close="selectedColumnForMetrics = null"
+      leftAlign
+    >
+      <!-- Title -->
+      <h2
+        class="aligned spaced gapped"
+        style="padding-bottom: 20px"
+      >
+        '{{ selectedColumnForMetrics.name }}' number column metrics
+        <button
+          class="red"
+          @click="selectedColumnForMetrics = false"
+        >
+          Close
+        </button>
+      </h2>
+
+      <p>Add metrics for this columns</p>
+
+      <form
+        action=""
+        @submit.prevent
+      >
+        <!-- Select metric -->
+        <div
+          class="form-group"
+          v-for="metric in availableMetrics"
+          :key="metric.name"
+        >
+          <button
+            @click="selectMetric(metric.name)"
+            :class="{
+              selected: metric.selected,
+            }"
+          >
+            {{ metric.name }}
+          </button>
+          <span class="description">{{ metric.description }}</span>
+        </div>
+
+        <!-- Apply button -->
+        <div class="controls">
+          <button
+            class="green"
+            @click="applyMetrics"
+          >
+            Apply metrics
+          </button>
+        </div>
+      </form>
+    </Modal>
     <!-- Number column aggregation modal -->
     <Modal
       v-if="selectedColumnForAggregation && selectedColumnForAggregation.type === 'number'"
@@ -210,7 +286,6 @@
         </div>
       </form>
     </Modal>
-
     <!-- String column aggregation modal -->
     <Modal
       v-if="selectedColumnForAggregation && selectedColumnForAggregation.type === 'text'"
@@ -305,11 +380,19 @@ export default {
       type: Array,
       required: true,
     },
+    selectedColumnMetrics: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      // Number column aggregation
+      // Column metrics
+      selectedColumnForMetrics: null,
+      availableMetrics: [{ name: "mean", description: "Mean value of the column combination" }],
+      // Column aggregation
       selectedColumnForAggregation: null,
+      // Number column aggregation
       nbChunks: 5,
       aggregationType: "evenRange",
       // String column aggregation
@@ -320,7 +403,7 @@ export default {
   methods: {
     selectColumn(column) {
       if (this.isUnsupported(column)) return;
-      if (column.aggregation) return;
+      if (column.aggregation || this.hasColumnMetrics(column.name)) return;
 
       const columnName = column.name;
       const existingColumn = this.selectedColumns.find((selected) => selected.label === columnName);
@@ -346,6 +429,58 @@ export default {
       if (column.aggregation) return true; // Aggregated columns are considered selected
       return this.selectedColumns.some((selected) => selected.label === column.name);
     },
+
+    // Metrics
+    hasColumnMetrics(columnLabel) {
+      const entry = this.selectedColumnMetrics.find(
+        (metricEntry) => metricEntry.columnLabel === columnLabel
+      );
+      return entry ? entry.metrics : false;
+    },
+    openColumnMetricsModal(column) {
+      this.selectedColumnForMetrics = column;
+
+      // Reset available metrics selection
+      const existingMetrics = this.hasColumnMetrics(column.name);
+      if (!existingMetrics) for (const metric of this.availableMetrics) metric.selected = false;
+      else
+        for (const metric of this.availableMetrics)
+          metric.selected = existingMetrics.includes(metric.name);
+    },
+    selectMetric(metricName) {
+      const metric = this.availableMetrics.find((m) => m.name === metricName);
+      if (!metric) return;
+
+      // Toggle the selected state of the metric
+      metric.selected = !metric.selected;
+
+      this.$forceUpdate();
+    },
+    applyMetrics() {
+      if (!this.selectedColumnForMetrics) return;
+
+      // Remove existing metrics for the column if any
+      const existingMetricsIndex = this.selectedColumnMetrics.findIndex(
+        (entry) => entry.columnLabel === this.selectedColumnForMetrics.name
+      );
+      if (existingMetricsIndex !== -1) this.selectedColumnMetrics.splice(existingMetricsIndex, 1);
+
+      // Add the selected metrics for the column
+      const metrics = this.availableMetrics
+        .filter((metric) => metric.selected)
+        .map((metric) => metric.name);
+
+      if (metrics.length > 0) {
+        this.selectedColumnMetrics.push({
+          columnLabel: this.selectedColumnForMetrics.name,
+          metrics,
+        });
+      }
+
+      this.selectedColumnForMetrics = null;
+    },
+
+    // Aggregation
     hasColumnAggregation(columnLabel) {
       const column = this.selectedColumns.find((selected) => selected.label === columnLabel);
       if (!column) return false;
@@ -360,8 +495,8 @@ export default {
         this.nbCharacters = existingAggregation?.nbCharacters || 1;
         this.nbCharactersSkip = existingAggregation?.nbCharactersSkip || 0;
       } else if (column.type === "number") {
-        this.nbChunks = existingAggregation.nbChunks || 5;
-        this.aggregationType = existingAggregation.type || "evenRange";
+        this.nbChunks = existingAggregation?.nbChunks || 5;
+        this.aggregationType = existingAggregation?.type || "evenRange";
       }
     },
     applyAggregation() {
@@ -510,6 +645,12 @@ form {
     justify-content: flex-end;
     gap: 1rem;
     padding-top: 1rem;
+
+    button {
+      svg {
+        fill: white;
+      }
+    }
   }
 
   .form-group {
@@ -526,6 +667,18 @@ form {
       padding: 0.2rem;
       border-radius: 4px;
       border: 1px solid #ccc;
+    }
+  }
+}
+.controls {
+  .metrics {
+    svg {
+      fill: white;
+    }
+  }
+  .aggregation {
+    svg {
+      fill: black;
     }
   }
 }
