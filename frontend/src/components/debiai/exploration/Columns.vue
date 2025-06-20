@@ -62,6 +62,18 @@
                 :title="column.max"
                 >{{ $services.prettyNumber(column.max) }}</span
               >
+              <!-- Average -->
+              <span
+                v-if="column.type === 'number'"
+                class="label"
+                >Mean:</span
+              >
+              <span
+                v-if="column.type === 'number'"
+                class="value"
+                :title="column.average"
+                >{{ $services.prettyNumber(column.average) }}</span
+              >
             </div>
           </div>
 
