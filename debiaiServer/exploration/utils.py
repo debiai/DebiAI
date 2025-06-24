@@ -94,14 +94,29 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
 
     # Set the metrics up
     metrics_values = {"Nb Samples": {"values": []}}
+    metric_columns_to_fetch = set()
     for selectedSampleMetric in exploration.get("config", {}).get(
         "selectedSampleMetrics", []
     ):
         metrics_values[selectedSampleMetric] = {"values": []}
+    for selectedColumnWithMetrics in exploration.get("config", {}).get(
+        "column_metrics", []
+    ):
+        for selectedColumnMetric in selectedColumnWithMetrics.get("metrics", []):
+            metric_name = (
+                selectedColumnWithMetrics["columnLabel"] + "_" + selectedColumnMetric
+            )
+            metrics_values[metric_name] = {
+                "values": [],
+                "metric": selectedColumnMetric,
+                "column": selectedColumnWithMetrics["columnLabel"],
+            }
+            metric_columns_to_fetch.add(selectedColumnWithMetrics["columnLabel"])
+    metric_columns_to_fetch = list(metric_columns_to_fetch)
 
     # Combinations computation
     combinations = defaultdict(list)
-    NB_SAMPLES = 1000
+    NB_SAMPLES = 50000
     current_sample = 0
     computation_id = str(uuid4())
     while True:
@@ -116,23 +131,24 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
         batch = get_data_batch(
             data_provider,
             project_id,
-            computation_id,
+            {"id": computation_id},
             current_sample,
             current_sample + NB_SAMPLES - 1,
             columns_structure,
             selected_columns_labels,
             selected_columns_aggregations,
             columns_statistics_dict,
+            metric_columns_to_fetch,
         )
 
         # Update the combinations
         for data_id, values in batch.items():
-            combinations[tuple(values)].append(data_id)
+            combinations[values["column_values"]].append(data_id)
 
         # Process the metrics for the current batch
         process_combination_metrics(
             current_combinations=combinations,
-            new_data_batch=batch,
+            data_and_metrics_batch=batch,
             metrics=metrics_values,
         )
 
@@ -164,6 +180,13 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     for key, value in combinations.items():
         combinations_json.append({"sample_ids": value, "combination": list(key)})
 
+    # Clean the metrics values
+    for metric_name, metric_data in metrics_values.items():
+        keys = list(metric_data.keys())
+        for key in keys:
+            if key != "values":
+                del metric_data[key]
+
     # Set the exploration status to "completed"
     exploration["combinations"] = combinations_json
     exploration["metrics"] = metrics_values
@@ -173,7 +196,47 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     update_exploration(project_id, exploration)
 
 
-def process_combination_metrics(current_combinations, new_data_batch, metrics):
+def process_combination_metrics(current_combinations, data_and_metrics_batch, metrics):
+    """
+    current_combinations:
+    {
+        (value1, value2): [sample_id1, sample_id2],
+        (value3, value4): [sample_id3]
+    }
+
+    data_and_metrics_batch:
+    {
+        "dataId1": {
+            "column_values": [1, "A"],
+            "metric_column_values": {
+                "col1": 0.5,
+                "col2": 1.0,
+            },
+        },
+        "dataId2": {
+            "column_values": [2, "B"],
+            "metric_column_values": {
+                "col1": 0.7,
+                "col2": 1.2,
+            },
+        },
+        ...
+    }
+
+    metrics:
+    {
+        "Nb Samples": {
+            "values": [...],
+        },
+        "metric1": {
+            "values": [...],
+            "column": "column1",
+            "metric": "mean",
+            ...
+        },
+        ...
+    """
+
     if "Nb Samples" in metrics:
         # For each combination, count the number of samples
         metrics["Nb Samples"]["values"] = []
@@ -181,3 +244,38 @@ def process_combination_metrics(current_combinations, new_data_batch, metrics):
             metrics["Nb Samples"]["values"].append(
                 len(current_combinations[combination])
             )
+
+    for metric_name, metric_data in metrics.items():
+        column_name = metric_data.get("column")
+        if metric_data.get("metric") == "mean":
+            # Process mean metrics
+            if "combinations" not in metric_data:
+                metric_data["combinations"] = {}
+
+            for new_data in data_and_metrics_batch.values():
+                if new_data["column_values"] not in metric_data["combinations"]:
+                    metric_data["combinations"][new_data["column_values"]] = {
+                        "mean": 0,
+                        "count": 0,
+                    }
+
+                current_mean = metric_data["combinations"][new_data["column_values"]][
+                    "mean"
+                ]
+                metric_data["combinations"][new_data["column_values"]]["count"] += 1
+                current_count = metric_data["combinations"][new_data["column_values"]][
+                    "count"
+                ]
+
+                metric_data["combinations"][new_data["column_values"]]["mean"] += (
+                    new_data["metric_column_values"].get(column_name, 0) - current_mean
+                ) / (current_count)
+
+            # Save the mean for each combination
+            metric_data["values"] = []
+            for combination in current_combinations:
+                if combination in metric_data["combinations"]:
+                    mean_value = metric_data["combinations"][combination].get("mean", 0)
+                    metric_data["values"].append(mean_value)
+                else:
+                    metric_data["values"].append(0)

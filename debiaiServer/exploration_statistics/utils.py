@@ -2,13 +2,14 @@ from debiaiServer.modules.dataProviders.DataProvider import DataProvider
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 from pickledb import PickleDB
 import uuid
+from typing import Any
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorationsStatistics.db")
 
 
 # Statistics
-def setColumnType(column) -> str:
+def set_column_type(column) -> str:
     # Return mixed if the column has more than one type
     # Except if the column has numbers and text
     nb_types = 0
@@ -35,7 +36,7 @@ def setColumnType(column) -> str:
     return "other"
 
 
-def canCalculate(column):
+def can_calculate(column):
     # Check if the column can be calculated
     # Only columns that have numbers or text can be calculated
     if column["hasNumbers"] and not (
@@ -49,23 +50,28 @@ def canCalculate(column):
 
 
 def get_columns_statistics(dataProviderId, projectId):
-    SAMPLES_PER_PAGE = 500
+    SAMPLES_PER_PAGE = 50000
 
     print(f" - Getting columns statistics for project {projectId} on {dataProviderId}")
 
-    # Find the data provider
+    # Find the data provider & project
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+    data_provider_project = data_provider.get_project(projectId)
 
     # Check if we already have the statistics
     project_columns_statistics_db_key = f"{dataProviderId}_{projectId}"
     existing = project_explorations_db.get(project_columns_statistics_db_key)
     if existing:
-        print(" - Statistics already exist")
-        return {"columns": existing}
+        # Get the project update time
+        project_update_time = data_provider_project.get("updateDate", 0)
+        if type(existing) is dict:
+            existing_update_time = existing.get("updateDate", 0)
+            if existing_update_time >= project_update_time:
+                return {"columns": existing["columns"]}
 
     # Get the project columns structure
     print(" - Getting columns structure")
-    columns_structure = data_provider.get_project(projectId)["columns"]
+    columns_structure = data_provider_project["columns"]
     # [
     #     {"name": "image", "category": "other", "type": "auto"},
     #     {"name": "objects", "category": "groundtruth", "type": "list"},
@@ -158,7 +164,7 @@ def get_columns_statistics(dataProviderId, projectId):
                     unique_values_map[column["name"]].add(sample)
 
                 # Update the min, max and average
-                if canCalculate(column):
+                if can_calculate(column):
                     # Update the min, max and average
                     if column["min"] is None or sample < column["min"]:
                         column["min"] = sample
@@ -187,10 +193,18 @@ def get_columns_statistics(dataProviderId, projectId):
             column["nbUniqueValues"] = len(unique_values_map[column["name"]])
 
         # Set the type of the column
-        column["type"] = setColumnType(column)
+        column["type"] = set_column_type(column)
 
     # Save the statistics in the database
-    project_explorations_db.set(project_columns_statistics_db_key, columns_statistics)
+    project_explorations_db.set(
+        project_columns_statistics_db_key,
+        {
+            "dataProviderId": dataProviderId,
+            "projectId": projectId,
+            "columns": columns_statistics,
+            "updateDate": data_provider_project["updateDate"],
+        },
+    )
     project_explorations_db.save()
 
     return {"columns": columns_statistics}
@@ -216,7 +230,7 @@ def get_samples_batch(
 
 def get_column_value_in_data(
     column_name: str, sample_data: list, project_columns: list
-) -> any:
+) -> Any:
     for i, column in enumerate(project_columns):
         if column["name"] == column_name:
             return sample_data[i]
@@ -281,10 +295,27 @@ def get_data_batch(
     selected_columns_labels: list[str],
     columns_aggregation_config: dict,
     columns_statistics: dict,
-) -> dict:
+    metric_columns_to_fetch: list,
+) -> dict[str, dict]:
     """
-    Returns a batch of dict:
-    {'data_4': [1, 2, 3], 'data_5': [4, 5, 6], 'data_6': [7, 8, 9]},
+    Returns a value for each data for the combinations:
+    {
+        "dataId1": {
+            "column_values": [1, "A"],
+            "metric_column_values": {
+                "col1": 0.5,
+                "col2": 1.0,
+            },
+        },
+        "dataId2": {
+            "column_values": [2, "B"],
+            "metric_column_values": {
+                "col1": 0.7,
+                "col2": 1.2,
+            },
+        },
+        ...
+    }
     """
 
     # Get the samples arrays
@@ -307,30 +338,44 @@ def get_data_batch(
         for i, column in enumerate(project_columns)
         if column["name"] in selected_columns_labels
     }
+    metric_column_indices = {
+        column["name"]: i
+        for i, column in enumerate(project_columns)
+        if column["name"] in metric_columns_to_fetch
+    }
 
     # Convert to a dictionary with data id as keys
     data_columns = {}
     for data_id, sample_data in data.items():
-        data_columns[data_id] = [
-            apply_aggregations(
-                sample_data[column_indices[column_name]],
-                column_name,
-                columns_aggregation_config,
-                columns_statistics,
-            )
-            for column_name in selected_columns_labels
-        ]
+        data_columns[data_id] = {
+            "column_values": tuple([
+                apply_aggregations(
+                    sample_data[column_indices[column_name]],
+                    column_name,
+                    columns_aggregation_config,
+                    columns_statistics,
+                )
+                for column_name in selected_columns_labels
+            ]),
+            "metric_column_values": {},
+        }
+
+        for metric_column_name in metric_columns_to_fetch:
+            metric_value = sample_data[metric_column_indices[metric_column_name]]
+            data_columns[data_id]["metric_column_values"][
+                metric_column_name
+            ] = metric_value
 
     return data_columns
 
 
 # Aggregations
 def apply_aggregations(
-    value: any,
+    value: Any,
     column_name: str,
     columns_aggregation_config: dict,
     columns_statistics: dict,
-) -> any:
+) -> Any:
     if not columns_aggregation_config[column_name]:
         return value
 

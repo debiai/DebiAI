@@ -75,7 +75,7 @@
                     :title="reasonNotReadyToComputeRealCombinations"
                     @click="computeRealCombinations"
                   >
-                    Compute real combinations
+                    Compute exploration values
                   </button>
                 </div>
 
@@ -103,7 +103,7 @@
                   :disabled="!exploration.real_combinations || exploration.state !== 'completed'"
                   @click="startCombinationAnalysis"
                 >
-                  Start combination analysis
+                  Start exploration analysis
                 </button>
               </div>
             </div>
@@ -393,10 +393,6 @@ export default {
           if (column.aggregation.nbCharacters)
             combinations *= 36 ** column.aggregation.nbCharacters;
         }
-        // If the column has metrics, we ignore it
-        else if (column.metrics && column.metrics !== {}) {
-          combinations *= 1; // No change in combinations
-        }
         // Use the nb unique values
         else {
           const columnNbUniqueValues = this.columnsStatistics.find(
@@ -457,6 +453,7 @@ export default {
 
     #columns {
       flex: 1;
+      max-width: 60vw;
 
       .columns {
         overflow-y: auto;

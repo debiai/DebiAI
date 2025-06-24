@@ -80,7 +80,7 @@ class WebDataProvider(DataProvider):
     def delete_project(self, project_id):
         return delete_project(self.url, project_id)
 
-    def get_id_list(self, project_id, analysis, _from=None, _to=None):
+    def get_id_list(self, project_id, analysis, _from=None, _to=None) -> list:
         # http Request on dp to get id list
         # Return Arr[id]
         return get_project_id_list(

@@ -15,7 +15,7 @@
           class="column"
         >
           <!-- Name, type & unique values -->
-          <div>
+          <div class="columnDetails">
             <!-- Btn -->
             <button
               @click="selectColumn(column)"
@@ -424,7 +424,7 @@ export default {
         // If the column is already selected, unselect it
         this.selectedColumns.splice(this.selectedColumns.indexOf(existingColumn), 1);
       } else {
-        this.selectedColumns.push({ label: columnName, aggregation: null, column_metrics: [] });
+        this.selectedColumns.push({ label: columnName, aggregation: null });
       }
     },
     unselectColumn(columnLabel) {
@@ -470,6 +470,10 @@ export default {
     },
     applyMetrics() {
       if (!this.selectedColumnForMetrics) return;
+
+      // Unselect the column if it was selected
+      if (this.isColumnSelected(this.selectedColumnForMetrics))
+        this.unselectColumn(this.selectedColumnForMetrics.name);
 
       // Remove existing metrics for the column if any
       const existingMetricsIndex = this.selectedColumnMetrics.findIndex(
@@ -599,15 +603,22 @@ export default {
       .column {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
 
-        div {
+        .columnDetails {
           display: flex;
           align-items: center;
           gap: 0.5rem;
 
+          button {
+            max-width: 300px;
+            word-break: break-all;
+          }
+
           .nbUnique {
             font-weight: bold;
           }
+
           .type {
             &.text {
               color: var(--class);
@@ -622,13 +633,28 @@ export default {
               color: var(--dict);
             }
           }
+
+          .statistics {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--fontColorLight);
+            opacity: 0.5;
+
+            .label {
+              font-weight: bold;
+            }
+          }
         }
 
-        .statistics {
-          color: var(--fontColorLight);
+        .controls {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
 
-          .label {
-            font-weight: bold;
+          .aggregation {
+            display: flex;
+            align-items: center;
           }
         }
       }
