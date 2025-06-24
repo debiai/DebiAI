@@ -198,12 +198,12 @@ export default {
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
-  addSelection(sampleHashList, selectionName, requestId = null) {
+  addSelection(sampleHashList, selectionName) {
     let code = startRequest("Saving selection");
     return axios
       .post(
         apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/selections/",
-        { sampleHashList, selectionName, requestId }
+        { sampleHashList, selectionName }
       )
       .finally(() => {
         endRequest(code);

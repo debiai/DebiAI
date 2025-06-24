@@ -194,6 +194,41 @@ paths:
         "200":
           description: Configuration updated
 
+  /explorations/{exploration_id}/selections:
+    post:
+      tags:
+        - Explorations
+      summary: Create a selection from an exploration and a list of combinations
+      operationId: debiaiServer.exploration.controller.create_exploration_selection
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                selected_combinations:
+                  type: array
+                  items:
+                    type: array
+                selection_name:
+                  type: string
+                  description: Name of the selection to be created
+      responses:
+        "201":
+          description: Selection created
+
 components:
   schemas:
     # Explorations

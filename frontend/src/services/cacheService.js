@@ -29,7 +29,7 @@ async function getDb(timestamp) {
         let timestampObj = timestampRequest.result;
         if (!timestampObj || !timestampObj.timestamp || timestampObj.timestamp !== timestamp) {
           // The database isn't up to date
-          // The dada need to be erased in case of modifications
+          // The data need to be erased in case of modifications
           console.log("Resetting the project database");
 
           // Samples store

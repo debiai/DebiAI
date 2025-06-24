@@ -127,4 +127,28 @@ export default {
         return response.data;
       });
   },
+
+  // Selections
+  createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
+    let code = b.startRequest("Creating selection");
+    return axios
+      .post(
+        `${apiURL}explorations/${explorationId}/selections`,
+        {
+          selection_name: selectionName,
+          selected_combinations: selectedCombinationsIds,
+        },
+        {
+          params: {
+            project_id: projectId,
+          },
+        }
+      )
+      .finally(() => {
+        b.endRequest(code);
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };

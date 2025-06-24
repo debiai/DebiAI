@@ -10,6 +10,22 @@
         <h3
           style="padding-right: 40px"
           class="aligned centered"
+          v-if="data.mode === 'exploration'"
+        >
+          Create a new selection from the combinations
+          <documentation-block>
+            A selection is a named list of samples ID. <br />
+            <br />
+            By creating a selection, you can extract, from the currently selected combinations, the
+            samples they contain and analyze them afterward.
+            <br />
+          </documentation-block>
+        </h3>
+
+        <h3
+          style="padding-right: 40px"
+          class="aligned centered"
+          v-else
         >
           Create a new selection from the selected data
           <documentation-block>
@@ -43,7 +59,19 @@
             </div>
           </div>
           <!-- nb samples -->
-          <div class="data">
+          <div
+            class="data"
+            v-if="data.mode === 'exploration'"
+          >
+            <div class="name">Selected samples</div>
+            <div class="value">
+              {{ data.nbExplorationSelectedSamples }} / {{ data.projectNbSamples }}
+            </div>
+          </div>
+          <div
+            class="data"
+            v-else
+          >
             <div class="name">Selected samples</div>
             <div class="value">{{ data.nbOriginalSelectedData }} / {{ data.nbLinesOriginal }}</div>
           </div>
@@ -69,7 +97,6 @@ export default {
     return {
       selectionName: "New selection",
       createdSelections: null,
-      saveRequestAsWell: false,
     };
   },
   props: {
@@ -83,33 +110,14 @@ export default {
   },
   methods: {
     save() {
-      if (this.saveRequestAsWell) {
-        this.saveRequest();
+      if (this.data.mode === "exploration") {
+        this.saveExplorationSelection();
       } else {
         this.saveSelection();
       }
     },
 
-    saveRequest() {
-      // Save the request first
-      this.$backendDialog
-        .addRequest(this.selectionName, "", this.filters)
-        .then((request) => {
-          this.$store.commit("sendMessage", {
-            title: "success",
-            msg: "Request saved successfully",
-          });
-          this.saveSelection(request.id);
-        })
-        .catch(() => {
-          this.$store.commit("sendMessage", {
-            title: "error",
-            msg: "Couldn't save the request",
-          });
-        });
-    },
-
-    saveSelection(requestId = null) {
+    saveSelection() {
       // Get the selected data positions
       const selectedDataNumbers = this.data.getOriginalSelectedData();
 
@@ -120,7 +128,7 @@ export default {
 
       // Save the selection
       this.$backendDialog
-        .addSelection(selectedIds, this.selectionName, requestId)
+        .addSelection(selectedIds, this.selectionName)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",
@@ -132,6 +140,33 @@ export default {
           this.$store.commit("sendMessage", {
             title: "error",
             msg: "Couldn't save the selection",
+          });
+        });
+    },
+
+    saveExplorationSelection() {
+      // Get the ids of the selected combinations
+      const selectedCombinationsIds = this.data.getSelectedCombinations();
+
+      // Save the selection from the exploration data
+      this.$explorationDialog
+        .createSelection(
+          this.$store.state.ProjectPage.projectId,
+          this.data.explorationId,
+          selectedCombinationsIds,
+          this.selectionName
+        )
+        .then(() => {
+          this.$store.commit("sendMessage", {
+            title: "success",
+            msg: "Selection created successfully",
+          });
+          this.$emit("cancel");
+        })
+        .catch(() => {
+          this.$store.commit("sendMessage", {
+            title: "error",
+            msg: "Couldn't create the selection",
           });
         });
     },

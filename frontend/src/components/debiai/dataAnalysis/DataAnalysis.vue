@@ -141,7 +141,7 @@
     />
 
     <!-- Side menu -->
-    <SideBar :menuList="menuList" />
+    <SideBar :menuList="menuList" :data="data" />
 
     <!-- Column unfolding menu -->
     <ColumnUnfoldingMenu :data="data" />
@@ -234,11 +234,25 @@ export default {
               name: "Create a new selection",
               description: "Create a new selection from the samples that are currently selected",
               callback: this.saveSelection,
+              modes: ["analysis"],
             },
             {
               name: "Open a selection",
               description: "Start a new analysis with another selection",
               callback: this.selectionSelectionBtn,
+              modes: ["analysis"],
+            },
+          ],
+        },
+        {
+          name: "Exploration",
+          icon: "realCombinations",
+          menuList: [
+            {
+              name: "Create a selection",
+              description: "Create a new selection from the samples of the selected combinations",
+              callback: this.saveSelection,
+              modes: ["exploration"],
             },
           ],
         },
@@ -272,6 +286,7 @@ export default {
               description:
                 "Export to another application the selected samples ID with an annotation",
               callback: this.exportSelection,
+              modes: ["analysis"],
             },
           ],
         },

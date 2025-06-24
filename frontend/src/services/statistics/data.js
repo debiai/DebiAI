@@ -4,6 +4,7 @@ import samplesFiltering from "./samplesFiltering";
 
 class Data {
   constructor(data) {
+    this.mode = "analysis";
     this.nbLinesOriginal = data.nbLines;
     this.sampleIdList = data.sampleIdList;
 

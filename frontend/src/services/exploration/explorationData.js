@@ -83,6 +83,13 @@ class ExplorationData extends Data.Data {
 
     this.calculateNbSelectedSamples();
   }
+
+  getSelectedCombinations() {
+    // Return the combinations of the selected data
+    return this.selectedData.map((combinationIndex) => {
+      return this.combinations[combinationIndex]["combination"];
+    });
+  }
 }
 
 export default { ExplorationData };

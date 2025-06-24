@@ -23,6 +23,7 @@ deployment/
 
 # VSCODE
 .vscode/
+.kilocode/
 
 # Databases
 *.db

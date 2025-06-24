@@ -6,6 +6,7 @@ from .utils import (
     get_exploration_by_id,
     update_explorations,
     update_exploration as update_exploration_db,
+    create_selection,
     computation_threads,
     stop_flags,
 )
@@ -114,3 +115,15 @@ def update_exploration(project_id, exploration_id, action, body):
 
 def update_exploration_config():
     pass
+
+
+def create_exploration_selection(project_id, exploration_id, body):
+    # Create a selection for the exploration
+    create_selection(
+        project_id,
+        exploration_id,
+        body["selected_combinations"],
+        body["selection_name"],
+    )
+
+    return 201

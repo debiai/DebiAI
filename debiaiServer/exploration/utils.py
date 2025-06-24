@@ -279,3 +279,43 @@ def process_combination_metrics(current_combinations, data_and_metrics_batch, me
                     metric_data["values"].append(mean_value)
                 else:
                     metric_data["values"].append(0)
+
+
+# Selections
+def create_selection(
+    project_id, exploration_id, selected_combinations_id, selection_name
+):
+    exploration = get_exploration_by_id(project_id, exploration_id)
+    if exploration is None:
+        raise ValueError(
+            f"Exploration with ID {exploration_id} not found in project {project_id}"
+        )
+
+    # Get the data provider for the project
+    data_provider = get_single_data_provider_for_project_id(project_id)
+    if data_provider is None:
+        raise ValueError(f"No data provider found for project {project_id}")
+
+    # Extract the selected combinations from the exploration
+    combinations = exploration.get("combinations", [])
+    if not combinations:
+        raise ValueError(
+            f"No combinations found in exploration {exploration_id} for project {project_id}"
+        )
+
+    # Filter the combinations based on the selected IDs
+    selected_combinations = [
+        comb for comb in combinations if comb["combination"] in selected_combinations_id
+    ]
+
+    # Aggregate the sample IDs from the selected combinations
+    selected_sample_ids = []
+    for comb in selected_combinations:
+        selected_sample_ids.extend(comb["sample_ids"])
+
+    # Create the selection
+    data_provider.create_selection(
+        project_id,
+        selection_name,
+        selected_sample_ids,
+    )
