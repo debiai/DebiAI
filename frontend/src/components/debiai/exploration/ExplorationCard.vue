@@ -19,6 +19,11 @@
     <!-- actions -->
     <div class="actions">
       <button
+        @click.stop="onStart"
+      >
+        Start the exploration analysis
+      </button>
+      <button
         class="red"
         @click.stop="onDelete"
       >
@@ -55,6 +60,24 @@ export default {
     },
     onDelete() {
       this.$emit("delete", this.exploration.id);
+    },
+    onStart() {
+      // Go back to the exploration page to start an analysis immediately
+      this.$router.push({
+        path:
+          "/dataprovider/" +
+          this.$store.state.ProjectPage.dataProviderId +
+          "/project/" +
+          this.$store.state.ProjectPage.projectId +
+          "/exploration/" +
+          this.exploration.id,
+        query: {
+          projectId: this.$store.state.ProjectPage.projectId,
+          dataProviderId: this.$store.state.ProjectPage.dataProviderId,
+          explorationId: this.exploration.id,
+          startAnalysis: true,
+        },
+      });
     },
   },
 };

@@ -103,7 +103,7 @@
                   :disabled="!exploration.real_combinations || exploration.state !== 'completed'"
                   @click="startCombinationAnalysis"
                 >
-                  Start exploration analysis
+                  Start the exploration analysis
                 </button>
               </div>
             </div>
