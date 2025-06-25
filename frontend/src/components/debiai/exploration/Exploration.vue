@@ -168,6 +168,8 @@ export default {
 
       // Other
       explorationRefreshInterval: null,
+      explorationConfigInitialized: false, // Prevent watcher on initial load
+      isLoadingExploration: false, // Prevent overlapping loadExploration calls
     };
   },
   created() {
@@ -260,15 +262,21 @@ export default {
     },
     async loadExploration(clearPrevious = true, updateColumns = true) {
       if (clearPrevious) this.exploration = null;
+      this.isLoadingExploration = true;
 
       return this.$explorationDialog
         .getExploration(this.projectId, this.explorationId, updateColumns)
         .then((exploration) => {
           this.exploration = exploration;
           if (this.exploration.config && updateColumns) {
+            // Prevent triggering watchers on initial load
+            this.explorationConfigInitialized = false;
             this.selectedColumns = this.exploration.config.columns || [];
             this.selectedSampleMetrics = this.exploration.config.global_metrics || ["Nb Samples"];
             this.selectedColumnMetrics = this.exploration.config.column_metrics || [];
+            this.$nextTick(() => {
+              this.explorationConfigInitialized = true;
+            });
           }
 
           if (!this.exploration) {
@@ -290,6 +298,9 @@ export default {
         })
         .catch((e) => {
           console.log(e);
+        })
+        .finally(() => {
+          this.isLoadingExploration = false;
         });
     },
     async loadColumnsStatistics() {
@@ -306,7 +317,7 @@ export default {
         });
     },
     async updateExplorationConfig() {
-      if (!this.exploration) return;
+      if (!this.exploration || !this.explorationConfigInitialized) return;
 
       this.exploration.config.columns = this.selectedColumns;
       this.exploration.config.global_metrics = this.selectedSampleMetrics;
@@ -346,6 +357,8 @@ export default {
       // Refresh the exploration data every second
       if (this.explorationRefreshInterval) clearInterval(this.explorationRefreshInterval);
       this.explorationRefreshInterval = setInterval(() => {
+        if (this.isLoadingExploration) return;
+
         this.loadExploration(false, false).then(() => {
           // Stop refreshing if the exploration computation is done
           if (this.exploration.state !== "ongoing") {

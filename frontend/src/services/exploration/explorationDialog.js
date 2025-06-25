@@ -6,8 +6,9 @@ const apiURL = config.EXPLORATION_API_URL;
 
 export default {
   // Explorations
-  getExplorations(projectId) {
-    let code = b.startRequest("Getting explorations");
+  getExplorations(projectId, displayMessage = true) {
+    let code;
+    if (displayMessage) code = b.startRequest("Getting explorations");
     return axios
       .get(`${apiURL}explorations`, {
         params: {
@@ -15,7 +16,7 @@ export default {
         },
       })
       .finally(() => {
-        b.endRequest(code);
+        if (displayMessage) b.endRequest(code);
       })
       .then((response) => {
         return response.data;

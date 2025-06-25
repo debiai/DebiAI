@@ -18,8 +18,15 @@
 
     <!-- actions -->
     <div class="actions">
+      <div
+        class="nbCombinations"
+        v-if="exploration.state === 'completed'"
+      >
+        <b>{{ exploration.real_combinations }}</b> combinations
+      </div>
       <button
         @click.stop="onStart"
+        v-if="exploration.state === 'completed'"
       >
         Start the exploration analysis
       </button>

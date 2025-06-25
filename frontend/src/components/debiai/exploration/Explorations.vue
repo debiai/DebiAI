@@ -119,6 +119,9 @@ export default {
       // Explorations
       explorations: null,
       explorationsRefreshInterval: null,
+
+      // Loading flag
+      isLoadingExplorations: false,
     };
   },
   created() {
@@ -189,6 +192,9 @@ export default {
     },
     async loadExplorations() {
       this.explorations = null;
+      // Add a flag to prevent overlapping requests
+      if (this.isLoadingExplorations) return;
+      this.isLoadingExplorations = true;
       return this.$explorationDialog
         .getExplorations(this.projectId)
         .then((explorations) => {
@@ -199,6 +205,9 @@ export default {
           // Check if explorations are ongoing and set an interval to refresh them
           if (this.explorations.some((exploration) => exploration.state === "ongoing")) {
             this.explorationsRefreshInterval = setInterval(() => {
+              // Prevent overlapping requests
+              if (this.isLoadingExplorations) return;
+              this.isLoadingExplorations = true;
               this.$explorationDialog
                 .getExplorations(this.projectId, false)
                 .then((explorations) => {
@@ -209,12 +218,18 @@ export default {
                     clearInterval(this.explorationsRefreshInterval);
                     this.explorationsRefreshInterval = null;
                   }
+                })
+                .finally(() => {
+                  this.isLoadingExplorations = false;
                 });
             }, 1000);
           }
         })
         .catch((e) => {
           console.log(e);
+        })
+        .finally(() => {
+          this.isLoadingExplorations = false;
         });
     },
 
