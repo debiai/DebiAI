@@ -74,9 +74,10 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
 
     # Get the data-provider for the given project
     data_provider = get_single_data_provider_for_project_id(project_id)
-    print(f"Starting exploration {exploration_id} on project {project_id}")
-    print(f"Using data provider: {data_provider.name}")
-    columns_structure = data_provider.get_project(project_id)["columns"]
+    data_provider_info = data_provider.get_info()
+    project = data_provider.get_project(project_id)
+    columns_structure = project["columns"]
+    project_nb_samples = project.get("nbSamples", None)
 
     # Set the exploration as started
     exploration["state"] = "ongoing"
@@ -114,9 +115,18 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             metric_columns_to_fetch.add(selectedColumnWithMetrics["columnLabel"])
     metric_columns_to_fetch = list(metric_columns_to_fetch)
 
+    # Determine the number of samples to fetch in each batch
+    NB_SAMPLES = 25000
+    if data_provider_info.get("maxSampleIdByRequest") and data_provider_info.get(
+        "maxSampleDataByRequest"
+    ):
+        NB_SAMPLES = min(
+            data_provider_info["maxSampleIdByRequest"],
+            data_provider_info["maxSampleDataByRequest"],
+        )
+
     # Combinations computation
     combinations = defaultdict(list)
-    NB_SAMPLES = 50000
     current_sample = 0
     computation_id = str(uuid4())
     while True:
@@ -159,11 +169,11 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
 
         # Calculate the estimated time remaining
         elapsed_time = time() - exploration["started_at"]
-        if exploration["current_sample"] > 0:
+        if exploration["current_sample"] > 0 and project_nb_samples is not None:
             estimated_total_time = (
-                elapsed_time * NB_SAMPLES / exploration["current_sample"]
+                elapsed_time * project_nb_samples / exploration["current_sample"]
             )
-            exploration["remaining_time"] = estimated_total_time - elapsed_time
+            exploration["remaining_time"] = max(0, estimated_total_time - elapsed_time)
 
         # Update the exploration in the database
         update_exploration(project_id, exploration)
@@ -172,8 +182,6 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
         if len(batch) < NB_SAMPLES:
             print("Reached the end of the data provider samples.")
             break
-
-        print(f"Time: {time() - exploration['started_at']:.2f}s, ")
 
     # Convert combinations to JSON format
     combinations_json = []

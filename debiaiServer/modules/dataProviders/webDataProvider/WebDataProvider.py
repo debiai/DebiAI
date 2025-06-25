@@ -61,7 +61,7 @@ class WebDataProvider(DataProvider):
         self.alive = True if get_status(self.url) is True else False
         return self.alive
 
-    def get_info(self):
+    def get_info(self) -> dict:
         return get_info(self.url)
 
     # ==== Projects ====

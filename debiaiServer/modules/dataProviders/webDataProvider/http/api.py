@@ -27,12 +27,12 @@ def get_status(url):
         raise DataProviderException("Invalid URL", 400)
 
 
-def get_info(url):
+def get_info(url) -> dict:
     try:
         r = requests.get(url + "/info")
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-        return None
+        return {}
 
 
 # ==== Projects ====

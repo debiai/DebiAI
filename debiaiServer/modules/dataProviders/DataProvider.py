@@ -20,7 +20,7 @@ class DataProvider(ABC):
 
     # Info
     @abstractmethod
-    def get_info(self):
+    def get_info(self) -> dict:
         pass
 
     # Projects

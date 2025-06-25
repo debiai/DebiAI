@@ -17,7 +17,11 @@ def get_exploration_available_config():
 
 
 def get_explorations(project_id):
-    return project_explorations_db.get(project_id) or []
+    explorations: list[dict] = project_explorations_db.get(project_id) or []
+    for exploration in explorations:
+        exploration.pop("combinations", None)
+        exploration.pop("metrics", None)
+    return explorations
 
 
 def create_exploration(project_id, body):
