@@ -30,7 +30,7 @@
 
         <!-- Time & samples left -->
         <div style="display: flex; flex-direction: column; width: 300px">
-          <div class="samplesLeft">
+          <div class="samplesLeft aligned centered gapped">
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
               width="20"
@@ -38,14 +38,14 @@
             />
             <span> Sample {{ exploration.current_sample }} / {{ project.nbSamples }} </span>
           </div>
-          <div class="timeLeft">
+          <div class="timeLeft aligned centered gapped">
             <inline-svg
               :src="require('@/assets/svg/time.svg')"
               width="20"
               height="20"
             />
             <span>
-              {{ $services.timeStampToRemainingTime(exploration.remaining_time) }}
+              {{ $services.nbSecondsToTime(exploration.remaining_time) }}
             </span>
           </div>
         </div>

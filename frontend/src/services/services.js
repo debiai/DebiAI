@@ -45,9 +45,9 @@ export default {
     return time;
   },
 
-  timeStampToDate(ts) {
-    var a = new Date(ts);
-    var months = [
+  timeStampToDate(ts, hoursOnly = false) {
+    const a = new Date(ts);
+    const months = [
       "Jan",
       "Feb",
       "Mar",
@@ -61,38 +61,38 @@ export default {
       "Nov",
       "Dec",
     ];
-    var year = a.getFullYear();
-    var month = months[a.getMonth()];
-    var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var sec = a.getSeconds();
-    var time = date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
-    return time;
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds();
+    if (hoursOnly) return hour + ":" + min + ":" + sec;
+    else return date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
   },
 
-  timeStampToRemainingTime(ts) {
-    console.log("TimeStamp to remaining time", ts);
-    
-    const a = new Date(ts);
-    console.log(a);
-    
-    let day = a.getDay();
-    let hour = a.getHours();
-    let min = a.getMinutes();
-    let sec = a.getSeconds() + 1; // To end on a full second
-    console.log("Day:", day, "Hour:", hour, "Min:", min, "Sec:", sec);
-    
-    if (min < 10) min = "0" + min;
-    if (hour < 10) hour = "0" + hour;
-    let time = hour + "h" + min;
-    if (day > 0) time = day + "d " + time;
+  nbSecondsToTime(nbSeconds) {
+    let seconds = Math.floor(nbSeconds);
+    if (nbSeconds <= 0) return "0s";
 
-    return time;
+    const days = Math.floor(seconds / 86400);
+    seconds %= 86400;
+    const hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    const minutes = Math.floor(seconds / 60);
+    seconds %= 60;
+
+    let time = "";
+    if (days > 0) time += `${days}d `;
+    if (hours > 0 || days > 0) time += `${hours}h `;
+    if (minutes > 0 || hours > 0 || days > 0) time += `${minutes}m `;
+    time += `${seconds}s`;
+
+    return time.trim();
   },
 
   timeSpentBetween(startTs, endTs) {
-    const diffInSeconds = (endTs - startTs);
+    const diffInSeconds = endTs - startTs;
     const hours = Math.floor(diffInSeconds / 3600);
     const minutes = Math.floor((diffInSeconds % 3600) / 60);
     const seconds = Math.floor(diffInSeconds % 60);

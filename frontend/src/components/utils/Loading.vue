@@ -33,9 +33,9 @@
           v-if="req.remaining !== undefined"
           class="remaining"
         >
-          Time remaining: {{ $services.timeStampToTime(req.remaining) }} <br />
+          Time remaining: {{ $services.nbSecondsToTime(req.remaining / 1000) }} <br />
           <span v-if="req.remaining > 60000">
-            Time of arrival: ~{{ $services.timeStampToRemainingTime(req.timeArrival + 60000) }}
+            Time of arrival: ~{{ $services.timeStampToDate(Date.now() + req.remaining, true) }}
           </span>
         </div>
 
@@ -45,9 +45,9 @@
           class="quantity"
         >
           Amount loaded: {{ req.quantity }} <br />
-          Time spent: {{ $services.timeStampToTime(Date.now() - req.creationTime) }} <br />
+          Time spent: {{ $services.nbSecondsToTime((Date.now() - req.creationTime) / 1000) }} <br />
           Time per 100000 items:
-          {{ $services.timeStampToTime(((Date.now() - req.creationTime) / req.quantity) * 100000) }}
+          {{ $services.nbSecondsToTime(((Date.now() - req.creationTime) / req.quantity) * 100) }}
         </div>
 
         <!-- Button to cancel the request -->
