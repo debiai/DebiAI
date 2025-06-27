@@ -42,27 +42,53 @@
         <div
           class="item nbSamples"
           title="Number of samples"
+          v-if="project.nbSamples !== undefined && project.nbSamples !== null"
         >
           <inline-svg :src="require('@/assets/svg/data.svg')" />
           {{ project.nbSamples }} samples
+        </div>
+        <div
+          class="item nbSamples"
+          title="Number of samples"
+          v-else
+        >
+          <inline-svg :src="require('@/assets/svg/data.svg')" />
+          ?
         </div>
 
         <!-- Nb selections -->
         <div
           class="item nbSelections"
           title="Project selections"
+          v-if="project.nbSelections !== undefined && project.nbSelections !== null"
         >
           <inline-svg :src="require('@/assets/svg/loop.svg')" />
           {{ project.nbSelections }} selections
         </div>
-
+        <div
+          class="item nbSelections"
+          title="Project selections"
+          v-else
+        >
+          <inline-svg :src="require('@/assets/svg/loop.svg')" />
+          ?
+        </div>
         <!-- Nb models -->
         <div
           class="item nbModel"
           title="Model added to the project"
+          v-if="project.nbModels !== undefined && project.nbModels !== null"
         >
           <inline-svg :src="require('@/assets/svg/gear.svg')" />
           {{ project.nbModels }} models
+        </div>
+        <div
+          class="item nbModel"
+          title="Model added to the project"
+          v-else
+        >
+          <inline-svg :src="require('@/assets/svg/gear.svg')" />
+          ?
         </div>
       </div>
     </div>

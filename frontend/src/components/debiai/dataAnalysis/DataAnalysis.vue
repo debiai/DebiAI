@@ -141,7 +141,10 @@
     />
 
     <!-- Side menu -->
-    <SideBar :menuList="menuList" />
+    <SideBar
+      :menuList="menuList"
+      :data="data"
+    />
 
     <!-- Column unfolding menu -->
     <ColumnUnfoldingMenu :data="data" />
@@ -171,6 +174,7 @@ import WidgetCatalog from "./widget/widgetCatalog/WidgetCatalog";
 
 // Services
 import Data from "@/services/statistics/data";
+import ExplorationData from "@/services/exploration/explorationData";
 import componentsGridStackData from "@/services/statistics/gridstackComponents";
 import { getAnalysisExport } from "@/services/statistics/analysisExport";
 
@@ -233,11 +237,25 @@ export default {
               name: "Create a new selection",
               description: "Create a new selection from the samples that are currently selected",
               callback: this.saveSelection,
+              modes: ["analysis"],
             },
             {
               name: "Open a selection",
               description: "Start a new analysis with another selection",
               callback: this.selectionSelectionBtn,
+              modes: ["analysis"],
+            },
+          ],
+        },
+        {
+          name: "Exploration",
+          icon: "realCombinations",
+          menuList: [
+            {
+              name: "Create a selection",
+              description: "Create a new selection from the samples of the selected combinations",
+              callback: this.saveSelection,
+              modes: ["exploration"],
             },
           ],
         },
@@ -271,6 +289,7 @@ export default {
               description:
                 "Export to another application the selected samples ID with an annotation",
               callback: this.exportSelection,
+              modes: ["analysis"],
             },
           ],
         },
@@ -301,31 +320,7 @@ export default {
   },
   created() {
     // check data integrity
-    if (!this.$route.params.data) {
-      // No data sended, checking url references
-      let dataProviderId = this.$route.query.dataProviderId;
-      let projectId = this.$route.query.projectId;
-      let selectionIds = this.$route.query.selectionIds;
-      let selectionIntersection = this.$route.query.selectionIntersection;
-      let modelIds = this.$route.query.modelIds;
-      let commonModelResults = this.$route.query.commonModelResults;
-
-      if (dataProviderId && projectId) {
-        // Go back to project page to start an analysis immediately
-        this.$router.push({
-          path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
-          query: {
-            projectId: projectId,
-            dataProviderId: dataProviderId,
-            selectionIds: selectionIds,
-            selectionIntersection: selectionIntersection,
-            modelIds: modelIds,
-            commonModelResults: commonModelResults,
-            startAnalysis: true,
-          },
-        });
-      } else this.$router.push("/");
-    } else {
+    if (this.$route.params.data) {
       // Load provided data and set selected data to 100%
       this.data = new Data.Data(this.$route.params.data);
 
@@ -334,6 +329,59 @@ export default {
 
       // Load saved layout
       this.loadLastLayout();
+    } else if (this.$route.params.exploration) {
+      // Load provided explorations combinations data
+      this.data = new ExplorationData.ExplorationData(this.$route.params.exploration);
+
+      // Load available Widgets from the widget folder
+      this.loadWidgets();
+
+      // Load saved layout
+      this.loadLastLayout();
+    } else {
+      // No data sended, checking url references
+      const dataProviderId = this.$route.query.dataProviderId;
+      const projectId = this.$route.query.projectId;
+      const selectionIds = this.$route.query.selectionIds;
+      const selectionIntersection = this.$route.query.selectionIntersection;
+      const modelIds = this.$route.query.modelIds;
+      const commonModelResults = this.$route.query.commonModelResults;
+      const explorationId = this.$route.query.explorationId;
+
+      if (dataProviderId && projectId) {
+        if (explorationId) {
+          // Go back to the exploration page to start an analysis immediately
+          this.$router.push({
+            path:
+              "/dataprovider/" +
+              dataProviderId +
+              "/project/" +
+              projectId +
+              "/exploration/" +
+              explorationId,
+            query: {
+              projectId: projectId,
+              dataProviderId: dataProviderId,
+              explorationId: explorationId,
+              startAnalysis: true,
+            },
+          });
+        } else {
+          // Go back to project page to start an analysis immediately
+          this.$router.push({
+            path: "/dataprovider/" + dataProviderId + "/project/" + projectId,
+            query: {
+              projectId: projectId,
+              dataProviderId: dataProviderId,
+              selectionIds: selectionIds,
+              selectionIntersection: selectionIntersection,
+              modelIds: modelIds,
+              commonModelResults: commonModelResults,
+              startAnalysis: true,
+            },
+          });
+        }
+      } else this.$router.push("/");
     }
   },
   mounted() {

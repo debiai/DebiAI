@@ -1,0 +1,373 @@
+openapi: 3.0.3
+info:
+  title: Exploration API
+  description: API for managing and exploring data combinations.
+  version: 1.0.3
+
+tags:
+  - name: Explorations
+
+paths:
+  # Explorations
+  /explorations:
+    get:
+      tags:
+        - Explorations
+      summary: List all explorations
+      operationId: debiaiServer.exploration.controller.get_explorations
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: page_size
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: A paginated list of explorations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Exploration"
+    post:
+      tags:
+        - Explorations
+      summary: Create a new exploration
+      operationId: debiaiServer.exploration.controller.create_exploration
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplorationCreate"
+      responses:
+        "201":
+          description: Exploration created
+
+  /explorations/config:
+    get:
+      tags:
+        - Explorations
+      summary: Get available metrics, and agregations that can be applied to columns
+      operationId: debiaiServer.exploration.controller.get_exploration_available_config
+      responses:
+        "200":
+          description: A list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExplorationMetric"
+
+  /explorations/{exploration_id}:
+    get:
+      tags:
+        - Explorations
+      summary: Get exploration data and configuration
+      operationId: debiaiServer.exploration.controller.get_exploration
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Exploration configuration retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplorationWithConfig"
+    delete:
+      tags:
+        - Explorations
+      summary: Delete an exploration
+      operationId: debiaiServer.exploration.controller.delete_exploration
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Exploration deleted
+    put:
+      tags:
+        - Explorations
+      summary: Enable to start / stop the exploration
+      operationId: debiaiServer.exploration.controller.update_exploration
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: action
+          required: true
+          schema:
+            type: string
+            enum: [updateConfig, start, stop]
+      responses:
+        "200":
+          description: Exploration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exploration"
+
+  /explorations/{exploration_id}/config:
+    put:
+      tags:
+        - Explorations
+      summary: Update exploration configuration
+      operationId: debiaiServer.exploration.controller.update_exploration_config
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: action
+          required: true
+          schema:
+            type: string
+            enum: [start, stop]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplorationConfig"
+      responses:
+        "200":
+          description: Configuration updated
+
+  /explorations/{exploration_id}/selections:
+    post:
+      tags:
+        - Explorations
+      summary: Create a selection from an exploration and a list of combinations
+      operationId: debiaiServer.exploration.controller.create_exploration_selection
+      parameters:
+        - in: query
+          name: project_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: exploration_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                selected_combinations:
+                  type: array
+                  items:
+                    type: array
+                selection_name:
+                  type: string
+                  description: Name of the selection to be created
+      responses:
+        "201":
+          description: Selection created
+
+components:
+  schemas:
+    # Explorations
+    ExplorationCreate:
+      type: object
+      description: Configuration for the exploration creation. Specify the name, description, and state of the exploration.
+      required: [name, description]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    Exploration:
+      type: object
+      description: Exploration object representing a data exploration task.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum: [completed, ongoing, not_started, upcoming]
+        theoretical_combinations:
+          type: integer
+          nullable: true
+        real_combinations:
+          type: integer
+          nullable: true
+        remaining_time:
+          type: string
+          format: date-time
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+        current_sample:
+          type: integer
+          nullable: true
+        combinaisons:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+          nullable: true
+        metrics:
+          type: object
+          additionalProperties:
+            type: object
+          nullable: true
+        combinaisons_file:
+          type: string
+          format: uri
+
+    # Configuration
+    ExplorationWithConfig:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Exploration"
+        - properties:
+            config:
+              $ref: "#/components/schemas/ExplorationConfig"
+    ExplorationConfig:
+      type: object
+      description: Configuration for the exploration. Specify the columns to be used in the exploration, and any global metrics to be applied.
+      required: [columns]
+      properties:
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/ColumnConfig"
+        global_metrics:
+          description: List of global metrics to be applied to the exploration, must be one of the available global metrics
+          type: array
+          items:
+            type: string
+          nullable: true
+        column_metrics:
+          description: List of metrics to be applied to the columns
+          type: array
+          items:
+            $ref: "#/components/schemas/ColumnMetricConfig"
+          nullable: true
+    ColumnConfig:
+      type: object
+      required: [label]
+      properties:
+        label:
+          description: Label of the column
+          type: string
+        aggregation:
+          $ref: "#/components/schemas/AggregationConfig"
+          nullable: true
+        column_metrics:
+          description: List of metrics to be applied to the column, must be one of the available column metrics
+          type: array
+          items:
+            type: string
+          nullable: true
+    AggregationConfig:
+      type: object
+      description: Configuration for the column aggregation, if any. Specify the aggregationId to apply a specific aggregation to the column, and add the additional properties needed for that aggregation.
+      properties:
+        aggregation_id:
+          description: ID of the aggregation to be applied to the column, must be one of the available aggregations
+          type: string
+      additionalProperties: true
+      nullable: true
+    ColumnMetricConfig:
+      type: object
+      description: Configuration for metrics associated with a column.
+      properties:
+        column_label:
+          description: Label of the column to which the metric applies
+          type: string
+        metrics:
+          description: List of metrics to be applied to the column, must be one of the available column metrics
+          type: array
+          items:
+            type: string
+      additionalProperties: true
+      nullable: true
+
+    # Metrics and Aggregations
+    ExplorationMetric:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: "nbSamples"
+        description:
+          type: string

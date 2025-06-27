@@ -7,7 +7,7 @@
   >
     <div
       class="section"
-      v-for="section in menuList"
+      v-for="section in menuSectionsWithoutEmptySubsections"
       :key="section.name"
     >
       <!-- Section icon and name -->
@@ -110,10 +110,19 @@ export default {
       //         {
       //             name: "Open a selection",
       //             description: "Open a new analysis with another selection",
-      //             callback: () => {}
+      //             callback: () => {},
+      //             modes: ["analysis", "exploration", ...],
       //         },
       //         ...
       //     ]
+      // }
+    },
+    data: {
+      type: Object,
+      default: () => ({}),
+      // {
+      //     mode: "...",
+      //     ...
       // }
     },
   },
@@ -127,8 +136,21 @@ export default {
   },
 
   created() {
+    // Add a menu section property to track when opened
     this.menuList.forEach((section) => {
       this.openedSections[section.name] = false;
+    });
+
+    // Filter the subsections based on the current mode
+    this.menuList.forEach((section) => {
+      for (const subSection of section.menuList) {
+        if (subSection.modes) {
+          // Check if the current mode is in the allowed modes
+          if (!subSection.modes.includes(this.data.mode)) {
+            section.menuList = section.menuList.filter((item) => item.name !== subSection.name);
+          }
+        }
+      }
     });
   },
 
@@ -139,6 +161,14 @@ export default {
     },
     openDocumentation() {
       window.open("https://debiai.irt-systemx.fr/dashboard/#analysis-page", "_blank");
+    },
+  },
+  computed: {
+    menuSectionsWithoutEmptySubsections() {
+      return this.menuList.filter((section) => {
+        // Filter out sections with no subsections
+        return section.menuList && section.menuList.length > 0;
+      });
     },
   },
 

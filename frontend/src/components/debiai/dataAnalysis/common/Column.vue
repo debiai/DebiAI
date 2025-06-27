@@ -120,7 +120,7 @@ export default {
   methods: {
     getColumnClass() {
       return {
-        warning: this.columnValidStatus["status"] === "warning",
+        striped: this.columnValidStatus["status"] === "warning",
         selected: this.selected,
         long: this.column.label.length > 20,
         disabled: this.columnValidStatus["status"] === "invalid",
@@ -275,18 +275,6 @@ export default {
     &.selected {
       background-color: var(--secondary);
       color: white;
-    }
-
-    &.warning {
-      // Striped background
-      background: repeating-linear-gradient(
-        125deg,
-        var(--greyLight),
-        var(--greyLight) 10px,
-        #f6f6f6 10px,
-        #f6f6f6 20px
-      );
-      color: var(--fontColorLight);
     }
   }
 

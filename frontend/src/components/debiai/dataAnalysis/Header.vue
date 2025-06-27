@@ -1,6 +1,6 @@
 <template>
   <div id="Header">
-    <!-- colored column selection modal -->
+    <!-- Colored column selection modal -->
     <modal
       v-if="selectColoredCol"
       @close="selectColoredCol = false"
@@ -57,7 +57,34 @@
               : $store.state.ProjectPage.projectId
           }}</router-link
         >
-        / Analysis
+        /
+        <span v-if="data.mode === 'exploration'">
+          <router-link
+            :to="
+              '/dataprovider/' +
+              $store.state.ProjectPage.dataProviderId +
+              '/project/' +
+              $store.state.ProjectPage.projectId +
+              '/exploration'
+            "
+            >Explorations</router-link
+          >
+          /
+          <router-link
+            :to="
+              '/dataprovider/' +
+              $store.state.ProjectPage.dataProviderId +
+              '/project/' +
+              $store.state.ProjectPage.projectId +
+              '/exploration/' +
+              data.explorationId
+            "
+            >{{ data.explorationName }}</router-link
+          >
+        </span>
+        <span v-else>
+          {{ data.mode ? $services.uppercaseFirstLetter(data.mode) : "Analysis" }}
+        </span>
       </div>
     </div>
 
@@ -110,7 +137,6 @@
       id="filtersAndSelectedData"
       :class="$store.state.StatisticalAnalysis.filters.length ? 'filters' : ''"
     >
-      <!-- Filters panel button -->
       <!-- Selected data info -->
       <SelectedDataInfo :data="data" />
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.527 -0.468 38.808 25.017" width="38.808px"
+    height="25.017px">
+    <g id="object-2">
+        <g data-cell-id="eUqsGvvy4RzzqifWDR8u-1" style=""
+            transform="matrix(0.986153, 0, 0, 0.986153, 0.270012, -0.295378)"
+            id="object-0">
+            <g>
+                <ellipse cx="26.5" cy="11.75" rx="11.5" ry="11.5" fill="transparent"
+                    style="stroke: rgb(0, 0, 0);" pointer-events="all"
+                    stroke-width="2" />
+            </g>
+        </g>
+        <g data-cell-id="eUqsGvvy4RzzqifWDR8u-2" id="object-1">
+            <g>
+                <ellipse cx="12.597" cy="11.292" rx="11.341" ry="11.341"
+                    fill="transparent" style="stroke: rgb(0, 0, 0);"
+                    pointer-events="all" stroke-width="2" />
+            </g>
+        </g>
+    </g>
+</svg>

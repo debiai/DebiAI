@@ -129,6 +129,30 @@ button {
     }
   }
 
+  &.striped {
+    // Striped background
+    background: repeating-linear-gradient(
+      125deg,
+      var(--greyLight),
+      var(--greyLight) 10px,
+      #f6f6f6 10px,
+      #f6f6f6 20px
+    );
+    color: var(--fontColorLight);
+
+    &.selected {
+      background: repeating-linear-gradient(
+        125deg,
+        var(--secondaryDark),
+        var(--secondaryDark) 10px,
+        var(--secondary) 10px,
+        var(--secondary) 20px
+      );
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+
   &.highlighted {
     animation: glowing 4s infinite;
     font-weight: bold;
@@ -142,6 +166,10 @@ button {
   }
 
   &.borderless {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     border: none;
     background-color: transparent;
     padding: 0;
@@ -151,6 +179,18 @@ button {
 
     svg {
       fill: var(--fontColorLight);
+    }
+  }
+
+  &.borderlessHover {
+    @extend .borderless;
+    border-radius: 0;
+    border-bottom: solid 1px transparent;
+    padding-bottom: 3px;
+    transition: border-bottom 0.1s ease;
+
+    &:hover {
+      border-bottom: solid 1px var(--fontColorLight);
     }
   }
 
@@ -201,6 +241,13 @@ button {
   &.radioBtn.selected {
     background-color: var(--secondary);
     border: solid 1px var(--secondary);
+    color: white;
+    font-weight: bold;
+  }
+
+  &.selected {
+    background-color: var(--primary);
+    border: solid 1px var(--primary);
     color: white;
     font-weight: bold;
   }

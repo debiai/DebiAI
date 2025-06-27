@@ -55,7 +55,6 @@ def method_exist(methodId):
 
 
 def load_export_methods():
-    global export_methods
     print("================== EXPORT METHODS ==================")
 
     # Load the export methods from the config file

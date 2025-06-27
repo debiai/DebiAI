@@ -72,6 +72,15 @@
           >
             Start analysis
           </button>
+
+          <button
+            id="startExplorationBtn"
+            @click="openExplorations(false)"
+            @mousedown.middle="openExplorations(true)"
+            :disabled="!readyToAnalyze"
+          >
+            Explorations
+          </button>
         </div>
       </div>
     </transition>
@@ -269,7 +278,7 @@ export default {
     },
 
     // Analysis start
-    startAnalysis({ newTab }) {
+    startAnalysis(newTab) {
       if (newTab) {
         let routeData = this.$router.resolve({
           path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
@@ -431,6 +440,19 @@ export default {
         this.$router.push("/");
       }
     },
+    openExplorations(newTab) {
+      if (newTab) {
+        const routeData = this.$router.resolve({
+          path: "/dataprovider/" + this.dataProviderId + "/project/" + this.projectId,
+          name: "explorations",
+        });
+        window.open(routeData.href, "_blank");
+      } else {
+        this.$router.push({
+          name: "explorations",
+        });
+      }
+    },
   },
   computed: {
     readyToAnalyze() {
@@ -463,7 +485,9 @@ export default {
     // We close the swal if it is open (in case of pressing back just before the analysis start)
     try {
       swal.close();
-    } catch (error) {}
+    } catch (error) {
+      // swal is not open
+    }
   },
 };
 </script>
@@ -499,6 +523,12 @@ export default {
     height: 100%;
     font-size: 1.5em;
     width: 400px;
+  }
+
+  #startExplorationBtn {
+    height: 100%;
+    font-size: 1.5em;
+    width: 200px;
   }
 }
 </style>

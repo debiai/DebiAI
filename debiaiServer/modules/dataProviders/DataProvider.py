@@ -1,23 +1,26 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 
 
 class DataProvider(ABC):
     # Data
-    @abstractproperty
+    @property
+    @abstractmethod
     def name(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def is_alive(self):
         return False
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def type(self):
         pass
 
     # Info
     @abstractmethod
-    def get_info(self):
+    def get_info(self) -> dict:
         pass
 
     # Projects
@@ -75,3 +78,16 @@ class DataProvider(ABC):
     @abstractmethod
     def delete_model(self, id):
         pass
+
+    def supports_project_id(self, project_id):
+        """
+        Check if the data provider supports the given project ID.
+        This can be overridden by specific data providers if needed.
+
+        This function was made for the exploration compatibility.
+        Avoid using it in other contexts unless necessary.
+        """
+        projects = self.get_projects()
+        if not projects:
+            return False
+        return any(project["id"] == project_id for project in projects)

@@ -13,8 +13,10 @@ commonComponents.forEach((component) => {
 
 // Common Services
 import backendDialog from "./services/backendDialog";
+import explorationDialog from "./services/exploration/explorationDialog";
 import services from "./services/services";
 Vue.prototype.$backendDialog = backendDialog;
+Vue.prototype.$explorationDialog = explorationDialog;
 Vue.prototype.$services = services;
 
 // Common Data

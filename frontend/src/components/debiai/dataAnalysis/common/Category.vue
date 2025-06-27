@@ -9,7 +9,7 @@
       class="title"
       :id="name"
     >
-      <h2>{{ name }}</h2>
+      <h2>{{ $services.uppercaseFirstLetter(name) }}</h2>
       <div style="flex: 1"></div>
       <div
         id="controls"

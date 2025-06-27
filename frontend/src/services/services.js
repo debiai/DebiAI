@@ -33,20 +33,21 @@ export default {
   },
 
   timeStampToTime(ts) {
-    var a = new Date(ts);
-    var hour = a.getHours() - 1; // GMT+1
-    var min = a.getMinutes();
-    var sec = a.getSeconds() + 1; // To end on a full second
-    var time = sec + "s";
+    const a = new Date(ts);
+    const day = a.getDay();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds() + 1; // To end on a full second
+    let time = sec + "s";
     if (min > 0) time = min + "m" + time;
     if (hour > 0) time = hour + "h " + time;
-
+    if (day > 0) time = day + "d " + time;
     return time;
   },
 
-  timeStampToDate(ts) {
-    var a = new Date(ts);
-    var months = [
+  timeStampToDate(ts, hoursOnly = false) {
+    const a = new Date(ts);
+    const months = [
       "Jan",
       "Feb",
       "Mar",
@@ -60,24 +61,48 @@ export default {
       "Nov",
       "Dec",
     ];
-    var year = a.getFullYear();
-    var month = months[a.getMonth()];
-    var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var sec = a.getSeconds();
-    var time = date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
-    return time;
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds();
+    if (hoursOnly) return hour + ":" + min + ":" + sec;
+    else return date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
   },
 
-  timeStampToHourAndMinute(ts) {
-    var a = new Date(ts);
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    if (min < 10) min = "0" + min;
-    if (hour < 10) hour = "0" + hour;
-    var time = hour + "h" + min;
-    return time;
+  nbSecondsToTime(nbSeconds) {
+    let seconds = Math.floor(nbSeconds);
+    if (nbSeconds <= 0) return "0s";
+
+    const days = Math.floor(seconds / 86400);
+    seconds %= 86400;
+    const hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    const minutes = Math.floor(seconds / 60);
+    seconds %= 60;
+
+    let time = "";
+    if (days > 0) time += `${days}d `;
+    if (hours > 0 || days > 0) time += `${hours}h `;
+    if (minutes > 0 || hours > 0 || days > 0) time += `${minutes}m `;
+    time += `${seconds}s`;
+
+    return time.trim();
+  },
+
+  timeSpentBetween(startTs, endTs) {
+    const diffInSeconds = endTs - startTs;
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = Math.floor(diffInSeconds % 60);
+
+    let result = "";
+    if (hours > 0) result += `${hours}h `;
+    if (minutes > 0 || hours > 0) result += `${minutes}m `;
+    result += `${seconds}s`;
+
+    return result.trim();
   },
 
   getTimestamp() {
@@ -139,6 +164,11 @@ export default {
       }
     }
     return prettifiedString;
+  },
+
+  uppercaseFirstLetter(str) {
+    if (typeof str !== "string") return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
   },
 
   // Random

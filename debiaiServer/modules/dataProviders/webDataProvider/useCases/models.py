@@ -8,6 +8,9 @@ def get_models_info(url, project_id):
     # Models
     try:
         models = api.get_models(url, project_id)
+        if models is None:
+            return []
+
         debiai_models = []
         for model_in in models:
             if "id" not in model_in:

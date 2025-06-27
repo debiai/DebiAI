@@ -1,27 +1,5 @@
 <template>
   <div id="selections">
-    <!-- selectionCreation modal -->
-    <!-- <modal
-      v-if="selectionCreation"
-      @close="selectionCreation = false"
-    >
-      <Requests
-        @close="selectionCreation = false"
-        @newSelection="$emit('newSelection')"
-      />
-    </modal> -->
-    <!-- selected request modal -->
-    <!-- <modal
-      v-if="selectedRequestId !== null"
-      @close="selectedRequestId = null"
-    >
-      <Request
-        :requestId="selectedRequestId"
-        @close="selectedRequestId = null"
-        @newSelection="$emit('newSelection')"
-      />
-    </modal> -->
-
     <div id="selectionsPanel">
       <!-- Panel header -->
       <div id="title">
@@ -46,19 +24,6 @@
         </span>
 
         <span class="aligned">
-          <!-- <button
-            style="margin-right: 10px"
-            title="Create a selection from a request, available in a future update"
-            @click="selectionCreation = !selectionCreation"
-          >
-            <inline-svg
-              :src="require('@/assets/svg/request.svg')"
-              width="12"
-              height="12"
-              fill="white"
-            />
-            Requests
-          </button> -->
           <button @click="selectAll">All</button>
           <button
             style="margin-right: 5px"
@@ -128,7 +93,6 @@
       <div
         class="card"
         id="analysisControls"
-        v-if="selectedSelectionIds.length > 0"
       >
         <!-- selection Intersection -->
         <transition name="fade">
@@ -161,24 +125,22 @@
         </transition>
         <!-- Nb samples -->
         <div id="nbSelectedSamples">
-          Selected samples :
-          <div class="dataGroup">
-            <inline-svg
-              :src="require('@/assets/svg/data.svg')"
-              width="20"
-              height="20"
-            />
-            <span style="padding: 0px 5px">
-              {{ nbSelectedSamples }}
-            </span>
-            <span
-              v-if="project.nbSamples"
-              style="padding-left: 10px; font-weight: normal"
-              :title="(nbSelectedSamples * 100) / project.nbSamples + '%'"
-            >
-              ({{ Math.ceil((nbSelectedSamples * 100) / project.nbSamples) }}%)
-            </span>
-          </div>
+          <span style="padding: 0px 5px">
+            {{ nbSelectedSamples }}
+          </span>
+          <inline-svg
+            :src="require('@/assets/svg/data.svg')"
+            width="20"
+            height="20"
+          />
+          <span
+            v-if="project.nbSamples"
+            style="padding: 0 5px 0 2px; font-weight: normal"
+            :title="(nbSelectedSamples * 100) / project.nbSamples + '%'"
+          >
+            ({{ Math.ceil((nbSelectedSamples * 100) / project.nbSamples) }}%)
+          </span>
+          Selected samples
         </div>
       </div>
     </transition>

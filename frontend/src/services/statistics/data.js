@@ -4,8 +4,7 @@ import samplesFiltering from "./samplesFiltering";
 
 class Data {
   constructor(data) {
-    this.categories = data.categories;
-    this.labels = data.labels;
+    this.mode = "analysis";
     this.nbLinesOriginal = data.nbLines;
     this.sampleIdList = data.sampleIdList;
 
@@ -20,6 +19,7 @@ class Data {
 
     // Register the columns
     this.columns = [];
+
     data.columns.forEach((column) => {
       this.addColumn({
         label: column.label,
@@ -87,7 +87,7 @@ class Data {
     } else return this.selectedData;
   }
 
-  // column utils
+  // Column utils
   get nbColumns() {
     return this.columns.length;
   }
@@ -109,7 +109,6 @@ class Data {
   getColumnByLabelAndCategory(label, category) {
     return this.columns.find((column) => column.label === label && column.category === category);
   }
-
   addColumn({ label, values, category, typeIn = null, group = null, parentColumnIndex = null }) {
     const unfoldedLevel = this.verticallyUnfoldedColumnsIndexes.length;
     const columnId = services.uuid();
@@ -152,7 +151,6 @@ class Data {
     // Return true if at least one column is unfolded
     return this.verticallyUnfoldedColumnsIndexes?.length > 0;
   }
-
   unfoldVertically(columnIndex) {
     // Get the column to unfold
     const unfoldedColumn = this.getColumn(columnIndex);
@@ -287,7 +285,6 @@ class Data {
     this.virtualIndexMapping = newVirtualIndexMapping;
     this.updateFilters(true);
   }
-
   unfoldDictHorizontally(columnIndex, columnsToUnfold) {
     const unfoldedColumn = this.getColumn(columnIndex);
     if (!unfoldedColumn || unfoldedColumn.typeText !== "Dict") return;
@@ -373,8 +370,6 @@ class Data {
   // Other
   clean() {
     // Nullify references to arrays and objects to help garbage collection
-    this.categories = null;
-    this.labels = null;
     this.nbLinesOriginal = null;
     this.sampleIdList = null;
 
@@ -496,6 +491,8 @@ class Column {
   defineColumnProperties(typeIn) {
     // Creating the column object
     this.uniques = [...new Set(this.originalValues)];
+    // Sort the uniques
+    this.uniques = this.uniques.sort();
     this.nbOccurrence = this.uniques.length;
     this.nbNullValues = this.originalValues.filter((v) => v === null).length;
 

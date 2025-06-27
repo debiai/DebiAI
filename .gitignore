@@ -18,8 +18,12 @@ frontend/node_modules/
 # Scripts
 build_and_run.sh
 
-# Deployement
+# Deployment
 deployment/
 
 # VSCODE
 .vscode/
+.kilocode/
+
+# Databases
+*.db

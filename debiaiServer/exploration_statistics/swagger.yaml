@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: DebiAI's Exploration statistics API
+  description: API for processing and managing exploration statistics.
+  version: 1.0.0
+
+tags:
+  - name: processing
+
+paths:
+  /data-providers/{dataProviderId}/projects/{projectId}/columnsStatistics:
+    get:
+      tags:
+        - Explorations
+      summary: Get DebiAI projects columns statistics
+      operationId: debiaiServer.exploration_statistics.controller.get_columns_statistics
+      parameters:
+        - name: dataProviderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of columns with their statistics.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  columns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: The name of the column.
+                        type:
+                          type: string
+                          description: The type of the column (e.g., text, number).
+                        categoty:
+                          type: string
+                          description: The category of the column (e.g., groundtruth, context).
+                        nbUniqueValues:
+                          type: integer
+                          description: The number of unique values in the column.
+                        average:
+                          type: number
+                          description: The average value of the column (if applicable).
+                          nullable: true
+                        min:
+                          type: number
+                          description: The minimum value of the column (if applicable).
+                          nullable: true
+                        max:
+                          type: number
+                          description: The maximum value of the column (if applicable).
+                          nullable: true
+                        nbNullValues:
+                          type: integer
+                          description: The number of null values in the column.
+                          nullable: true
+                  status:
+                    type: string
+                    description: The status of the column statistics computation.
+                    enum:
+                      - ongoing
+                      - failed
+                      - completed
+                  nbCurrentSample:
+                    type: integer
+                    description: The current number of samples processed (optional).
+                  nbTotalSample:
+                    type: integer
+                    description: The total number of samples to process (optional).
+        "400":
+          description: Bad request. Invalid parameters.
+        "500":
+          description: Internal server error.
