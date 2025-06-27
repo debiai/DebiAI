@@ -348,15 +348,17 @@ def get_data_batch(
     data_columns = {}
     for data_id, sample_data in data.items():
         data_columns[data_id] = {
-            "column_values": tuple([
-                apply_aggregations(
-                    sample_data[column_indices[column_name]],
-                    column_name,
-                    columns_aggregation_config,
-                    columns_statistics,
-                )
-                for column_name in selected_columns_labels
-            ]),
+            "column_values": tuple(
+                [
+                    apply_aggregations(
+                        sample_data[column_indices[column_name]],
+                        column_name,
+                        columns_aggregation_config,
+                        columns_statistics,
+                    )
+                    for column_name in selected_columns_labels
+                ]
+            ),
             "metric_column_values": {},
         }
 

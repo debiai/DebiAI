@@ -19,7 +19,7 @@ class Data {
 
     // Register the columns
     this.columns = [];
- 
+
     data.columns.forEach((column) => {
       this.addColumn({
         label: column.label,

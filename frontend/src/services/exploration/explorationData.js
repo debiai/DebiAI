@@ -34,8 +34,8 @@ class ExplorationData extends Data.Data {
       });
 
       // Define the category of the column
-      let category = "project column"
-      if (col.aggregation) category = "aggregation"
+      let category = "project column";
+      if (col.aggregation) category = "aggregation";
 
       return {
         label: col.label,
@@ -62,8 +62,8 @@ class ExplorationData extends Data.Data {
     super(dataBuilder);
 
     this.mode = "exploration";
-    this.explorationId = explorationObject.id
-    this.explorationName = explorationObject.name
+    this.explorationId = explorationObject.id;
+    this.explorationName = explorationObject.name;
     this.combinations = explorationObject.combinations;
     this.nbExplorationSelectedSamples = 0;
     this.nbSamplesMetric = explorationObject.metrics["Nb Samples"]["values"];

@@ -141,7 +141,10 @@
     />
 
     <!-- Side menu -->
-    <SideBar :menuList="menuList" :data="data" />
+    <SideBar
+      :menuList="menuList"
+      :data="data"
+    />
 
     <!-- Column unfolding menu -->
     <ColumnUnfoldingMenu :data="data" />
@@ -349,7 +352,13 @@ export default {
         if (explorationId) {
           // Go back to the exploration page to start an analysis immediately
           this.$router.push({
-            path: "/dataprovider/" + dataProviderId + "/project/" + projectId + "/exploration/" + explorationId,
+            path:
+              "/dataprovider/" +
+              dataProviderId +
+              "/project/" +
+              projectId +
+              "/exploration/" +
+              explorationId,
             query: {
               projectId: projectId,
               dataProviderId: dataProviderId,
