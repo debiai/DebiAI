@@ -1,4 +1,5 @@
 from termcolor import colored
+from typing import List
 
 from debiaiServer.config.init_config import (
     get_config,
@@ -19,7 +20,7 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 
 from debiaiServer.modules.dataProviders.DataProvider import DataProvider
 
-data_providers_list: list[DataProvider] = []
+data_providers_list: List[DataProvider] = []
 python_data_provider_disabled = True
 
 

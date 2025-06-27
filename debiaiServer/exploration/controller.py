@@ -1,5 +1,6 @@
 import uuid
 import threading
+from typing import List
 from .utils import (
     project_explorations_db,
     start_exploration_real_combination_computation,
@@ -17,7 +18,7 @@ def get_exploration_available_config():
 
 
 def get_explorations(project_id):
-    explorations: list[dict] = project_explorations_db.get(project_id) or []
+    explorations: List[dict] = project_explorations_db.get(project_id) or []
     for exploration in explorations:
         exploration.pop("combinations", None)
         exploration.pop("metrics", None)
