@@ -55,7 +55,25 @@
 
     <!-- Header & new explorations btn -->
     <div class="explorations-header">
-      <h2>Explorations</h2>
+      <h2 class="aligned gapped">
+        Explorations
+
+        <DocumentationBlock>
+          The exploration mode of DebiAI allows you to analyze large datasets by utilizing
+          server-side processing. This mode enables you to work with extensive data without the need
+          to download it to your local machine, making it ideal for handling large datasets
+          efficiently.
+          <br />
+          <br />
+          More information on how to use the exploration mode can be found in our
+          <a
+            href="https://debiai.irt-systemx.fr/exploration"
+            target="_blank"
+          >
+            online documentation
+          </a>
+        </DocumentationBlock>
+      </h2>
       <button
         class="green"
         @click="newExploration = true"
@@ -88,7 +106,7 @@
       class="no-explorations"
     >
       <p>No explorations found.</p>
-      <p>Click the button above to create a new exploration.</p>
+      <p>Click the "Create new exploration" button to start a new exploration.</p>
     </div>
   </div>
 </template>
