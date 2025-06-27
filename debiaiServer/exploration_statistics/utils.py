@@ -2,7 +2,7 @@ from debiaiServer.modules.dataProviders.DataProvider import DataProvider
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 from pickledb import PickleDB
 import uuid
-from typing import Any, List
+from typing import Any, List, Dict
 
 # Create or load a database
 project_explorations_db = PickleDB("projectsExplorationsStatistics.db")
@@ -296,7 +296,7 @@ def get_data_batch(
     columns_aggregation_config: dict,
     columns_statistics: dict,
     metric_columns_to_fetch: list,
-) -> dict[str, dict]:
+) -> Dict[str, dict]:
     """
     Returns a value for each data for the combinations:
     {
