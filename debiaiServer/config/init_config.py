@@ -153,7 +153,7 @@ def get_config_values(section, parameters, config_parser):
 
 
 def set_config_value(section, key, value):
-    global config, changes_made
+    global changes_made
 
     if section in config and key in config[section]:
         if config[section][key] != value:
@@ -172,7 +172,7 @@ def set_config_value(section, key, value):
 
 
 def init_config(data_folder_path: str = None, parameters: dict = {}):
-    global DATA_FOLDER_PATH, config
+    global DATA_FOLDER_PATH
 
     print("===================== CONFIG =======================")
 
