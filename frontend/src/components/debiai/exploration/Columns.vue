@@ -282,7 +282,7 @@
             v-model="aggregationType"
           >
             <option value="evenRange">Even range</option>
-            <option value="evenQuantity">Even quantity</option>
+            <!-- <option value="evenQuantity">Even quantity</option> -->
           </select>
         </div>
 
