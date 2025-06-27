@@ -308,7 +308,8 @@ def create_selection(
     combinations = exploration.get("combinations", [])
     if not combinations:
         raise ValueError(
-            f"No combinations found in exploration {exploration_id} for project {project_id}"
+            f"No combinations found in exploration \
+{exploration_id} for project {project_id}"
         )
 
     # Filter the combinations based on the selected IDs
