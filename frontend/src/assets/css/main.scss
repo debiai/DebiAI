@@ -129,6 +129,30 @@ button {
     }
   }
 
+  &.striped {
+    // Striped background
+    background: repeating-linear-gradient(
+      125deg,
+      var(--greyLight),
+      var(--greyLight) 10px,
+      #f6f6f6 10px,
+      #f6f6f6 20px
+    );
+    color: var(--fontColorLight);
+
+    &.selected {
+      background: repeating-linear-gradient(
+        125deg,
+        var(--secondaryDark),
+        var(--secondaryDark) 10px,
+        var(--secondary) 10px,
+        var(--secondary) 20px
+      );
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+
   &.highlighted {
     animation: glowing 4s infinite;
     font-weight: bold;

@@ -491,6 +491,8 @@ class Column {
   defineColumnProperties(typeIn) {
     // Creating the column object
     this.uniques = [...new Set(this.originalValues)];
+    // Sort the uniques
+    this.uniques = this.uniques.sort();
     this.nbOccurrence = this.uniques.length;
     this.nbNullValues = this.originalValues.filter((v) => v === null).length;
 
