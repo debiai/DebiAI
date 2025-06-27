@@ -64,6 +64,37 @@
               </label>
             </div>
           </div>
+          <!-- Weight by column -->
+          <div
+            class="data"
+            id="weightByColumn"
+          >
+            <div class="name">Weight by column</div>
+            <div class="value">
+              <input
+                type="checkbox"
+                :id="'weightByColumnCbx' + index"
+                class="customCbx"
+                v-model="useWeightColumn"
+                style="display: none"
+              />
+              <label
+                :for="'weightByColumnCbx' + index"
+                class="toggle"
+              >
+                <span></span>
+              </label>
+              <ColumnSelectionButton
+                v-if="useWeightColumn"
+                :data="data"
+                :validColumnsProperties="weightColumnProperties"
+                :defaultColumnIndex="weightColumnIndex"
+                title="Select weight column"
+                tooltip="Select a column to use as weights"
+                v-on:selected="weightColumnSelect"
+              />
+            </div>
+          </div>
           <!-- Plot type -->
           <div class="data">
             <div class="name">Plot type</div>
@@ -197,6 +228,13 @@ export default {
       plotType: "bar",
       bins: 0,
 
+      // Weight column options
+      useWeightColumn: false,
+      weightColumnIndex: null,
+      weightColumnProperties: {
+        types: ["Num"],
+      },
+
       // Other
       plotDrawn: false,
       currentDrawnColorIndex: null,
@@ -238,6 +276,10 @@ export default {
         if (this.displayLegends) conf.displayLegends = this.displayLegends;
         conf.dividePerColor = this.dividePerColor;
       }
+      if (this.useWeightColumn && this.weightColumnIndex !== null) {
+        conf.useWeightColumn = this.useWeightColumn;
+        conf.weightColumn = this.data.getColumn(this.weightColumnIndex)?.label;
+      }
       return conf;
     },
     setConf(conf, options = {}) {
@@ -256,6 +298,11 @@ export default {
       if ("displayLegends" in conf) this.displayLegends = conf.displayLegends;
       if ("dividePerColor" in conf) this.dividePerColor = conf.dividePerColor;
       if ("bins" in conf) this.bins = conf.bins;
+      if ("useWeightColumn" in conf) this.useWeightColumn = conf.useWeightColumn;
+      if ("weightColumn" in conf) {
+        let c = this.data.getColumnByLabel(conf.weightColumn);
+        if (c) this.weightColumnIndex = c.index;
+      }
 
       this.checkPlot(false);
     },
@@ -268,6 +315,8 @@ export default {
           vm.displayDetails,
           vm.plotType,
           vm.bins,
+          vm.useWeightColumn,
+          vm.weightColumnIndex,
           Date.now()
         ),
         () => {
@@ -277,6 +326,40 @@ export default {
     },
     getConfNameSuggestion() {
       return this.data.getColumn(this.columnXindex)?.label;
+    },
+
+    // Calculate weighted repartition
+    getWeightedRepartition(values, weights, nbBins, min, max) {
+      // If values aren't numbers, return the standard repartition
+      if (values.length === 0 || typeof values[0] === "string") {
+        return dataOperations.getRepartition(values, nbBins, min, max);
+      }
+
+      // Set up bins
+      const step = (max - min) / nbBins;
+      const xSections = [];
+      const repartition = new Array(nbBins + 1).fill(0);
+
+      // Generate bin boundaries
+      for (let i = 0; i <= nbBins; i++) {
+        xSections.push(min + i * step);
+      }
+
+      // Populate bins with weighted values
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        if (value < min || value > max || isNaN(value)) continue;
+
+        // Calculate bin index
+        let binIndex = Math.floor((value - min) / step);
+        // Handle edge case for max value
+        if (binIndex > nbBins) binIndex = nbBins;
+
+        // Add weight to the appropriate bin
+        repartition[binIndex] += weights[i];
+      }
+
+      return { xSections, repartition };
     },
 
     // Plot
@@ -336,14 +419,30 @@ export default {
       let selectedX;
       if (colX.type == String) selectedX = this.data.selectedData.map((i) => colX.valuesIndex[i]);
       else selectedX = this.data.selectedData.map((i) => colX.values[i]);
+
+      // get weight values if needed
+      let weights;
+      if (this.useWeightColumn && this.weightColumnIndex !== null) {
+        const weightColumn = this.data.getColumn(this.weightColumnIndex);
+        if (weightColumn && weightColumn.type != String) {
+          weights = this.data.selectedData.map((i) => weightColumn.values[i]);
+        }
+      }
+
       // on x axis
       let colSecondX;
       let secondSelectedX;
+      let secondWeights;
       if (this.data.columnExists(this.secondColumnIndex)) {
         colSecondX = this.data.getColumn(this.secondColumnIndex);
         if (colSecondX.type == String)
           secondSelectedX = this.data.selectedData.map((i) => colSecondX.valuesIndex[i]);
         else secondSelectedX = this.data.selectedData.map((i) => colSecondX.values[i]);
+
+        // copy weights for second column if using weights
+        if (weights) {
+          secondWeights = [...weights];
+        }
       }
 
       let colColor;
@@ -365,10 +464,37 @@ export default {
 
         groupedValues.forEach((idValues, i) => {
           let values = idValues.map((i) => selectedX[i]);
-          let rep = dataOperations.getRepartition(values, this.bins - 1, colX.min, colX.max);
+
+          // Apply weights if needed
+          let groupWeights;
+          if (weights) {
+            groupWeights = idValues.map((i) => weights[i]);
+          }
+
+          // Get distribution with or without weights
+          let rep;
+          if (this.useWeightColumn && groupWeights) {
+            rep = this.getWeightedRepartition(
+              values,
+              groupWeights,
+              this.bins - 1,
+              colX.min,
+              colX.max
+            );
+          } else {
+            rep = dataOperations.getRepartition(values, this.bins - 1, colX.min, colX.max);
+          }
 
           xSections = rep.xSections;
           let repartition = rep.repartition;
+          let totalWeight =
+            this.useWeightColumn && groupWeights
+              ? groupWeights.reduce((sum, val) => sum + val, 0)
+              : idValues.length;
+          let totalSampleWeight =
+            this.useWeightColumn && weights
+              ? weights.reduce((sum, val) => sum + val, 0)
+              : this.data.selectedData.length;
 
           if (colX.type == String) xSectionsText = xSections.map((v, i) => colX.uniques[i]);
 
@@ -377,12 +503,19 @@ export default {
             type: this.plotType,
             mode: "lines",
             x: xSections,
-            y: repartition.map((v) => (v * 100) / this.data.selectedData.length),
+            y: repartition.map((v) => (v * 100) / totalSampleWeight),
           };
 
           // Display more values in the bars
-          if (this.displayDetails)
-            trace.text = repartition.map((v) => "<b>" + v + "</b> / " + idValues.length);
+          if (this.displayDetails) {
+            if (this.useWeightColumn && groupWeights) {
+              trace.text = repartition.map(
+                (v) => "<b>" + v.toFixed(2) + "</b> / " + totalWeight.toFixed(2)
+              );
+            } else {
+              trace.text = repartition.map((v) => "<b>" + v + "</b> / " + idValues.length);
+            }
+          }
 
           // Disabled on option the colorscale because of a plotly Bug
           // follow this issue : https://github.com/plotly/plotly.js/issues/5285
@@ -407,7 +540,16 @@ export default {
         });
       } else {
         // No color or no group by selected
-        let rep = dataOperations.getRepartition(selectedX, this.bins - 1, colX.min, colX.max);
+        let rep;
+        let totalWeight = this.data.selectedData.length;
+
+        // Get distribution with or without weights
+        if (this.useWeightColumn && weights) {
+          rep = this.getWeightedRepartition(selectedX, weights, this.bins - 1, colX.min, colX.max);
+          totalWeight = weights.reduce((sum, val) => sum + val, 0);
+        } else {
+          rep = dataOperations.getRepartition(selectedX, this.bins - 1, colX.min, colX.max);
+        }
 
         xSections = rep.xSections;
         let repartition = rep.repartition;
@@ -418,7 +560,7 @@ export default {
             mode: "lines",
             type: this.plotType,
             x: xSections,
-            y: repartition.map((v) => (v * 100) / this.data.selectedData.length),
+            y: repartition.map((v) => (v * 100) / totalWeight),
             marker: {
               color: "rgb(0,157,223)",
               line: {
@@ -431,12 +573,27 @@ export default {
 
         // deal with the second axis
         if (this.secondColumnIndex !== null) {
-          let rep2 = dataOperations.getRepartition(
-            secondSelectedX,
-            this.bins - 1,
-            colX.min,
-            colX.max
-          );
+          let rep2;
+          let totalWeight2 = this.data.selectedData.length;
+
+          // Get distribution with or without weights for second axis
+          if (this.useWeightColumn && secondWeights) {
+            rep2 = this.getWeightedRepartition(
+              secondSelectedX,
+              secondWeights,
+              this.bins - 1,
+              colX.min,
+              colX.max
+            );
+            totalWeight2 = secondWeights.reduce((sum, val) => sum + val, 0);
+          } else {
+            rep2 = dataOperations.getRepartition(
+              secondSelectedX,
+              this.bins - 1,
+              colX.min,
+              colX.max
+            );
+          }
 
           let xSections2 = rep2.xSections;
           let repartition2 = rep2.repartition;
@@ -445,7 +602,7 @@ export default {
             mode: "lines",
             type: this.plotType,
             x: xSections2,
-            y: repartition2.map((v) => (v * 100) / this.data.selectedData.length),
+            y: repartition2.map((v) => (v * 100) / totalWeight2),
             marker: {
               color: "rgb(223,17,10)",
               line: {
@@ -454,17 +611,32 @@ export default {
               },
             },
           });
-          if (this.displayDetails)
-            plotlyData[1].text = repartition2.map(
-              (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
-            );
+          if (this.displayDetails) {
+            if (this.useWeightColumn && secondWeights) {
+              plotlyData[1].text = repartition2.map(
+                (v) => "<b>" + v.toFixed(2) + "</b> / " + totalWeight2.toFixed(2)
+              );
+            } else {
+              plotlyData[1].text = repartition2.map(
+                (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
+              );
+            }
+          }
         }
 
         // Display more values in the bars
-        if (this.displayDetails)
-          plotlyData[0].text = repartition.map(
-            (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
-          );
+        if (this.displayDetails) {
+          if (this.useWeightColumn && weights) {
+            const totalWeight = weights.reduce((sum, val) => sum + val, 0);
+            plotlyData[0].text = repartition.map(
+              (v) => "<b>" + v.toFixed(2) + "</b> / " + totalWeight.toFixed(2)
+            );
+          } else {
+            plotlyData[0].text = repartition.map(
+              (v) => "<b>" + v + "</b> / " + this.data.selectedData.length
+            );
+          }
+        }
       }
 
       // set labels for x axis
@@ -498,6 +670,12 @@ export default {
       // Add the second axis name
       if (this.secondColumnIndex !== null)
         layout.title = "<b>" + colSecondX.label + "</b> and " + layout.title;
+
+      // Add the weight column information
+      if (this.useWeightColumn && this.weightColumnIndex !== null) {
+        const weightCol = this.data.getColumn(this.weightColumnIndex);
+        layout.title += " Weighted by <b>" + weightCol.label + "</b>";
+      }
 
       // Add the color to the legend name
       if (colColor) layout.title += " Grouped by <b>" + colColor.label + "</b>";
@@ -594,6 +772,10 @@ export default {
       this.dividePerColor = false;
       this.checkPlot(false);
     },
+    weightColumnSelect(index) {
+      this.weightColumnIndex = index;
+      this.checkPlot(false);
+    },
     setBins() {
       let colX = this.data.getColumn(this.columnXindex);
       if (!colX) return;
@@ -624,6 +806,18 @@ export default {
     },
     displayDetails() {
       this.checkPlot();
+    },
+    useWeightColumn() {
+      if (this.useWeightColumn && this.weightColumnIndex === null) {
+        this.plotDrawn = false;
+      } else {
+        this.checkPlot();
+      }
+    },
+    weightColumnIndex() {
+      if (this.useWeightColumn) {
+        this.checkPlot();
+      }
     },
     selectedDataUpdate() {
       if (!this.$parent.startFiltering && this.plotDrawn) this.$parent.selectedDataWarning = true;
