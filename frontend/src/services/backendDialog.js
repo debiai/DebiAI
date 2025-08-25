@@ -4,6 +4,10 @@ import store from "../store";
 import services from "./services";
 
 const apiURL = config.API_URL;
+const apiProjectURL = config.API_PROJECT_URL;
+const apiDataURL = config.API_DATA_URL;
+const apiAlgoURL = config.API_ALGO_URL;
+
 
 function startRequest(name) {
   let requestCode = services.uuid();
@@ -38,7 +42,7 @@ export default {
   getProjects() {
     let code = startRequest("Getting projects");
     return axios
-      .get(apiURL + "projects")
+      .get(apiProjectURL)
       .finally(() => {
         endRequest(code);
       })
@@ -49,7 +53,7 @@ export default {
   getProject() {
     let code = startRequest("Getting project data");
     return axios
-      .get(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId())
+      .get(apiDataURL  + "/" + dataProviderId() + "/projects/" + projectId())
       .finally(() => {
         endRequest(code);
       })
@@ -60,7 +64,7 @@ export default {
   deleteProject() {
     let code = startRequest("Deleting project");
     return axios
-      .delete(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId())
+      .delete(apiDataURL  + "/" + dataProviderId() + "/projects/" + projectId())
       .finally(() => {
         endRequest(code);
       })
@@ -100,7 +104,7 @@ export default {
   },
   deleteDataProvider(id) {
     let code = startRequest("Deleting data provider");
-    return axios.delete(apiURL + "data-providers/" + id).finally(() => {
+    return axios.delete(apiURL + "/data-providers"  + "/" + id).finally(() => {
       endRequest(code);
     });
   },
@@ -108,7 +112,7 @@ export default {
   // Samples ID
   getProjectIdList(analysis, from = null, to = null) {
     let request =
-      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
+      apiDataURL  + "/" + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
 
     const requestBody = { analysis, from, to };
 
@@ -117,8 +121,7 @@ export default {
   getSelectionIdList(selection_id) {
     return axios
       .get(
-        apiURL +
-          "data-providers/" +
+        apiDataURL  + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -130,8 +133,7 @@ export default {
   getModelResultsIdList(model_id) {
     return axios
       .get(
-        apiURL +
-          "data-providers/" +
+        apiDataURL  + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -145,8 +147,7 @@ export default {
   getBlocksFromSampleIds(sampleIds, analysis) {
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
+        apiDataURL  + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -160,8 +161,7 @@ export default {
   getModelResults(modelId, sampleIds) {
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
+        apiDataURL  + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -176,8 +176,7 @@ export default {
     let code = startRequest("Deleting selection");
     return axios
       .delete(
-        apiURL +
-          "data-providers/" +
+        apiDataURL  + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -193,7 +192,7 @@ export default {
     let code = startRequest("Loading selections");
     return axios
       .get(
-        apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/selections/"
+        apiDataURL  + "/" + dataProviderId() + "/projects/" + projectId() + "/selections/"
       )
       .finally(() => endRequest(code))
       .then((response) => response.data);
@@ -202,7 +201,7 @@ export default {
     let code = startRequest("Saving selection");
     return axios
       .post(
-        apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/selections/",
+        apiDataURL + "/" + dataProviderId() + "/projects/" + projectId() + "/selections/",
         { sampleHashList, selectionName }
       )
       .finally(() => {
@@ -216,8 +215,7 @@ export default {
     let code = startRequest("Deleting selection");
     return axios
       .delete(
-        apiURL +
-          "data-providers/" +
+        apiDataURL + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -234,33 +232,33 @@ export default {
 
   // Layouts
   getLayouts() {
-    return axios.get(apiURL + "app/layouts/").then((response) => response.data);
+    return axios.get(apiURL + "/app/layouts/").then((response) => response.data);
   },
   saveLayout(body) {
     let code = startRequest("Saving layout");
     body.projectId = projectId();
     body.dataProviderId = dataProviderId();
     return axios
-      .post(apiURL + "app/layouts/", body)
+      .post(apiURL + "/app/layouts/", body)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteLayout(layoutId) {
     let code = startRequest("Deleting layout");
     return axios
-      .delete(apiURL + "app/layouts/" + layoutId)
+      .delete(apiURL + "/app/layouts/" + layoutId)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
 
   // Widget configurations
   getWidgetConfigurationsOverview() {
-    return axios.get(apiURL + "app/widget-configurations/").then((response) => response.data);
+    return axios.get(apiURL + "/app/widget-configurations/").then((response) => response.data);
   },
   getWidgetConfigurations(widgetKey) {
     let code = startRequest("Loading widget configurations");
     return axios
-      .get(apiURL + "app/widgets/" + widgetKey + "/configurations")
+      .get(apiURL + "/app/widgets/" + widgetKey + "/configurations")
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -270,7 +268,7 @@ export default {
   ) {
     let code = startRequest("Saving widget configuration");
     return axios
-      .post(apiURL + "app/widgets/" + widgetKey + "/configurations", {
+      .post(apiURL + "/app/widgets/" + widgetKey + "/configurations", {
         projectId,
         dataProviderId,
         configuration,
@@ -283,7 +281,7 @@ export default {
   deleteWidgetConfiguration(widgetKey, configurationId) {
     let code = startRequest("Deleting widget configuration");
     return axios
-      .delete(apiURL + "app/widgets/" + widgetKey + "/configurations/" + configurationId)
+      .delete(apiURL + "/app/widgets/" + widgetKey + "/configurations/" + configurationId)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -292,7 +290,7 @@ export default {
   getExportMethods() {
     let code = startRequest("Loading export methods");
     return axios
-      .get(apiURL + "app/exportMethods")
+      .get(apiURL + "/app/exportMethods")
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -301,14 +299,14 @@ export default {
 
     let code = startRequest("Creating the export method");
     return axios
-      .post(apiURL + "app/exportMethods", toExport)
+      .post(apiURL + "/app/exportMethods", toExport)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteExportMethod(methodId) {
     let code = startRequest("Deleting the export method");
     return axios
-      .delete(apiURL + "app/exportMethods/" + methodId)
+      .delete(apiURL + "/app/exportMethods/" + methodId)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -327,8 +325,7 @@ export default {
     let code = startRequest("Exporting the selection " + selectionName);
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
+        apiDataURL + "/" +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -341,7 +338,7 @@ export default {
   exportData(data, exportMethodId) {
     let code = startRequest("Exporting " + data.type);
     return axios
-      .post(apiURL + "app/exportMethods/" + exportMethodId + "/exportData", data)
+      .post(apiURL + "/app/exportMethods/" + exportMethodId + "/exportData", data)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -350,7 +347,7 @@ export default {
   getAlgoProviders() {
     let code = startRequest("Loading algo providers");
     return axios
-      .get(apiURL + "app/algo-providers")
+      .get(apiAlgoURL)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -358,21 +355,21 @@ export default {
     let toExport = { name, url };
     let code = startRequest("Adding the algo provider");
     return axios
-      .post(apiURL + "app/algo-providers", toExport)
+      .post(apiAlgoURL, toExport)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteAlgoProvider(algoProviderName) {
     let code = startRequest("Deleting the algo provider");
     return axios
-      .delete(apiURL + "app/algo-providers/" + algoProviderName)
+      .delete(apiAlgoURL + "/" + algoProviderName)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   useAlgorithm(algoProviderName, algoId, inputs) {
     let code = startRequest("The algorithm is running");
     return axios
-      .post(apiURL + "app/algo-providers/" + algoProviderName + "/algorithms/use/" + algoId, {
+      .post(apiAlgoURL + "/" + algoProviderName + "/algorithms/use/" + algoId, {
         inputs,
       })
       .finally(() => endRequest(code))

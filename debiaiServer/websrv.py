@@ -20,6 +20,34 @@ app.add_api(
     strict_validation=True,
     base_path="/exploration/statistics",
 )
+
+# We duplicate current API as V1 API for debiai, it will help to understand the refactoring 
+# - Step 1 split the main swagger in severals sub API (iso API content)
+app.add_api("api/v1/swagger.yaml", strict_validation=True, base_path="/api/v1")
+app.add_api(
+    "exploration/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration"
+)
+app.add_api(
+    "exploration_statistics/swagger.yaml",
+    strict_validation=True,
+    base_path="/api/v1/exploration/statistics",
+)
+
+# - Step 2 update the API for the V2
+app.add_api(
+    "api/v2/debiai/swagger.yaml", strict_validation=True, base_path="/api/v2"
+)
+app.add_api(
+    "api/v2/internal_provider/swagger.yaml", strict_validation=True, base_path="/api/v2/data"
+)
+app.add_api(
+    "api/v2/exploration/swagger.yaml", strict_validation=True, base_path="/api/v2/exploration"
+)
+app.add_api(
+    "api/v2/exploration_statistics/swagger.yaml",
+    strict_validation=True,
+    base_path="/api/v2/exploration/statistics",
+)
 CORS(app.app)
 
 
