@@ -14,7 +14,7 @@ paths:
       tags:
         - Explorations
       summary: List all explorations
-      operationId: debiaiServer.api.v2.exploration.controller.get_explorations
+      operationId: debiaiServer.api.v1.exploration.controller.get_explorations
       parameters:
         - in: query
           name: project_id
@@ -55,7 +55,7 @@ paths:
       tags:
         - Explorations
       summary: Create a new exploration
-      operationId: debiaiServer.api.v2.exploration.controller.create_exploration
+      operationId: debiaiServer.api.v1.exploration.controller.create_exploration
       parameters:
         - in: query
           name: project_id
@@ -77,7 +77,7 @@ paths:
       tags:
         - Explorations
       summary: Get available metrics, and agregations that can be applied to columns
-      operationId: debiaiServer.api.v2.exploration.controller.get_exploration_available_config
+      operationId: debiaiServer.api.v1.exploration.controller.get_exploration_available_config
       responses:
         "200":
           description: A list of metrics
@@ -93,7 +93,7 @@ paths:
       tags:
         - Explorations
       summary: Get exploration data and configuration
-      operationId: debiaiServer.api.v2.exploration.controller.get_exploration
+      operationId: debiaiServer.api.v1.exploration.controller.get_exploration
       parameters:
         - in: query
           name: project_id
@@ -116,7 +116,7 @@ paths:
       tags:
         - Explorations
       summary: Delete an exploration
-      operationId: debiaiServer.api.v2.exploration.controller.delete_exploration
+      operationId: debiaiServer.api.v1.exploration.controller.delete_exploration
       parameters:
         - in: query
           name: project_id
@@ -135,7 +135,7 @@ paths:
       tags:
         - Explorations
       summary: Enable to start / stop the exploration
-      operationId: debiaiServer.api.v2.exploration.controller.update_exploration
+      operationId: debiaiServer.api.v1.exploration.controller.update_exploration
       parameters:
         - in: query
           name: project_id
@@ -166,7 +166,7 @@ paths:
       tags:
         - Explorations
       summary: Update exploration configuration
-      operationId: debiaiServer.api.v2.exploration.controller.update_exploration_config
+      operationId: debiaiServer.api.v1.exploration.controller.update_exploration_config
       parameters:
         - in: query
           name: project_id
@@ -199,7 +199,7 @@ paths:
       tags:
         - Explorations
       summary: Create a selection from an exploration and a list of combinations
-      operationId: debiaiServer.api.v2.exploration.controller.create_exploration_selection
+      operationId: debiaiServer.api.v1.exploration.controller.create_exploration_selection
       parameters:
         - in: query
           name: project_id

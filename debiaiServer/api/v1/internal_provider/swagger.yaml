@@ -22,7 +22,7 @@ paths:
     get:
       summary: Get the projects overview for a data provider
       tags: [Project]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_data_providers_project
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data_providers_project
       responses:
         200:
           description: List of project overviews
@@ -35,7 +35,7 @@ paths:
     get:
       summary: Get project name, nb of models & nb of selections (overviews of a project)
       tags: [Project]
-      operationId:  debiaiServer.api.v2.internal_provider.dataprovider.get_project
+      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.get_project
       parameters:
         - name: projectId
           in: path
@@ -50,7 +50,7 @@ paths:
     delete:
       summary: remove a project from ID
       tags: [Project]
-      operationId:  debiaiServer.api.v2.internal_provider.dataprovider.delete_project
+      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.delete_project
       parameters:
         - name: projectId
           in: path
@@ -66,7 +66,7 @@ paths:
     post:
       summary: Get the project data id list
       tags: [Project]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_data_id_list
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data_id_list
       parameters:
         - name: projectId
           in: path
@@ -119,7 +119,7 @@ paths:
     get:
       summary: Get a model results id list
       tags: [Model]
-      operationId:  debiaiServer.api.v2.internal_provider.dataprovider.get_model_id_list
+      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.get_model_id_list
       parameters:
         - name: projectId
           in: path
@@ -142,7 +142,7 @@ paths:
     delete:
       summary: remove a model
       tags: [Model]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.delete_model
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.delete_model
       parameters:
         - name: projectId
           in: path
@@ -162,7 +162,7 @@ paths:
     post:
       summary: Get the model results from a sample list
       tags: [Model]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_results
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_results
       parameters:
         - name: projectId
           in: path
@@ -200,7 +200,7 @@ paths:
     post:
       summary: get a project tree form a sample list
       tags: [Block]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_data
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data
       parameters:
         - name: projectId
           in: path
@@ -238,7 +238,7 @@ paths:
     get:
       summary: Get the project selections
       tags: [Selection]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_selections
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_selections
       parameters:
         - name: projectId
           in: path
@@ -255,7 +255,7 @@ paths:
     post:
       summary: add a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.post_selection
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.post_selection
       parameters:
         - name: projectId
           in: path
@@ -286,7 +286,7 @@ paths:
     get:
       summary: Get a project selection id list
       tags: [Selection]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.get_selection_id_list
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_selection_id_list
       parameters:
         - name: projectId
           in: path
@@ -309,7 +309,7 @@ paths:
     delete:
       summary: delete a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.delete_selection
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.delete_selection
       parameters:
         - name: projectId
           in: path
@@ -327,7 +327,7 @@ paths:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
-      operationId: debiaiServer.api.v2.internal_provider.dataprovider.exportSelection
+      operationId: debiaiServer.api.v1.internal_provider.dataprovider.exportSelection
       parameters:
         - name: projectId
           in: path

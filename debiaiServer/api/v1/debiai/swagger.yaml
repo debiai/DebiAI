@@ -24,14 +24,31 @@ paths:
     get:
       summary: Get the projects overview
       tags: [Project]
-      operationId: debiaiServer.api.v2.debiai.projects.get_projects 
+      operationId: debiaiServer.api.v1.debiai.projects.get_projects 
+      parameters:
+        - name: prev_hash_content
+          in: query
+          type: string
+          description: Hash of the previous request performed
+          minLength: 1
       responses:
         200:
           description: List of project overviews
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/projectOverview"
+              type: object
+              required:
+                - projects
+              properties:
+                hash_content:
+                  type: string
+                projects:
+                  type: array
+                  items:
+                    $ref: "#/definitions/projectOverview"
+
+        304:
+          description: No content change
+
 
     # Analysis layouts
   /app/layouts/:
@@ -383,7 +400,7 @@ paths:
     delete:
       summary: Delete data providers from the list
       tags: [Data Providers]
-      operationId: debiaiServer.api.v2.debiai.dataprovider.delete_data_providers
+      operationId: debiaiServer.api.v1.debiai.dataprovider.delete_data_providers
       parameters:
         - name: dataProviderId
           in: path
@@ -400,7 +417,7 @@ paths:
     get:
       summary: Get general informations about a data provider, like his version or the max number sample for each type of request
       tags: [Data Providers]
-      operationId: debiaiServer.api.v2.debiai.dataprovider.get_data_provider_info
+      operationId: debiaiServer.api.v1.debiai.dataprovider.get_data_provider_info
       parameters:
         - name: dataProviderId
           in: path

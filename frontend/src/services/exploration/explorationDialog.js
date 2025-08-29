@@ -2,7 +2,7 @@ import axios from "axios";
 import config from "../../../config";
 import b from "../backendDialog";
 
-const apiURL = config.EXPLORATION_API_URL;
+const apiURL = config.API_EXPLORATION_URL;
 
 export default {
   // Explorations

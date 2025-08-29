@@ -21,33 +21,25 @@ app.add_api(
     base_path="/exploration/statistics",
 )
 
-# We duplicate current API as V1 API for debiai, it will help to understand the refactoring 
-# - Step 1 split the main swagger in severals sub API (iso API content)
-app.add_api("api/v1/swagger.yaml", strict_validation=True, base_path="/api/v1")
+# We duplicate current API as V0 API for debiai, it will help to understand the refactoring 
+# - Step 1 duplicate current API as /api/v0 sub API (iso API content)
+app.add_api("api/v0/swagger.yaml", strict_validation=True, base_path="/api/v0")
 app.add_api(
-    "exploration/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration"
+    "exploration/swagger.yaml", strict_validation=True, base_path="/api/v0/exploration"
 )
 app.add_api(
     "exploration_statistics/swagger.yaml",
     strict_validation=True,
-    base_path="/api/v1/exploration/statistics",
+    base_path="/api/v0/exploration/statistics",
 )
 
-# - Step 2 update the API for the V2
-app.add_api(
-    "api/v2/debiai/swagger.yaml", strict_validation=True, base_path="/api/v2"
-)
-app.add_api(
-    "api/v2/internal_provider/swagger.yaml", strict_validation=True, base_path="/api/v2/data"
-)
-app.add_api(
-    "api/v2/exploration/swagger.yaml", strict_validation=True, base_path="/api/v2/exploration"
-)
-app.add_api(
-    "api/v2/exploration_statistics/swagger.yaml",
-    strict_validation=True,
-    base_path="/api/v2/exploration/statistics",
-)
+# - Step 2 update the API for the V1
+# - Step 2 split the main swagger in severals sub API (iso API content)
+app.add_api( "api/v1/debiai/swagger.yaml", strict_validation=True, base_path="/api/v1")
+app.add_api( "api/v1/internal_provider/swagger.yaml", strict_validation=True, base_path="/api/v1/data")
+app.add_api( "api/v1/exploration/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration")
+app.add_api( "api/v1/exploration_statistics/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration/statistics")
+
 CORS(app.app)
 
 

@@ -1,8 +1,6 @@
 export default {
-  API_URL: "http://localhost:3000:/api/v2/",
-  API_PROJECT_URL: "http://localhost:3000/api/v2/projects",
-  // API_DATA_URL: "/api/v2/data-providers",
-  API_DATA_URL: "http://localhost:3000/api/v2/data",
-  API_ALGO_URL: "http://localhost:3000/api/v1/app/algo-providers",  
-  EXPLORATION_API_URL: "http://localhost:3000/api/v2/exploration/"
+  API_DEBIAI_URL: "http://localhost:3000/api/v1/",
+  API_DATA_URL: "http://localhost:3000/api/v1/data/",
+  API_ALGO_URL: "http://localhost:3000/api/v0/app/algo-providers/",  
+  API_EXPLORATION_URL: "http://localhost:3000/api/v1/exploration/"
 }

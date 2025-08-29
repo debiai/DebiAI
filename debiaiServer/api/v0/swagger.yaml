@@ -12,7 +12,7 @@ paths:
   /version:
     get:
       summary: Ping to check if the backend is running
-      operationId: debiaiServer.api.v1.projects.ping
+      operationId: debiaiServer.api.v0.projects.ping
       responses:
         200:
           description: The server is online
@@ -22,7 +22,7 @@ paths:
     get:
       summary: Get data providers list and status
       tags: [Data Providers]
-      operationId: debiaiServer.api.v1.dataProviders.get_data_providers
+      operationId: debiaiServer.api.v0.dataProviders.get_data_providers
       responses:
         200:
           description: List of data providers
@@ -34,7 +34,7 @@ paths:
     post:
       summary: Add data provider to data providers list
       tags: [Data Providers]
-      operationId: debiaiServer.api.v1.dataProviders.post_data_providers
+      operationId: debiaiServer.api.v0.dataProviders.post_data_providers
       parameters:
         - name: data
           in: body
@@ -63,7 +63,7 @@ paths:
     delete:
       summary: Delete data providers from the list
       tags: [Data Providers]
-      operationId: debiaiServer.api.v1.dataProviders.delete_data_providers
+      operationId: debiaiServer.api.v0.dataProviders.delete_data_providers
       parameters:
         - name: dataProviderId
           in: path
@@ -80,7 +80,7 @@ paths:
     get:
       summary: Get general informations about a data provider, like his version or the max number sample for each type of request
       tags: [Data Providers]
-      operationId: debiaiServer.api.v1.dataProviders.get_data_provider_info
+      operationId: debiaiServer.api.v0.dataProviders.get_data_provider_info
       parameters:
         - name: dataProviderId
           in: path
@@ -126,7 +126,7 @@ paths:
     get:
       summary: Get the projects overview
       tags: [Project]
-      operationId: debiaiServer.api.v1.projects.get_projects
+      operationId: debiaiServer.api.v0.projects.get_projects
       responses:
         200:
           description: List of project overviews
@@ -138,7 +138,7 @@ paths:
     post:
       summary: Post a new project
       tags: [Project]
-      operationId: debiaiServer.api.v1.pythonModuleDp.post_project
+      operationId: debiaiServer.api.v0.pythonModuleDp.post_project
       parameters:
         - name: data
           in: body
@@ -179,7 +179,7 @@ paths:
     get:
       summary: Get the projects overview for a data provider
       tags: [Project]
-      operationId: debiaiServer.api.v1.projects.get_data_providers_project
+      operationId: debiaiServer.api.v0.projects.get_data_providers_project
       parameters:
         - name: dataProviderId
           in: path
@@ -197,7 +197,7 @@ paths:
     get:
       summary: Get project name, nb of models & nb of selections (overviews of a project)
       tags: [Project]
-      operationId: debiaiServer.api.v1.projects.get_project
+      operationId: debiaiServer.api.v0.projects.get_project
       parameters:
         - name: dataProviderId
           in: path
@@ -216,7 +216,7 @@ paths:
     delete:
       summary: remove a project from ID
       tags: [Project]
-      operationId: debiaiServer.api.v1.projects.delete_project
+      operationId: debiaiServer.api.v0.projects.delete_project
       parameters:
         - name: dataProviderId
           in: path
@@ -236,7 +236,7 @@ paths:
     post:
       summary: Get the project data id list
       tags: [Project]
-      operationId: debiaiServer.api.v1.projects.get_data_id_list
+      operationId: debiaiServer.api.v0.projects.get_data_id_list
       parameters:
         - name: dataProviderId
           in: path
@@ -291,7 +291,7 @@ paths:
     post:
       summary: add a new data blocks level structure
       tags: [Project]
-      operationId: debiaiServer.api.v1.pythonModuleDp.post_block_levels
+      operationId: debiaiServer.api.v0.pythonModuleDp.post_block_levels
       parameters:
         - name: dataProviderId
           in: path
@@ -349,7 +349,7 @@ paths:
     post:
       summary: add a new expected results structure
       tags: [Project]
-      operationId: debiaiServer.api.v1.pythonModuleDp.post_resultsStructure
+      operationId: debiaiServer.api.v0.pythonModuleDp.post_resultsStructure
       parameters:
         - name: dataProviderId
           in: path
@@ -400,7 +400,7 @@ paths:
     post:
       summary: add a model
       tags: [Model]
-      operationId: debiaiServer.api.v1.models.post_model
+      operationId: debiaiServer.api.v0.models.post_model
       parameters:
         - name: dataProviderId
           in: path
@@ -437,7 +437,7 @@ paths:
     get:
       summary: Get a model results id list
       tags: [Model]
-      operationId: debiaiServer.api.v1.models.get_model_id_list
+      operationId: debiaiServer.api.v0.models.get_model_id_list
       parameters:
         - name: dataProviderId
           in: path
@@ -464,7 +464,7 @@ paths:
     delete:
       summary: remove a model
       tags: [Model]
-      operationId: debiaiServer.api.v1.models.delete_model
+      operationId: debiaiServer.api.v0.models.delete_model
       parameters:
         - name: dataProviderId
           in: path
@@ -488,7 +488,7 @@ paths:
     post:
       summary: Add a results to a model
       tags: [Model]
-      operationId: debiaiServer.api.v1.pythonModuleDp.add_results_dict
+      operationId: debiaiServer.api.v0.pythonModuleDp.add_results_dict
       parameters:
         - name: dataProviderId
           in: path
@@ -529,7 +529,7 @@ paths:
     post:
       summary: Get the model results from a sample list
       tags: [Model]
-      operationId: debiaiServer.api.v1.models.get_results
+      operationId: debiaiServer.api.v0.models.get_results
       parameters:
         - name: dataProviderId
           in: path
@@ -571,7 +571,7 @@ paths:
     post:
       summary: add a tree to an existing project block tree
       tags: [Block]
-      operationId: debiaiServer.api.v1.pythonModuleDp.post_block_tree
+      operationId: debiaiServer.api.v0.pythonModuleDp.post_block_tree
       parameters:
         - name: dataProviderId
           in: path
@@ -606,7 +606,7 @@ paths:
     post:
       summary: get a project tree form a sample list
       tags: [Block]
-      operationId: debiaiServer.api.v1.data.get_data
+      operationId: debiaiServer.api.v0.data.get_data
       parameters:
         - name: dataProviderId
           in: path
@@ -649,7 +649,7 @@ paths:
     get:
       summary: Get the project selections
       tags: [Selection]
-      operationId: debiaiServer.api.v1.selection.get_selections
+      operationId: debiaiServer.api.v0.selection.get_selections
       parameters:
         - name: dataProviderId
           in: path
@@ -670,7 +670,7 @@ paths:
     post:
       summary: add a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v1.selection.post_selection
+      operationId: debiaiServer.api.v0.selection.post_selection
       parameters:
         - name: dataProviderId
           in: path
@@ -705,7 +705,7 @@ paths:
     get:
       summary: Get a project selection id list
       tags: [Selection]
-      operationId: debiaiServer.api.v1.selection.get_selection_id_list
+      operationId: debiaiServer.api.v0.selection.get_selection_id_list
       parameters:
         - name: dataProviderId
           in: path
@@ -732,7 +732,7 @@ paths:
     delete:
       summary: delete a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v1.selection.delete_selection
+      operationId: debiaiServer.api.v0.selection.delete_selection
       parameters:
         - name: dataProviderId
           in: path
@@ -755,7 +755,7 @@ paths:
     get:
       summary: Get all layouts
       tags: [Layouts]
-      operationId: debiaiServer.api.v1.layouts.get_layouts
+      operationId: debiaiServer.api.v0.layouts.get_layouts
       responses:
         200:
           description: Layouts for all projects
@@ -767,7 +767,7 @@ paths:
     post:
       summary: Add a layout
       tags: [Layouts]
-      operationId: debiaiServer.api.v1.layouts.post_layout
+      operationId: debiaiServer.api.v0.layouts.post_layout
       parameters:
         - name: data
           in: body
@@ -814,7 +814,7 @@ paths:
     delete:
       summary: Delete a layout
       tags: [Layouts]
-      operationId: debiaiServer.api.v1.layouts.delete_layout
+      operationId: debiaiServer.api.v0.layouts.delete_layout
       parameters:
         - name: id
           in: path
@@ -834,7 +834,7 @@ paths:
       summary: Get all widget configurations overview,
         return the number of configurations for each widget
       tags: [Widget configurations]
-      operationId: debiaiServer.api.v1.widgetConfigurations.get_all_configurations
+      operationId: debiaiServer.api.v0.widgetConfigurations.get_all_configurations
       responses:
         200:
           description: Widget configurations number for each widget
@@ -850,7 +850,7 @@ paths:
     get:
       summary: Get the widget configurations
       tags: [Widget configurations]
-      operationId: debiaiServer.api.v1.widgetConfigurations.get_widget_configurations
+      operationId: debiaiServer.api.v0.widgetConfigurations.get_widget_configurations
       parameters:
         - name: widgetKey
           in: path
@@ -892,7 +892,7 @@ paths:
     post:
       summary: Add a widget configuration
       tags: [Widget configurations]
-      operationId: debiaiServer.api.v1.widgetConfigurations.post_configuration
+      operationId: debiaiServer.api.v0.widgetConfigurations.post_configuration
       parameters:
         - name: widgetKey
           in: path
@@ -937,7 +937,7 @@ paths:
     delete:
       summary: Delete a widget configuration
       tags: [Widget configurations]
-      operationId: debiaiServer.api.v1.widgetConfigurations.delete_configuration
+      operationId: debiaiServer.api.v0.widgetConfigurations.delete_configuration
       parameters:
         - name: widgetKey
           in: path
@@ -961,7 +961,7 @@ paths:
     get:
       summary: Get the application export methods
       tags: [Export]
-      operationId: debiaiServer.api.v1.exportMethods.get_export_methods
+      operationId: debiaiServer.api.v0.exportMethods.get_export_methods
       responses:
         200:
           description: Export method list
@@ -992,7 +992,7 @@ paths:
     post:
       summary: Create an export method for the app
       tags: [Export]
-      operationId: debiaiServer.api.v1.exportMethods.post_export_method
+      operationId: debiaiServer.api.v0.exportMethods.post_export_method
       parameters:
         - name: data
           in: body
@@ -1024,7 +1024,7 @@ paths:
     delete:
       summary: Remove an export method for the app
       tags: [Export]
-      operationId: debiaiServer.api.v1.exportMethods.delete_export_method
+      operationId: debiaiServer.api.v0.exportMethods.delete_export_method
       parameters:
         - name: exportMethodId
           in: path
@@ -1040,7 +1040,7 @@ paths:
     post:
       summary: Export data with an export method
       tags: [Export]
-      operationId: debiaiServer.api.v1.exportMethods.exportData
+      operationId: debiaiServer.api.v0.exportMethods.exportData
       parameters:
         - name: exportMethodId
           in: path
@@ -1058,7 +1058,7 @@ paths:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
-      operationId: debiaiServer.api.v1.exportMethods.exportSelection
+      operationId: debiaiServer.api.v0.exportMethods.exportSelection
       parameters:
         - name: dataProviderId
           in: path
@@ -1098,7 +1098,7 @@ paths:
     get:
       summary: Get all Algo providers and their algorithms
       tags: [AlgoProviders]
-      operationId: debiaiServer.api.v1.algoProviders.get_algo_providers
+      operationId: debiaiServer.api.v0.algoProviders.get_algo_providers
       responses:
         200:
           description: Algorithms list
@@ -1111,7 +1111,7 @@ paths:
     post:
       summary: Add an Algo provider
       tags: [AlgoProviders]
-      operationId: debiaiServer.api.v1.algoProviders.post_algo_provider
+      operationId: debiaiServer.api.v0.algoProviders.post_algo_provider
       parameters:
         - name: data
           in: body
@@ -1139,7 +1139,7 @@ paths:
     delete:
       summary: Delete an Algo provider
       tags: [AlgoProviders]
-      operationId: debiaiServer.api.v1.algoProviders.delete_algo_provider
+      operationId: debiaiServer.api.v0.algoProviders.delete_algo_provider
       parameters:
         - name: name
           in: path
@@ -1157,7 +1157,7 @@ paths:
     post:
       summary: Use an algorithm of an Algo provider
       tags: [AlgoProviders]
-      operationId: debiaiServer.api.v1.algoProviders.use_algo
+      operationId: debiaiServer.api.v0.algoProviders.use_algo
       parameters:
         - name: algoProviderName
           in: path

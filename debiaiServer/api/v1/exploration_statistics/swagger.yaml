@@ -13,7 +13,7 @@ paths:
       tags:
         - Explorations
       summary: Get DebiAI projects columns statistics
-      operationId: debiaiServer.api.v2.exploration_statistics.controller.get_columns_statistics
+      operationId: debiaiServer.api.v1.exploration_statistics.controller.get_columns_statistics
       parameters:
         - name: dataProviderId
           in: path
