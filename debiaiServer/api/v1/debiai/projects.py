@@ -5,14 +5,16 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
     DataProviderException,
 )
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
-from  debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
+from debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
 
 #############################################################################
 # PROJECTS Management
 #############################################################################
 
 # TODO LOIC : for API compatibilité, we do not change the registered method content
-# TODO proposer 2 internal module : legacy (v1 implementation & 1 based on parquet)
+# TODO proposer 2 internal module : legacy (v1 implementation & 1 based on parquet)
+
+
 def change_project_overview_v2(project_info, column_info):
     v2_project_info = {
         "id": project_info["id"],
@@ -26,7 +28,7 @@ def change_project_overview_v2(project_info, column_info):
         "metrics": {
             "nbModels":  project_info["nbModels"],
             "nbSelections":  project_info["nbSelections"],
-            "nbSamples":  project_info["nbSamples"],       
+            "nbSamples":  project_info["nbSamples"],
         },
         "columns": column_info
         # projectColumns, get from statistic et supprimer doublon
@@ -34,7 +36,7 @@ def change_project_overview_v2(project_info, column_info):
     }
     return v2_project_info
 
-    
+
 def get_projects():
     # Return a list of project overviews from all the data providers
     data_providers_list = data_provider_manager.get_data_provider_list()
@@ -46,7 +48,7 @@ def get_projects():
             if projects is not None:
                 # Adding data provider id to projects
                 for project in projects:
-    
+
                     stats = get_columns_statistics(data_provider.name,  project["id"])
                     project_inf = change_project_overview_v2(project, stats["columns"])
                     projectOverviews.append(project_inf)

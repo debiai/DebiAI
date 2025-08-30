@@ -13,8 +13,8 @@ def set_column_type(column) -> str:
     # Return mixed if the column has more than one type
     # Except if the column has numbers and text
     nb_types = 0
-    
-    if  "hasNumbers" in column["tags"] or  "hasText" in column["tags"]:
+
+    if ("hasNumbers" in column["tags"]) or ("hasText" in column["tags"]):
         nb_types += 1
     if "hasList" in column["tags"]:
         nb_types += 1
@@ -50,13 +50,12 @@ def can_calculate(column):
     return False
 
 
-
 def get_columns_statistics(dataProviderId, projectId):
     SAMPLES_PER_PAGE = 50000
 
     print(f" - Getting columns statistics for project {projectId} on {dataProviderId}")
 
-    # TODO LOIC: ack for name switch : 
+    # TODO LOIC: ack for name switch :
     if dataProviderId == "internal":
         dataProviderId = 'Python module Data Provider'
 
@@ -75,7 +74,6 @@ def get_columns_statistics(dataProviderId, projectId):
             if existing_update_time >= project_update_time:
                 return {"columns": existing["columns"]}
 
-
     # Get the project columns structure
     print(" - Getting columns structure")
     columns_structure = data_provider_project["columns"]
@@ -87,7 +85,7 @@ def get_columns_statistics(dataProviderId, projectId):
     #     {"name": "per classes number", "category": "context", "type": "number"},
     # ]
 
-    # In the structure we have the following elements
+    # In the structure we have the following elements
     # - name
     # - type
     # - tags (list of tags among which)
@@ -101,8 +99,8 @@ def get_columns_statistics(dataProviderId, projectId):
     #       "category" : => if not define <=> auto
     # - metrics (list of columns metrics)
     #       - NbUniques
-    #       - ... 
-    #  
+    #       - ...
+    #
     # Set the columns statistics
     columns_statistics = []
     for column in columns_structure:
@@ -170,20 +168,20 @@ def get_columns_statistics(dataProviderId, projectId):
                 # Check the sample type
                 if isinstance(sample, (int, float)):
                     if "hasNumbers" not in column["tags"]:
-                        column["tags"].append("hasNumbers")                    
+                        column["tags"].append("hasNumbers")
                 elif isinstance(sample, str):
                     if "hasText" not in column["tags"]:
-                        column["tags"].append("hasText")                        
+                        column["tags"].append("hasText")
                 elif isinstance(sample, list):
                     if "hasList" not in column["tags"]:
-                        column["tags"].append("hasList")                         
+                        column["tags"].append("hasList")
                 elif isinstance(sample, dict):
                     if "hasDict" not in column["tags"]:
-                        column["tags"].append("hasDict")                          
+                        column["tags"].append("hasDict")
                 else:
                     print("Unknown type", type(sample))
                     if "hasOther" not in column["tags"]:
-                        column["tags"].append("hasOther")                         
+                        column["tags"].append("hasOther")
 
                 # Deal with the unique values
                 if "hasNumbers" in column["tags"] or "hasText" in column["tags"]:
