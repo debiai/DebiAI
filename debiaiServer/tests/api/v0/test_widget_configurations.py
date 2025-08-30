@@ -1,7 +1,7 @@
 import requests
 import ujson as json
 
-appUrl = "http://localhost:3000/"
+appUrl = "http://localhost:3000/api/v0/"
 testWidgetKey = "testWidgetKey"
 testConfigurationId = None
 
