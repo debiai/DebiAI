@@ -14,8 +14,8 @@ def format_data_provider_info(data_provider):
     data = {
         "id": data_provider.id,
         "status": True,
-        "name":  data_provider.name,
-        "type":  data_provider.type,
+        "name": data_provider.name,
+        "type": data_provider.type,
         "tags": [],
         "metadatas": {},
         "metrics": {},
@@ -35,7 +35,9 @@ def format_data_provider_info(data_provider):
     if "maxResultByRequest" in provider_info:
         data["metrics"]["maxResultByRequest"] = provider_info["maxResultByRequest"]
     if "maxSampleDataByRequest" in provider_info:
-        data["metrics"]["maxSampleDataByRequest"] = provider_info["maxSampleDataByRequest"]
+        data["metrics"]["maxSampleDataByRequest"] = provider_info[
+            "maxSampleDataByRequest"
+        ]
     if "maxSampleIdByRequest" in provider_info:
         data["metrics"]["maxSampleIdByRequest"] = provider_info["maxSampleIdByRequest"]
 
@@ -49,7 +51,7 @@ def get_data_provider_info(dataProviderId):
 
     # TODO LOIC: ack for name switch :
     if dataProviderId == "json_block":
-        dataProviderId = 'Python module Data Provider'
+        dataProviderId = "Python module Data Provider"
     # TODO : adapt API when we change api od data-providers instances and copy tags
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
@@ -73,17 +75,26 @@ def get_data_providers(prev_hash_content=None):
             data["metadatas"]["status_code"] = e.status_code
             data["metadatas"]["message"] = e.message
 
-    new_hash = "data_" + str(+ make_hash(providers_formatted))  # We add a prefix to avoir empty string
+    new_hash = "data_" + str(
+        +make_hash(providers_formatted)
+    )  # We add a prefix to avoir empty string
     # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
-    print(new_hash, " <=> ", prev_hash_content, type(new_hash), type(prev_hash_content), new_hash == prev_hash_content)
+    print(
+        new_hash,
+        " <=> ",
+        prev_hash_content,
+        type(new_hash),
+        type(prev_hash_content),
+        new_hash == prev_hash_content,
+    )
     if new_hash == prev_hash_content:
         return None, 304
     else:
-        providers_answser = {
+        providers_answer = {
             "dataproviders": providers_formatted,
-            "hash_content": new_hash
+            "hash_content": new_hash,
         }
-        return providers_answser, 200
+        return providers_answer, 200
 
 
 def delete_data_providers(dataProviderId):
@@ -95,7 +106,7 @@ def delete_data_providers(dataProviderId):
 
     # TODO LOIC: ack for name switch :
     if dataProviderId == "json_block":
-        dataProviderId = 'Python module Data Provider'
+        dataProviderId = "Python module Data Provider"
 
     # Delete data provider
     try:

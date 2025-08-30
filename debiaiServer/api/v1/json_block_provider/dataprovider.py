@@ -7,6 +7,7 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 import debiaiServer.modules.exportMethods.exportUtils as exportUtils
 from debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
+
 #############################################################################
 # Internal Data Provider
 #############################################################################
@@ -39,20 +40,17 @@ def get_data_providers_project():
 def change_project_v1(project_info, column_info):
     v1_project_info = {
         "id": project_info["id"],
-        "name":  project_info["name"],
-        "creationDate":  project_info["creationDate"],
-        "updateDate":  project_info["updateDate"],
+        "name": project_info["name"],
+        "creationDate": project_info["creationDate"],
+        "updateDate": project_info["updateDate"],
         "tags": [],
-        "metadatas": {
-
-        },
+        "metadatas": {},
         "metrics": {
-            "nbModels":  project_info["nbModels"],
-            "nbSelections":  project_info["nbSelections"],
-            "nbSamples":  project_info["nbSamples"],
+            "nbModels": project_info["nbModels"],
+            "nbSelections": project_info["nbSelections"],
+            "nbSamples": project_info["nbSamples"],
         },
         "columns_new": column_info,
-
         #  "nbModels": project_info["nbModels"],
         #  "nbSelections": project_info["nbSelections"],
         #  "nbSamples": project_info["nbSamples"],
@@ -74,7 +72,7 @@ def get_project(projectId):
 
         project = data_provider.get_project(projectId)
 
-        stats = get_columns_statistics(data_provider.name,  project["id"])
+        stats = get_columns_statistics(data_provider.name, project["id"])
         project_inf = change_project_v1(project, stats["columns"])
 
         # Adding data provider id to project

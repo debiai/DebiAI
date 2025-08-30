@@ -7,7 +7,6 @@ const apiDebiaiURL = config.API_DEBIAI_URL;
 const apiDataURL = config.API_DATA_URL;
 const apiAlgoURL = config.API_ALGO_URL;
 
-
 function startRequest(name) {
   let requestCode = services.uuid();
   store.commit("startRequest", { name, code: requestCode });
@@ -46,14 +45,14 @@ export default {
         endRequest(code);
       })
       .then((response) => {
-        // TODO loic ack to make the request work without ash managment
+        // TODO loic ack to make the request work without ash management
         return response.data.projects;
       });
   },
   getProject() {
     let code = startRequest("Getting project data");
     return axios
-      .get(apiDataURL  + dataProviderId() + "/projects/" + projectId())
+      .get(apiDataURL + dataProviderId() + "/projects/" + projectId())
       .finally(() => {
         endRequest(code);
       })
@@ -64,7 +63,7 @@ export default {
   deleteProject() {
     let code = startRequest("Deleting project");
     return axios
-      .delete(apiDataURL  + dataProviderId() + "/projects/" + projectId())
+      .delete(apiDataURL + dataProviderId() + "/projects/" + projectId())
       .finally(() => {
         endRequest(code);
       })
@@ -105,15 +104,14 @@ export default {
   },
   deleteDataProvider(id) {
     let code = startRequest("Deleting data provider");
-    return axios.delete(apiDebiaiURL + "data-providers"  + "/" + id).finally(() => {
+    return axios.delete(apiDebiaiURL + "data-providers" + "/" + id).finally(() => {
       endRequest(code);
     });
   },
 
   // Samples ID
   getProjectIdList(analysis, from = null, to = null) {
-    let request =
-      apiDataURL  + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
+    let request = apiDataURL + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
 
     const requestBody = { analysis, from, to };
 
@@ -122,39 +120,23 @@ export default {
   getSelectionIdList(selection_id) {
     return axios
       .get(
-        apiDataURL  +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/selections/" +
-          selection_id
+        apiDataURL + dataProviderId() + "/projects/" + projectId() + "/selections/" + selection_id
       )
       .then((response) => response.data);
   },
   getModelResultsIdList(model_id) {
     return axios
-      .get(
-        apiDataURL  +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          model_id
-      )
+      .get(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/models/" + model_id)
       .then((response) => response.data);
   },
 
   // Blocks
   getBlocksFromSampleIds(sampleIds, analysis) {
     return axios
-      .post(
-        apiDataURL  +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/blocksFromSampleIds",
-        { sampleIds, analysis }
-      )
+      .post(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/blocksFromSampleIds", {
+        sampleIds,
+        analysis,
+      })
       .then((response) => response.data);
   },
 
@@ -162,7 +144,7 @@ export default {
   getModelResults(modelId, sampleIds) {
     return axios
       .post(
-        apiDataURL  +
+        apiDataURL +
           dataProviderId() +
           "/projects/" +
           projectId() +
@@ -176,14 +158,7 @@ export default {
   delModel(modelId) {
     let code = startRequest("Deleting selection");
     return axios
-      .delete(
-        apiDataURL +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          modelId
-      )
+      .delete(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/models/" + modelId)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -192,19 +167,17 @@ export default {
   getSelections() {
     let code = startRequest("Loading selections");
     return axios
-      .get(
-        apiDataURL  + dataProviderId() + "/projects/" + projectId() + "/selections/"
-      )
+      .get(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/selections/")
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   addSelection(sampleHashList, selectionName) {
     let code = startRequest("Saving selection");
     return axios
-      .post(
-        apiDataURL  + dataProviderId() + "/projects/" + projectId() + "/selections/",
-        { sampleHashList, selectionName }
-      )
+      .post(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/selections/", {
+        sampleHashList,
+        selectionName,
+      })
       .finally(() => {
         endRequest(code);
       })
@@ -216,12 +189,7 @@ export default {
     let code = startRequest("Deleting selection");
     return axios
       .delete(
-        apiDataURL  +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/selections/" +
-          selectionId
+        apiDataURL + dataProviderId() + "/projects/" + projectId() + "/selections/" + selectionId
       )
       .finally(() => {
         endRequest(code);
@@ -325,14 +293,7 @@ export default {
 
     let code = startRequest("Exporting the selection " + selectionName);
     return axios
-      .post(
-        apiDataURL +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/exportSelection",
-        toSend
-      )
+      .post(apiDataURL + dataProviderId() + "/projects/" + projectId() + "/exportSelection", toSend)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },

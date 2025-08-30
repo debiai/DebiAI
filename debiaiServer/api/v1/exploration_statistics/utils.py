@@ -57,7 +57,7 @@ def get_columns_statistics(dataProviderId, projectId):
 
     # TODO LOIC: ack for name switch :
     if dataProviderId == "json_block":
-        dataProviderId = 'Python module Data Provider'
+        dataProviderId = "Python module Data Provider"
 
     # Find the data provider & project
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
@@ -118,7 +118,7 @@ def get_columns_statistics(dataProviderId, projectId):
                 "average": None,
                 "min": None,
                 "max": None,
-            }
+            },
         }
         columns_statistics.append(column_statistics)
 
@@ -192,15 +192,22 @@ def get_columns_statistics(dataProviderId, projectId):
                 # Update the min, max and average
                 if can_calculate(column):
                     # Update the min, max and average
-                    if column["metrics"]["min"] is None or sample < column["metrics"]["min"]:
+                    if (
+                        column["metrics"]["min"] is None
+                        or sample < column["metrics"]["min"]
+                    ):
                         column["metrics"]["min"] = sample
-                    if column["metrics"]["max"] is None or sample > column["metrics"]["max"]:
+                    if (
+                        column["metrics"]["max"] is None
+                        or sample > column["metrics"]["max"]
+                    ):
                         column["metrics"]["max"] = sample
                     if column["metrics"]["average"] is None:
                         column["metrics"]["average"] = sample
                     else:
                         column["metrics"]["average"] = (
-                            column["metrics"]["average"] * (current_sample_nb - 1) + sample
+                            column["metrics"]["average"] * (current_sample_nb - 1)
+                            + sample
                         ) / current_sample_nb
 
         # If no more samples, break the loop
@@ -214,7 +221,9 @@ def get_columns_statistics(dataProviderId, projectId):
         # Set the unique values nb
         # Skip the columns that are not of type number or text
         if column["name"] in unique_values_map and not (
-            "hasDict" in column["tags"] or "hasList" in column["tags"] or "hasOther" in column["tags"]
+            "hasDict" in column["tags"]
+            or "hasList" in column["tags"]
+            or "hasOther" in column["tags"]
         ):
             column["metrics"]["nbUniqueValues"] = len(unique_values_map[column["name"]])
 

@@ -5,13 +5,15 @@ appUrl = "http://localhost:3000/api/v1/"
 test_data_provider_name = "test_create_data_provider"
 
 
-class TestDataProvidersRegisty:
+class TestDataProvidersRegistry:
     data_providers = []
 
     def get_dataproviders(self):
         url = appUrl + "data-providers"
         resp = requests.get(url=url, headers={})
-        assert resp.status_code == 200, "As no hash provider we shall have 200 response code"
+        assert (
+            resp.status_code == 200
+        ), "As no hash provider we shall have 200 response code"
         load = json.loads(resp.text)
 
         assert "hash_content" in load
@@ -39,7 +41,9 @@ class TestDataProvidersRegisty:
     def test_get_dataproviders_response_structure(self):
         url = appUrl + "data-providers"
         resp = requests.get(url=url, headers={})
-        assert resp.status_code == 200, "As no hash provider we shall have 200 response code"
+        assert (
+            resp.status_code == 200
+        ), "As no hash provider we shall have 200 response code"
         load = json.loads(resp.text)
 
         assert "hash_content" in load

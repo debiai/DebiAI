@@ -16,21 +16,19 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 def change_project_overview_v1(project_info, column_info):
     v1_project_info = {
         "id": project_info["id"],
-        "name":  project_info["name"],
-        "creationDate":  project_info["creationDate"],
-        "updateDate":  project_info["updateDate"],
+        "name": project_info["name"],
+        "creationDate": project_info["creationDate"],
+        "updateDate": project_info["updateDate"],
         "tags": [],
-        "metadatas": {
-
-        },
+        "metadatas": {},
         "metrics": {
-            "nbModels":  project_info["nbModels"],
-            "nbSelections":  project_info["nbSelections"],
-            "nbSamples":  project_info["nbSamples"],
+            "nbModels": project_info["nbModels"],
+            "nbSelections": project_info["nbSelections"],
+            "nbSamples": project_info["nbSamples"],
         },
-        "columns": column_info
-        # projectColumns, get from statistic et supprimer doublon
-        # "blockLevelInfo": projectBlockLevel, supprimer ici, garder dans l'API pour module python en V1
+        "columns": column_info,
+        # projectColumns, get from statistic et suppress
+        # "blockLevelInfo": projectBlockLevel, suppress here keep
     }
     return v1_project_info
 
@@ -49,21 +47,30 @@ def get_projects(prev_hash_content=None):
                 # Adding data provider id to projects
                 for project in projects:
 
-                    stats = get_columns_statistics(data_provider.name,  project["id"])
+                    stats = get_columns_statistics(data_provider.name, project["id"])
                     project_inf = change_project_overview_v1(project, stats["columns"])
                     projectList.append(project_inf)
 
                     if data_provider.name != "Python module Data Provider":
                         project_inf["dataProviderId"] = data_provider.name
                     else:
-                        project_inf["dataProviderId"] = 'json_block'
+                        project_inf["dataProviderId"] = "json_block"
 
         except DataProviderException as e:
             print("Warning get DP projects : " + e.message)
 
-    new_hash = "prj_" + str(+ make_hash(projectList))  # We add a prefix to avoir empty string
+    new_hash = "prj_" + str(
+        +make_hash(projectList)
+    )  # We add a prefix to avoir empty string
     # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
-    print(new_hash, " <=> ", prev_hash_content, type(new_hash), type(prev_hash_content), new_hash == prev_hash_content)
+    print(
+        new_hash,
+        " <=> ",
+        prev_hash_content,
+        type(new_hash),
+        type(prev_hash_content),
+        new_hash == prev_hash_content,
+    )
     if new_hash == prev_hash_content:
         return None, 304
     else:

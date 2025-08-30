@@ -25,7 +25,6 @@ Vue.prototype.$API_DEBIAI_URL = config.API_DEBIAI_URL;
 Vue.prototype.$API_DATA_URL = config.API_DATA_URL;
 Vue.prototype.$API_ALGO_URL = config.API_ALGO_URL;
 
-
 // Custom directive
 Vue.directive("focus", { inserted: (el) => el.focus() });
 

@@ -115,7 +115,7 @@ def get_data_provider_list():
 
 def get_single_data_provider(id) -> WebDataProvider:
 
-    # TODO compatibilité with v0 :
+    # TODO For compatibility with v0 :
     if id == PYTHON_DATA_PROVIDER_NAME and python_data_provider_disabled:
         raise DataProviderException("Python module data provider is disabled", 403)
 
