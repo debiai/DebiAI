@@ -6,11 +6,12 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 )
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 import debiaiServer.modules.exportMethods.exportUtils as exportUtils
+from debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
 #############################################################################
 # Internal Data Provider
 #############################################################################
 
-dataProviderId = "Python module Data Provider"
+dataProviderId = "json_block"
 
 
 def get_data_providers_project():
@@ -35,6 +36,37 @@ def get_data_providers_project():
     return projects, 200
 
 
+def change_project_v1(project_info, column_info):
+    v1_project_info = {
+        "id": project_info["id"],
+        "name":  project_info["name"],
+        "creationDate":  project_info["creationDate"],
+        "updateDate":  project_info["updateDate"],
+        "tags": [],
+        "metadatas": {
+
+        },
+        "metrics": {
+            "nbModels":  project_info["nbModels"],
+            "nbSelections":  project_info["nbSelections"],
+            "nbSamples":  project_info["nbSamples"],
+        },
+        "columns_new": column_info,
+
+        #  "nbModels": project_info["nbModels"],
+        #  "nbSelections": project_info["nbSelections"],
+        #  "nbSamples": project_info["nbSamples"],
+        "columns": project_info["columns"],
+        # "blockLevelInfo": project_info["blockLevelInfo"],
+        "selections": project_info["selections"],
+        "models": project_info["models"],
+        # projectColumns, get from statistic et supprimer doublon
+        # "blockLevelInfo": projectBlockLevel, supprimer ici, garder dans l'API pour module python en V1
+    }
+
+    return v1_project_info
+
+
 def get_project(projectId):
     # return the info about datasets, models, selections & tags
     try:
@@ -42,10 +74,13 @@ def get_project(projectId):
 
         project = data_provider.get_project(projectId)
 
-        # Adding data provider id to project
-        project["dataProviderId"] = dataProviderId
+        stats = get_columns_statistics(data_provider.name,  project["id"])
+        project_inf = change_project_v1(project, stats["columns"])
 
-        return project, 200
+        # Adding data provider id to project
+        project_inf["dataProviderId"] = dataProviderId
+
+        return project_inf, 200
     except DataProviderException as e:
         return e.message, e.status_code
 
