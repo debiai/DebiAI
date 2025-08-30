@@ -48,7 +48,7 @@ def format_data_provider_info(data_provider):
 def get_data_provider_info(dataProviderId):
 
     # TODO LOIC: ack for name switch :
-    if dataProviderId == "internal":
+    if dataProviderId == "json_block":
         dataProviderId = 'Python module Data Provider'
     # TODO : adapt API when we change api od data-providers instances and copy tags
     try:
@@ -94,7 +94,7 @@ def delete_data_providers(dataProviderId):
         return "Data provider deletion is not allowed", 403
 
     # TODO LOIC: ack for name switch :
-    if dataProviderId == "internal":
+    if dataProviderId == "json_block":
         dataProviderId = 'Python module Data Provider'
 
     # Delete data provider

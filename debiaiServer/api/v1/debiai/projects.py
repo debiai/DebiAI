@@ -56,7 +56,7 @@ def get_projects(prev_hash_content=None):
                     if data_provider.name != "Python module Data Provider":
                         project_inf["dataProviderId"] = data_provider.name
                     else:
-                        project_inf["dataProviderId"] = 'internal'
+                        project_inf["dataProviderId"] = 'json_block'
 
         except DataProviderException as e:
             print("Warning get DP projects : " + e.message)

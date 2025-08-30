@@ -149,8 +149,8 @@ def get_single_data_provider_for_project_id(project_id) -> WebDataProvider:
 def delete(name):
     for d in data_providers_list:
         if d.name == name:
-            # Add check or internal type for V0 / V1 compatibility
-            if d.type == "Python module Data Provider" or d.type == "internal":
+            # Add check for json_block type for V0 / V1 compatibility
+            if d.type == "Python module Data Provider" or d.type == "json_block":
                 raise DataProviderException(
                     "Python module data provider cannot be deleted", 403
                 )

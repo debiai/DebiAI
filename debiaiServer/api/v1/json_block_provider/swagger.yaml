@@ -18,11 +18,11 @@ paths:
         200:
           description: The server is online
 
-  /internal/projects:
+  /json_block/projects:
     get:
       summary: Get the projects overview for a data provider
       tags: [Project]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data_providers_project
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data_providers_project
       responses:
         200:
           description: List of project overviews
@@ -31,11 +31,11 @@ paths:
             items:
               $ref: "#/definitions/projectOverview"
 
-  /internal/projects/{projectId}:
+  /json_block/projects/{projectId}:
     get:
       summary: Get project name, nb of models & nb of selections (overviews of a project)
       tags: [Project]
-      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.get_project
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.get_project
       parameters:
         - name: projectId
           in: path
@@ -50,7 +50,7 @@ paths:
     delete:
       summary: remove a project from ID
       tags: [Project]
-      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.delete_project
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.delete_project
       parameters:
         - name: projectId
           in: path
@@ -62,11 +62,11 @@ paths:
         404:
           description: project doesn't exist
 
-  /internal/projects/{projectId}/dataIdList:
+  /json_block/projects/{projectId}/dataIdList:
     post:
       summary: Get the project data id list
       tags: [Project]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data_id_list
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data_id_list
       parameters:
         - name: projectId
           in: path
@@ -115,11 +115,11 @@ paths:
 
   # Models
 
-  /internal/projects/{projectId}/models/{modelId}:
+  /json_block/projects/{projectId}/models/{modelId}:
     get:
       summary: Get a model results id list
       tags: [Model]
-      operationId:  debiaiServer.api.v1.internal_provider.dataprovider.get_model_id_list
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.get_model_id_list
       parameters:
         - name: projectId
           in: path
@@ -142,7 +142,7 @@ paths:
     delete:
       summary: remove a model
       tags: [Model]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.delete_model
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.delete_model
       parameters:
         - name: projectId
           in: path
@@ -158,11 +158,11 @@ paths:
         404:
           description: model or project doesn't exist
 
-  /internal/projects/{projectId}/models/{modelId}/getModelResults:
+  /json_block/projects/{projectId}/models/{modelId}/getModelResults:
     post:
       summary: Get the model results from a sample list
       tags: [Model]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_results
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_results
       parameters:
         - name: projectId
           in: path
@@ -196,11 +196,11 @@ paths:
           description: model or project doesn't exist
 
   # Blocks
-  /internal/projects/{projectId}/blocksFromSampleIds:
+  /json_block/projects/{projectId}/blocksFromSampleIds:
     post:
       summary: get a project tree form a sample list
       tags: [Block]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_data
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data
       parameters:
         - name: projectId
           in: path
@@ -234,11 +234,11 @@ paths:
           description: Project or one of the models not found
 
   # Selections
-  /internal/projects/{projectId}/selections/:
+  /json_block/projects/{projectId}/selections/:
     get:
       summary: Get the project selections
       tags: [Selection]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_selections
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_selections
       parameters:
         - name: projectId
           in: path
@@ -255,7 +255,7 @@ paths:
     post:
       summary: add a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.post_selection
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.post_selection
       parameters:
         - name: projectId
           in: path
@@ -282,11 +282,11 @@ paths:
           schema:
             $ref: "#/definitions/selection"
 
-  /internal/projects/{projectId}/selections/{selectionId}:
+  /json_block/projects/{projectId}/selections/{selectionId}:
     get:
       summary: Get a project selection id list
       tags: [Selection]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.get_selection_id_list
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_selection_id_list
       parameters:
         - name: projectId
           in: path
@@ -309,7 +309,7 @@ paths:
     delete:
       summary: delete a selection
       tags: [Selection]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.delete_selection
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.delete_selection
       parameters:
         - name: projectId
           in: path
@@ -323,11 +323,11 @@ paths:
         200:
           description: selection deleted
 
-  /internal/projects/{projectId}/exportSelection:
+  /json_block/projects/{projectId}/exportSelection:
     post:
       summary: Export a selected sample id list from an export method
       tags: [Export]
-      operationId: debiaiServer.api.v1.internal_provider.dataprovider.exportSelection
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.exportSelection
       parameters:
         - name: projectId
           in: path

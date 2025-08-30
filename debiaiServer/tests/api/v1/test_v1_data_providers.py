@@ -52,10 +52,11 @@ class TestDataProvidersRegisty:
         for dp in data_providers:
             self.check_provider(dp)
 
-    def test_get_intenal_provider(self):
+    def test_get_json_block_provider(self):
 
-        internal = self.get_dataprovider("Python module Data Provider")
-        assert internal["type"] == "internal", "It's an internal type, check impact to the v0 API"
+        json_block = self.get_dataprovider("Python module Data Provider")
+        assert json_block["id"] == "json_block"
+        assert json_block["type"] == "internal"
 
     def test_all_data_providers(self):
 

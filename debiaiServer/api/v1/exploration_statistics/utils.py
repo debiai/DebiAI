@@ -56,7 +56,7 @@ def get_columns_statistics(dataProviderId, projectId):
     print(f" - Getting columns statistics for project {projectId} on {dataProviderId}")
 
     # TODO LOIC: ack for name switch :
-    if dataProviderId == "internal":
+    if dataProviderId == "json_block":
         dataProviderId = 'Python module Data Provider'
 
     # Find the data provider & project

@@ -16,7 +16,7 @@ from debiaiServer.utils.utils import get_app_version
 
 PYTHON_DATA_PROVIDER_NAME = "Python module Data Provider"
 PYTHON_DATA_PROVIDER_TYPE = "internal"
-PYTHON_DATA_PROVIDER_ID = "internal"
+PYTHON_DATA_PROVIDER_ID = "json_block"
 
 
 # Wrappers

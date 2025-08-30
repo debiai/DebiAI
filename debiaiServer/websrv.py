@@ -31,7 +31,7 @@ app.add_api("exploration_statistics/swagger.yaml", strict_validation=True, base_
 # API Refactorrint in /api/V1
 # - Step 2 split the main swagger in severals sub API (iso API content)
 app.add_api("api/v1/debiai/swagger.yaml", strict_validation=True, base_path="/api/v1")
-app.add_api("api/v1/internal_provider/swagger.yaml", strict_validation=True, base_path="/api/v1/data")
+app.add_api("api/v1/json_block_provider/swagger.yaml", strict_validation=True, base_path="/api/v1/data")
 app.add_api("api/v1/exploration/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration")
 app.add_api("api/v1/exploration_statistics/swagger.yaml", strict_validation=True, base_path="/api/v1/exploration/statistics")  # noqa: E501
 
