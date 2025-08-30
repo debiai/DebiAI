@@ -14,7 +14,9 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
 
 from debiaiServer.utils.utils import get_app_version
 
-PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
+PYTHON_DATA_PROVIDER_NAME = "Python module Data Provider"
+PYTHON_DATA_PROVIDER_TYPE = "internal"
+PYTHON_DATA_PROVIDER_ID = "internal"
 
 
 # Wrappers
@@ -46,10 +48,14 @@ class PythonDataProvider(DataProvider):
 
     @property
     def name(self):
-        return PYTHON_DATA_PROVIDER_ID
+        return PYTHON_DATA_PROVIDER_NAME
 
     @property
     def type(self):
+        return PYTHON_DATA_PROVIDER_TYPE
+
+    @property
+    def id(self):
         return PYTHON_DATA_PROVIDER_ID
 
     def is_alive(self):

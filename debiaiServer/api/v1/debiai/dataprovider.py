@@ -6,6 +6,84 @@ import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_m
 from debiaiServer.modules.dataProviders.DataProviderException import (
     DataProviderException,
 )
+from debiaiServer.api.v1.debiai.utils import make_hash
+
+
+def format_data_provider_info(data_provider):
+
+    data = {
+        "id": data_provider.id,
+        "status": True,
+        "name":  data_provider.name,
+        "type":  data_provider.type,
+        "tags": [],
+        "metadatas": {},
+        "metrics": {},
+    }
+    print("NAME ", data_provider.name)
+
+    provider_info = data_provider.get_info()
+    if "canDelete" in provider_info and provider_info["canDelete"]["models"]:
+        data["tags"].append("canDeleteModels")
+    if "canDelete" in provider_info and provider_info["canDelete"]["projects"]:
+        data["tags"].append("canDeleteProject")
+    if "canDelete" in provider_info and provider_info["canDelete"]["selections"]:
+        data["tags"].append("canDeleteSelections")
+    if "version" in provider_info:
+        data["metadatas"]["version"] = provider_info["version"]
+
+    if "maxResultByRequest" in provider_info:
+        data["metrics"]["maxResultByRequest"] = provider_info["maxResultByRequest"]
+    if "maxSampleDataByRequest" in provider_info:
+        data["metrics"]["maxSampleDataByRequest"] = provider_info["maxSampleDataByRequest"]
+    if "maxSampleIdByRequest" in provider_info:
+        data["metrics"]["maxSampleIdByRequest"] = provider_info["maxSampleIdByRequest"]
+
+    if data_provider.name != "Python module Data Provider":
+        data["metadatas"]["external_url"] = data_provider.url
+
+    return data
+
+
+def get_data_provider_info(dataProviderId):
+
+    # TODO LOIC: ack for name switch :
+    if dataProviderId == "internal":
+        dataProviderId = 'Python module Data Provider'
+    # TODO : adapt API when we change api od data-providers instances and copy tags
+    try:
+        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
+        data = format_data_provider_info(data_provider)
+
+        return data, 200
+    except DataProviderException as e:
+        return e.message, e.status_code
+
+
+def get_data_providers(prev_hash_content=None):
+    data_provider_list = data_provider_manager.get_data_provider_list()
+    providers_formatted = []
+
+    for data_provider in data_provider_list:
+        try:
+            data = format_data_provider_info(data_provider)
+            providers_formatted.append(data)
+        except DataProviderException as e:
+            data["status"] = False
+            data["metadatas"]["status_code"] = e.status_code
+            data["metadatas"]["message"] = e.message
+
+    new_hash = "data_" + str(+ make_hash(providers_formatted))  # We add a prefix to avoir empty string
+    # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
+    print(new_hash, " <=> ", prev_hash_content, type(new_hash), type(prev_hash_content), new_hash == prev_hash_content)
+    if new_hash == prev_hash_content:
+        return None, 304
+    else:
+        providers_answser = {
+            "dataproviders": providers_formatted,
+            "hash_content": new_hash
+        }
+        return providers_answser, 200
 
 
 def delete_data_providers(dataProviderId):
@@ -23,20 +101,5 @@ def delete_data_providers(dataProviderId):
     try:
         data_provider_manager.delete(dataProviderId)
         return None, 204
-    except DataProviderException as e:
-        return e.message, e.status_code
-
-
-def get_data_provider_info(dataProviderId):
-
-    # TODO LOIC: ack for name switch :
-    if dataProviderId == "internal":
-        dataProviderId = 'Python module Data Provider'
-
-    try:
-        data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
-        info = data_provider.get_info()
-
-        return info, 200
     except DataProviderException as e:
         return e.message, e.status_code

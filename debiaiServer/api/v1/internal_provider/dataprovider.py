@@ -12,8 +12,9 @@ import debiaiServer.modules.exportMethods.exportUtils as exportUtils
 
 dataProviderId = "Python module Data Provider"
 
+
 def get_data_providers_project():
-    
+
     # Return a list of project overviews for a specific data provider
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 
@@ -47,7 +48,8 @@ def get_project(projectId):
         return project, 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def delete_project(projectId):
     # Delete a project
     try:
@@ -57,6 +59,7 @@ def delete_project(projectId):
         return "Project deleted", 200
     except DataProviderException as e:
         return e.message, e.status_code
+
 
 def get_data_id_list(projectId, requestParameters):
     # return the list of data ids
@@ -73,7 +76,8 @@ def get_data_id_list(projectId, requestParameters):
         return data_id_list, 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def get_model_id_list(projectId, modelId):
     """
     Get the list of models for a project
@@ -83,7 +87,8 @@ def get_model_id_list(projectId, modelId):
         return list(data_provider.get_model_results_id_list(projectId, modelId)), 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def delete_model(projectId, modelId):
     """
     Delete a model
@@ -93,6 +98,7 @@ def delete_model(projectId, modelId):
         return data_provider.delete_model(projectId, modelId), 200
     except DataProviderException as e:
         return e.message, e.status_code
+
 
 def get_results(projectId, modelId, data):
     """
@@ -106,7 +112,8 @@ def get_results(projectId, modelId, data):
         )
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def get_data(projectId, data):
     # return a project data from a list of ids
     sampleIds = data["sampleIds"]
@@ -135,13 +142,15 @@ def get_data(projectId, data):
     except DataProviderException as e:
         return e.message, e.status_code
 
+
 def get_selections(projectId):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         return data_provider.get_selections(projectId), 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def post_selection(projectId, data):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
@@ -153,13 +162,15 @@ def post_selection(projectId, data):
         return new_selection, 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def get_selection_id_list(projectId, selectionId):
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         return data_provider.get_selection_id_list(projectId, selectionId), 200
     except DataProviderException as e:
         return e.message, e.status_code
+
 
 def delete_selection(projectId, selectionId):
     try:
@@ -168,7 +179,8 @@ def delete_selection(projectId, selectionId):
         return "Selection deleted", 200
     except DataProviderException as e:
         return e.message, e.status_code
-    
+
+
 def exportSelection(dataProviderId, projectId, data):
     try:
         return exportUtils.exportSelection(dataProviderId, projectId, data), 200

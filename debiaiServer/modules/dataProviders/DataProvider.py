@@ -18,6 +18,12 @@ class DataProvider(ABC):
     def type(self):
         pass
 
+    #  Differentiate Name and ID => Use ID for the request, as Name is more free content
+    @property
+    @abstractmethod
+    def id(self):
+        pass
+
     # Info
     @abstractmethod
     def get_info(self) -> dict:

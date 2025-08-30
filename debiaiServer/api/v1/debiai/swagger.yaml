@@ -10,7 +10,6 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
 
-
   /version:
     get:
       summary: Ping to check if the backend is running
@@ -359,14 +358,28 @@ paths:
     get:
       summary: Get data providers list and status
       tags: [Data Providers]
-      operationId: debiaiServer.controller.dataProviders.get_data_providers
+      operationId: debiaiServer.api.v1.debiai.dataprovider.get_data_providers
+      parameters:
+        - name: prev_hash_content
+          in: query
+          type: string
+          description: Hash of the previous request performed   
       responses:
         200:
           description: List of data providers
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/dataProvider"
+              type: object
+              required:
+                - dataproviders
+              properties:
+                hash_content:
+                  type: string
+                dataproviders:
+                  type: array
+                  items:
+                    $ref: "#/definitions/dataProvider"              
+        304:
+          description: No content change
 
     post:
       summary: Add data provider to data providers list
@@ -377,19 +390,10 @@ paths:
           in: body
           schema:
             type: object
+            $ref: "#/definitions/dataProviderConfig"
             required:
               - name
               - type
-            properties:
-              name:
-                type: string
-                description: The name of the data Provider
-              type:
-                type: string
-                description: Type of the data Provider (Web)
-              url:
-                type: string
-                description: The url of the new data Provider if type is Web
       responses:
         204:
           description: Data provider added to the list
@@ -428,31 +432,9 @@ paths:
           description: The info of the data provider
           schema:
             type: object
+            $ref: "#/definitions/dataProviderConfig"            
             required:
               - version
-            properties:
-              version:
-                type: string
-              maxSampleIdByRequest:
-                type: integer
-              maxSampleDataByRequest:
-                type: integer
-              maxResultByRequest:
-                type: integer
-
-              canDelete:
-                type: object
-                description: Information about what can be deleted by DebiAI
-                properties:
-                  projects:
-                    type: boolean
-                    default: true
-                  selections:
-                    type: boolean
-                    default: true
-                  models:
-                    type: boolean
-                    default: true
         400:
           description: The Data provider id must not be null
         404:
@@ -461,18 +443,63 @@ paths:
 definitions:
 
   # Data providers
-  dataProvider:
+  dataProviderConfig:
     type: object
     properties:
       name:
         type: string
-      url:
-        type: string
-      status:
-        type: boolean
-        description: True if the data provider is up and running
+        description: Name display to the user
       type:
         type: string
+        description: Type of the data provider (enum of supported ? TODO)
+      tags:
+        type: array
+        description: List of tags associated to the project)
+        items: 
+          type: string
+          additionalProperties:
+            type: string
+          example: 
+          - canDeleteProject
+          - canDeleteSelections
+          - canDeleteModels
+      metadatas:
+        type: array
+        description: List of meta informations sur as "category", or "origin", ...
+        items:
+          additionalProperties:
+            type: string
+          example:
+            version: "data provider version"
+            external_url: "Optional external URL to access data provide"
+            url_key: "Optional url_key in the debiai front to access the data provider api"
+            s3_bucket: "If S3 use to read parquet files by front"
+            s3_access_key: "S3 access key needed to access directly parquet from front in readonly"
+            # TODO check if we need to encoded it on top of HTTPS
+            s3_secret_id: "S3 access key needed to access directly parquet from front in readonly - use https with such informations"
+            selection_path: "local path or S3 to read selection parquet ($path/$selection_id)"
+            models_path: "local path or S3 to read selection parquet ($path/$selection_id)"
+            project_path: "local path or S3 to read project parquets"
+      metrics:
+        type: array
+        description: List of metrics associated to the data providers
+        items:
+          additionalProperties:
+            type: number
+          example:
+            maxSampleIdByRequest: "Max sample id per request"
+            maxSampleDataByRequest: "Max sample data per request"
+            maxResultByRequest: "Max results per request"
+
+  dataProvider:
+    allOf:
+      - $ref: "#/definitions/dataProviderConfig"
+      - type: object  
+        properties:
+          status:
+            type: boolean
+            description: True if the data provider is up and running (if manage by backend)
+
 
   # Projects
   projectOverview:

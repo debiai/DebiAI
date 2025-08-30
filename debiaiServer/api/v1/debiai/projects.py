@@ -6,14 +6,15 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
 )
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
 from debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
+from debiaiServer.api.v1.debiai.utils import make_hash
 
 #############################################################################
 # PROJECTS Management
 #############################################################################
 
 
-def change_project_overview_v2(project_info, column_info):
-    v2_project_info = {
+def change_project_overview_v1(project_info, column_info):
+    v1_project_info = {
         "id": project_info["id"],
         "name":  project_info["name"],
         "creationDate":  project_info["creationDate"],
@@ -31,25 +32,7 @@ def change_project_overview_v2(project_info, column_info):
         # projectColumns, get from statistic et supprimer doublon
         # "blockLevelInfo": projectBlockLevel, supprimer ici, garder dans l'API pour module python en V1
     }
-    return v2_project_info
-
-
-def freeze(o):
-
-    if isinstance(o, dict):
-        return frozenset({k: freeze(v) for k, v in o.items()}.items())
-
-    if isinstance(o, list):
-        return tuple([freeze(v) for v in o])
-
-    return o
-
-
-def make_hash(o):
-    """
-    makes a hash out of anything that contains only list,dict and hashable types including string and numeric types
-    """
-    return hash(freeze(o))
+    return v1_project_info
 
 
 def get_projects(prev_hash_content=None):
@@ -67,7 +50,7 @@ def get_projects(prev_hash_content=None):
                 for project in projects:
 
                     stats = get_columns_statistics(data_provider.name,  project["id"])
-                    project_inf = change_project_overview_v2(project, stats["columns"])
+                    project_inf = change_project_overview_v1(project, stats["columns"])
                     projectList.append(project_inf)
 
                     if data_provider.name != "Python module Data Provider":

@@ -26,9 +26,13 @@ class TestProjects:
         resp = requests.get(url=url, headers={})
         assert resp.status_code == 200
         projects_response = json.loads(resp.text)
-        project_list = projects_response
+        assert "projects" in projects_response
+        print(projects_response)
+        project_list = projects_response["projects"]
+        print(project_list)
 
         for project in project_list:
+            print(project)
             print(f"\nDeleting project {project['id']}")
             self.delete_project(project['id'])
 
@@ -80,19 +84,61 @@ class TestProjects:
         resp = requests.get(url=url, headers={})
         assert resp.status_code == 200
         load = json.loads(resp.text)
-        assert type(load) is list
+        assert "projects" in load
+        project_list = load["projects"]
+        assert type(project_list) is list
+        assert "hash_content" in load
 
     def test_get_project_response_void(self, no_project):
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})
         assert resp.status_code == 200
         load = json.loads(resp.text)
-        assert len(load) == 0
+        assert "projects" in load
+        project_list = load["projects"]
+        assert len(project_list) == 0
 
-    def test_get_projects_check_project_one(self, project_one):
+    def test_get_projects_check_project_one_empty(self, project_one):
 
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})
-        assert resp.status_code == 200
+        assert resp.status_code == 200, "As no hass provider we shall have 200 response code"
         load = json.loads(resp.text)
-        assert len(load) == 1
+        print(load)
+        assert "projects" in load,  "We check projects are in the payload"
+
+        project_list = load["projects"]
+        assert len(project_list) == 1, "We check only one project exist"
+
+        project_one = project_list[0]
+        assert project_one['id'] == self.PROJECT_NAME_1, "We check The project name"
+
+        # We chek project expected properties
+        assert "name"           in project_one, "We check name  are in the projects payload"  # noqa:E272
+        assert "updateDate"     in project_one, "We check creationDate  are in the projects payload"  # noqa:E272
+        assert "creationDate"   in project_one, "We check creationDate  are in the projects payload"  # noqa:E272
+        assert "dataProviderId" in project_one, "We check dataProviderId  are in the projects payload"  # noqa:E272
+        assert "tags"           in project_one, "We check tags  are in the projects payload"  # noqa:E272
+        assert "metadatas"      in project_one, "We check matadatas  are in the projects payload"  # noqa:E272
+        assert "metrics"        in project_one, "We check metrics  are in the projects payload"  # noqa:E272
+        assert "columns"        in project_one, "We check columns  are in the projects payload"  # noqa:E272
+
+        # We chek mandatory metrics
+        assert "nbModels"       in project_one['metrics'], "We check nbModels metrics is available"  # noqa:E272
+        assert "nbSamples"      in project_one['metrics'], "We check nbModels metrics is available"  # noqa:E272
+        assert "nbSelections"   in project_one['metrics'], "We check nbModels metrics is available"  # noqa:E272
+
+        # We chek mandatory metadatas (Nothing)
+
+    def test_get_projects_check_project_one_already_load(self, project_one):
+        url = appUrl + "projects"
+        resp = requests.get(url=url, headers={})
+        assert resp.status_code == 200, "As no hash provider we shall have 200 response code"
+        load = json.loads(resp.text)
+        print(load)
+        assert "hash_content" in load,  "We check hash_content are in the payload"
+
+        hash_content = load["hash_content"]
+        payload = {'prev_hash_content': hash_content}
+        resp = requests.get(url=url, headers={}, params=payload)
+        assert resp.status_code == 304, "As same hash than previous call is provide, we shall have 304 response code"

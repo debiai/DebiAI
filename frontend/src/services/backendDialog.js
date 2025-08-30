@@ -46,7 +46,8 @@ export default {
         endRequest(code);
       })
       .then((response) => {
-        return response.data;
+        // TODO loic ack to make the request work without ash managment
+        return response.data.projects;
       });
   },
   getProject() {
@@ -81,7 +82,8 @@ export default {
         endRequest(code);
       })
       .then((response) => {
-        return response.data;
+        // TODO ack loic for basic test
+        return response.data.dataproviders;
       });
   },
   getSingleDataInfo() {

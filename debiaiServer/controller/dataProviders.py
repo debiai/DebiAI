@@ -21,7 +21,7 @@ def get_data_providers():
     providers_formatted = []
     for data_provider in data_provider_list:
         data = {}
-        if data_provider.type != "Python module Data Provider":
+        if data_provider.type != "Python module Data Provider" and data_provider.type != "internal":
             data["url"] = data_provider.url
             data["status"] = data_provider.is_alive()
 
