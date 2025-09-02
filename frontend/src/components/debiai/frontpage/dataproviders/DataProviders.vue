@@ -50,7 +50,9 @@
             </div>
             <div class="data">
               <div class="type tag">{{ dataProvider.type }}</div>
-              <div>{{ dataProvider.url }}</div>
+              <div v-if="dataProvider.metadata && dataProvider.metadata.external_url">
+                {{ dataProvider.metadata.external_url }}
+              </div>
             </div>
           </div>
           <!-- Status -->
