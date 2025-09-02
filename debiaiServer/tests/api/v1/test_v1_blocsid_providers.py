@@ -149,8 +149,8 @@ class TestBlocsIdProvider:
             "tags" in project_one
         ), "We check tags  are in the projects payload"  # noqa:E272
         assert (
-            "metadatas" in project_one
-        ), "We check metadatas  are in the projects payload"  # noqa:E272
+            "metadata" in project_one
+        ), "We check metadata  are in the projects payload"  # noqa:E272
         assert (
             "metrics" in project_one
         ), "We check metrics  are in the projects payload"  # noqa:E272
@@ -169,7 +169,7 @@ class TestBlocsIdProvider:
             "nbSelections" in project_one["metrics"]
         ), "We check nbModels metrics is available"  # noqa:E272
 
-        # We check mandatory metadatas (Nothing)
+        # We check mandatory metadata (Nothing)
 
     def test_get_projects_check_project_one_already_load(self, project_one):
         url = appUrl + "projects"

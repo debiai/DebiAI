@@ -44,7 +44,7 @@ def change_project_v1(project_info, column_info):
         "creationDate": project_info["creationDate"],
         "updateDate": project_info["updateDate"],
         "tags": [],
-        "metadatas": {},
+        "metadata": {},
         "metrics": {
             "nbModels": project_info["nbModels"],
             "nbSelections": project_info["nbSelections"],

@@ -10,14 +10,13 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 
 
 def format_data_provider_info(data_provider):
-
     data = {
         "id": data_provider.id,
         "status": True,
         "name": data_provider.name,
         "type": data_provider.type,
         "tags": [],
-        "metadatas": {},
+        "metadata": {},
         "metrics": {},
     }
     print("NAME ", data_provider.name)
@@ -30,7 +29,7 @@ def format_data_provider_info(data_provider):
     if "canDelete" in provider_info and provider_info["canDelete"]["selections"]:
         data["tags"].append("canDeleteSelections")
     if "version" in provider_info:
-        data["metadatas"]["version"] = provider_info["version"]
+        data["metadata"]["version"] = provider_info["version"]
 
     if "maxResultByRequest" in provider_info:
         data["metrics"]["maxResultByRequest"] = provider_info["maxResultByRequest"]
@@ -42,7 +41,7 @@ def format_data_provider_info(data_provider):
         data["metrics"]["maxSampleIdByRequest"] = provider_info["maxSampleIdByRequest"]
 
     if data_provider.name != "Python module Data Provider":
-        data["metadatas"]["external_url"] = data_provider.url
+        data["metadata"]["external_url"] = data_provider.url
 
     return data
 
@@ -69,11 +68,21 @@ def get_data_providers(prev_hash_content=None):
     for data_provider in data_provider_list:
         try:
             data = format_data_provider_info(data_provider)
-            providers_formatted.append(data)
         except DataProviderException as e:
-            data["status"] = False
-            data["metadatas"]["status_code"] = e.status_code
-            data["metadatas"]["message"] = e.message
+            data = {
+                "id": data_provider.id,
+                "status": False,
+                "name": data_provider.name,
+                "type": data_provider.type,
+                "tags": [],
+                "metadata": {
+                    "status_code": e.status_code,
+                    "message": e.message,
+                },
+                "metrics": {},
+            }
+
+        providers_formatted.append(data)
 
     new_hash = "data_" + str(
         +make_hash(providers_formatted)

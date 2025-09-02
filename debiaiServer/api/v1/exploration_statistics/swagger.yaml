@@ -49,7 +49,7 @@ paths:
                           description: List of tags associated to the columns (ex hasDict, hasNull, ...)
                           items: 
                             type: string
-                        metadatas:
+                        metadata:
                           type: array
                           description: List of meta informations sur as "category", or "origin", ...
                           items:
