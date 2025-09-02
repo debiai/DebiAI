@@ -172,7 +172,7 @@
                 width="14"
                 height="14"
               />
-              {{ project.nbSamples !== null ? project.nbSamples : "?" }}
+              {{ project.metrics && project.metrics.nbSamples !== null ? project.metrics.nbSamples : "?" }}
             </div>
 
             <!-- Nb selections -->
@@ -185,7 +185,7 @@
                 width="14"
                 height="14"
               />
-              {{ project.nbSelections !== null ? project.nbSelections : "?" }}
+              {{ project.metrics && project.metrics.nbSelections !== null ? project.metrics.nbSelections : "?" }}
             </div>
 
             <!-- Nb models -->
@@ -198,7 +198,7 @@
                 width="17"
                 height="17"
               />
-              {{ project.nbModels !== null ? project.nbModels : "?" }}
+              {{ project.metrics && project.metrics.nbModels !== null ? project.metrics.nbModels : "?" }}
             </div>
           </div>
           <!-- Dates -->
