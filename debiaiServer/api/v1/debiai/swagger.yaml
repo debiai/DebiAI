@@ -463,7 +463,7 @@ definitions:
           - canDeleteProject
           - canDeleteSelections
           - canDeleteModels
-      metadatas:
+      metadata:
         type: array
         description: List of meta informations sur as "category", or "origin", ...
         items:
@@ -523,7 +523,7 @@ definitions:
         description: List of tags associated to the project)
         items: 
           type: string
-      metadatas:
+      metadata:
         type: array
         description: List of meta informations sur as "category", or "origin", ...
         items:

@@ -20,7 +20,7 @@ def change_project_overview_v1(project_info, column_info):
         "creationDate": project_info["creationDate"],
         "updateDate": project_info["updateDate"],
         "tags": [],
-        "metadatas": {},
+        "metadata": {},
         "metrics": {
             "nbModels": project_info["nbModels"],
             "nbSelections": project_info["nbSelections"],
@@ -34,12 +34,13 @@ def change_project_overview_v1(project_info, column_info):
 
 
 def get_projects(prev_hash_content=None):
-
     # Return a list of project overviews from all the data providers
     data_providers_list = data_provider_manager.get_data_provider_list()
     projectOverviews = {}
     projectList = []
+    print("data_provider Get projects")
     for data_provider in data_providers_list:
+        print(data_provider)
         try:
             projects = data_provider.get_projects()
 

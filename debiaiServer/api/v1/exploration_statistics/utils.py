@@ -95,7 +95,7 @@ def get_columns_statistics(dataProviderId, projectId):
     #       "hasList"
     #       "hasDict"
     #       "hasOther"
-    # - metadata (list of informations)
+    # - metadata (list of information)
     #       "category" : => if not define <=> auto
     # - metrics (list of columns metrics)
     #       - NbUniques
@@ -109,7 +109,7 @@ def get_columns_statistics(dataProviderId, projectId):
             "name": column["name"],
             "type": column["type"],
             "tags": [],
-            "metadatas": {
+            "metadata": {
                 "category": column["category"],
             },
             "metrics": {
