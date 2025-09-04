@@ -16,6 +16,7 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 def change_project_overview_v1(project_info, column_info):
     v1_project_info = {
         "id": project_info["id"],
+        "dataProviderProjectId": project_info["id"], # We use the same id, but might be differents for other implementations
         "name": project_info["name"],
         "creationDate": project_info["creationDate"],
         "updateDate": project_info["updateDate"],
@@ -26,7 +27,7 @@ def change_project_overview_v1(project_info, column_info):
             "nbSelections": project_info["nbSelections"],
             "nbSamples": project_info["nbSamples"],
         },
-        "columns": column_info,
+        # "columns": column_info,
         # projectColumns, get from statistic et suppress
         # "blockLevelInfo": projectBlockLevel, suppress here keep
     }

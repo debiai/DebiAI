@@ -33,8 +33,15 @@ paths:
           schema:
             type: integer
             default: 10
+        - in: query
+          name: prev_hash_content
+          required: false          
+          schema:
+            type: string
+            description: Hash of the previous request performed
+            minLength: 1
       responses:
-        "200":
+        200:
           description: A paginated list of explorations
           content:
             application/json:
@@ -47,10 +54,16 @@ paths:
                     type: integer
                   page_size:
                     type: integer
+                  hash_content:
+                    type: string                  
                   items:
                     type: array
                     items:
                       $ref: "#/components/schemas/Exploration"
+
+        304:
+          description: No content change 
+                  
     post:
       tags:
         - Explorations
@@ -79,7 +92,7 @@ paths:
       summary: Get available metrics, and agregations that can be applied to columns
       operationId: debiaiServer.api.v1.exploration.controller.get_exploration_available_config
       responses:
-        "200":
+        200:
           description: A list of metrics
           content:
             application/json:
@@ -87,6 +100,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ExplorationMetric"
+        404: 
+          description: Exploration not found
 
   /explorations/{exploration_id}:
     get:
@@ -95,41 +110,33 @@ paths:
       summary: Get exploration data and configuration
       operationId: debiaiServer.api.v1.exploration.controller.get_exploration
       parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
         - in: path
           name: exploration_id
           required: true
           schema:
             type: string
       responses:
-        "200":
+        200:
           description: Exploration configuration retrieved
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExplorationWithConfig"
+        404: 
+          description: Exploration not found                
     delete:
       tags:
         - Explorations
       summary: Delete an exploration
       operationId: debiaiServer.api.v1.exploration.controller.delete_exploration
       parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
         - in: path
           name: exploration_id
           required: true
           schema:
             type: string
       responses:
-        "204":
+        204:
           description: Exploration deleted
     put:
       tags:
@@ -137,11 +144,6 @@ paths:
       summary: Enable to start / stop the exploration
       operationId: debiaiServer.api.v1.exploration.controller.update_exploration
       parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
         - in: path
           name: exploration_id
           required: true
@@ -153,13 +155,21 @@ paths:
           schema:
             type: string
             enum: [updateConfig, start, stop]
+      requestBody:
+        content:
+          application/json:
+           schema:
+              type: object
+        required: true
       responses:
-        "200":
+        200:
           description: Exploration created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Exploration"
+        204:
+          description: Exploration not found
 
   /explorations/{exploration_id}/config:
     put:
@@ -168,11 +178,6 @@ paths:
       summary: Update exploration configuration
       operationId: debiaiServer.api.v1.exploration.controller.update_exploration_config
       parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
         - in: path
           name: exploration_id
           required: true
@@ -201,11 +206,6 @@ paths:
       summary: Create a selection from an exploration and a list of combinations
       operationId: debiaiServer.api.v1.exploration.controller.create_exploration_selection
       parameters:
-        - in: query
-          name: project_id
-          required: true
-          schema:
-            type: string
         - in: path
           name: exploration_id
           required: true

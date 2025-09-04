@@ -2,73 +2,87 @@ import uuid
 import threading
 from typing import List
 from .utils import (
-    project_explorations_db,
+    explorations_db,
     start_exploration_real_combination_computation,
-    get_exploration_by_id,
-    update_explorations,
-    update_exploration as update_exploration_db,
     create_selection,
+    update_exploration_db,
     computation_threads,
     stop_flags,
 )
 
+from debiaiServer.api.v1.debiai.utils import make_hash
 
 def get_exploration_available_config():
     pass
 
 
-def get_explorations(project_id):
-    explorations: List[dict] = project_explorations_db.get(project_id) or []
-    for exploration in explorations:
+def get_explorations(project_id, prev_hash_content = None):
+
+    explorations: List[dict] = []
+    all_explo = explorations_db.all()
+    print(all_explo)
+    for explo_id in explorations_db.all():
+        exploration = explorations_db.get(explo_id)
+        print(exploration)
+        if exploration.get("project_id") != project_id:
+            continue
+        # TODO : use severals keys of available explorations for project_id
+        # TODO : copy only selected keys
         exploration.pop("combinations", None)
         exploration.pop("metrics", None)
-    return explorations
+        explorations.append(exploration)
 
+    new_hash = "explo_" + str(make_hash(explorations))
+    print(new_hash, " <=> ", prev_hash_content, new_hash == prev_hash_content)
 
+    if new_hash == prev_hash_content:
+        return None, 304
+    else:
+        explorations_answer = {
+            "explorations": explorations,
+            "hash_content": new_hash,
+        }
+        return explorations_answer, 200
+    
 def create_exploration(project_id, body):
-    # Get current explorations
-    explorations = project_explorations_db.get(project_id) or []
 
-    # Add new exploration
-    explorations.append(
-        {
-            "id": str(uuid.uuid4()),
+    # Get current explorations
+    exploration_id = str(uuid.uuid4())
+    new_exploration = {
+            "id": exploration_id,
+            "project_id": project_id,
             "name": body.get("name"),
             "description": body.get("description", ""),
             "state": "not_started",
             "config": {},
         }
-    )
 
-    # Update the database
-    update_explorations(project_id, explorations)
-
-
-def get_exploration(project_id, exploration_id):
-    return get_exploration_by_id(project_id, exploration_id)
+    # Add new exploration
+    explorations_db.set(exploration_id, new_exploration)
+    explorations_db.save()
+    return 201
 
 
-def delete_exploration(project_id, exploration_id):
-    # Get current explorations
-    explorations = project_explorations_db.get(project_id) or []
-
-    # Filter out the exploration to delete
-    explorations = [
-        exploration
-        for exploration in explorations
-        if exploration.get("id") != exploration_id
-    ]
-
-    # Update the database
-    update_explorations(project_id, explorations)
-    return explorations
+def get_exploration(exploration_id):
+    exploration = explorations_db.get(exploration_id)
+    if exploration:
+        return exploration, 200
+    else:
+        return 404
 
 
-def update_exploration(project_id, exploration_id, action, body):
-    exploration = get_exploration(project_id, exploration_id)
+def delete_exploration(exploration_id):
+    print("detete :",exploration_id)
+    explorations_db.remove(exploration_id)
+    print("Remainings ", explorations_db.all())
+    return 204
+
+def update_exploration(exploration_id, action, body):
+    exploration = explorations_db.get(exploration_id)    
+    print("update epxploitations", exploration_id, action, body)
     if exploration is None:
         print("Exploration not found:", exploration_id)
-        return None
+        return None, 404
 
     # Perform action based on the request
     if action == "start":
@@ -78,15 +92,18 @@ def update_exploration(project_id, exploration_id, action, body):
             return exploration
 
         # Start the exploration computation in a separate thread
+        print(exploration_id)
         thread = threading.Thread(
             target=start_exploration_real_combination_computation,
-            args=(project_id, exploration_id),
+            args=(exploration_id, ),
             daemon=True,
         )
         thread.start()
 
+        exploration["state"] = "ongoing"
         # Save the thread in the global dictionary
         computation_threads[exploration_id] = thread
+        update_exploration_db(exploration_id, exploration)
 
         return exploration
     elif action == "stop":
@@ -103,6 +120,7 @@ def update_exploration(project_id, exploration_id, action, body):
             # Exploration is ongoing but no thread found, set state to not_started
             exploration["state"] = "not_started"
 
+        update_exploration_db(exploration_id, exploration)        
         return exploration
     elif action == "updateConfig":
         # Do not update the exploration if it is running
@@ -112,7 +130,7 @@ def update_exploration(project_id, exploration_id, action, body):
 
         # Update exploration config
         exploration["config"] = body
-        update_exploration_db(project_id, exploration)
+        update_exploration_db(exploration_id, exploration)        
         return exploration
     else:
         raise ValueError(f"Unknown action: {action}")
@@ -122,10 +140,11 @@ def update_exploration_config():
     pass
 
 
-def create_exploration_selection(project_id, exploration_id, body):
+def create_exploration_selection(exploration_id, body):
+    exploration = explorations_db.get(exploration_id)    
     # Create a selection for the exploration
     create_selection(
-        project_id,
+        exploration.get("project_id"),
         exploration_id,
         body["selected_combinations"],
         body["selection_name"],

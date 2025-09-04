@@ -201,7 +201,8 @@ export default {
 
   // Layouts
   getLayouts() {
-    return axios.get(apiDebiaiURL + "app/layouts/").then((response) => response.data);
+    // TODO Ack loic basic 304 handing
+    return axios.get(apiDebiaiURL + "app/layouts/").then((response) => response.data.layouts);
   },
   saveLayout(body) {
     let code = startRequest("Saving layout");

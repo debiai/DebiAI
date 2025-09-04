@@ -19,7 +19,8 @@ export default {
         if (displayMessage) b.endRequest(code);
       })
       .then((response) => {
-        return response.data;
+        // TODO : ack for 304
+        return response.data.explorations;
       });
   },
   createExploration(projectId, explorationName, explorationDescription) {
@@ -45,11 +46,11 @@ export default {
       });
   },
   deleteExploration(projectId, explorationId) {
+    // TODO : loic projectId not needed
     let code = b.startRequest("Deleting exploration");
     return axios
       .delete(`${apiURL}explorations/${explorationId}`, {
         params: {
-          project_id: projectId,
         },
       })
       .finally(() => {
@@ -64,11 +65,10 @@ export default {
   getExploration(projectId, explorationId, displayMessage = true) {
     let code;
     if (displayMessage) code = b.startRequest("Getting exploration");
-
+    // TODO : loic projectId not needed
     return axios
       .get(`${apiURL}explorations/${explorationId}`, {
         params: {
-          project_id: projectId,
         },
       })
       .finally(() => {
@@ -80,10 +80,10 @@ export default {
   },
   updateExplorationConfig(projectId, explorationId, config, action = "updateConfig") {
     let code = b.startRequest("Updating exploration config");
+    // TODO : loic projectId not needed    
     return axios
       .put(`${apiURL}explorations/${explorationId}`, config, {
         params: {
-          project_id: projectId,
           action,
         },
       })
@@ -99,10 +99,10 @@ export default {
   },
   cancelRealCombinationsComputation(projectId, explorationId) {
     let code = b.startRequest("Cancelling real combinations computation");
+    // TODO : loic projectId not needed    
     return axios
       .put(`${apiURL}explorations/${explorationId}`, null, {
         params: {
-          project_id: projectId,
           action: "stop",
         },
       })
@@ -117,6 +117,7 @@ export default {
   // Statistics
   getColumnsStatistics(dataProviderId, projectId) {
     let code = b.startRequest("Loading columns statistics");
+     // TODO : Not needed to remove
     return axios
       .get(
         `${apiURL}statistics/data-providers/${dataProviderId}/projects/${projectId}/columnsStatistics`
@@ -132,6 +133,7 @@ export default {
   // Selections
   createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
     let code = b.startRequest("Creating selection");
+    // TODO : loic projectId not needed    
     return axios
       .post(
         `${apiURL}explorations/${explorationId}/selections`,
@@ -141,7 +143,6 @@ export default {
         },
         {
           params: {
-            project_id: projectId,
           },
         }
       )

@@ -84,9 +84,8 @@ def get_data_providers(prev_hash_content=None):
 
         providers_formatted.append(data)
 
-    new_hash = "data_" + str(
-        +make_hash(providers_formatted)
-    )  # We add a prefix to avoir empty string
+    new_hash = "data_" + str(make_hash(providers_formatted))
+    # We add a prefix to avoir empty string
     # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
     print(
         new_hash,
