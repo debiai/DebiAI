@@ -3,6 +3,7 @@
 #############################################################################
 import debiaiServer.utils.layouts.layouts as layoutsUtils
 from debiaiServer.api.v1.debiai.utils import make_hash
+
 #############################################################################
 # Analysis dashboard layout Management
 #############################################################################
@@ -11,7 +12,7 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 def get_layouts(prev_hash_content=None):
     layouts_overview = layoutsUtils.get_layouts()
     for layout in layouts_overview:
-        layout.pop('dataProviderId', None)
+        layout.pop("dataProviderId", None)
         print(layout)
 
     new_hash = "layout_" + str(make_hash(layouts_overview))

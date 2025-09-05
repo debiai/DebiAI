@@ -16,9 +16,11 @@ stop_flags = {}
 
 # DB operations
 
+
 def update_exploration_db(exploration_id, exploration):
     explorations_db.set(exploration_id, exploration)
     explorations_db.save()
+
 
 # Processing functions
 def start_exploration_real_combination_computation(exploration_id):
@@ -37,11 +39,9 @@ def start_exploration_real_combination_computation(exploration_id):
 def _start_exploration_real_combination_computation(exploration_id):
     # Get the exploration from the database
     exploration = explorations_db.get(exploration_id)
-    project_id = exploration['project_id']
+    project_id = exploration["project_id"]
     if exploration is None:
-        raise ValueError(
-            f"Exploration with ID {exploration_id} not found"
-        )
+        raise ValueError(f"Exploration with ID {exploration_id} not found")
     selected_columns = exploration.get("config", {}).get("columns", [])
     if not selected_columns:
         raise ValueError(

@@ -50,8 +50,7 @@ export default {
     let code = b.startRequest("Deleting exploration");
     return axios
       .delete(`${apiURL}explorations/${explorationId}`, {
-        params: {
-        },
+        params: {},
       })
       .finally(() => {
         b.endRequest(code);
@@ -68,8 +67,7 @@ export default {
     // TODO : loic projectId not needed
     return axios
       .get(`${apiURL}explorations/${explorationId}`, {
-        params: {
-        },
+        params: {},
       })
       .finally(() => {
         if (displayMessage) b.endRequest(code);
@@ -80,7 +78,7 @@ export default {
   },
   updateExplorationConfig(projectId, explorationId, config, action = "updateConfig") {
     let code = b.startRequest("Updating exploration config");
-    // TODO : loic projectId not needed    
+    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, config, {
         params: {
@@ -99,7 +97,7 @@ export default {
   },
   cancelRealCombinationsComputation(projectId, explorationId) {
     let code = b.startRequest("Cancelling real combinations computation");
-    // TODO : loic projectId not needed    
+    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, null, {
         params: {
@@ -117,7 +115,7 @@ export default {
   // Statistics
   getColumnsStatistics(dataProviderId, projectId) {
     let code = b.startRequest("Loading columns statistics");
-     // TODO : Not needed to remove
+    // TODO : Not needed to remove
     return axios
       .get(
         `${apiURL}statistics/data-providers/${dataProviderId}/projects/${projectId}/columnsStatistics`
@@ -133,7 +131,7 @@ export default {
   // Selections
   createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
     let code = b.startRequest("Creating selection");
-    // TODO : loic projectId not needed    
+    // TODO : loic projectId not needed
     return axios
       .post(
         `${apiURL}explorations/${explorationId}/selections`,
@@ -142,8 +140,7 @@ export default {
           selected_combinations: selectedCombinationsIds,
         },
         {
-          params: {
-          },
+          params: {},
         }
       )
       .finally(() => {
