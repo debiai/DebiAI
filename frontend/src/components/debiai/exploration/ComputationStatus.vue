@@ -21,8 +21,8 @@
             class="progress"
             :style="{
               width:
-                project.nbSamples > 0
-                  ? (exploration.current_sample / project.nbSamples) * 100 + '%'
+                project.metrics.nbSamples > 0
+                  ? (exploration.current_sample / project.metrics.nbSamples) * 100 + '%'
                   : '0%',
             }"
           ></div>
@@ -36,7 +36,7 @@
               width="20"
               height="20"
             />
-            <span> Sample {{ exploration.current_sample }} / {{ project.nbSamples }} </span>
+            <span> Sample {{ exploration.current_sample }} / {{ project.metrics.nbSamples }} </span>
           </div>
           <div class="timeLeft aligned centered gapped">
             <inline-svg

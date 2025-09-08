@@ -51,7 +51,7 @@
                   width="33"
                   height="30"
                 />
-                <strong>{{ project.nbSamples }} </strong>
+                <strong>{{ project.metrics.nbSamples }} </strong>
                 <div>Project samples</div>
               </div>
               <!-- Theoretical -->

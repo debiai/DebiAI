@@ -192,7 +192,7 @@ export default {
         .getProject()
         .then((project) => {
           this.project = project;
-          this.nbSelectedSamples = this.project.nbSamples;
+          this.nbSelectedSamples = this.project.metrics.nbSamples;
 
           // Sort models and selections by update date
           this.project.selections = this.project.selections.sort(
@@ -244,7 +244,7 @@ export default {
       // Get the number of samples that will be analyzed
       // Don't send request if there is no selection and model
       if (this.selectedSelections.length === 0 && this.selectedModels.length === 0) {
-        this.nbSelectedSamples = this.project.nbSamples;
+        this.nbSelectedSamples = this.project.metrics.nbSamples;
         this.nbEvaluatedSamples = 0;
         this.nbResults = 0;
         return;
