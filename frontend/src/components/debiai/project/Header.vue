@@ -42,10 +42,10 @@
         <div
           class="item nbSamples"
           title="Number of samples"
-          v-if="project.nbSamples !== undefined && project.nbSamples !== null"
+          v-if="project.metrics.nbSamples !== undefined && project.metrics.nbSamples !== null"
         >
           <inline-svg :src="require('@/assets/svg/data.svg')" />
-          {{ project.nbSamples }} samples
+          {{ project.metrics.nbSamples }} samples
         </div>
         <div
           class="item nbSamples"
@@ -60,10 +60,10 @@
         <div
           class="item nbSelections"
           title="Project selections"
-          v-if="project.nbSelections !== undefined && project.nbSelections !== null"
+          v-if="project.metrics.nbSelections !== undefined && project.metrics.nbSelections !== null"
         >
           <inline-svg :src="require('@/assets/svg/loop.svg')" />
-          {{ project.nbSelections }} selections
+          {{ project.metrics.nbSelections }} selections
         </div>
         <div
           class="item nbSelections"
@@ -77,10 +77,10 @@
         <div
           class="item nbModel"
           title="Model added to the project"
-          v-if="project.nbModels !== undefined && project.nbModels !== null"
+          v-if="project.metrics.nbModels !== undefined && project.metrics.nbModels !== null"
         >
           <inline-svg :src="require('@/assets/svg/gear.svg')" />
-          {{ project.nbModels }} models
+          {{ project.metrics.nbModels }} models
         </div>
         <div
           class="item nbModel"

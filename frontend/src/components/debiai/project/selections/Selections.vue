@@ -62,7 +62,7 @@
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
               height="25"
-            />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
+            />{{ project.metrics.nbSamples !== null ? project.metrics.nbSamples : "?" }}
           </div>
         </div>
 
