@@ -115,9 +115,7 @@ export default {
       apiDebiaiURL + "data-providers",
       "data-providers",
       "Getting data providers"
-    ).then((data) => {
-      return data.dataproviders;
-    });
+    ).then((data) => data.dataproviders);
   },
   getSingleDataInfo() {
     let code = startRequest("Getting data provider info");
@@ -235,7 +233,9 @@ export default {
 
   // Layouts
   getLayouts() {
-    return axios.get(apiDebiaiURL + "app/layouts/").then((response) => response.data);
+    return getCachedRequest(apiDebiaiURL + "app/layouts/", "layouts", "Getting layouts").then(
+      (data) => data.layouts
+    );
   },
   saveLayout(body) {
     let code = startRequest("Saving layout");
