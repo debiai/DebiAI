@@ -33,6 +33,12 @@ paths:
           schema:
             type: integer
             default: 10
+        - in: query
+          name: prev_hash_content
+          required: false
+          schema:
+            type: string
+          description: Hash of the previous request performed
       responses:
         "200":
           description: A paginated list of explorations
@@ -41,16 +47,20 @@ paths:
               schema:
                 type: object
                 properties:
+                  hash_content:
+                    type: string
+                  explorations:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Exploration"
                   total:
                     type: integer
                   page:
                     type: integer
                   page_size:
                     type: integer
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Exploration"
+        "304":
+          description: No content change
     post:
       tags:
         - Explorations
@@ -105,13 +115,26 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: prev_hash_content
+          required: false
+          schema:
+            type: string
+          description: Hash of the previous request performed
       responses:
         "200":
           description: Exploration configuration retrieved
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExplorationWithConfig"
+                type: object
+                properties:
+                  hash_content:
+                    type: string
+                  exploration:
+                    $ref: "#/components/schemas/ExplorationWithConfig"
+        "304":
+          description: No content change
     delete:
       tags:
         - Explorations

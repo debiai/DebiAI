@@ -11,18 +11,43 @@ from .utils import (
     computation_threads,
     stop_flags,
 )
+from debiaiServer.api.v1.debiai.utils import make_hash
 
 
 def get_exploration_available_config():
     pass
 
 
-def get_explorations(project_id):
+def get_explorations(project_id, prev_hash_content=None):
+    """
+    Get all explorations with hash-based caching support.
+    Returns 304 if content hasn't changed, 200 with data if it has.
+    """
     explorations: List[dict] = project_explorations_db.get(project_id) or []
+
+    # Create a clean copy for response (remove large data fields)
+    clean_explorations = []
     for exploration in explorations:
-        exploration.pop("combinations", None)
-        exploration.pop("metrics", None)
-    return explorations
+        clean_exploration = exploration.copy()
+        clean_exploration.pop("combinations", None)
+        clean_exploration.pop("metrics", None)
+        clean_explorations.append(clean_exploration)
+
+    # Create hash from the clean explorations data
+    new_hash = f"explorations_{project_id}_{str(make_hash(clean_explorations))}"
+
+    print(
+        f"Explorations hash check: {new_hash} <=> {prev_hash_content} "
+        f"(types: {type(new_hash)}, {type(prev_hash_content)}) "
+        f"equal: {new_hash == prev_hash_content}"
+    )
+
+    # Check if content has changed
+    if new_hash == prev_hash_content:
+        return None, 304
+    else:
+        response = {"explorations": clean_explorations, "hash_content": new_hash}
+        return response, 200
 
 
 def create_exploration(project_id, body):
@@ -44,8 +69,33 @@ def create_exploration(project_id, body):
     update_explorations(project_id, explorations)
 
 
-def get_exploration(project_id, exploration_id):
-    return get_exploration_by_id(project_id, exploration_id)
+def get_exploration(project_id, exploration_id, prev_hash_content=None):
+    """
+    Get a specific exploration with hash-based caching support.
+    Returns 304 if content hasn't changed, 200 with data if it has.
+    """
+    exploration = get_exploration_by_id(project_id, exploration_id)
+
+    if exploration is None:
+        return None, 404
+
+    # Create hash from the exploration data
+    new_hash = (
+        f"exploration_{project_id}_{exploration_id}_{str(make_hash(exploration))}"
+    )
+
+    print(
+        f"Exploration hash check: {new_hash} <=> {prev_hash_content} "
+        f"(types: {type(new_hash)}, {type(prev_hash_content)}) "
+        f"equal: {new_hash == prev_hash_content}"
+    )
+
+    # Check if content has changed
+    if new_hash == prev_hash_content:
+        return None, 304
+    else:
+        response = {"exploration": exploration, "hash_content": new_hash}
+        return response, 200
 
 
 def delete_exploration(project_id, exploration_id):
@@ -65,7 +115,8 @@ def delete_exploration(project_id, exploration_id):
 
 
 def update_exploration(project_id, exploration_id, action, body):
-    exploration = get_exploration(project_id, exploration_id)
+    # Get exploration directly from utils, not through the cached version
+    exploration = get_exploration_by_id(project_id, exploration_id)
     if exploration is None:
         print("Exploration not found:", exploration_id)
         return None
