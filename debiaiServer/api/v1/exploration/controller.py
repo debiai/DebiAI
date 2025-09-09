@@ -17,7 +17,6 @@ def get_exploration_available_config():
 
 
 def get_explorations(project_id, prev_hash_content=None):
-
     explorations: List[dict] = []
     all_explo = explorations_db.all()
     print(all_explo)
@@ -46,7 +45,6 @@ def get_explorations(project_id, prev_hash_content=None):
 
 
 def create_exploration(project_id, body):
-
     # Get current explorations
     exploration_id = str(uuid.uuid4())
     new_exploration = {

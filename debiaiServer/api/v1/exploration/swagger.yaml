@@ -60,10 +60,6 @@ paths:
                     type: integer
                   page_size:
                     type: integer
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Exploration"
 
         304:
           description: No content change

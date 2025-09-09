@@ -96,7 +96,7 @@ export default {
         return response.data;
       });
   },
-  deleteExploration(projectId, explorationId) {
+  deleteExploration(explorationId) {
     // TODO : loic projectId not needed
     let code = b.startRequest("Deleting exploration");
     return axios
@@ -114,11 +114,7 @@ export default {
   // Exploration
   getExploration(projectId, explorationId, displayMessage = true) {
     const cacheKey = `exploration_${projectId}_${explorationId}`;
-    const requestOptions = {
-      params: {
-        project_id: projectId,
-      },
-    };
+    const requestOptions = { params: {} };
 
     if (displayMessage) {
       return getCachedRequest(
