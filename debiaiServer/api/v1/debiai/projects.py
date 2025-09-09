@@ -16,6 +16,7 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 def change_project_overview_v1(project_info):
     v1_project_info = {
         "id": project_info["id"],
+        "dataProviderProjectId": project_info["id"],  # same id for test
         "name": project_info["name"],
         "creationDate": project_info["creationDate"],
         "updateDate": project_info["updateDate"],

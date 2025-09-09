@@ -63,19 +63,18 @@ paths:
         200:
           description: Layouts for all projects
           schema:
-            type: object
-            required:
-              - layouts
-            properties:
-              hash_content:
-                type: string
-              layouts:
-                type: array
-                items:
-                  $ref: "#/definitions/projectLayout"
+              type: object
+              required:
+                - projects
+              properties:
+                hash_content:
+                  type: string
+                layouts:          
+                  type: array
+                  items:
+                    $ref: "#/definitions/projectLayout"
         304:
           description: No content change
-
     post:
       summary: Add a layout
       tags: [Layouts]
@@ -89,7 +88,6 @@ paths:
             required:
               - name
               - projectId
-              - dataProviderId
               - layout
             properties:
               name:
@@ -100,23 +98,27 @@ paths:
               projectId:
                 type: string
                 description: Id of the project linked to the configuration
-              dataProviderId:
-                type: string
-                description: Id of the data provider linked to the project id
               description:
                 type: string
               layout:
                 $ref: "#/definitions/dashboardLayout"
-              lastLayoutSaved:
-                type: boolean
-                description: If true, the layout will be loaded by default
-                  If a layout with lastLayoutSaved=true already exists, it will
-                  be replaced by the new one
-                default: false
-              selectedColorColumn:
-                type: string
-                description: Column selected to be used as color
-                x-nullable: true
+              tags:
+                type: array
+                description: List of tags associated to the layout
+                items: 
+                  type: string
+                  additionalProperties:
+                    type: string
+                  example: 
+                  - lastLayoutSaved
+              metadata:
+                type: array
+                description: List of meta informations sur as "selectedColorColumn", or ...
+                items:
+                  additionalProperties:
+                    type: string
+                  example:
+                    selectedColorColumn: "colorColumnID"
 
       responses:
         204:
@@ -131,8 +133,8 @@ paths:
         - name: id
           in: path
           type: string
+          description: Id of the layout to delete          
           required: true
-          description: Id of the layout to delete
           minLength: 1
       responses:
         204:
@@ -181,7 +183,6 @@ paths:
                 - id
                 - name
                 - projectId
-                - dataProviderId
                 - configuration
               properties:
                 id:
@@ -193,9 +194,6 @@ paths:
                 projectId:
                   type: string
                   description: Id of the project linked to the configuration
-                dataProviderId:
-                  type: string
-                  description: Id of the data provider linked to the project id
                 creationDate:
                   type: string
                 configuration:
@@ -221,7 +219,6 @@ paths:
             required:
               - name
               - projectId
-              - dataProviderId
               - configuration
             properties:
               name:
@@ -478,7 +475,7 @@ definitions:
             - canDeleteModels
       metadata:
         type: array
-        description: List of meta informations sur as "category", or "origin", ...
+        description: List of meta informations such as "category", or "origin", ...
         items:
           additionalProperties:
             type: string
@@ -523,10 +520,13 @@ definitions:
     properties:
       id:
         type: string
-        description: project ID
+        description: project ID in debiai API
       dataProviderId:
         type: string
         description: project data provider ID
+      dataProviderProjectId:
+        type: string
+        description: project id in the data provider
       name:
         type: string
         description: project name
@@ -573,7 +573,6 @@ definitions:
       - id
       - name
       - projectId
-      - dataProviderId
       - layout
     properties:
       id:
@@ -585,9 +584,6 @@ definitions:
       projectId:
         type: string
         description: Id of the project linked to the layout
-      dataProviderId:
-        type: string
-        description: Id of the data provider linked to the project id
       creationDate:
         type: string
         format: date-time

@@ -9,59 +9,39 @@ import traceback
 from collections import defaultdict
 
 # Create or load a database
-project_explorations_db = PickleDB("projectsExplorations.db")
+explorations_db = PickleDB("Explorations.db")
 computation_threads = {}
 stop_flags = {}
 
 
 # DB operations
-def get_exploration_by_id(project_id, exploration_id):
-    explorations = project_explorations_db.get(project_id) or []
-    for exploration in explorations:
-        if exploration.get("id") == exploration_id:
-            return exploration
-    return None
 
 
-def update_explorations(project_id, explorations):
-    project_explorations_db.set(project_id, explorations)
-    project_explorations_db.save()
-
-
-def update_exploration(project_id, exploration):
-    explorations = project_explorations_db.get(project_id) or []
-    for i, existing_exploration in enumerate(explorations):
-        if existing_exploration.get("id") == exploration.get("id"):
-            explorations[i] = exploration
-            break
-    else:
-        explorations.append(exploration)
-
-    update_explorations(project_id, explorations)
-    return exploration
+def update_exploration_db(exploration_id, exploration):
+    explorations_db.set(exploration_id, exploration)
+    explorations_db.save()
 
 
 # Processing functions
-def start_exploration_real_combination_computation(project_id, exploration_id):
+def start_exploration_real_combination_computation(exploration_id):
     try:
-        _start_exploration_real_combination_computation(project_id, exploration_id)
+        _start_exploration_real_combination_computation(exploration_id)
     except Exception as e:
         print(f"Error during exploration computation: {e}")
         traceback.print_exc()
-        exploration = get_exploration_by_id(project_id, exploration_id)
+        exploration = explorations_db.get(exploration_id)
         if exploration:
             exploration["state"] = "error"
-            update_exploration(project_id, exploration)
+            update_exploration_db(exploration_id, exploration)
         return
 
 
-def _start_exploration_real_combination_computation(project_id, exploration_id):
+def _start_exploration_real_combination_computation(exploration_id):
     # Get the exploration from the database
-    exploration = get_exploration_by_id(project_id, exploration_id)
+    exploration = explorations_db.get(exploration_id)
+    project_id = exploration["project_id"]
     if exploration is None:
-        raise ValueError(
-            f"Exploration with ID {exploration_id} not found in project {project_id}"
-        )
+        raise ValueError(f"Exploration with ID {exploration_id} not found")
     selected_columns = exploration.get("config", {}).get("columns", [])
     if not selected_columns:
         raise ValueError(
@@ -85,7 +65,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     exploration["started_at"] = time()
     exploration["current_sample"] = 0
     exploration["remaining_time"] = None
-    update_exploration(project_id, exploration)
+    update_exploration_db(exploration_id, exploration)
 
     # Load the columns statistics
     columns_statistics = get_columns_statistics(data_provider.name, project_id)[
@@ -134,7 +114,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
         if stop_flags.get(exploration_id):
             print(f"Stopping exploration {exploration_id}")
             exploration["state"] = "not_started"
-            update_exploration(project_id, exploration)
+            update_exploration_db(exploration_id, exploration)
             return
 
         # Fetch the next batch of samples
@@ -176,7 +156,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
             exploration["remaining_time"] = max(0, estimated_total_time - elapsed_time)
 
         # Update the exploration in the database
-        update_exploration(project_id, exploration)
+        update_exploration_db(exploration_id, exploration)
 
         # If the batch is less than the requested size, we assume we reached the end
         if len(batch) < NB_SAMPLES:
@@ -201,7 +181,7 @@ def _start_exploration_real_combination_computation(project_id, exploration_id):
     exploration["state"] = "completed"
     exploration["finished_at"] = time()
 
-    update_exploration(project_id, exploration)
+    update_exploration_db(exploration_id, exploration)
 
 
 def process_combination_metrics(current_combinations, data_and_metrics_batch, metrics):
@@ -293,7 +273,8 @@ def process_combination_metrics(current_combinations, data_and_metrics_batch, me
 def create_selection(
     project_id, exploration_id, selected_combinations_id, selection_name
 ):
-    exploration = get_exploration_by_id(project_id, exploration_id)
+    exploration = explorations_db.get(exploration_id)
+
     if exploration is None:
         raise ValueError(
             f"Exploration with ID {exploration_id} not found in project {project_id}"

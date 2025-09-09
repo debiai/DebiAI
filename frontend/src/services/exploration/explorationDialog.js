@@ -97,12 +97,11 @@ export default {
       });
   },
   deleteExploration(projectId, explorationId) {
+    // TODO : loic projectId not needed
     let code = b.startRequest("Deleting exploration");
     return axios
       .delete(`${apiURL}explorations/${explorationId}`, {
-        params: {
-          project_id: projectId,
-        },
+        params: {},
       })
       .finally(() => {
         b.endRequest(code);
@@ -139,10 +138,10 @@ export default {
   },
   updateExplorationConfig(projectId, explorationId, config, action = "updateConfig") {
     let code = b.startRequest("Updating exploration config");
+    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, config, {
         params: {
-          project_id: projectId,
           action,
         },
       })
@@ -158,10 +157,10 @@ export default {
   },
   cancelRealCombinationsComputation(projectId, explorationId) {
     let code = b.startRequest("Cancelling real combinations computation");
+    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, null, {
         params: {
-          project_id: projectId,
           action: "stop",
         },
       })
@@ -176,6 +175,7 @@ export default {
   // Statistics
   getColumnsStatistics(dataProviderId, projectId) {
     let code = b.startRequest("Loading columns statistics");
+    // TODO : Not needed to remove
     return axios
       .get(
         `${apiURL}statistics/data-providers/${dataProviderId}/projects/${projectId}/columnsStatistics`
@@ -191,6 +191,7 @@ export default {
   // Selections
   createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
     let code = b.startRequest("Creating selection");
+    // TODO : loic projectId not needed
     return axios
       .post(
         `${apiURL}explorations/${explorationId}/selections`,
@@ -199,9 +200,7 @@ export default {
           selected_combinations: selectedCombinationsIds,
         },
         {
-          params: {
-            project_id: projectId,
-          },
+          params: {},
         }
       )
       .finally(() => {

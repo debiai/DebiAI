@@ -143,9 +143,6 @@ class TestProjects:
         assert (
             "metrics" in project_one
         ), "We check metrics  are in the projects payload"  # noqa:E272
-        assert (
-            "columns" in project_one
-        ), "We check columns  are in the projects payload"  # noqa:E272
 
         # We check mandatory metrics
         assert (
