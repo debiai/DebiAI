@@ -92,7 +92,7 @@ async function resetDb() {
       reject("Error");
     };
 
-    request.onsuccess = (e) => {
+    request.onsuccess = () => {
       resolve();
     };
   });
@@ -195,82 +195,29 @@ async function getNbSamples(timestamp) {
   }
 }
 
-// async function saveResults(timestamp, modelId, results) {
-//   let db = await getDb(timestamp);
-//   console.time("Saving results to the cache");
+// Hash-based cache for API responses
+const hashCache = new Map();
 
-//   return new Promise((resolve) => {
-//     let trans = db.transaction("results", "readwrite");
-//     trans.oncomplete = () => {
-//       console.timeEnd("Saving results to the cache");
-//       resolve();
-//     };
-//     trans.onerror = (e) => {
-//       console.timeEnd("Saving results to the cache");
-//       console.log("Error");
-//       console.log(e);
-//       resolve();
-//     };
+async function saveHashResponse(cacheKey, hash, response) {
+  try {
+    hashCache.set(cacheKey, {
+      hash,
+      response,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    console.warn("Error while saving hash response to cache", error);
+  }
+}
 
-//     let resultsStore = trans.objectStore("results");
-//     Object.entries(results).forEach(([sampleId, result]) =>
-//       resultsStore.put({ sampleId, modelId, result })
-//     );
-//   });
-// }
-
-// async function getModelResultsByIds(timestamp, modelId, sampleIds) {
-//   let db = await getDb(timestamp);
-
-//   return new Promise((resolve) => {
-//     let trans = db.transaction("results", "readonly");
-//     let resultsStore = trans.objectStore("results");
-//     let results = {};
-//     let lastSample = sampleIds.length;
-
-//     console.time("Loading results from cache");
-//     sampleIds.forEach((sampleId, i) => {
-//       // For unknown reason, the modelID and sampleID in the double key
-//       // need to be swapped :
-//       let resultRequest = resultsStore.get([modelId, sampleId]);
-//       resultRequest.onsuccess = () => {
-//         if (resultRequest.result) results[sampleId] = resultRequest.result.result;
-//         if (i == lastSample - 1) {
-//           console.timeEnd("Loading results from cache");
-//           resolve(results);
-//         }
-//       };
-//       resultRequest.onerror = (e) => {
-//         console.timeEnd("Loading results from cache");
-//         console.log("Error");
-//         console.log(e);
-//         resolve(results);
-//       };
-//     });
-//   });
-// }
-
-// async function getAllResults(db) {
-//   return new Promise((resolve) => {
-
-//     let trans = db.transaction(['results'], 'readonly');
-//     trans.oncomplete = () => {
-//       resolve(results);
-//     };
-
-//     let store = trans.objectStore('results');
-//     let results = [];
-
-//     store.openCursor().onsuccess = e => {
-//       let cursor = e.target.result;
-//       if (cursor) {
-//         results.push(cursor.value)
-//         cursor.continue();
-//       }
-//     };
-
-//   });
-// }
+async function getHashResponse(cacheKey) {
+  try {
+    return hashCache.get(cacheKey) || null;
+  } catch (error) {
+    console.warn("Error while getting hash response from cache", error);
+    return null;
+  }
+}
 
 export default {
   saveSamples,
@@ -279,4 +226,6 @@ export default {
   // saveResults,
   // getModelResultsByIds,
   getNbSamples,
+  saveHashResponse,
+  getHashResponse,
 };
