@@ -13,7 +13,7 @@ from debiaiServer.api.v1.debiai.utils import make_hash
 #############################################################################
 
 
-def change_project_overview_v1(project_info, column_info):
+def change_project_overview_v1(project_info):
     v1_project_info = {
         "id": project_info["id"],
         "name": project_info["name"],
@@ -26,7 +26,7 @@ def change_project_overview_v1(project_info, column_info):
             "nbSelections": project_info["nbSelections"],
             "nbSamples": project_info["nbSamples"],
         },
-        "columns": column_info,
+        # "columns": column_info,
         # projectColumns, get from statistic et suppress
         # "blockLevelInfo": projectBlockLevel, suppress here keep
     }
@@ -47,9 +47,7 @@ def get_projects(prev_hash_content=None):
             if projects is not None:
                 # Adding data provider id to projects
                 for project in projects:
-
-                    stats = get_columns_statistics(data_provider.name, project["id"])
-                    project_inf = change_project_overview_v1(project, stats["columns"])
+                    project_inf = change_project_overview_v1(project)
                     projectList.append(project_inf)
 
                     if data_provider.name != "Python module Data Provider":
