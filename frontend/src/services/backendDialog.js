@@ -50,9 +50,7 @@ async function requestWithHashCache(url, cacheKey, requestOptions = {}) {
     const response = await axios.get(url, { ...requestOptions, params });
 
     // If status is 304 (Not Modified), return cached response
-    if (response.status === 304 && cachedData) {
-      return cachedData.response;
-    }
+    if (response.status === 304 && cachedData) return cachedData.response;
 
     // If status is 200, save new hash and response
     if (response.status === 200 && response.data.hash_content) {
@@ -63,10 +61,7 @@ async function requestWithHashCache(url, cacheKey, requestOptions = {}) {
   } catch (error) {
     // If request fails and we have cached data, return it
     const cachedData = await cacheService.getHashResponse(cacheKey);
-    if (cachedData) {
-      console.warn("API request failed, using cached data", error);
-      return cachedData.response;
-    }
+    if (cachedData) return cachedData.response;
     throw error;
   }
 }

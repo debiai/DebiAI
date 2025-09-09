@@ -195,12 +195,60 @@ async function getNbSamples(timestamp) {
   }
 }
 
-// Hash-based cache for API responses
-const hashCache = new Map();
+// Hash-based cache with localStorage persistence
+// Used to deal with 304 responses
+class PersistentHashCache {
+  constructor() {
+    this.memoryCache = new Map();
+    this.loadFromStorage();
+  }
+
+  loadFromStorage() {
+    try {
+      const stored = localStorage.getItem("debiai_hash_cache");
+      if (stored) {
+        const data = JSON.parse(stored);
+        Object.entries(data).forEach(([key, value]) => {
+          // Only load recent cache entries (e.g., last 24 hours)
+          if (Date.now() - value.timestamp < 24 * 60 * 60 * 1000) {
+            this.memoryCache.set(key, value);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn("Error loading hash cache from storage", error);
+    }
+  }
+
+  saveToStorage() {
+    try {
+      const data = Object.fromEntries(this.memoryCache);
+      localStorage.setItem("debiai_hash_cache", JSON.stringify(data));
+    } catch (error) {
+      console.warn("Error saving hash cache to storage", error);
+    }
+  }
+
+  set(key, value) {
+    this.memoryCache.set(key, value);
+    this.saveToStorage();
+  }
+
+  get(key) {
+    return this.memoryCache.get(key) || null;
+  }
+
+  clear() {
+    this.memoryCache.clear();
+    localStorage.removeItem("debiai_hash_cache");
+  }
+}
+
+const persistentHashCache = new PersistentHashCache();
 
 async function saveHashResponse(cacheKey, hash, response) {
   try {
-    hashCache.set(cacheKey, {
+    persistentHashCache.set(cacheKey, {
       hash,
       response,
       timestamp: Date.now(),
@@ -212,7 +260,7 @@ async function saveHashResponse(cacheKey, hash, response) {
 
 async function getHashResponse(cacheKey) {
   try {
-    return hashCache.get(cacheKey) || null;
+    return persistentHashCache.get(cacheKey);
   } catch (error) {
     console.warn("Error while getting hash response from cache", error);
     return null;
