@@ -92,7 +92,7 @@ async function resetDb() {
       reject("Error");
     };
 
-    request.onsuccess = (e) => {
+    request.onsuccess = () => {
       resolve();
     };
   });
@@ -195,82 +195,77 @@ async function getNbSamples(timestamp) {
   }
 }
 
-// async function saveResults(timestamp, modelId, results) {
-//   let db = await getDb(timestamp);
-//   console.time("Saving results to the cache");
+// Hash-based cache with localStorage persistence
+// Used to deal with 304 responses
+class PersistentHashCache {
+  constructor() {
+    this.memoryCache = new Map();
+    this.loadFromStorage();
+  }
 
-//   return new Promise((resolve) => {
-//     let trans = db.transaction("results", "readwrite");
-//     trans.oncomplete = () => {
-//       console.timeEnd("Saving results to the cache");
-//       resolve();
-//     };
-//     trans.onerror = (e) => {
-//       console.timeEnd("Saving results to the cache");
-//       console.log("Error");
-//       console.log(e);
-//       resolve();
-//     };
+  loadFromStorage() {
+    try {
+      const stored = localStorage.getItem("debiai_hash_cache");
+      if (stored) {
+        const data = JSON.parse(stored);
+        Object.entries(data).forEach(([key, value]) => {
+          // Only load recent cache entries (e.g., last 24 hours)
+          if (Date.now() - value.timestamp < 24 * 60 * 60 * 1000) {
+            this.memoryCache.set(key, value);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn("Error loading hash cache from storage", error);
+    }
+  }
 
-//     let resultsStore = trans.objectStore("results");
-//     Object.entries(results).forEach(([sampleId, result]) =>
-//       resultsStore.put({ sampleId, modelId, result })
-//     );
-//   });
-// }
+  saveToStorage() {
+    try {
+      const data = Object.fromEntries(this.memoryCache);
+      localStorage.setItem("debiai_hash_cache", JSON.stringify(data));
+    } catch (error) {
+      console.warn("Error saving hash cache to storage", error);
+    }
+  }
 
-// async function getModelResultsByIds(timestamp, modelId, sampleIds) {
-//   let db = await getDb(timestamp);
+  set(key, value) {
+    this.memoryCache.set(key, value);
+    this.saveToStorage();
+  }
 
-//   return new Promise((resolve) => {
-//     let trans = db.transaction("results", "readonly");
-//     let resultsStore = trans.objectStore("results");
-//     let results = {};
-//     let lastSample = sampleIds.length;
+  get(key) {
+    return this.memoryCache.get(key) || null;
+  }
 
-//     console.time("Loading results from cache");
-//     sampleIds.forEach((sampleId, i) => {
-//       // For unknown reason, the modelID and sampleID in the double key
-//       // need to be swapped :
-//       let resultRequest = resultsStore.get([modelId, sampleId]);
-//       resultRequest.onsuccess = () => {
-//         if (resultRequest.result) results[sampleId] = resultRequest.result.result;
-//         if (i == lastSample - 1) {
-//           console.timeEnd("Loading results from cache");
-//           resolve(results);
-//         }
-//       };
-//       resultRequest.onerror = (e) => {
-//         console.timeEnd("Loading results from cache");
-//         console.log("Error");
-//         console.log(e);
-//         resolve(results);
-//       };
-//     });
-//   });
-// }
+  clear() {
+    this.memoryCache.clear();
+    localStorage.removeItem("debiai_hash_cache");
+  }
+}
 
-// async function getAllResults(db) {
-//   return new Promise((resolve) => {
+const persistentHashCache = new PersistentHashCache();
 
-//     let trans = db.transaction(['results'], 'readonly');
-//     trans.oncomplete = () => {
-//       resolve(results);
-//     };
+async function saveHashResponse(cacheKey, hash, response) {
+  try {
+    persistentHashCache.set(cacheKey, {
+      hash,
+      response,
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    console.warn("Error while saving hash response to cache", error);
+  }
+}
 
-//     let store = trans.objectStore('results');
-//     let results = [];
-
-//     store.openCursor().onsuccess = e => {
-//       let cursor = e.target.result;
-//       if (cursor) {
-//         results.push(cursor.value)
-//         cursor.continue();
-//       }
-//     };
-
-//   });
-// }
+async function getHashResponse(cacheKey) {
+  try {
+    return persistentHashCache.get(cacheKey);
+  } catch (error) {
+    console.warn("Error while getting hash response from cache", error);
+    return null;
+  }
+}
 
 export default {
   saveSamples,
@@ -279,4 +274,6 @@ export default {
   // saveResults,
   // getModelResultsByIds,
   getNbSamples,
+  saveHashResponse,
+  getHashResponse,
 };

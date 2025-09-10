@@ -9,7 +9,6 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-
   /version:
     get:
       summary: Ping to check if the backend is running
@@ -23,7 +22,7 @@ paths:
     get:
       summary: Get the projects overview
       tags: [Project]
-      operationId: debiaiServer.api.v1.debiai.projects.get_projects 
+      operationId: debiaiServer.api.v1.debiai.projects.get_projects
       parameters:
         - name: prev_hash_content
           in: query
@@ -34,20 +33,19 @@ paths:
         200:
           description: List of project overviews
           schema:
-              type: object
-              required:
-                - projects
-              properties:
-                hash_content:
-                  type: string
-                projects:
-                  type: array
-                  items:
-                    $ref: "#/definitions/projectOverview"
+            type: object
+            required:
+              - projects
+            properties:
+              hash_content:
+                type: string
+              projects:
+                type: array
+                items:
+                  $ref: "#/definitions/projectOverview"
 
         304:
           description: No content change
-
 
     # Analysis layouts
   /app/layouts/:
@@ -60,7 +58,7 @@ paths:
           in: query
           type: string
           description: Hash of the previous request performed
-          minLength: 1      
+          minLength: 1
       responses:
         200:
           description: Layouts for all projects
@@ -201,6 +199,7 @@ paths:
                 configuration:
                   type: object
                   description: Key value list with the configuration, specific to the widget
+
     post:
       summary: Add a widget configuration
       tags: [Widget configurations]
@@ -375,21 +374,21 @@ paths:
         - name: prev_hash_content
           in: query
           type: string
-          description: Hash of the previous request performed   
+          description: Hash of the previous request performed
       responses:
         200:
           description: List of data providers
           schema:
-              type: object
-              required:
-                - dataproviders
-              properties:
-                hash_content:
-                  type: string
-                dataproviders:
-                  type: array
-                  items:
-                    $ref: "#/definitions/dataProvider"              
+            type: object
+            required:
+              - dataproviders
+            properties:
+              hash_content:
+                type: string
+              dataproviders:
+                type: array
+                items:
+                  $ref: "#/definitions/dataProvider"
         304:
           description: No content change
 
@@ -444,7 +443,7 @@ paths:
           description: The info of the data provider
           schema:
             type: object
-            $ref: "#/definitions/dataProviderConfig"            
+            $ref: "#/definitions/dataProviderConfig"
             required:
               - version
         400:
@@ -453,7 +452,6 @@ paths:
           description: The data provider doesn't exist
 
 definitions:
-
   # Data providers
   dataProviderConfig:
     type: object
@@ -467,14 +465,14 @@ definitions:
       tags:
         type: array
         description: List of tags associated to the project)
-        items: 
+        items:
           type: string
           additionalProperties:
             type: string
-          example: 
-          - canDeleteProject
-          - canDeleteSelections
-          - canDeleteModels
+          example:
+            - canDeleteProject
+            - canDeleteSelections
+            - canDeleteModels
       metadata:
         type: array
         description: List of meta informations such as "category", or "origin", ...
@@ -506,12 +504,11 @@ definitions:
   dataProvider:
     allOf:
       - $ref: "#/definitions/dataProviderConfig"
-      - type: object  
+      - type: object
         properties:
           status:
             type: boolean
             description: True if the data provider is up and running (if manage by backend)
-
 
   # Projects
   projectOverview:
@@ -536,7 +533,7 @@ definitions:
       tags:
         type: array
         description: List of tags associated to the project)
-        items: 
+        items:
           type: string
       metadata:
         type: array
@@ -603,7 +600,6 @@ definitions:
   dashboardLayout:
     description: Dashboard layout, list of widgets with their
       position and configuration
-
     type: array
     items:
       type: object

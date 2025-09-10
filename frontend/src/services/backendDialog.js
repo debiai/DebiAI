@@ -2,11 +2,13 @@ import axios from "axios";
 import config from "../../config";
 import store from "../store";
 import services from "./services";
+import cacheService from "./cacheService";
 
 const apiDebiaiURL = config.API_DEBIAI_URL;
 const apiDataURL = config.API_DATA_URL;
 const apiAlgoURL = config.API_ALGO_URL;
 
+// Request tracking & display utilities
 function startRequest(name) {
   let requestCode = services.uuid();
   store.commit("startRequest", { name, code: requestCode });
@@ -17,6 +19,7 @@ function endRequest(code) {
   store.commit("endRequest", code);
 }
 
+// Request creation helpers
 function dataProviderId() {
   const dpId = store.state.ProjectPage.dataProviderId;
   if (dpId === null || dpId === undefined) throw new Error("Data provider ID not set");
@@ -29,25 +32,59 @@ function projectId() {
   return pId;
 }
 
+// Hash-based cache utilities
+//  Provide automatic caching based on hash_content from the backend.
+// - If no cached response exists, sends a normal GET request
+// - If cached response exists, sends prev_hash_content parameter
+// - If backend returns 304, uses cached response
+// - If backend returns 200 with new hash_content, updates cache
+async function requestWithHashCache(url, cacheKey, requestOptions = {}) {
+  try {
+    // Get cached response if exists
+    const cachedData = await cacheService.getHashResponse(cacheKey);
+
+    // Prepare request parameters
+    const params = { ...requestOptions.params };
+    if (cachedData && cachedData.hash) params.prev_hash_content = cachedData.hash;
+
+    const response = await axios.get(url, { ...requestOptions, params });
+
+    // If status is 304 (Not Modified), return cached response
+    if (response.status === 304 && cachedData) return cachedData.response;
+
+    // If status is 200, save new hash and response
+    if (response.status === 200 && response.data.hash_content) {
+      await cacheService.saveHashResponse(cacheKey, response.data.hash_content, response.data);
+    }
+
+    return response.data;
+  } catch (error) {
+    // If request fails and we have cached data, return it
+    const cachedData = await cacheService.getHashResponse(cacheKey);
+    if (cachedData) return cachedData.response;
+    throw error;
+  }
+}
+
+function getCachedRequest(url, cacheKey, requestName) {
+  let code = startRequest(requestName);
+  return requestWithHashCache(url, cacheKey).finally(() => {
+    endRequest(code);
+  });
+}
+
+// Main API interaction functions
 export default {
   startRequest,
   endRequest,
   dataProviderId,
   projectId,
-  // ====== Menu
 
   // Projects
   getProjects() {
-    let code = startRequest("Getting projects");
-    return axios
-      .get(apiDebiaiURL + "projects")
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        // TODO loic ack to make the request work without ash management
-        return response.data.projects;
-      });
+    return getCachedRequest(apiDebiaiURL + "projects", "projects", "Getting projects").then(
+      (data) => data.projects
+    );
   },
   getProject() {
     let code = startRequest("Getting project data");
@@ -74,16 +111,11 @@ export default {
 
   // Data providers
   getDataProviders() {
-    let code = startRequest("Getting data providers");
-    return axios
-      .get(apiDebiaiURL + "data-providers")
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        // TODO ack loic for basic test
-        return response.data.dataproviders;
-      });
+    return getCachedRequest(
+      apiDebiaiURL + "data-providers",
+      "data-providers",
+      "Getting data providers"
+    ).then((data) => data.dataproviders);
   },
   getSingleDataInfo() {
     let code = startRequest("Getting data provider info");
@@ -201,8 +233,9 @@ export default {
 
   // Layouts
   getLayouts() {
-    // TODO Ack loic basic 304 handing
-    return axios.get(apiDebiaiURL + "app/layouts/").then((response) => response.data.layouts);
+    return getCachedRequest(apiDebiaiURL + "app/layouts/", "layouts", "Getting layouts").then(
+      (data) => data.layouts
+    );
   },
   saveLayout(body) {
     let code = startRequest("Saving layout");

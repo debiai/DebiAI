@@ -295,7 +295,7 @@ export default {
     },
     deleteExploration(explorationId) {
       this.$explorationDialog
-        .deleteExploration(this.projectId, explorationId)
+        .deleteExploration(explorationId)
         .then(() => {
           this.loadExplorations();
           this.$store.commit("sendMessage", {
