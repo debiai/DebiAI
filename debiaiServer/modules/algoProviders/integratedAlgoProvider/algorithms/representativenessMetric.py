@@ -1,5 +1,5 @@
 import numpy as np
-from scipy import stats
+from dqm.representativeness.chi_square import ChiSquareGoodnessOfFit
 from debiaiServer.modules.algoProviders.integratedAlgoProvider.utils import (
     get_input_from_inputs,
 )
@@ -94,48 +94,9 @@ def get_algorithm_details():
 
 def _discretize_data(data, bins, distribution_type="normal"):
     """
-    Discretize data into bins and calculate observed and expected frequencies
+    This function is now handled by the dqm-ml library
     """
-    data_array = np.array(data)
-
-    if distribution_type == "normal":
-        # Calculate mean and std for normal distribution
-        mean = np.mean(data_array)
-        std = np.std(data_array, ddof=1)
-
-        # Create bins based on normal distribution quantiles
-        bin_edges = np.linspace(mean - 3 * std, mean + 3 * std, bins + 1)
-
-        # Calculate observed frequencies
-        observed, _ = np.histogram(data_array, bins=bin_edges)
-
-        # Calculate expected frequencies for normal distribution
-        expected = []
-        for i in range(len(bin_edges) - 1):
-            lower_prob = stats.norm.cdf(bin_edges[i], mean, std)
-            upper_prob = stats.norm.cdf(bin_edges[i + 1], mean, std)
-            expected_freq = (upper_prob - lower_prob) * len(data_array)
-            expected.append(expected_freq)
-
-        expected = np.array(expected)
-
-    elif distribution_type == "uniform":
-        # Create uniform bins
-        min_val = np.min(data_array)
-        max_val = np.max(data_array)
-        bin_edges = np.linspace(min_val, max_val, bins + 1)
-
-        # Calculate observed frequencies
-        observed, _ = np.histogram(data_array, bins=bin_edges)
-
-        # For uniform distribution, expected frequency is equal for all bins
-        expected_freq = len(data_array) / bins
-        expected = np.full(bins, expected_freq)
-
-    else:
-        raise ValueError(f"Unsupported distribution type: {distribution_type}")
-
-    return observed, expected
+    pass
 
 
 def use_algorithm(inputs):
@@ -160,55 +121,45 @@ def use_algorithm(inputs):
     bins = int(bins)
 
     try:
-        # Discretize data and get observed/expected frequencies
-        observed, expected = _discretize_data(data, bins, distribution)
-
-        # Remove bins with zero expected frequency to avoid division by zero
-        mask = expected > 0
-        observed_filtered = observed[mask]
-        expected_filtered = expected[mask]
-
-        if len(observed_filtered) < 2:
-            raise ValueError("Not enough valid bins for Chi-square test")
-
-        # Fix numerical precision issue by normalizing expected frequencies
-        # to match the sum of observed frequencies exactly
-        observed_sum = np.sum(observed_filtered)
-        expected_sum = np.sum(expected_filtered)
-
-        if expected_sum > 0:
-            expected_filtered = expected_filtered * (observed_sum / expected_sum)
-
-        # Perform Chi-square goodness of fit test
-        chi2_stat, p_value = stats.chisquare(observed_filtered, expected_filtered)
-
-        # Calculate degrees of freedom
-        degrees_of_freedom = len(observed_filtered) - 1
-        if distribution == "normal":
-            degrees_of_freedom -= 2  # Subtract 2 for estimated mean and std
-        elif distribution == "uniform":
-            degrees_of_freedom -= 0  # No parameters estimated for uniform
-
-        degrees_of_freedom = max(1, degrees_of_freedom)
-
+        # Convert data to numpy array
+        data_array = np.array(data)
+        
+        # Use dqm-ml Chi-square goodness of fit test
+        chi_square_test = ChiSquareGoodnessOfFit()
+        
+        # Perform the test
+        result = chi_square_test.compute(
+            data=data_array,
+            bins=bins,
+            distribution=distribution
+        )
+        
+        # Extract results from dqm-ml output
+        chi2_stat = result.get('chi2_statistic', 0.0)
+        p_value = result.get('p_value', 0.0)
+        degrees_of_freedom = result.get('degrees_of_freedom', bins - 1)
+        observed_freq = result.get('observed_frequencies', [])
+        expected_freq = result.get('expected_frequencies', [])
+        
         # Calculate representativeness score (normalize p-value to 0-1 scale)
-        # Higher p-value means better fit, so we use p-value directly as score
         representativeness_score = min(p_value, 1.0)
 
         # Determine if distribution fits (common threshold is 0.05)
         distribution_fit = p_value > 0.05
 
+        # Format frequencies for display
+        frequencies = []
+        if len(observed_freq) == len(expected_freq):
+            frequencies = [
+                {
+                    "1.Expected freq.": round(expected_freq[i], 2),
+                    "2.Observed freq.": int(observed_freq[i]),
+                    "3.Diff": round(observed_freq[i] - expected_freq[i], 2),
+                }
+                for i in range(len(observed_freq))
+            ]
+
         # Return outputs
-        observed = observed.tolist()
-        expected = expected.tolist()
-        frequencies = [
-            {
-                "1.Expected freq.": int(expected[i]),
-                "2.Observed freq.": int(observed[i]),
-                "3.Diff": int(observed[i] - expected[i]),
-            }
-            for i in range(len(observed))
-        ]
         return [
             {"name": "Chi-square statistic", "value": float(chi2_stat)},
             {"name": "P-value", "value": float(p_value)},

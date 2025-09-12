@@ -1,4 +1,6 @@
 import numpy as np
+from dqm.diversity.simpson import Simpson
+from dqm.diversity.gini_simpson import GiniSimpson
 from collections import Counter
 from debiaiServer.modules.algoProviders.integratedAlgoProvider.utils import (
     get_input_from_inputs,
@@ -77,30 +79,6 @@ def get_algorithm_details():
     return algorithm_description
 
 
-def _calculate_simpson_index(frequencies):
-    """
-    Calculate Simpson diversity index
-    Simpson index = sum(pi^2) where pi is the proportion of each species
-    Lower values indicate higher diversity
-    """
-    total = sum(frequencies.values())
-    if total == 0:
-        return 0.0
-    
-    simpson = sum((count / total) ** 2 for count in frequencies.values())
-    return simpson
-
-
-def _calculate_gini_simpson_index(frequencies):
-    """
-    Calculate Gini-Simpson diversity index
-    Gini-Simpson index = 1 - Simpson index
-    Higher values indicate higher diversity
-    """
-    simpson = _calculate_simpson_index(frequencies)
-    return 1.0 - simpson
-
-
 def use_algorithm(inputs):
     # Get inputs
     data = get_input_from_inputs(inputs, "Data", "array")
@@ -124,24 +102,40 @@ def use_algorithm(inputs):
         most_frequent_value = frequencies.most_common(1)[0][0]
         most_frequent_count = frequencies.most_common(1)[0][1]
 
-        # Calculate diversity indices
-        simpson_index = _calculate_simpson_index(frequencies)
-        gini_simpson_index = _calculate_gini_simpson_index(frequencies)
-
         # Prepare outputs based on requested metric type
         outputs = []
         
         if metric_type in ["simpson", "both"]:
+            # Use dqm-ml Simpson diversity
+            simpson_metric = Simpson()
+            simpson_result = simpson_metric.compute(data_str)
+            simpson_index = simpson_result.get('simpson_index', 0.0)
+            
             outputs.append({
                 "name": "Simpson index",
                 "value": float(simpson_index)
             })
         
         if metric_type in ["gini-simpson", "both"]:
+            # Use dqm-ml Gini-Simpson diversity
+            gini_simpson_metric = GiniSimpson()
+            gini_simpson_result = gini_simpson_metric.compute(data_str)
+            gini_simpson_index = gini_simpson_result.get('gini_simpson_index', 0.0)
+            
             outputs.append({
                 "name": "Gini-Simpson index",
                 "value": float(gini_simpson_index)
             })
+
+        # Format frequency data for display
+        frequency_table = [
+            {
+                "Value": str(value),
+                "Count": int(count),
+                "Proportion": round(count / total_samples, 4)
+            }
+            for value, count in frequencies.most_common()
+        ]
 
         # Add common outputs
         outputs.extend([
@@ -149,7 +143,7 @@ def use_algorithm(inputs):
             {"name": "Total samples", "value": int(total_samples)},
             {"name": "Most frequent value", "value": str(most_frequent_value)},
             {"name": "Most frequent count", "value": int(most_frequent_count)},
-            {"name": "Value frequencies", "value": dict(frequencies)},
+            {"name": "Value frequencies", "value": frequency_table},
         ])
 
         return outputs
