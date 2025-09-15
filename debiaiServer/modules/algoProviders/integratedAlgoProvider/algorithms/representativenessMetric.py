@@ -1,5 +1,5 @@
-import numpy as np
-from dqm.representativeness.chi_square import ChiSquareGoodnessOfFit
+import pandas as pd
+from dqm.representativeness.metric import DistributionAnalyzer
 from debiaiServer.modules.algoProviders.integratedAlgoProvider.utils import (
     get_input_from_inputs,
 )
@@ -72,17 +72,11 @@ to a theoretical distribution (normal or uniform).""",
             "type": "boolean",
         },
         {
-            "name": "Observed frequencies",
-            "description": "Observed frequencies in each bin",
+            "name": "Frequencies",
+            "description": "Detailed frequency analysis with intervals, "
+            + "observed and expected frequencies",
             "type": "array",
-            "arrayType": "number",
-        },
-        {
-            "name": "Expected frequencies",
-            "description": "Expected frequencies based on "
-            + "theoretical distribution",
-            "type": "array",
-            "arrayType": "number",
+            "arrayType": "object",
         },
     ],
 }
@@ -90,13 +84,6 @@ to a theoretical distribution (normal or uniform).""",
 
 def get_algorithm_details():
     return algorithm_description
-
-
-def _discretize_data(data, bins, distribution_type="normal"):
-    """
-    This function is now handled by the dqm-ml library
-    """
-    pass
 
 
 def use_algorithm(inputs):
@@ -121,43 +108,64 @@ def use_algorithm(inputs):
     bins = int(bins)
 
     try:
-        # Convert data to numpy array
-        data_array = np.array(data)
-        
-        # Use dqm-ml Chi-square goodness of fit test
-        chi_square_test = ChiSquareGoodnessOfFit()
-        
-        # Perform the test
-        result = chi_square_test.compute(
-            data=data_array,
-            bins=bins,
-            distribution=distribution
-        )
-        
-        # Extract results from dqm-ml output
-        chi2_stat = result.get('chi2_statistic', 0.0)
-        p_value = result.get('p_value', 0.0)
-        degrees_of_freedom = result.get('degrees_of_freedom', bins - 1)
-        observed_freq = result.get('observed_frequencies', [])
-        expected_freq = result.get('expected_frequencies', [])
-        
+        # Convert data to pandas Series
+        data_series = pd.Series(data)
+
+        # Use dqm-ml DistributionAnalyzer
+        analyzer = DistributionAnalyzer(data_series, bins, distribution)
+
+        # Perform chi-square test
+        chi2_result = analyzer.chisquare_test()
+
+        if chi2_result is None:
+            raise ValueError("Chi-square test failed")
+
+        # Extract p-value and intervals from result
+        if isinstance(chi2_result, tuple) and len(chi2_result) >= 2:
+            p_value = chi2_result[0]
+            intervals_freq = chi2_result[1] if len(chi2_result) > 1 else {}
+        else:
+            p_value = chi2_result
+            intervals_freq = {}
+
+        # Calculate chi-square statistic (approximation from p-value)
+        from scipy import stats
+
+        degrees_of_freedom = bins - 1
+        if distribution == "normal":
+            degrees_of_freedom -= 2
+        degrees_of_freedom = max(1, degrees_of_freedom)
+
+        # Get chi2 statistic from p-value (inverse calculation)
+        if p_value < 1.0:
+            chi2_stat = stats.chi2.ppf(1 - p_value, degrees_of_freedom)
+        else:
+            chi2_stat = 0.0
+
         # Calculate representativeness score (normalize p-value to 0-1 scale)
         representativeness_score = min(p_value, 1.0)
 
         # Determine if distribution fits (common threshold is 0.05)
         distribution_fit = p_value > 0.05
 
-        # Format frequencies for display
+        # Format frequencies for display, from dataframe to list of dicts
         frequencies = []
-        if len(observed_freq) == len(expected_freq):
-            frequencies = [
-                {
-                    "1.Expected freq.": round(expected_freq[i], 2),
-                    "2.Observed freq.": int(observed_freq[i]),
-                    "3.Diff": round(observed_freq[i] - expected_freq[i], 2),
-                }
-                for i in range(len(observed_freq))
-            ]
+        # intervals_freq is a dataframe with columns:
+        # lower_limit, upper_limit, obs_freq, exp_freq
+        if isinstance(intervals_freq, pd.DataFrame):
+            for _, row in intervals_freq.iterrows():
+                lower = float(row["lower_limit"])
+                upper = float(row["upper_limit"])
+                obs_freq = int(row["obs_freq"])
+                exp_freq = float(row["exp_freq"])
+                frequencies.append(
+                    {
+                        "1. Interval": f"[{lower} ; {upper}]",
+                        "2. Observed frequency": obs_freq,
+                        "3. Expected frequency": exp_freq,
+                        "4. Difference": obs_freq - exp_freq,
+                    }
+                )
 
         # Return outputs
         return [
@@ -170,7 +178,6 @@ def use_algorithm(inputs):
             },
             {"name": "Distribution fit", "value": bool(distribution_fit)},
             {"name": "Frequencies", "value": frequencies},
-            # TODO: Add data from & to
         ]
 
     except Exception as e:

@@ -1,6 +1,5 @@
-import numpy as np
-from dqm.diversity.simpson import Simpson
-from dqm.diversity.gini_simpson import GiniSimpson
+import pandas as pd
+from dqm.diversity.metric import DiversityIndexCalculator
 from collections import Counter
 from debiaiServer.modules.algoProviders.integratedAlgoProvider.utils import (
     get_input_from_inputs,
@@ -95,58 +94,61 @@ def use_algorithm(inputs):
         # Convert data to strings and count frequencies
         data_str = [str(item) for item in data]
         frequencies = Counter(data_str)
-        
+
+        # Convert to pandas Series for dqm-ml
+        data_series = pd.Series(data_str)
+
         # Calculate basic statistics
         total_samples = len(data_str)
         unique_values = len(frequencies)
         most_frequent_value = frequencies.most_common(1)[0][0]
         most_frequent_count = frequencies.most_common(1)[0][1]
 
-        # Prepare outputs based on requested metric type
-        outputs = []
-        
+        # Use dqm-ml DiversityIndexCalculator
+        calc = DiversityIndexCalculator()
+
+        # Calculate indices based on requested metric type
+        simpson_index = None
+        gini_simpson_index = None
+
         if metric_type in ["simpson", "both"]:
-            # Use dqm-ml Simpson diversity
-            simpson_metric = Simpson()
-            simpson_result = simpson_metric.compute(data_str)
-            simpson_index = simpson_result.get('simpson_index', 0.0)
-            
-            outputs.append({
-                "name": "Simpson index",
-                "value": float(simpson_index)
-            })
-        
+            simpson_index = calc.simpson(data_series)
+
         if metric_type in ["gini-simpson", "both"]:
-            # Use dqm-ml Gini-Simpson diversity
-            gini_simpson_metric = GiniSimpson()
-            gini_simpson_result = gini_simpson_metric.compute(data_str)
-            gini_simpson_index = gini_simpson_result.get('gini_simpson_index', 0.0)
-            
-            outputs.append({
-                "name": "Gini-Simpson index",
-                "value": float(gini_simpson_index)
-            })
+            gini_simpson_index = calc.gini(data_series)
 
         # Format frequency data for display
         frequency_table = [
             {
                 "Value": str(value),
                 "Count": int(count),
-                "Proportion": round(count / total_samples, 4)
+                "Proportion": round(count / total_samples, 4),
             }
             for value, count in frequencies.most_common()
         ]
 
-        # Add common outputs
-        outputs.extend([
+        # Return all outputs (with None for non-calculated metrics)
+        return [
+            {
+                "name": "Simpson index",
+                "value": (
+                    float(simpson_index) if simpson_index is not None else None
+                )
+            },
+            {
+                "name": "Gini-Simpson index",
+                "value": (
+                    float(gini_simpson_index)
+                    if gini_simpson_index is not None
+                    else None
+                )
+            },
             {"name": "Number of unique values", "value": int(unique_values)},
             {"name": "Total samples", "value": int(total_samples)},
             {"name": "Most frequent value", "value": str(most_frequent_value)},
             {"name": "Most frequent count", "value": int(most_frequent_count)},
             {"name": "Value frequencies", "value": frequency_table},
-        ])
-
-        return outputs
+        ]
 
     except Exception as e:
         raise ValueError(f"Error in diversity calculation: {str(e)}")
