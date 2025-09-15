@@ -481,14 +481,14 @@ definitions:
             type: string
           example:
             version: "data provider version"
-            external_url: "Optional external URL to access data provide"
+            external_url: "Optional external URL to access the data provider"
             url_key: "Optional url_key in the debiai front to access the data provider api"
             s3_bucket: "If S3 use to read parquet files by front"
             s3_access_key: "S3 access key needed to access directly parquet from front in readonly"
             # TODO check if we need to encoded it on top of HTTPS
             s3_secret_id: "S3 access key needed to access directly parquet from front in readonly - use https with such informations"
-            selection_path: "local path or S3 to read selection parquet ($path/$selection_id)"
-            models_path: "local path or S3 to read selection parquet ($path/$selection_id)"
+            selections_path: "local path or S3 to read selection parquet ($path/$selection_id)"
+            models_path: "local path or S3 to read model parquet ($path/$model_id)"
             project_path: "local path or S3 to read project parquets"
       metrics:
         type: array

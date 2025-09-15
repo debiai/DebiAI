@@ -1,6 +1,8 @@
 import store from "../store";
 import cacheService from "./cacheService";
 import services from "./services";
+import axios from "axios";
+import { parquetRead } from 'hyparquet'
 
 const backendDialog = require("./backendDialog");
 const samplesIdListRequester = require("./statistics/samplesIdListRequester").default;
@@ -49,6 +51,15 @@ async function getDataProviderLimit() {
       maxResultLimit: 5000,
     };
   }
+}
+
+async function getDataProviderBucketPath() {
+  // TODO Tom: Complete
+  return {
+    project_path: "http://localhost:8000/data/parquet/10000/download", // Local path or S3 to read project parquets
+    selection_path: null, // Local path or S3 to read selection parquet ($path/$selection_id)
+    models_path: null, // Local path or S3 to read model parquet ($path/$model_id)
+  };
 }
 
 // Get project samples Id list functions
@@ -403,6 +414,15 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
+  console.log("loadData", selectionIds, selectionIntersection);
+
+  const parquetPaths = await getDataProviderBucketPath();
+  console.log(parquetPaths);
+  if (parquetPaths.project_path)
+    return await loadDataParquet(parquetPaths.project_path, selectionIds, selectionIntersection);
+  else return await loadDataJson(selectionIds, selectionIntersection);
+}
+async function loadDataJson(selectionIds, selectionIntersection) {
   // Downloading project meta data, required to interpret the tree
   let projectMetadata = await getProjectMetadata({ considerResults: false });
 
@@ -426,6 +446,35 @@ async function loadData(selectionIds, selectionIntersection) {
     metaData: projectMetadata,
     array: [projectMetadata.labels, ...dataArray],
     sampleIdList,
+  };
+}
+async function loadDataParquet(parquetDataPath, selectionIds, selectionIntersection) {
+  // First, get parquet file info
+  console.log("Loading parquet data from ", parquetDataPath);
+
+  const fileResponse = await axios.get(parquetDataPath, { responseType: "arraybuffer" });
+  console.log(fileResponse);
+
+  // Read parquet file
+  let rows = [];
+  await parquetRead({
+    file: fileResponse.data,
+    onChunk: (chunk) => {
+      console.log("Processing chunk:", chunk);
+    },
+    onComplete: (data) => {
+      console.log("Parquet parsing complete. Number of rows:", data.length);
+      console.log(data);
+
+      rows = data;
+    },
+  });
+  console.log("All rows:", rows);
+
+  return {
+    metaData: {},
+    array: rows,
+    sampleIdList: [],
   };
 }
 async function loadDataAndModelResults(
@@ -501,7 +550,7 @@ async function loadDataAndModelResults(
   }
 }
 
-// array to DebiAI analysis main data object
+// Array to DebiAI analysis main data object
 async function arrayToJson(array, metaData) {
   let requestCode = services.startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");
