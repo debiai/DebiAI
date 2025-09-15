@@ -127,14 +127,26 @@
           class="experiment"
         >
           <div class="top">
-            <h4 class="experiment-title">
-              Experiment {{ experiment.nb }}
-              <!-- Display Inputs -->
-              <DocumentationBlock v-if="experiment.inputs.length > 0">
+            <h4 class="experiment-title">Experiment {{ experiment.nb }}</h4>
+
+            <div class="controls">
+              <button
+                v-if="experiment.inputs.length > 0"
+                class="blue"
+                @click="showInputs(experiment)"
+              >
+                Inputs
+              </button>
+
+              <!-- inputs modal -->
+              <modal
+                v-if="inputsModal"
+                @close="inputsModal = false"
+              >
                 <span v-if="experiment.selectedData">
                   On {{ experiment.selectedData.length }} selected data.
                 </span>
-                Inputs:
+                <h3>Experiment {{ experiment.nb }} inputs:</h3>
                 <div class="inputs">
                   <div
                     class="input"
@@ -163,10 +175,13 @@
                     </div>
                   </div>
                 </div>
-              </DocumentationBlock>
-            </h4>
-
-            <div class="controls">
+                <button
+                  class="red"
+                  @click="inputsModal = false"
+                >
+                  Close
+                </button>
+              </modal>
               <button
                 class="green"
                 @click="exportJson(experiment)"
@@ -266,6 +281,7 @@ export default {
       selectedOutput: null,
       selectedOutputNeedsDefault: false,
       selectedExperiment: null,
+      inputsModal: false,
     };
   },
   mounted() {
@@ -280,6 +296,9 @@ export default {
 
       // Sort the experiments by nb
       this.experiments.sort((a, b) => a.nb - b.nb);
+    },
+    showInputs(experiment) {
+      this.inputsModal = true;
     },
     deleteExperiment(experiment) {
       this.$store.commit("deleteExperiment", experiment.id);
@@ -442,9 +461,31 @@ export default {
     }
 
     .inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 15px 0;
+
       .input {
         display: flex;
-        gap: 5px;
+        gap: 12px;
+        padding: 8px 12px;
+        background: var(--greyLight);
+        border-radius: 4px;
+
+        .name {
+          text-align: right;
+          font-weight: 500;
+          min-width: 120px;
+          color: var(--fontColor);
+        }
+
+        .value {
+          text-align: left;
+          flex: 1;
+          color: var(--fontColorLight);
+          word-break: break-word;
+        }
       }
     }
 
@@ -468,9 +509,8 @@ export default {
       .name {
         font-weight: bold;
       }
+
       .value {
-        width: 500px;
-        max-width: 500px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -484,6 +524,7 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
+
 #columnCreationModal .name {
   min-width: 130px;
 }
