@@ -418,20 +418,14 @@ async function loadData(selectionIds, selectionIntersection) {
   console.log("loadData", selectionIds, selectionIntersection);
 
   const parquetPaths = await getDataProviderBucketPath();
-  console.log(parquetPaths);
-  const jsonResp = await loadDataJson(selectionIds, selectionIntersection);
-  console.log("jsonResp", jsonResp);
-  const parquetResp = await loadDataParquet(
-    parquetPaths.project_path,
-    parquetPaths.id_column_label,
-    selectionIds,
-    selectionIntersection
-  );
-  console.log("parquetResp", parquetResp);
-  return parquetResp;
-  // if (parquetPaths.project_path)
-  //   return await loadDataParquet(parquetPaths.project_path,     parquetPaths.id_column_label,selectionIds, selectionIntersection);
-  // else return await loadDataJson(selectionIds, selectionIntersection);
+  if (parquetPaths.project_path)
+    return await loadDataParquet(
+      parquetPaths.project_path,
+      parquetPaths.id_column_label,
+      selectionIds,
+      selectionIntersection
+    );
+  else return await loadDataJson(selectionIds, selectionIntersection);
 }
 async function loadDataJson(selectionIds, selectionIntersection) {
   // Downloading project meta data, required to interpret the tree
@@ -466,10 +460,7 @@ async function loadDataParquet(
   selectionIntersection
 ) {
   // First, get parquet file info
-  console.log("Loading parquet data from ", parquetDataPath);
-
   const fileResponse = await axios.get(parquetDataPath, { responseType: "arraybuffer" });
-  console.log(fileResponse);
 
   // Read parquet file
   let rows = [];
@@ -480,28 +471,42 @@ async function loadDataParquet(
       columns.push(chunk.columnName);
     },
     onComplete: (data) => {
-      rows = data;
-      console.log("All rows:", rows);
+      // Convert BigInt values to Number (int)
+      rows = data.map((row) =>
+        row.map((value) => (typeof value === "bigint" ? Number(value) : value))
+      );
     },
   });
 
   // Check if we have an ID column
-  // TODO Tom: Display proper error message
   if (!columns.includes(parquetIdColumnLabel))
     throw new Error("ID column " + parquetIdColumnLabel + " not found in parquet file");
 
   // Get the data id list
   const dataIdListColumnIndex = columns.indexOf(parquetIdColumnLabel);
-  const dataIdList = rows.map((row) => row[dataIdListColumnIndex]);
+  const sampleIdList = rows.map((row) => row[dataIdListColumnIndex]);
 
   // Add column labels as the first row
   const arrayWithLabels = [columns, ...rows];
-  console.log("All rows with labels:", arrayWithLabels);
+
+  // Get the data provider info (pull limitations)
+  let dataProviderInfo = await getDataProviderLimit();
+
+  // Build metadata object compatible with the JSON loader format
+  const metaData = {
+    timestamp: Date.now(), // Current timestamp for caching purposes
+    nbSamples: rows.length,
+    labels: columns,
+    categories: columns.map(() => "other"), // Default to "other" category for all columns
+    type: columns.map(() => "auto"), // Default to "auto" type for all columns
+    groups: columns.map(() => null), // Default to null group for all columns
+    dataProvider: dataProviderInfo,
+  };
 
   return {
-    metaData: { labels: columns },
+    metaData,
     array: arrayWithLabels,
-    sampleIdList: dataIdList,
+    sampleIdList,
   };
 }
 async function loadDataAndModelResults(
