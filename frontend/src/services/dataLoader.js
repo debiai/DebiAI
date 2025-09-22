@@ -2,7 +2,7 @@ import store from "../store";
 import cacheService from "./cacheService";
 import services from "./services";
 import axios from "axios";
-import { parquetRead } from 'hyparquet'
+import { parquetRead } from "hyparquet";
 
 const backendDialog = require("./backendDialog");
 const samplesIdListRequester = require("./statistics/samplesIdListRequester").default;
@@ -59,6 +59,7 @@ async function getDataProviderBucketPath() {
     project_path: "http://localhost:8000/data/parquet/10000/download", // Local path or S3 to read project parquets
     selection_path: null, // Local path or S3 to read selection parquet ($path/$selection_id)
     models_path: null, // Local path or S3 to read model parquet ($path/$model_id)
+    id_column_label: "id", // Column label for the data ID
   };
 }
 
@@ -418,9 +419,19 @@ async function loadData(selectionIds, selectionIntersection) {
 
   const parquetPaths = await getDataProviderBucketPath();
   console.log(parquetPaths);
-  if (parquetPaths.project_path)
-    return await loadDataParquet(parquetPaths.project_path, selectionIds, selectionIntersection);
-  else return await loadDataJson(selectionIds, selectionIntersection);
+  const jsonResp = await loadDataJson(selectionIds, selectionIntersection);
+  console.log("jsonResp", jsonResp);
+  const parquetResp = await loadDataParquet(
+    parquetPaths.project_path,
+    parquetPaths.id_column_label,
+    selectionIds,
+    selectionIntersection
+  );
+  console.log("parquetResp", parquetResp);
+  return parquetResp;
+  // if (parquetPaths.project_path)
+  //   return await loadDataParquet(parquetPaths.project_path,     parquetPaths.id_column_label,selectionIds, selectionIntersection);
+  // else return await loadDataJson(selectionIds, selectionIntersection);
 }
 async function loadDataJson(selectionIds, selectionIntersection) {
   // Downloading project meta data, required to interpret the tree
@@ -448,7 +459,12 @@ async function loadDataJson(selectionIds, selectionIntersection) {
     sampleIdList,
   };
 }
-async function loadDataParquet(parquetDataPath, selectionIds, selectionIntersection) {
+async function loadDataParquet(
+  parquetDataPath,
+  parquetIdColumnLabel,
+  selectionIds,
+  selectionIntersection
+) {
   // First, get parquet file info
   console.log("Loading parquet data from ", parquetDataPath);
 
@@ -457,24 +473,35 @@ async function loadDataParquet(parquetDataPath, selectionIds, selectionIntersect
 
   // Read parquet file
   let rows = [];
+  let columns = [];
   await parquetRead({
     file: fileResponse.data,
     onChunk: (chunk) => {
-      console.log("Processing chunk:", chunk);
+      columns.push(chunk.columnName);
     },
     onComplete: (data) => {
-      console.log("Parquet parsing complete. Number of rows:", data.length);
-      console.log(data);
-
       rows = data;
+      console.log("All rows:", rows);
     },
   });
-  console.log("All rows:", rows);
+
+  // Check if we have an ID column
+  // TODO Tom: Display proper error message
+  if (!columns.includes(parquetIdColumnLabel))
+    throw new Error("ID column " + parquetIdColumnLabel + " not found in parquet file");
+
+  // Get the data id list
+  const dataIdListColumnIndex = columns.indexOf(parquetIdColumnLabel);
+  const dataIdList = rows.map((row) => row[dataIdListColumnIndex]);
+
+  // Add column labels as the first row
+  const arrayWithLabels = [columns, ...rows];
+  console.log("All rows with labels:", arrayWithLabels);
 
   return {
-    metaData: {},
-    array: rows,
-    sampleIdList: [],
+    metaData: { labels: columns },
+    array: arrayWithLabels,
+    sampleIdList: dataIdList,
   };
 }
 async function loadDataAndModelResults(
