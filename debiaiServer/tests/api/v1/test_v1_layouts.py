@@ -16,7 +16,7 @@ def test_get_layouts():
     resp = requests.request("GET", url, headers={}, data={})
     data = json.loads(resp.text)
 
-    assert ("layouts" in data), "We check layouts are in the payload"
+    assert "layouts" in data, "We check layouts are in the payload"
     layouts = data["layouts"]
 
     print(layouts)
@@ -58,7 +58,7 @@ def test_add_layout():
     resp = requests.request("GET", url, headers={}, data={})
     resp_data = json.loads(resp.text)
     assert resp.status_code == 200
-    assert ("layouts" in resp_data), "We check layouts are in the payload"
+    assert "layouts" in resp_data, "We check layouts are in the payload"
     layouts = resp_data["layouts"]
     print(layouts[0])
     assert type(layouts) is list
@@ -89,7 +89,7 @@ def test_delete_layout():
     resp = requests.request("GET", url, headers={}, data={})
     resp_data = json.loads(resp.text)
     assert resp.status_code == 200
-    assert ("layouts" in resp_data), "We check layouts are in the payload"
+    assert "layouts" in resp_data, "We check layouts are in the payload"
     layouts = resp_data["layouts"]
     assert type(layouts) is list
     assert len(layouts) == 0
@@ -130,7 +130,7 @@ def test_last_layout_saved():
     resp_data = json.loads(resp.text)
     assert resp.status_code == 200
 
-    assert ("layouts" in resp_data), "We check layouts are in the payload"
+    assert "layouts" in resp_data, "We check layouts are in the payload"
     layouts = resp_data["layouts"]
 
     assert type(layouts) is list
