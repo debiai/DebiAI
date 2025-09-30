@@ -22,8 +22,7 @@ def get_explorations(project_id, prev_hash_content=None):
         exploration = explorations_db.get(exploration_id)
         if exploration.get("project_id") != project_id:
             continue
-        # TODO : use severals keys of available explorations for project_id
-        # TODO : copy only selected keys
+
         exploration.pop("combinations", None)
         exploration.pop("metrics", None)
         explorations.append(exploration)

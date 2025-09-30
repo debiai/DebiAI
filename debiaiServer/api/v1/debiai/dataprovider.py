@@ -48,10 +48,10 @@ def format_data_provider_info(data_provider):
 
 def get_data_provider_info(dataProviderId):
 
-    # TODO LOIC: ack for name switch :
+    # As Parquet not yet supported we force json_block:
     if dataProviderId == "json_block":
         dataProviderId = "Python module Data Provider"
-    # TODO : adapt API when we change api od data-providers instances and copy tags
+
     try:
         data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
         data = format_data_provider_info(data_provider)
@@ -86,7 +86,7 @@ def get_data_providers(prev_hash_content=None):
 
     new_hash = "data_" + str(make_hash(providers_formatted))
     # We add a prefix to avoir empty string
-    # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
+
     print(
         new_hash,
         " <=> ",
@@ -112,7 +112,7 @@ def delete_data_providers(dataProviderId):
     if not deletion_allowed:
         return "Data provider deletion is not allowed", 403
 
-    # TODO LOIC: ack for name switch :
+    # To remove when legacy API V0 removal
     if dataProviderId == "json_block":
         dataProviderId = "Python module Data Provider"
 

@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: 0.31.1
+  version: 1.0.0
   title: DebiAI_APPLICATION_PROJECT_BACKEND_API
   description: DebiAI backend api
   contact:
@@ -461,7 +461,7 @@ definitions:
         description: Name display to the user
       type:
         type: string
-        description: Type of the data provider (enum of supported ? TODO)
+        description: Type of the data provider (enum of supported ?)
       tags:
         type: array
         description: List of tags associated to the project)
@@ -485,7 +485,6 @@ definitions:
             url_key: "Optional url_key in the debiai front to access the data provider api"
             s3_bucket: "If S3 use to read parquet files by front"
             s3_access_key: "S3 access key needed to access directly parquet from front in readonly"
-            # TODO check if we need to encoded it on top of HTTPS
             s3_secret_id: "S3 access key needed to access directly parquet from front in readonly - use https with such informations"
             selections_path: "local path or S3 to read selection parquet ($path/$selection_id)"
             models_path: "local path or S3 to read model parquet ($path/$model_id)"

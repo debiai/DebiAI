@@ -262,7 +262,7 @@ def __check_blocks_of_tree_exists(
 
         for result in result_structure:
             resultsToAdd[blockInfo["id"]].append(block[giv_exp_res[result["name"]]])
-            # TODO Deal with defaults results and check type
+
 
         return True, None
 

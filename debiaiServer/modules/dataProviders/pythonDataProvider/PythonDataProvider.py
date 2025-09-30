@@ -223,7 +223,6 @@ class PythonDataProvider(DataProvider):
         if not creation_allowed:
             raise DataProviderException("Results insertion is not allowed", 403)
 
-        # TODO : check resultStructure (type and default type ==)
         existing_result_structure = projects.get_result_structure(project_id)
         if existing_result_structure is not None:
             raise DataProviderException(

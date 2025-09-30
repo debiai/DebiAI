@@ -61,7 +61,7 @@ def get_projects(prev_hash_content=None):
     new_hash = "prj_" + str(
         +make_hash(projectList)
     )  # We add a prefix to avoir empty string
-    # TODO : we make the computation and check the hash but a better implementation shall use hash from data_providers
+
     print(
         new_hash,
         " <=> ",

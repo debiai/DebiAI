@@ -55,7 +55,7 @@ def get_columns_statistics(dataProviderId, projectId):
 
     print(f" - Getting columns statistics for project {projectId} on {dataProviderId}")
 
-    # TODO LOIC: ack for name switch :
+    # To remove during V0 legacy API removal in futur versions
     if dataProviderId == "json_block":
         dataProviderId = "Python module Data Provider"
 
