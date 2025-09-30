@@ -117,7 +117,7 @@ export default {
       for (let category in categories) {
         const groups = { "": [] };
         for (let column of categories[category]) {
-          const group = column.group;
+          const group = column.metadata.group;
           if (!group) {
             groups[""].push(column);
             continue;
@@ -136,7 +136,7 @@ export default {
       let columnsPerCategory = {};
       for (let i = 0; i < this.projectColumns.length; i++) {
         let column = this.projectColumns[i];
-        let category = column.category + "s";
+        let category = column.metadata.category + "s";
         // Capitalize first letter
         category = category.charAt(0).toUpperCase() + category.slice(1);
         if (!category) category = "other";

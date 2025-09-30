@@ -26,8 +26,23 @@
             >
               {{ column.name }}
             </button>
+            <!-- Tags -->
+            <documentationBlock v-if="column.tags && column.tags.length">
+              Column tags
+              <div
+                v-if="column.tags && column.tags.length"
+                class="tags"
+              >
+                <span
+                  v-for="tag in column.tags"
+                  :key="tag"
+                  class="tag"
+                  >{{ tag }}</span
+                >
+              </div>
+            </documentationBlock>
             <!-- Unique values -->
-            <div class="nbUnique">{{ column.nbUniqueValues }}</div>
+            <div class="nbUnique">{{ column.metrics.nbUniqueValues }}</div>
             <!-- Type -->
             <div
               class="type"
@@ -47,8 +62,8 @@
               <span
                 v-if="column.type === 'number'"
                 class="value"
-                :title="column.min"
-                >{{ $services.prettyNumber(column.min) }}</span
+                :title="getMetricValue(column, 'min')"
+                >{{ $services.prettyNumber(getMetricValue(column, "min")) }}</span
               >
               <!-- max -->
               <span
@@ -59,8 +74,8 @@
               <span
                 v-if="column.type === 'number'"
                 class="value"
-                :title="column.max"
-                >{{ $services.prettyNumber(column.max) }}</span
+                :title="getMetricValue(column, 'max')"
+                >{{ $services.prettyNumber(getMetricValue(column, "max")) }}</span
               >
               <!-- Average -->
               <span
@@ -71,8 +86,19 @@
               <span
                 v-if="column.type === 'number'"
                 class="value"
-                :title="column.average"
-                >{{ $services.prettyNumber(column.average) }}</span
+                :title="getMetricValue(column, 'average')"
+                >{{ $services.prettyNumber(getMetricValue(column, "average")) }}</span
+              >
+              <!-- Null values -->
+              <span
+                v-if="column.metrics && column.metrics.nbNullValues !== undefined"
+                class="label"
+                >Nulls:</span
+              >
+              <span
+                v-if="column.metrics && column.metrics.nbNullValues !== undefined"
+                class="value"
+                >{{ column.metrics.nbNullValues }}</span
               >
             </div>
           </div>
@@ -552,6 +578,10 @@ export default {
       this.unselectColumn(columnLabel);
       this.$forceUpdate();
     },
+    getMetricValue(column, metricName) {
+      if (column.metrics && column.metrics[metricName] !== undefined)
+        return column.metrics[metricName];
+    },
   },
   computed: {
     columnsGroupedByCategory() {
@@ -560,7 +590,7 @@ export default {
 
       for (const column of columns) {
         if (this.isUnsupported(column)) continue;
-        const category = column.category || "Other";
+        const category = column.metadata?.category || "Other";
         if (!columnsGroupedByCategory[category]) columnsGroupedByCategory[category] = [];
         columnsGroupedByCategory[category].push(column);
       }
@@ -634,12 +664,26 @@ export default {
             }
           }
 
+          .tags {
+            display: flex;
+            gap: 4px;
+
+            .tag {
+              background-color: #e1f5fe;
+              padding: 1px 4px;
+              border-radius: 8px;
+              font-size: 0.7em;
+              color: #0277bd;
+            }
+          }
+
           .statistics {
             display: flex;
             align-items: center;
             gap: 0.3rem;
             color: var(--fontColorLight);
             opacity: 0.5;
+            flex-wrap: wrap;
 
             .label {
               font-weight: bold;

@@ -18,8 +18,6 @@ def get_exploration_available_config():
 
 def get_explorations(project_id, prev_hash_content=None):
     explorations: List[dict] = []
-    all_explo = explorations_db.all()
-    print(all_explo)
     for explo_id in explorations_db.all():
         exploration = explorations_db.get(explo_id)
         print(exploration)
@@ -32,7 +30,6 @@ def get_explorations(project_id, prev_hash_content=None):
         explorations.append(exploration)
 
     new_hash = "explo_" + str(make_hash(explorations))
-    print(new_hash, " <=> ", prev_hash_content, new_hash == prev_hash_content)
 
     if new_hash == prev_hash_content:
         return None, 304

@@ -423,8 +423,8 @@ def apply_aggregations(
     aggregation_type = columns_aggregation_config[column_name]["type"]
     if aggregation_type == "evenRange":
         # Get the min and max values from the statistics
-        min_value = columns_statistics[column_name]["min"]
-        max_value = columns_statistics[column_name]["max"]
+        min_value = columns_statistics[column_name]["metrics"]["min"]
+        max_value = columns_statistics[column_name]["metrics"]["max"]
 
         # Get the nb chunks from the aggregation config
         nb_chunks = columns_aggregation_config[column_name]["nbChunks"]
