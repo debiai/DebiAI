@@ -314,7 +314,7 @@ export default {
       this.exploration.config.column_metrics = this.selectedColumnMetrics;
 
       return this.$explorationDialog
-        .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
+        .updateExplorationConfig(this.exploration.id, this.exploration.config)
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -327,7 +327,6 @@ export default {
     async computeRealCombinations() {
       try {
         const exploration = await this.$explorationDialog.computeRealCombinations(
-          this.projectId,
           this.explorationId,
           this.exploration.config
         );

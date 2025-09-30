@@ -30,7 +30,7 @@ format:
 
 check:
 	# -----  Validating Black code style
-	cd debiaiServer && black --check --diff --line-lenght = 120 .
+	cd debiaiServer && black --check --diff --line-length = 120 .
 
 	# -----  Validating Flake8 code style
 	cd debiaiServer && flake8 .

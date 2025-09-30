@@ -97,7 +97,6 @@ export default {
       });
   },
   deleteExploration(explorationId) {
-    // TODO : loic projectId not needed
     let code = b.startRequest("Deleting exploration");
     return axios
       .delete(`${apiURL}explorations/${explorationId}`, {
@@ -132,9 +131,8 @@ export default {
       ).then((data) => data.exploration || data);
     }
   },
-  updateExplorationConfig(projectId, explorationId, config, action = "updateConfig") {
+  updateExplorationConfig(explorationId, config, action = "updateConfig") {
     let code = b.startRequest("Updating exploration config");
-    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, config, {
         params: {
@@ -148,12 +146,11 @@ export default {
         return response.data;
       });
   },
-  computeRealCombinations(projectId, explorationId, config) {
-    return this.updateExplorationConfig(projectId, explorationId, config, "start");
+  computeRealCombinations(explorationId, config) {
+    return this.updateExplorationConfig(explorationId, config, "start");
   },
-  cancelRealCombinationsComputation(projectId, explorationId) {
+  cancelRealCombinationsComputation(explorationId) {
     let code = b.startRequest("Cancelling real combinations computation");
-    // TODO : loic projectId not needed
     return axios
       .put(`${apiURL}explorations/${explorationId}`, null, {
         params: {
@@ -169,9 +166,8 @@ export default {
   },
 
   // Selections
-  createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
+  createSelection(explorationId, selectedCombinationsIds, selectionName) {
     let code = b.startRequest("Creating selection");
-    // TODO : loic projectId not needed
     return axios
       .post(
         `${apiURL}explorations/${explorationId}/selections`,

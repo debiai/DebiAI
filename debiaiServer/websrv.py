@@ -34,7 +34,7 @@ app.add_api(
 )
 
 
-# API Refactorring in /api/V1
+# API Refactoring in /api/V1
 # - Step 2 split the main swagger in severals sub API (iso API content)
 app.add_api("api/v1/debiai/swagger.yaml", strict_validation=True, base_path="/api/v1")
 app.add_api(

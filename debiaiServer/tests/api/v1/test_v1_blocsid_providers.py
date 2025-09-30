@@ -63,7 +63,7 @@ class TestBlocsIdProvider:
 
         return test_project_id
 
-    def create_blocklevels(self, project_name):
+    def create_block_levels(self, project_name):
 
         url = (
             self.PYTHON_API_URL
@@ -99,14 +99,14 @@ class TestBlocsIdProvider:
 
     @pytest.fixture
     def project_one(self):
-        print("\nProjects one initiatization")
+        print("\nProjects one initialization")
 
         # We reset project one if already exist
         self.delete_project(self.PROJECT_NAME_1)
 
         # create project one
         self.prj_one = self.create_project(self.PROJECT_NAME_1)
-        self.create_blocklevels(self.PROJECT_NAME_1)
+        self.create_block_levels(self.PROJECT_NAME_1)
         self.add_project_data(self.PROJECT_NAME_1)
         yield
         print("\nProject init cleaning")
@@ -118,7 +118,7 @@ class TestBlocsIdProvider:
     def test_get_data_ids(self, project_one):
         pass
 
-    def otest_get_projects_check_project_one_empty(self, project_one):
+    def test_get_projects_check_project_one_empty(self, project_one):
 
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})

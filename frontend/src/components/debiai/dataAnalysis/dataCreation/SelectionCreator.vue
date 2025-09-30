@@ -151,7 +151,6 @@ export default {
       // Save the selection from the exploration data
       this.$explorationDialog
         .createSelection(
-          this.$store.state.ProjectPage.projectId,
           this.data.explorationId,
           selectedCombinationsIds,
           this.selectionName

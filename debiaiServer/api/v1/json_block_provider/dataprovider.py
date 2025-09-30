@@ -51,14 +51,14 @@ def change_project_v1(project_info, column_info):
             "nbSamples": project_info["nbSamples"],
         },
         "columns": column_info,
-        #  "nbModels": project_info["nbModels"],
-        #  "nbSelections": project_info["nbSelections"],
-        #  "nbSamples": project_info["nbSamples"],
+        # "nbModels": project_info["nbModels"],
+        # "nbSelections": project_info["nbSelections"],
+        # "nbSamples": project_info["nbSamples"],
         # "blockLevelInfo": project_info["blockLevelInfo"],
         "selections": project_info["selections"],
         "models": project_info["models"],
-        # projectColumns, get from statistic et supprimer doublon
-        # "blockLevelInfo": projectBlockLevel, supprimer ici, garder dans l'API pour module python en V1
+        # projectColumns, get from statistics and remove duplicates
+        # "blockLevelInfo": projectBlockLevel, remove here, keep in the API for python module in V1
     }
 
     return v1_project_info

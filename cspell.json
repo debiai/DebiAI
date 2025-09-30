@@ -6,6 +6,7 @@
     "applymap",
     "astype",
     "bdist",
+    "blocklevels",
     "buildx",
     "cacheout",
     "ckdtree",
@@ -27,6 +28,7 @@
     "kilocode",
     "kneighbors",
     "kraskov",
+    "LOIC",
     "nats",
     "ndarray",
     "nextafter",
@@ -80,6 +82,9 @@
     "__pycache__/",
     "node_modules/",
     "./setup.py",
-    "TODO"
+    "TODO",
+    "todo",
+    "*egg-info/*",
+    "*.db"
   ]
 }

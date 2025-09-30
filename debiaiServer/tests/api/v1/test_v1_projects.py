@@ -110,7 +110,7 @@ class TestProjects:
         resp = requests.get(url=url, headers={})
         assert (
             resp.status_code == 200
-        ), "As no hass provider we shall have 200 response code"
+        ), "As no hash provider we shall have 200 response code"
         load = json.loads(resp.text)
         print(load)
         assert "projects" in load, "We check projects are in the payload"
@@ -139,7 +139,7 @@ class TestProjects:
         ), "We check tags  are in the projects payload"  # noqa:E272
         assert (
             "metadata" in project_one
-        ), "We check matadatas  are in the projects payload"  # noqa:E272
+        ), "We check metadata  are in the projects payload"  # noqa:E272
         assert (
             "metrics" in project_one
         ), "We check metrics  are in the projects payload"  # noqa:E272

@@ -124,7 +124,7 @@ export default {
       if (this.cancellationLoading) return;
       this.cancellationLoading = true;
       this.$explorationDialog
-        .cancelRealCombinationsComputation(this.project.id, this.exploration.id)
+        .cancelRealCombinationsComputation(this.exploration.id)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

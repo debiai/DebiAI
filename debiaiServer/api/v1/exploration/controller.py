@@ -18,9 +18,8 @@ def get_exploration_available_config():
 
 def get_explorations(project_id, prev_hash_content=None):
     explorations: List[dict] = []
-    for explo_id in explorations_db.all():
-        exploration = explorations_db.get(explo_id)
-        print(exploration)
+    for exploration_id in explorations_db.all():
+        exploration = explorations_db.get(exploration_id)
         if exploration.get("project_id") != project_id:
             continue
         # TODO : use severals keys of available explorations for project_id
@@ -29,7 +28,7 @@ def get_explorations(project_id, prev_hash_content=None):
         exploration.pop("metrics", None)
         explorations.append(exploration)
 
-    new_hash = "explo_" + str(make_hash(explorations))
+    new_hash = "exploration_" + str(make_hash(explorations))
 
     if new_hash == prev_hash_content:
         return None, 304
@@ -68,15 +67,12 @@ def get_exploration(exploration_id):
 
 
 def delete_exploration(exploration_id):
-    print("detete :", exploration_id)
     explorations_db.remove(exploration_id)
-    print("Remainings ", explorations_db.all())
     return 204
 
 
 def update_exploration(exploration_id, action, body):
     exploration = explorations_db.get(exploration_id)
-    print("update epxploitations", exploration_id, action, body)
     if exploration is None:
         print("Exploration not found:", exploration_id)
         return None, 404
