@@ -1,7 +1,6 @@
 <template>
   <div id="ProjectColumnsVisualization">
     <h3>Data columns</h3>
-    {{ dataColumnsPerGroup }}
     <div id="columns">
       <div
         class="category"
