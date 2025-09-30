@@ -219,10 +219,7 @@ export default {
   methods: {
     async loadProjectAndExploration() {
       try {
-        await Promise.all([
-          this.loadProject(),
-          this.loadExploration(),
-        ]);
+        await Promise.all([this.loadProject(), this.loadExploration()]);
       } catch (e) {
         console.log(e);
       }
@@ -233,7 +230,7 @@ export default {
         .getProject()
         .then((project) => {
           this.project = project;
-          this.columnsStatistics = project.columns; 
+          this.columnsStatistics = project.columns;
 
           // Change the browser title
           if (this.project.name) document.title = this.project.name;
@@ -261,7 +258,8 @@ export default {
         });
     },
     async loadExploration(clearPrevious = true, updateColumns = true) {
-      if (clearPrevious) {this.exploration = null;
+      if (clearPrevious) {
+        this.exploration = null;
         this.columnsStatistics = null;
         this.selectedColumns = [];
         this.selectedSampleMetrics = ["Nb Samples"];
@@ -400,9 +398,7 @@ export default {
         }
         // Use the nb unique values
         else {
-          const columnStats = this.columnsStatistics.find(
-            (col) => col.name === column.label
-          );
+          const columnStats = this.columnsStatistics.find((col) => col.name === column.label);
           const columnNbUniqueValues = columnStats.metrics?.nbUniqueValues || 0;
           combinations *= columnNbUniqueValues;
         }

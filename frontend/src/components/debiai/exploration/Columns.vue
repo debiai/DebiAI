@@ -27,12 +27,20 @@
               {{ column.name }}
             </button>
             <!-- Tags -->
-            <documentationBlock  v-if="column.tags && column.tags.length">
+            <documentationBlock v-if="column.tags && column.tags.length">
               Column tags
-            <div v-if="column.tags && column.tags.length" class="tags">
-              <span v-for="tag in column.tags" :key="tag" class="tag">{{ tag }}</span>
-            </div>
-          </documentationBlock>
+              <div
+                v-if="column.tags && column.tags.length"
+                class="tags"
+              >
+                <span
+                  v-for="tag in column.tags"
+                  :key="tag"
+                  class="tag"
+                  >{{ tag }}</span
+                >
+              </div>
+            </documentationBlock>
             <!-- Unique values -->
             <div class="nbUnique">{{ column.metrics.nbUniqueValues }}</div>
             <!-- Type -->
@@ -55,7 +63,7 @@
                 v-if="column.type === 'number'"
                 class="value"
                 :title="getMetricValue(column, 'min')"
-                >{{ $services.prettyNumber(getMetricValue(column, 'min')) }}</span
+                >{{ $services.prettyNumber(getMetricValue(column, "min")) }}</span
               >
               <!-- max -->
               <span
@@ -67,7 +75,7 @@
                 v-if="column.type === 'number'"
                 class="value"
                 :title="getMetricValue(column, 'max')"
-                >{{ $services.prettyNumber(getMetricValue(column, 'max')) }}</span
+                >{{ $services.prettyNumber(getMetricValue(column, "max")) }}</span
               >
               <!-- Average -->
               <span
@@ -79,7 +87,7 @@
                 v-if="column.type === 'number'"
                 class="value"
                 :title="getMetricValue(column, 'average')"
-                >{{ $services.prettyNumber(getMetricValue(column, 'average')) }}</span
+                >{{ $services.prettyNumber(getMetricValue(column, "average")) }}</span
               >
               <!-- Null values -->
               <span
@@ -571,9 +579,9 @@ export default {
       this.$forceUpdate();
     },
     getMetricValue(column, metricName) {
-      if (column.metrics && column.metrics[metricName] !== undefined) 
+      if (column.metrics && column.metrics[metricName] !== undefined)
         return column.metrics[metricName];
-    }
+    },
   },
   computed: {
     columnsGroupedByCategory() {
