@@ -44,11 +44,8 @@ function projectId() {
 
 // Create request configuration with authentication headers
 function createRequestConfig() {
-  console.log("Creating request config with auth headers");
-
   const config = {};
   const authHeaders = authService.getAuthHeader();
-  console.log("Auth headers:", authHeaders);
 
   if (Object.keys(authHeaders).length > 0) {
     config.headers = {

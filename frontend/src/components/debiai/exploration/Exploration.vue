@@ -222,7 +222,6 @@ export default {
         await Promise.all([
           this.loadProject(),
           this.loadExploration(),
-          this.loadColumnsStatistics(),
         ]);
       } catch (e) {
         console.log(e);
@@ -234,6 +233,7 @@ export default {
         .getProject()
         .then((project) => {
           this.project = project;
+          this.columnsStatistics = project.columns; 
 
           // Change the browser title
           if (this.project.name) document.title = this.project.name;
@@ -261,7 +261,12 @@ export default {
         });
     },
     async loadExploration(clearPrevious = true, updateColumns = true) {
-      if (clearPrevious) this.exploration = null;
+      if (clearPrevious) {this.exploration = null;
+        this.columnsStatistics = null;
+        this.selectedColumns = [];
+        this.selectedSampleMetrics = ["Nb Samples"];
+        this.selectedColumnMetrics = [];
+      }
       this.isLoadingExploration = true;
 
       return this.$explorationDialog
@@ -301,19 +306,6 @@ export default {
         })
         .finally(() => {
           this.isLoadingExploration = false;
-        });
-    },
-    async loadColumnsStatistics() {
-      this.columnsStatistics = null;
-      return this.$explorationDialog
-        .getColumnsStatistics(this.dataProviderId, this.projectId)
-        .then((columnsStatisticsResult) => {
-          if (columnsStatisticsResult.columns)
-            this.columnsStatistics = columnsStatisticsResult.columns;
-          else this.columnsStatistics_status = columnsStatisticsResult.status;
-        })
-        .catch((e) => {
-          console.log(e);
         });
     },
     async updateExplorationConfig() {
@@ -408,9 +400,10 @@ export default {
         }
         // Use the nb unique values
         else {
-          const columnNbUniqueValues = this.columnsStatistics.find(
+          const columnStats = this.columnsStatistics.find(
             (col) => col.name === column.label
-          ).nbUniqueValues;
+          );
+          const columnNbUniqueValues = columnStats.metrics?.nbUniqueValues || 0;
           combinations *= columnNbUniqueValues;
         }
       }

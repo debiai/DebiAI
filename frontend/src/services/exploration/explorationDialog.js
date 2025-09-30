@@ -168,22 +168,6 @@ export default {
       });
   },
 
-  // Statistics
-  getColumnsStatistics(dataProviderId, projectId) {
-    let code = b.startRequest("Loading columns statistics");
-    // TODO : Not needed to remove
-    return axios
-      .get(
-        `${apiURL}statistics/data-providers/${dataProviderId}/projects/${projectId}/columnsStatistics`
-      )
-      .finally(() => {
-        b.endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-
   // Selections
   createSelection(projectId, explorationId, selectedCombinationsIds, selectionName) {
     let code = b.startRequest("Creating selection");
