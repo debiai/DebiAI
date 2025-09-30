@@ -213,13 +213,7 @@ export default {
   getModelResults(modelId, sampleIds) {
     return axios
       .post(
-        apiDataURL +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          modelId +
-          "/getModelResults",
+        dataProviderUrl() + "/projects/" + projectId() + "/models/" + modelId + "/getModelResults",
         { sampleIds },
         requestConfig
       )
