@@ -415,17 +415,20 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
-  console.log("loadData", selectionIds, selectionIntersection);
+  // console.log("loadData", selectionIds, selectionIntersection);
 
-  const parquetPaths = await getDataProviderBucketPath();
-  if (parquetPaths.project_path)
-    return await loadDataParquet(
-      parquetPaths.project_path,
-      parquetPaths.id_column_label,
-      selectionIds,
-      selectionIntersection
-    );
-  else return await loadDataJson(selectionIds, selectionIntersection);
+  // const parquetPaths = await getDataProviderBucketPath();
+  // if (parquetPaths.project_path)
+  //   return await loadDataParquet(
+  //     parquetPaths.project_path,
+  //     parquetPaths.id_column_label,
+  //     selectionIds,
+  //     selectionIntersection
+  //   );
+  // else return await loadDataJson(selectionIds, selectionIntersection);
+  // TODO: Tom, restore this when parquet is supported.
+
+  return await loadDataJson(selectionIds, selectionIntersection);
 }
 async function loadDataJson(selectionIds, selectionIntersection) {
   // Downloading project meta data, required to interpret the tree
