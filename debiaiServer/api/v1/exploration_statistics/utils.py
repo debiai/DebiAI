@@ -55,7 +55,7 @@ def get_columns_statistics(dataProviderId, projectId):
 
     print(f" - Getting columns statistics for project {projectId} on {dataProviderId}")
 
-    # To remove during V0 legacy API removal in futur versions
+    # To remove during V0 legacy API removal in future versions
     if dataProviderId == "json_block":
         dataProviderId = "Python module Data Provider"
 
