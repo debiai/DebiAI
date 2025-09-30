@@ -150,35 +150,35 @@ export default {
       // Load data-provider info
       this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
         this.$store.commit("setDataProviderInfo", dataInfo);
-      });
 
-      // Load the project data
-      this.loadProject().then(() => {
-        if (startAns) {
-          console.log("Start analysis");
-          let selectionIds = this.$route.query.selectionIds;
-          let selectionIntersection = this.$route.query.selectionIntersection;
-          let modelIds = this.$route.query.modelIds;
-          let commonModelResults = this.$route.query.commonModelResults;
+        // Load the project data
+        this.loadProject().then(() => {
+          if (startAns) {
+            console.log("Start analysis");
+            let selectionIds = this.$route.query.selectionIds;
+            let selectionIntersection = this.$route.query.selectionIntersection;
+            let modelIds = this.$route.query.modelIds;
+            let commonModelResults = this.$route.query.commonModelResults;
 
-          // Convert str to lists
-          if (selectionIds) selectionIds = selectionIds.split(".");
-          if (modelIds) modelIds = modelIds.split(".");
+            // Convert str to lists
+            if (selectionIds) selectionIds = selectionIds.split(".");
+            if (modelIds) modelIds = modelIds.split(".");
 
-          // Convert str to Boolean
-          selectionIntersection = selectionIntersection === true;
-          commonModelResults = commonModelResults === true;
+            // Convert str to Boolean
+            selectionIntersection = selectionIntersection === true;
+            commonModelResults = commonModelResults === true;
 
-          // Start analysis
-          this.loadData({
-            dataProviderId,
-            projectId,
-            selectionIds,
-            selectionIntersection,
-            modelIds,
-            commonModelResults,
-          });
-        }
+            // Start analysis
+            this.loadData({
+              dataProviderId,
+              projectId,
+              selectionIds,
+              selectionIntersection,
+              modelIds,
+              commonModelResults,
+            });
+          }
+        });
       });
     } else {
       console.log("No project ID or no data provider ID");

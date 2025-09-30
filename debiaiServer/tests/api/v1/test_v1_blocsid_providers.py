@@ -25,7 +25,7 @@ DEBIAI_basic_block = {
         {"name": "2", "inputs": [47, "toto"], "groundTruth": [-2]},
         {"name": "2a", "inputs": [47, "toto"], "groundTruth": [-2]},
         {"name": "2b", "inputs": [47, "toto"], "groundTruth": [-2]},
-        {"name": "2c", "inputs": [47, "tata"], "groundTruth": [-2]},        
+        {"name": "2c", "inputs": [47, "tata"], "groundTruth": [-2]},
         {"name": "3", "inputs": [99, "tata"], "groundTruth": [0.2]},
     ]
 }

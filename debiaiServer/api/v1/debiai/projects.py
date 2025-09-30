@@ -5,7 +5,6 @@ from debiaiServer.modules.dataProviders.DataProviderException import (
     DataProviderException,
 )
 import debiaiServer.modules.dataProviders.dataProviderManager as data_provider_manager
-from debiaiServer.api.v1.exploration_statistics.utils import get_columns_statistics
 from debiaiServer.api.v1.debiai.utils import make_hash
 
 #############################################################################

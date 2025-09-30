@@ -206,11 +206,11 @@ export default {
       // Load data-provider info
       this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
         this.$store.commit("setDataProviderInfo", dataInfo);
-      });
 
-      // Load the project and exploration data
-      this.loadProjectAndExploration().then(() => {
-        if (startAns) this.startCombinationAnalysis();
+        // Load the project and exploration data
+        this.loadProjectAndExploration().then(() => {
+          if (startAns) this.startCombinationAnalysis();
+        });
       });
     } else {
       this.$router.push("/");

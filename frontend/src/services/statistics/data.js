@@ -574,10 +574,10 @@ class Column {
       this.min = this.calculateMin(this.valuesIndexUniques);
       this.max = this.calculateMax(this.valuesIndexUniques);
     } else {
-      // Default Type
+      // Default Type, auto
       this.type = Number;
       this.typeText = "Num";
-      this.originalValues = this.originalValues.map((v) => (v === null ? v : +v));
+      // this.originalValues = this.originalValues.map((v) => (v === null ? v : +v));
       this.uniques = this.uniques.map((v) => (v === null ? v : +v));
       this.nbOccurrence = this.uniques.length;
       this.min = this.calculateMin(this.uniques);
