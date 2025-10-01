@@ -13,6 +13,7 @@ from debiaiServer.modules.dataProviders.webDataProvider.WebDataProvider import (
 from debiaiServer.modules.dataProviders.pythonDataProvider.PythonDataProvider import (
     PythonDataProvider,
     PYTHON_DATA_PROVIDER_ID,
+    PYTHON_DATA_PROVIDER_NAME,
 )
 from debiaiServer.modules.dataProviders.DataProviderException import (
     DataProviderException,
@@ -112,15 +113,25 @@ def get_data_provider_list():
     return data_providers_list
 
 
-def get_single_data_provider(name) -> WebDataProvider:
+def get_single_data_provider(id) -> WebDataProvider:
+
+    # TODO For compatibility with v0 :
+    if id == PYTHON_DATA_PROVIDER_NAME and python_data_provider_disabled:
+        raise DataProviderException("Python module data provider is disabled", 403)
 
     # Check if the data provider is not disabled
-    if name == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
+    if id == PYTHON_DATA_PROVIDER_ID and python_data_provider_disabled:
         raise DataProviderException("Python module data provider is disabled", 403)
 
     # Return the data provider with the given name
     for d in data_providers_list:
-        if d.name == name:
+        if d.id == id:
+            return d
+
+    # TODO : remove after V0 removal as data_provider shall be request by id
+    # Return the data provider with the given name
+    for d in data_providers_list:
+        if d.name == id:
             return d
 
     raise DataProviderException("Data provider not found", 404)
@@ -138,7 +149,8 @@ def get_single_data_provider_for_project_id(project_id) -> WebDataProvider:
 def delete(name):
     for d in data_providers_list:
         if d.name == name:
-            if d.type == "Python module Data Provider":
+            # Add check for json_block type for V0 / V1 compatibility
+            if d.type == "Python module Data Provider" or d.type == "json_block":
                 raise DataProviderException(
                     "Python module data provider cannot be deleted", 403
                 )

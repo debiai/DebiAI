@@ -1,7 +1,7 @@
 import requests
 import ujson as json
 
-appUrl = "http://localhost:3000/"
+appUrl = "http://localhost:3000/api/v0/"
 test_algo_provider_name = "test_create_algo_provider"
 
 algo_provider_list = []

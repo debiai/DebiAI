@@ -62,7 +62,7 @@
             <inline-svg
               :src="require('@/assets/svg/data.svg')"
               height="25"
-            />{{ project.nbSamples !== null ? project.nbSamples : "?" }}
+            />{{ project.metrics.nbSamples !== null ? project.metrics.nbSamples : "?" }}
           </div>
         </div>
 
@@ -134,11 +134,11 @@
             height="20"
           />
           <span
-            v-if="project.nbSamples"
+            v-if="project.metrics.nbSamples"
             style="padding: 0 5px 0 2px; font-weight: normal"
-            :title="(nbSelectedSamples * 100) / project.nbSamples + '%'"
+            :title="(nbSelectedSamples * 100) / project.metrics.nbSamples + '%'"
           >
-            ({{ Math.ceil((nbSelectedSamples * 100) / project.nbSamples) }}%)
+            ({{ Math.ceil((nbSelectedSamples * 100) / project.metrics.nbSamples) }}%)
           </span>
           Selected samples
         </div>

@@ -2,6 +2,11 @@
 FROM node:16.13-alpine AS build-stage
 WORKDIR /frontend
 COPY frontend/ .
+
+# Set the environment variable for auth token local storage key
+ARG VUE_APP_AUTH_TOKEN_KEY=debiai_auth_token
+ENV VUE_APP_AUTH_TOKEN_KEY=${VUE_APP_AUTH_TOKEN_KEY}
+
 RUN npm install
 RUN npm run build
 

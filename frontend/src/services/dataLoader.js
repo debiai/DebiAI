@@ -1,6 +1,8 @@
 import store from "../store";
 import cacheService from "./cacheService";
 import services from "./services";
+import axios from "axios";
+import { parquetRead } from "hyparquet";
 
 const backendDialog = require("./backendDialog");
 const samplesIdListRequester = require("./statistics/samplesIdListRequester").default;
@@ -49,6 +51,16 @@ async function getDataProviderLimit() {
       maxResultLimit: 5000,
     };
   }
+}
+
+async function getDataProviderBucketPath() {
+  // TODO Tom: Complete
+  return {
+    project_path: "http://localhost:8000/data/parquet/10000/download", // Local path or S3 to read project parquets
+    selection_path: null, // Local path or S3 to read selection parquet ($path/$selection_id)
+    models_path: null, // Local path or S3 to read model parquet ($path/$model_id)
+    id_column_label: "id", // Column label for the data ID
+  };
 }
 
 // Get project samples Id list functions
@@ -403,6 +415,22 @@ async function downloadResults(projectMetadata, modelId, sampleIds) {
 
 // Main methods :
 async function loadData(selectionIds, selectionIntersection) {
+  // console.log("loadData", selectionIds, selectionIntersection);
+
+  // const parquetPaths = await getDataProviderBucketPath();
+  // if (parquetPaths.project_path)
+  //   return await loadDataParquet(
+  //     parquetPaths.project_path,
+  //     parquetPaths.id_column_label,
+  //     selectionIds,
+  //     selectionIntersection
+  //   );
+  // else return await loadDataJson(selectionIds, selectionIntersection);
+  // TODO: Tom, restore this when parquet is supported.
+
+  return await loadDataJson(selectionIds, selectionIntersection);
+}
+async function loadDataJson(selectionIds, selectionIntersection) {
   // Downloading project meta data, required to interpret the tree
   let projectMetadata = await getProjectMetadata({ considerResults: false });
 
@@ -425,6 +453,62 @@ async function loadData(selectionIds, selectionIntersection) {
   return {
     metaData: projectMetadata,
     array: [projectMetadata.labels, ...dataArray],
+    sampleIdList,
+  };
+}
+async function loadDataParquet(
+  parquetDataPath,
+  parquetIdColumnLabel,
+  selectionIds,
+  selectionIntersection
+) {
+  // First, get parquet file info
+  const fileResponse = await axios.get(parquetDataPath, { responseType: "arraybuffer" });
+
+  // Read parquet file
+  let rows = [];
+  let columns = [];
+  await parquetRead({
+    file: fileResponse.data,
+    onChunk: (chunk) => {
+      columns.push(chunk.columnName);
+    },
+    onComplete: (data) => {
+      // Convert BigInt values to Number (int)
+      rows = data.map((row) =>
+        row.map((value) => (typeof value === "bigint" ? Number(value) : value))
+      );
+    },
+  });
+
+  // Check if we have an ID column
+  if (!columns.includes(parquetIdColumnLabel))
+    throw new Error("ID column " + parquetIdColumnLabel + " not found in parquet file");
+
+  // Get the data id list
+  const dataIdListColumnIndex = columns.indexOf(parquetIdColumnLabel);
+  const sampleIdList = rows.map((row) => row[dataIdListColumnIndex]);
+
+  // Add column labels as the first row
+  const arrayWithLabels = [columns, ...rows];
+
+  // Get the data provider info (pull limitations)
+  let dataProviderInfo = await getDataProviderLimit();
+
+  // Build metadata object compatible with the JSON loader format
+  const metaData = {
+    timestamp: Date.now(), // Current timestamp for caching purposes
+    nbSamples: rows.length,
+    labels: columns,
+    categories: columns.map(() => "other"), // Default to "other" category for all columns
+    type: columns.map(() => "auto"), // Default to "auto" type for all columns
+    groups: columns.map(() => null), // Default to null group for all columns
+    dataProvider: dataProviderInfo,
+  };
+
+  return {
+    metaData,
+    array: arrayWithLabels,
     sampleIdList,
   };
 }
@@ -501,7 +585,7 @@ async function loadDataAndModelResults(
   }
 }
 
-// array to DebiAI analysis main data object
+// Array to DebiAI analysis main data object
 async function arrayToJson(array, metaData) {
   let requestCode = services.startProgressRequest("Preparing the analysis");
   console.time("Preparing the analysis");

@@ -160,10 +160,10 @@ export default {
       // Load data-provider info
       this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
         this.$store.commit("setDataProviderInfo", dataInfo);
-      });
 
-      // Load the project and explorations data
-      this.loadProjectAndExplorations();
+        // Load the project and explorations data
+        this.loadProjectAndExplorations();
+      });
     } else {
       console.log("No project ID or no data provider ID");
       this.$router.push("/");
@@ -295,7 +295,7 @@ export default {
     },
     deleteExploration(explorationId) {
       this.$explorationDialog
-        .deleteExploration(this.projectId, explorationId)
+        .deleteExploration(explorationId)
         .then(() => {
           this.loadExplorations();
           this.$store.commit("sendMessage", {

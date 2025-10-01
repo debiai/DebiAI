@@ -1,7 +1,7 @@
 import requests
 import ujson as json
 
-appUrl = "http://localhost:3000/"
+appUrl = "http://localhost:3000/api/v0/"
 test_data_provider_name = "test_create_data_provider"
 
 data_providers = []

@@ -1,0 +1,636 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: DebiAI_APPLICATION_PROJECT_BACKEND_API
+  description: DebiAI backend api
+  contact:
+    email: debiai@irt-systemx.fr
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /version:
+    get:
+      summary: Ping to check if the backend is running
+      operationId: debiaiServer.controller.projects.ping
+      responses:
+        200:
+          description: The server is online
+
+  # Projects (via sub API)
+  /projects:
+    get:
+      summary: Get the projects overview
+      tags: [Project]
+      operationId: debiaiServer.api.v1.debiai.projects.get_projects
+      parameters:
+        - name: prev_hash_content
+          in: query
+          type: string
+          description: Hash of the previous request performed
+          minLength: 1
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: object
+            required:
+              - projects
+            properties:
+              hash_content:
+                type: string
+              projects:
+                type: array
+                items:
+                  $ref: "#/definitions/projectOverview"
+
+        304:
+          description: No content change
+
+    # Analysis layouts
+  /app/layouts/:
+    get:
+      summary: Get all layouts
+      tags: [Layouts]
+      operationId: debiaiServer.api.v1.debiai.layouts.get_layouts
+      parameters:
+        - name: prev_hash_content
+          in: query
+          type: string
+          description: Hash of the previous request performed
+          minLength: 1
+      responses:
+        200:
+          description: Layouts for all projects
+          schema:
+              type: object
+              required:
+                - projects
+              properties:
+                hash_content:
+                  type: string
+                layouts:          
+                  type: array
+                  items:
+                    $ref: "#/definitions/projectLayout"
+        304:
+          description: No content change
+    post:
+      summary: Add a layout
+      tags: [Layouts]
+      operationId: debiaiServer.api.v1.debiai.layouts.post_layout
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - layout
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              description:
+                type: string
+              layout:
+                $ref: "#/definitions/dashboardLayout"
+              tags:
+                type: array
+                description: List of tags associated to the layout
+                items: 
+                  type: string
+                  additionalProperties:
+                    type: string
+                  example: 
+                  - lastLayoutSaved
+              metadata:
+                type: array
+                description: List of meta informations sur as "selectedColorColumn", or ...
+                items:
+                  additionalProperties:
+                    type: string
+                  example:
+                    selectedColorColumn: "colorColumnID"
+
+      responses:
+        204:
+          description: Dashboard layout saved
+
+  /app/layouts/{id}:
+    delete:
+      summary: Delete a layout
+      tags: [Layouts]
+      operationId: debiaiServer.api.v1.debiai.layouts.delete_layout
+      parameters:
+        - name: id
+          in: path
+          type: string
+          description: Id of the layout to delete          
+          required: true
+          minLength: 1
+      responses:
+        204:
+          description: Layout deleted
+        404:
+          description: Layout not found
+
+  # Widget configuration
+  /app/widget-configurations/:
+    get:
+      summary: Get all widget configurations overview,
+        return the number of configurations for each widget
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.get_all_configurations
+      responses:
+        200:
+          description: Widget configurations number for each widget
+          schema:
+            type: object
+            description: Object with widget title as key and number of
+              configurations as value
+            additionalProperties:
+              type: integer
+              minimum: 0
+
+  /app/widgets/{widgetKey}/configurations:
+    get:
+      summary: Get the widget configurations
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.get_widget_configurations
+      parameters:
+        - name: widgetKey
+          in: path
+          description: Title of the wigdet linked to the configuration
+          type: string
+          required: true
+          minLength: 1
+      responses:
+        200:
+          description: Widget configurations list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - name
+                - projectId
+                - configuration
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                projectId:
+                  type: string
+                  description: Id of the project linked to the configuration
+                creationDate:
+                  type: string
+                configuration:
+                  type: object
+                  description: Key value list with the configuration, specific to the widget
+
+    post:
+      summary: Add a widget configuration
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.post_configuration
+      parameters:
+        - name: widgetKey
+          in: path
+          required: true
+          type: string
+          minLength: 1
+
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - projectId
+              - configuration
+            properties:
+              name:
+                type: string
+                description: Name of the configuration
+                maxLength: 100
+                minLength: 1
+              projectId:
+                type: string
+                description: Id of the project linked to the configuration
+              dataProviderId:
+                type: string
+                description: Id of the data provider linked to the project id
+              description:
+                type: string
+              configuration:
+                type: object
+                description: Key value list with the configuration, specific to the widget
+                maxProperties: 15
+
+      responses:
+        204:
+          description: Widget configuration saved
+
+  /app/widgets/{widgetKey}/configurations/{id}:
+    delete:
+      summary: Delete a widget configuration
+      tags: [Widget configurations]
+      operationId: debiaiServer.controller.widgetConfigurations.delete_configuration
+      parameters:
+        - name: widgetKey
+          in: path
+          type: string
+          required: true
+          minLength: 1
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: Id of the configuration to delete
+          minLength: 1
+      responses:
+        204:
+          description: Widget configuration saved
+        404:
+          description: Widget title or configuration not found
+
+  # Data export
+  /app/exportMethods:
+    get:
+      summary: Get the application export methods
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.get_export_methods
+      responses:
+        200:
+          description: Export method list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+                - name
+                - parameters
+                - parameterNames
+              properties:
+                type:
+                  type: string
+                  description: Export method type
+                name:
+                  type: string
+                  description: Export method name
+                  minLength: 1
+                parameters:
+                  type: array
+                  description: Export method parameters
+                parametersNames:
+                  type: array
+                  description: Name of the export method parameters according to the export type
+
+    post:
+      summary: Create an export method for the app
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.post_export_method
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - type
+              - name
+              - parameters
+            properties:
+              type:
+                type: string
+                description: Export method type
+              name:
+                type: string
+                description: Export method name
+                minLength: 1
+              parameters:
+                type: array
+                description: Export method parameters, can be anything as long as the export method type can read it
+          required: true
+      responses:
+        200:
+          description: Export method added
+        400:
+          description: Wrong type or parameters
+
+  /app/exportMethods/{exportMethodId}:
+    delete:
+      summary: Remove an export method for the app
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.delete_export_method
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Export method removed
+        404:
+          description: Unknown export method
+
+  /app/exportMethods/{exportMethodId}/exportData:
+    post:
+      summary: Export data with an export method
+      tags: [Export]
+      operationId: debiaiServer.controller.exportMethods.exportData
+      parameters:
+        - name: exportMethodId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Data exported
+
+  # Data providers
+  /data-providers:
+    get:
+      summary: Get data providers list and status
+      tags: [Data Providers]
+      operationId: debiaiServer.api.v1.debiai.dataprovider.get_data_providers
+      parameters:
+        - name: prev_hash_content
+          in: query
+          type: string
+          description: Hash of the previous request performed
+      responses:
+        200:
+          description: List of data providers
+          schema:
+            type: object
+            required:
+              - dataproviders
+            properties:
+              hash_content:
+                type: string
+              dataproviders:
+                type: array
+                items:
+                  $ref: "#/definitions/dataProvider"
+        304:
+          description: No content change
+
+    post:
+      summary: Add data provider to data providers list
+      tags: [Data Providers]
+      operationId: debiaiServer.controller.dataProviders.post_data_providers
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            $ref: "#/definitions/dataProviderConfig"
+            required:
+              - name
+              - type
+      responses:
+        204:
+          description: Data provider added to the list
+        400:
+          description: Bad request on data
+
+  /data-providers/{dataProviderId}:
+    delete:
+      summary: Delete data providers from the list
+      tags: [Data Providers]
+      operationId: debiaiServer.api.v1.debiai.dataprovider.delete_data_providers
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: Data provider deleted
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+
+    get:
+      summary: Get general informations about a data provider, like his version or the max number sample for each type of request
+      tags: [Data Providers]
+      operationId: debiaiServer.api.v1.debiai.dataprovider.get_data_provider_info
+      parameters:
+        - name: dataProviderId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The info of the data provider
+          schema:
+            type: object
+            $ref: "#/definitions/dataProviderConfig"
+            required:
+              - version
+        400:
+          description: The Data provider id must not be null
+        404:
+          description: The data provider doesn't exist
+
+definitions:
+  # Data providers
+  dataProviderConfig:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name display to the user
+      type:
+        type: string
+        description: Type of the data provider (enum of supported ?)
+      tags:
+        type: array
+        description: List of tags associated to the project)
+        items:
+          type: string
+          additionalProperties:
+            type: string
+          example:
+            - canDeleteProject
+            - canDeleteSelections
+            - canDeleteModels
+      metadata:
+        type: array
+        description: List of meta informations such as "category", or "origin", ...
+        items:
+          additionalProperties:
+            type: string
+          example:
+            version: "data provider version"
+            external_url: "Optional external URL to access the data provider"
+            url_key: "Optional url_key in the debiai front to access the data provider api"
+            s3_bucket: "If S3 use to read parquet files by front"
+            s3_access_key: "S3 access key needed to access directly parquet from front in readonly"
+            s3_secret_id: "S3 access key needed to access directly parquet from front in readonly - use https with such informations"
+            selections_path: "local path or S3 to read selection parquet ($path/$selection_id)"
+            models_path: "local path or S3 to read model parquet ($path/$model_id)"
+            project_path: "local path or S3 to read project parquets"
+      metrics:
+        type: array
+        description: List of metrics associated to the data providers
+        items:
+          additionalProperties:
+            type: number
+          example:
+            maxSampleIdByRequest: "Max sample id per request"
+            maxSampleDataByRequest: "Max sample data per request"
+            maxResultByRequest: "Max results per request"
+
+  dataProvider:
+    allOf:
+      - $ref: "#/definitions/dataProviderConfig"
+      - type: object
+        properties:
+          status:
+            type: boolean
+            description: True if the data provider is up and running (if manage by backend)
+
+  # Projects
+  projectOverview:
+    type: object
+    required:
+      - id
+      - dataProviderId
+      - name
+    properties:
+      id:
+        type: string
+        description: project ID in debiai API
+      dataProviderId:
+        type: string
+        description: project data provider ID
+      dataProviderProjectId:
+        type: string
+        description: project id in the data provider
+      name:
+        type: string
+        description: project name
+      tags:
+        type: array
+        description: List of tags associated to the project)
+        items:
+          type: string
+      metadata:
+        type: array
+        description: List of meta informations sur as "category", or "origin", ...
+        items:
+          additionalProperties:
+            type: string
+          example:
+            s3_bucket: "If S3, the buckjet name"
+            s3_access_key: ""
+            s3_secret_id: ""
+            selection_path: "local path or S3"
+            database_path: "Path  for project datas"
+      metrics:
+        type: array
+        description: List of metrics associated to the column
+        items:
+          additionalProperties:
+            type: number
+          example:
+            nbModels: 2
+            nbSelections: 1
+      creationDate:
+        type: string
+        format: date-time
+        description: creation date
+
+      updateDate:
+        type: string
+        format: date-time
+        description: last update date
+
+  projectLayout:
+    description: Project layout, information about a dashboard layout
+    type: object
+    required:
+      - id
+      - name
+      - projectId
+      - layout
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      projectId:
+        type: string
+        description: Id of the project linked to the layout
+      creationDate:
+        type: string
+        format: date-time
+      layout:
+        $ref: "#/definitions/dashboardLayout"
+      lastLayoutSaved:
+        type: boolean
+        description: True if this is the last layout saved
+      selectedColorColumn:
+        type: string
+        description: Column selected to be used as color
+        x-nullable: true
+
+  dashboardLayout:
+    description: Dashboard layout, list of widgets with their
+      position and configuration
+    type: array
+    items:
+      type: object
+      required:
+        - widgetKey
+        - x
+        - y
+        - width
+        - height
+      properties:
+        widgetKey:
+          type: string
+          description: Key of the widget
+        x:
+          type: integer
+          description: x position of the widget
+        y:
+          type: integer
+          description: y position of the widget
+        width:
+          type: integer
+          description: width of the widget
+        height:
+          type: integer
+          description: height of the widget
+        config:
+          type: object
+          description: Configuration of the widget
+          x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object

@@ -24,7 +24,7 @@ from debiaiServer.modules.dataProviders.webDataProvider.cache.cache import Cache
 
 # WebDataProvider class, allow to get data from a web data-provider
 class WebDataProvider(DataProvider):
-    def __init__(self, url, name):
+    def __init__(self, url, name, id=None):
         self.url = url
         self._name = name
         self.alive = None
@@ -32,6 +32,11 @@ class WebDataProvider(DataProvider):
         # Check if url is valid
         if not self.url:
             raise ValueError("Url is empty")
+
+        # By default id = name
+        self._id = id
+        if not self._id:
+            self._id = name
 
         # Remove trailing spaces
         self.url = self.url.strip()
@@ -51,6 +56,10 @@ class WebDataProvider(DataProvider):
     @property
     def name(self):
         return self._name
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def type(self):

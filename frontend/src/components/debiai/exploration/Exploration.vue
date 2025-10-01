@@ -51,7 +51,7 @@
                   width="33"
                   height="30"
                 />
-                <strong>{{ project.nbSamples }} </strong>
+                <strong>{{ project.metrics.nbSamples }} </strong>
                 <div>Project samples</div>
               </div>
               <!-- Theoretical -->
@@ -206,11 +206,11 @@ export default {
       // Load data-provider info
       this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
         this.$store.commit("setDataProviderInfo", dataInfo);
-      });
 
-      // Load the project and exploration data
-      this.loadProjectAndExploration().then(() => {
-        if (startAns) this.startCombinationAnalysis();
+        // Load the project and exploration data
+        this.loadProjectAndExploration().then(() => {
+          if (startAns) this.startCombinationAnalysis();
+        });
       });
     } else {
       this.$router.push("/");
@@ -219,11 +219,7 @@ export default {
   methods: {
     async loadProjectAndExploration() {
       try {
-        await Promise.all([
-          this.loadProject(),
-          this.loadExploration(),
-          this.loadColumnsStatistics(),
-        ]);
+        await Promise.all([this.loadProject(), this.loadExploration()]);
       } catch (e) {
         console.log(e);
       }
@@ -234,6 +230,7 @@ export default {
         .getProject()
         .then((project) => {
           this.project = project;
+          this.columnsStatistics = project.columns;
 
           // Change the browser title
           if (this.project.name) document.title = this.project.name;
@@ -261,7 +258,13 @@ export default {
         });
     },
     async loadExploration(clearPrevious = true, updateColumns = true) {
-      if (clearPrevious) this.exploration = null;
+      if (clearPrevious) {
+        this.exploration = null;
+        this.columnsStatistics = null;
+        this.selectedColumns = [];
+        this.selectedSampleMetrics = ["Nb Samples"];
+        this.selectedColumnMetrics = [];
+      }
       this.isLoadingExploration = true;
 
       return this.$explorationDialog
@@ -303,19 +306,6 @@ export default {
           this.isLoadingExploration = false;
         });
     },
-    async loadColumnsStatistics() {
-      this.columnsStatistics = null;
-      return this.$explorationDialog
-        .getColumnsStatistics(this.dataProviderId, this.projectId)
-        .then((columnsStatisticsResult) => {
-          if (columnsStatisticsResult.columns)
-            this.columnsStatistics = columnsStatisticsResult.columns;
-          else this.columnsStatistics_status = columnsStatisticsResult.status;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
     async updateExplorationConfig() {
       if (!this.exploration || !this.explorationConfigInitialized) return;
 
@@ -324,7 +314,7 @@ export default {
       this.exploration.config.column_metrics = this.selectedColumnMetrics;
 
       return this.$explorationDialog
-        .updateExplorationConfig(this.projectId, this.exploration.id, this.exploration.config)
+        .updateExplorationConfig(this.exploration.id, this.exploration.config)
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -337,7 +327,6 @@ export default {
     async computeRealCombinations() {
       try {
         const exploration = await this.$explorationDialog.computeRealCombinations(
-          this.projectId,
           this.explorationId,
           this.exploration.config
         );
@@ -408,9 +397,8 @@ export default {
         }
         // Use the nb unique values
         else {
-          const columnNbUniqueValues = this.columnsStatistics.find(
-            (col) => col.name === column.label
-          ).nbUniqueValues;
+          const columnStats = this.columnsStatistics.find((col) => col.name === column.label);
+          const columnNbUniqueValues = columnStats.metrics?.nbUniqueValues || 0;
           combinations *= columnNbUniqueValues;
         }
       }

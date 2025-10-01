@@ -63,7 +63,7 @@
           title="Number of samples"
         >
           <inline-svg :src="require('@/assets/svg/data.svg')" />
-          {{ project.nbSamples }} samples
+          {{ project.metrics.nbSamples }} samples
         </div>
       </div>
 

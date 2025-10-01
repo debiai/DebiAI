@@ -150,35 +150,35 @@ export default {
       // Load data-provider info
       this.$backendDialog.getSingleDataInfo().then((dataInfo) => {
         this.$store.commit("setDataProviderInfo", dataInfo);
-      });
 
-      // Load the project data
-      this.loadProject().then(() => {
-        if (startAns) {
-          console.log("Start analysis");
-          let selectionIds = this.$route.query.selectionIds;
-          let selectionIntersection = this.$route.query.selectionIntersection;
-          let modelIds = this.$route.query.modelIds;
-          let commonModelResults = this.$route.query.commonModelResults;
+        // Load the project data
+        this.loadProject().then(() => {
+          if (startAns) {
+            console.log("Start analysis");
+            let selectionIds = this.$route.query.selectionIds;
+            let selectionIntersection = this.$route.query.selectionIntersection;
+            let modelIds = this.$route.query.modelIds;
+            let commonModelResults = this.$route.query.commonModelResults;
 
-          // Convert str to lists
-          if (selectionIds) selectionIds = selectionIds.split(".");
-          if (modelIds) modelIds = modelIds.split(".");
+            // Convert str to lists
+            if (selectionIds) selectionIds = selectionIds.split(".");
+            if (modelIds) modelIds = modelIds.split(".");
 
-          // Convert str to Boolean
-          selectionIntersection = selectionIntersection === true;
-          commonModelResults = commonModelResults === true;
+            // Convert str to Boolean
+            selectionIntersection = selectionIntersection === true;
+            commonModelResults = commonModelResults === true;
 
-          // Start analysis
-          this.loadData({
-            dataProviderId,
-            projectId,
-            selectionIds,
-            selectionIntersection,
-            modelIds,
-            commonModelResults,
-          });
-        }
+            // Start analysis
+            this.loadData({
+              dataProviderId,
+              projectId,
+              selectionIds,
+              selectionIntersection,
+              modelIds,
+              commonModelResults,
+            });
+          }
+        });
       });
     } else {
       console.log("No project ID or no data provider ID");
@@ -192,7 +192,7 @@ export default {
         .getProject()
         .then((project) => {
           this.project = project;
-          this.nbSelectedSamples = this.project.nbSamples;
+          this.nbSelectedSamples = this.project.metrics.nbSamples;
 
           // Sort models and selections by update date
           this.project.selections = this.project.selections.sort(
@@ -244,7 +244,7 @@ export default {
       // Get the number of samples that will be analyzed
       // Don't send request if there is no selection and model
       if (this.selectedSelections.length === 0 && this.selectedModels.length === 0) {
-        this.nbSelectedSamples = this.project.nbSamples;
+        this.nbSelectedSamples = this.project.metrics.nbSamples;
         this.nbEvaluatedSamples = 0;
         this.nbResults = 0;
         return;

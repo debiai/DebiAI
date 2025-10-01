@@ -27,3 +27,6 @@ deployment/
 
 # Databases
 *.db
+
+# Project files
+TODO

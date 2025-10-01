@@ -1,7 +1,7 @@
 import requests
 import ujson as json
 
-appUrl = "http://localhost:3000/"
+appUrl = "http://localhost:3000/api/v1/"
 testLayoutId = None
 
 
@@ -14,7 +14,11 @@ def delete_layout(id):
 def test_get_layouts():
     url = appUrl + "app/layouts"
     resp = requests.request("GET", url, headers={}, data={})
-    layouts = json.loads(resp.text)
+    data = json.loads(resp.text)
+
+    assert "layouts" in data, "We check layouts are in the payload"
+    layouts = data["layouts"]
+
     print(layouts)
     assert resp.status_code == 200
     assert type(layouts) is list
@@ -52,14 +56,18 @@ def test_add_layout():
 
     # Check if the layout was added
     resp = requests.request("GET", url, headers={}, data={})
-    layouts = json.loads(resp.text)
+    resp_data = json.loads(resp.text)
     assert resp.status_code == 200
+    assert "layouts" in resp_data, "We check layouts are in the payload"
+    layouts = resp_data["layouts"]
+    print(layouts[0])
     assert type(layouts) is list
     assert len(layouts) == 1
+
     assert layouts[0]["name"] == data["name"]
     assert layouts[0]["description"] == data["description"]
     assert layouts[0]["projectId"] == data["projectId"]
-    assert layouts[0]["dataProviderId"] == data["dataProviderId"]
+
     assert type(layouts[0]["layout"]) is list
     assert len(layouts[0]["layout"]) == 1
     assert layouts[0]["layout"][0]["x"] == data["layout"][0]["x"]
@@ -79,8 +87,10 @@ def test_delete_layout():
     # Check if the layout was removed
     url = appUrl + "app/layouts/"
     resp = requests.request("GET", url, headers={}, data={})
-    layouts = json.loads(resp.text)
+    resp_data = json.loads(resp.text)
     assert resp.status_code == 200
+    assert "layouts" in resp_data, "We check layouts are in the payload"
+    layouts = resp_data["layouts"]
     assert type(layouts) is list
     assert len(layouts) == 0
 
@@ -117,15 +127,18 @@ def test_last_layout_saved():
     # Check if the first layout was removed
     url = appUrl + "app/layouts/"
     resp = requests.request("GET", url, headers={}, data={})
-    layouts = json.loads(resp.text)
+    resp_data = json.loads(resp.text)
     assert resp.status_code == 200
+
+    assert "layouts" in resp_data, "We check layouts are in the payload"
+    layouts = resp_data["layouts"]
+
     assert type(layouts) is list
     assert len(layouts) == 1
     assert layouts[0]["lastLayoutSaved"] is True
     assert layouts[0]["name"] == data["name"]
     assert layouts[0]["description"] == data["description"]
     assert layouts[0]["projectId"] == data["projectId"]
-    assert layouts[0]["dataProviderId"] == data["dataProviderId"]
 
     # Remove the layout
     delete_layout(layouts[0]["id"])

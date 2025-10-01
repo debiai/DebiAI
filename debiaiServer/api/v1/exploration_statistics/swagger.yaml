@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: DebiAI's Exploration statistics API
+  description: API for processing and managing exploration statistics.
+  version: 2.0.0
+
+tags:
+  - name: processing
+
+paths:
+  /data-providers/{dataProviderId}/projects/{projectId}/columnsStatistics:
+    get:
+      tags:
+        - Explorations
+      summary: Get DebiAI projects columns statistics
+      operationId: debiaiServer.api.v1.exploration_statistics.controller.get_columns_statistics
+      parameters:
+        - name: dataProviderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of columns with their statistics.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  columns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: The name of the column.
+                        type:
+                          type: string
+                          description: The type of the column (e.g., text, number).
+                        tags:
+                          type: array
+                          description: List of tags associated to the columns (ex hasDict, hasNull, ...)
+                          items: 
+                            type: string
+                        metadata:
+                          type: array
+                          description: List of meta informations sur as "category", or "origin", ...
+                          items:
+                            additionalProperties:
+                              type: string
+                            example:
+                              cateroy: Groundtruth
+                              origin: User inputs
+                        metrics:
+                          type: array
+                          description: List of metrics associated to the column
+                          items:
+                            additionalProperties:
+                              type: number
+                            example:
+                              nbUniquesValues: 25
+                              average: 3.8
+                              min: 0
+                              max: 50
+                              nbNullValues: 0
+                          
+                  version_hash:
+                    type: string
+                    description: Hash of the current available data, if new data are integrate, this hash change.
+
+        "400":
+          description: Bad request. Invalid parameters.
+        "500":
+          description: Internal server error.

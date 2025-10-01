@@ -14,7 +14,9 @@ from debiaiServer.modules.dataProviders.pythonDataProvider.dataUtils import (
 
 from debiaiServer.utils.utils import get_app_version
 
-PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
+PYTHON_DATA_PROVIDER_NAME = "Python module Data Provider"
+PYTHON_DATA_PROVIDER_TYPE = "internal"
+PYTHON_DATA_PROVIDER_ID = "json_block"
 
 
 # Wrappers
@@ -46,10 +48,14 @@ class PythonDataProvider(DataProvider):
 
     @property
     def name(self):
-        return PYTHON_DATA_PROVIDER_ID
+        return PYTHON_DATA_PROVIDER_NAME
 
     @property
     def type(self):
+        return PYTHON_DATA_PROVIDER_TYPE
+
+    @property
+    def id(self):
         return PYTHON_DATA_PROVIDER_ID
 
     def is_alive(self):
@@ -217,7 +223,6 @@ class PythonDataProvider(DataProvider):
         if not creation_allowed:
             raise DataProviderException("Results insertion is not allowed", 403)
 
-        # TODO : check resultStructure (type and default type ==)
         existing_result_structure = projects.get_result_structure(project_id)
         if existing_result_structure is not None:
             raise DataProviderException(

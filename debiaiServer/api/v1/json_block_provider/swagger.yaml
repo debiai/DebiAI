@@ -1,0 +1,821 @@
+swagger: "2.0"
+info:
+  version: 0.31.1
+  title: DebiAI_DATAPROVIDER_BACKEND_API
+  description: DebiAI backend api
+  contact:
+    email: debiai@irt-systemx.fr
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+
+  /version:
+    get:
+      summary: Ping to check if the backend is running
+      operationId: debiaiServer.controller.projects.ping
+      responses:
+        200:
+          description: The server is online
+
+  /json_block/projects:
+    get:
+      summary: Get the projects overview for a data provider
+      tags: [Project]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data_providers_project
+      responses:
+        200:
+          description: List of project overviews
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/projectOverview"
+
+  /json_block/projects/{projectId}:
+    get:
+      summary: Get project name, nb of models & nb of selections (overviews of a project)
+      tags: [Project]
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.get_project
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
+    delete:
+      summary: remove a project from ID
+      tags: [Project]
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.delete_project
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: project deleted
+        404:
+          description: project doesn't exist
+
+  /json_block/projects/{projectId}/dataIdList:
+    post:
+      summary: Get the project data id list
+      tags: [Project]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data_id_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: requestParameters
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - analysis
+              - from
+              - to
+            properties:
+              from:
+                type: integer
+                description: The index of the first data to return
+                x-nullable: true
+              to:
+                type: integer
+                description: The index of the last data to return
+                x-nullable: true
+              analysis:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    description: Id of the analysis
+                  start:
+                    type: boolean
+                    description: If true, this is the first request of the analysis
+                  end:
+                    type: boolean
+                    description: If true, this is the last request of the analysis
+                x-nullable: true
+
+      responses:
+        200:
+          description: project
+          schema:
+            $ref: "#/definitions/project"
+
+
+  # Models
+
+  /json_block/projects/{projectId}/models/{modelId}:
+    get:
+      summary: Get a model results id list
+      tags: [Model]
+      operationId:  debiaiServer.api.v1.json_block_provider.dataprovider.get_model_id_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: model or project doesn't exist
+
+    delete:
+      summary: remove a model
+      tags: [Model]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.delete_model
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: model deleted
+        404:
+          description: model or project doesn't exist
+
+  /json_block/projects/{projectId}/models/{modelId}/getModelResults:
+    post:
+      summary: Get the model results from a sample list
+      tags: [Model]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_results
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: modelId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                description: List of sample ID
+                items:
+                  type: [string, integer, number]
+      responses:
+        200:
+          description: model results
+          schema:
+            type: object
+            additionalProperties:
+              type: array
+              description: List of results ordered the same way as the project expected results
+        404:
+          description: model or project doesn't exist
+
+  # Blocks
+  /json_block/projects/{projectId}/blocksFromSampleIds:
+    post:
+      summary: get a project tree form a sample list
+      tags: [Block]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_data
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          description: project ID
+          required: true
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - sampleIds
+            properties:
+              sampleIds:
+                type: array
+                items:
+                  type: [string, integer, number]
+
+              analysis:
+                description: Informations about the analysis to help data-providers with data management
+                $ref: "#/definitions/analysis"
+                x-nullable: true
+
+      responses:
+        200:
+          description: Block tree with sample
+          schema:
+            type: object
+        404:
+          description: Project or one of the models not found
+
+  # Selections
+  /json_block/projects/{projectId}/selections/:
+    get:
+      summary: Get the project selections
+      tags: [Selection]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_selections
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selections
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/selection"
+
+    post:
+      summary: add a selection
+      tags: [Selection]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.post_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selection sample id (hash)
+              selectionName:
+                type: string
+      responses:
+        200:
+          description: selection added, return the selection
+          schema:
+            $ref: "#/definitions/selection"
+
+  /json_block/projects/{projectId}/selections/{selectionId}:
+    get:
+      summary: Get a project selection id list
+      tags: [Selection]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.get_selection_id_list
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Project selection id list
+          schema:
+            type: array
+            items:
+              type: string
+        404:
+          description: Selection, project or data provider not found
+
+    delete:
+      summary: delete a selection
+      tags: [Selection]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.delete_selection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: selectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: selection deleted
+
+  /json_block/projects/{projectId}/exportSelection:
+    post:
+      summary: Export a selected sample id list from an export method
+      tags: [Export]
+      operationId: debiaiServer.api.v1.json_block_provider.dataprovider.exportSelection
+      parameters:
+        - name: projectId
+          in: path
+          type: string
+          required: true
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - sampleHashList
+              - selectionName
+              - exportMethodId
+            properties:
+              sampleHashList:
+                type: array
+                items:
+                  type: string
+                description: List of the selected sample id (hash)
+              selectionName:
+                type: string
+              exportMethodId:
+                type: string
+              annotationValue:
+                type: string
+                description: Any value set by the user
+      responses:
+        200:
+          description: Selection exported
+
+definitions:
+  # Projects
+  projectOverview:
+    type: object
+    required:
+      - id
+      - dataProviderId
+      - name
+    properties:
+      id:
+        type: string
+        description: project ID
+
+      dataProviderId:
+        type: string
+        description: project data provider ID
+
+      name:
+        type: string
+        description: project name
+
+      nbModels:
+        type: integer
+        description: number of Models
+
+      nbSelections:
+        type: integer
+        description: number of selections
+
+      creationDate:
+        type: string
+        format: date-time
+        description: creation date
+
+      updateDate:
+        type: string
+        format: date-time
+        description: last update date
+
+  project:
+    allOf:
+      - $ref: "#/definitions/projectOverview"
+      - type: object
+        required:
+          - columns
+          - resultsStructure
+        properties:
+          columns:
+            description: list of the projects columns that will be used to display the data
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+          resultsStructure:
+            description: list of the projects columns that will be used to display the model results
+            type: array
+            items:
+              $ref: "#/definitions/column"
+
+  column:
+    description: column information, for data or model results
+    type: object
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        description: column name
+      category:
+        type: string
+        description: column category, by default it is 'other' or 'result' for model results
+        enum:
+          - other
+          - context
+          - input
+          - groundtruth
+      type:
+        type: string
+        description: column type
+        enum:
+          - auto
+          - text
+          - number
+          - boolean
+
+      group:
+        type: string
+        description: column group, used to group columns in the UI
+
+  blockLevelInfo:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: block level name
+
+  # Artefact
+  artefact:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      creationDate:
+        type: string
+        format: date-time
+      updateDate:
+        type: string
+        format: date-time
+      version:
+        type: string
+      metadata:
+        type: object
+        additionalProperties:
+          type: string
+        example:
+          meteo: soleil
+          temperature: 50
+
+  # Models
+  modelOverview:
+    type: object
+    required:
+      - name
+      - id
+    properties:
+      name:
+        type: string
+      id:
+        type: string
+      nbEvaluatedSamples:
+        type: integer
+      updateDate:
+        type: string
+        format: date-time
+      creationDate:
+        type: string
+        format: date-time
+      metadata:
+        type: object
+
+  model:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          hyperParameters:
+            type: array
+            items:
+              type: string
+          trainingLogs:
+            type: array
+            items:
+              type: string
+
+  # Selections
+  selection:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+        properties:
+          nbSamples:
+            type: integer
+          metadata:
+            type: object
+
+  # DataTypes
+  dataType:
+    type: object
+    properties:
+      gdtList:
+        type: array
+        items:
+          type: object
+        description: list of ground thruth (key - value)
+
+      inputList:
+        type: array
+        items:
+          type: object
+        description: list of inputs (key - value)
+
+      contextList:
+        type: array
+        items:
+          type: object
+        description: list of context (key - value)
+
+  # block & sample
+  block:
+    allOf:
+      - $ref: "#/definitions/dataType"
+      - type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+
+  blockOverview:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: name of the block
+
+  sample:
+    allOf:
+      - $ref: "#/definitions/artefact"
+      - type: object
+
+  blockTree:
+    type: array
+    items:
+      $ref: "#/definitions/block"
+
+  # Data providers
+  dataProvider:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      status:
+        type: boolean
+        description: True if the data provider is up and running
+      type:
+        type: string
+
+  # Analysis
+  analysis:
+    type: object
+    description: Data for the current analysis
+    required:
+      - id
+    properties:
+      id:
+        type: string
+        description: Unique ID generated for the analysis, it will be the same in this analysis requests
+      start:
+        type: boolean
+        description: True if this is the first request of the analysis
+      end:
+        type: boolean
+        description: True if this is the last request of the analysis
+
+  # Layout
+  projectLayout:
+    description: Project layout, information about a dashboard layout
+    type: object
+    required:
+      - id
+      - name
+      - projectId
+      - dataProviderId
+      - layout
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      projectId:
+        type: string
+        description: Id of the project linked to the layout
+      dataProviderId:
+        type: string
+        description: Id of the data provider linked to the project id
+      creationDate:
+        type: string
+        format: date-time
+      layout:
+        $ref: "#/definitions/dashboardLayout"
+      lastLayoutSaved:
+        type: boolean
+        description: True if this is the last layout saved
+      selectedColorColumn:
+        type: string
+        description: Column selected to be used as color
+        x-nullable: true
+
+  dashboardLayout:
+    description: Dashboard layout, list of widgets with their
+      position and configuration
+
+    type: array
+    items:
+      type: object
+      required:
+        - widgetKey
+        - x
+        - y
+        - width
+        - height
+      properties:
+        widgetKey:
+          type: string
+          description: Key of the widget
+        x:
+          type: integer
+          description: x position of the widget
+        y:
+          type: integer
+          description: y position of the widget
+        width:
+          type: integer
+          description: width of the widget
+        height:
+          type: integer
+          description: height of the widget
+        config:
+          type: object
+          description: Configuration of the widget
+          x-nullable: true
+        localFilters:
+          type: array
+          description: Filters applied to the widget
+          x-nullable: true
+          items:
+            type: object
+
+  # Algo providers
+  algoProvider:
+    description: Informations about an AlgoProvider
+    required:
+      - url
+      - name
+      - status
+      - algorithms
+    properties:
+      name:
+        type: string
+        description: Name of the AlgoProvider
+        minLength: 1
+      url:
+        type: string
+        description: Url of the AlgoProvider
+        minLength: 1
+      status:
+        type: boolean
+        description: True if the algo provider is up and running
+      algorithms:
+        type: array
+        description: List of algorithms provided by the AlgoProvider
+        items:
+          type: object
+          description: Informations about an algorithm
+          required:
+            - id
+            - inputs
+            - outputs
+          properties:
+            id:
+              type: string
+              description: The id of the algorithm, must be unique, will be used to identify the algorithm
+              example: "my-algorithm-01"
+            name:
+              type: string
+              description: The name of the algorithm
+              example: "My algorithm 01"
+            description:
+              type: string
+              description: The description of the algorithm
+              example: "This algorithm is used to do something"
+            tags:
+              type: array
+              description: The list of tags of the algorithm
+              items:
+                type: string
+              example: ["tag1", "tag2"]
+            author:
+              type: string
+              description: The author of the algorithm
+              example: "Ada Lovelace"
+            creationDate:
+              type: string
+              description: The creation date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-01-01"
+              format: date
+              x-nullable: true
+            updateDate:
+              type: string
+              description: The last update date of the algorithm, ISO 8601 format, YYYY-MM-DD
+              example: "2023-03-20"
+              format: date
+              x-nullable: true
+            version:
+              type: string
+              description: The version of the algorithm
+              example: "0.1.0"
+            inputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoInputOutput"
+            outputs:
+              type: array
+              description: The list of inputs of the algorithm
+              items:
+                type: object
+                $ref: "#/definitions/algoInputOutput"
+
+  algoInputOutput:
+    type: object
+    description: Informations about an input or an output of an algorithm
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        description: The name of the input or output
+        example: "Input_A"
+      type:
+        type: string
+        enum:
+          - string
+          - number
+          - boolean
+          - array
+
+      # Next is useless for outputs
+      availableValues:
+        type: array
+        description: The list of available values for this input
+        example: ["my value", "my other value"]
+      default:
+        description: The default value for this input
+        example: "my value"
+      min:
+        type: number
+        description: The minimum value for number inputs
+        example: 0
+      max:
+        type: number
+        description: The maximum value for number inputs
+        example: 10
+      arrayType:
+        type: string
+        description: For array inputs, specify type of the array
+        enum:
+          - string
+          - number
+          - boolean
+      lengthMin:
+        type: number
+        description: The minimum length of the array for array inputs
+        example: 0
+      lengthMax:
+        type: number
+        description: The maximum length of the array for array inputs
+        example: 10

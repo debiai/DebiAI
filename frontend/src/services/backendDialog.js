@@ -2,9 +2,14 @@ import axios from "axios";
 import config from "../../config";
 import store from "../store";
 import services from "./services";
+import cacheService from "./cacheService";
+import authService from "./authService";
 
-const apiURL = config.API_URL;
+const apiDebiaiURL = config.API_DEBIAI_URL;
+const apiDataURL = config.API_DATA_URL;
+const apiAlgoURL = config.API_ALGO_URL;
 
+// Request tracking & display utilities
 function startRequest(name) {
   let requestCode = services.uuid();
   store.commit("startRequest", { name, code: requestCode });
@@ -15,10 +20,20 @@ function endRequest(code) {
   store.commit("endRequest", code);
 }
 
+// Request creation helpers
 function dataProviderId() {
   const dpId = store.state.ProjectPage.dataProviderId;
   if (dpId === null || dpId === undefined) throw new Error("Data provider ID not set");
   return dpId;
+}
+
+function dataProviderUrl() {
+  let dpUrl = store.state.ProjectPage.dataProviderInfo?.metadata?.external_url;
+  if (dpUrl === null || dpUrl === undefined) dpUrl = config.API_DATA_URL + dataProviderId();
+
+  // Remove trailing slash if exists
+  if (dpUrl.endsWith("/")) return dpUrl.slice(0, -1);
+  return dpUrl;
 }
 
 function projectId() {
@@ -27,29 +42,85 @@ function projectId() {
   return pId;
 }
 
+// Create request configuration with authentication headers
+function createRequestConfig() {
+  const config = {};
+  const authHeaders = authService.getAuthHeader();
+
+  if (Object.keys(authHeaders).length > 0) {
+    config.headers = {
+      ...authHeaders,
+    };
+  }
+
+  return config;
+}
+
+const requestConfig = createRequestConfig();
+
+// Hash-based cache utilities
+//  Provide automatic caching based on hash_content from the backend.
+// - If no cached response exists, sends a normal GET request
+// - If cached response exists, sends prev_hash_content parameter
+// - If backend returns 304, uses cached response
+// - If backend returns 200 with new hash_content, updates cache
+async function requestWithHashCache(url, cacheKey, requestOptions = {}) {
+  try {
+    // Get cached response if exists
+    const cachedData = await cacheService.getHashResponse(cacheKey);
+
+    // Prepare request parameters
+    const params = { ...requestOptions.params };
+    if (cachedData && cachedData.hash) params.prev_hash_content = cachedData.hash;
+
+    // Create request config with auth headers
+    const response = await axios.get(url, {
+      ...requestOptions,
+      ...requestConfig,
+      params,
+    });
+
+    // If status is 304 (Not Modified), return cached response
+    if (response.status === 304 && cachedData) return cachedData.response;
+
+    // If status is 200, save new hash and response
+    if (response.status === 200 && response.data.hash_content) {
+      await cacheService.saveHashResponse(cacheKey, response.data.hash_content, response.data);
+    }
+
+    return response.data;
+  } catch (error) {
+    // If request fails and we have cached data, return it
+    const cachedData = await cacheService.getHashResponse(cacheKey);
+    if (cachedData) return cachedData.response;
+    throw error;
+  }
+}
+
+function getCachedRequest(url, cacheKey, requestName) {
+  let code = startRequest(requestName);
+  return requestWithHashCache(url, cacheKey).finally(() => {
+    endRequest(code);
+  });
+}
+
+// Main API interaction functions
 export default {
   startRequest,
   endRequest,
   dataProviderId,
   projectId,
-  // ====== Menu
 
   // Projects
   getProjects() {
-    let code = startRequest("Getting projects");
-    return axios
-      .get(apiURL + "projects")
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
+    return getCachedRequest(apiDebiaiURL + "projects", "projects", "Getting projects").then(
+      (data) => data.projects
+    );
   },
   getProject() {
     let code = startRequest("Getting project data");
     return axios
-      .get(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId())
+      .get(dataProviderUrl() + "/projects/" + projectId(), requestConfig)
       .finally(() => {
         endRequest(code);
       })
@@ -60,7 +131,7 @@ export default {
   deleteProject() {
     let code = startRequest("Deleting project");
     return axios
-      .delete(apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId())
+      .delete(dataProviderUrl() + "/projects/" + projectId(), requestConfig)
       .finally(() => {
         endRequest(code);
       })
@@ -71,20 +142,16 @@ export default {
 
   // Data providers
   getDataProviders() {
-    let code = startRequest("Getting data providers");
-    return axios
-      .get(apiURL + "data-providers")
-      .finally(() => {
-        endRequest(code);
-      })
-      .then((response) => {
-        return response.data;
-      });
+    return getCachedRequest(
+      apiDebiaiURL + "data-providers",
+      "data-providers",
+      "Getting data providers"
+    ).then((data) => data.dataproviders);
   },
   getSingleDataInfo() {
     let code = startRequest("Getting data provider info");
     return axios
-      .get(apiURL + "data-providers/" + dataProviderId())
+      .get(apiDebiaiURL + "data-providers/" + dataProviderId(), requestConfig)
       .finally(() => {
         endRequest(code);
       })
@@ -94,50 +161,37 @@ export default {
   },
   postDataProvider(type, name, url) {
     let code = startRequest("Creating data provider");
-    return axios.post(apiURL + "data-providers", { type, name, url }).finally(() => {
-      endRequest(code);
-    });
+    return axios
+      .post(apiDebiaiURL + "data-providers", { type, name, url }, requestConfig)
+      .finally(() => {
+        endRequest(code);
+      });
   },
   deleteDataProvider(id) {
     let code = startRequest("Deleting data provider");
-    return axios.delete(apiURL + "data-providers/" + id).finally(() => {
+    return axios.delete(apiDebiaiURL + "data-providers" + "/" + id, requestConfig).finally(() => {
       endRequest(code);
     });
   },
 
   // Samples ID
   getProjectIdList(analysis, from = null, to = null) {
-    let request =
-      apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/dataIdList";
-
+    let request = dataProviderUrl() + "/projects/" + projectId() + "/dataIdList";
     const requestBody = { analysis, from, to };
 
-    return axios.post(request, requestBody).then((response) => response.data);
+    return axios.post(request, requestBody, requestConfig).then((response) => response.data);
   },
   getSelectionIdList(selection_id) {
     return axios
       .get(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/selections/" +
-          selection_id
+        dataProviderUrl() + "/projects/" + projectId() + "/selections/" + selection_id,
+        requestConfig
       )
       .then((response) => response.data);
   },
   getModelResultsIdList(model_id) {
     return axios
-      .get(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          model_id
-      )
+      .get(dataProviderUrl() + "/projects/" + projectId() + "/models/" + model_id, requestConfig)
       .then((response) => response.data);
   },
 
@@ -145,13 +199,12 @@ export default {
   getBlocksFromSampleIds(sampleIds, analysis) {
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/blocksFromSampleIds",
-        { sampleIds, analysis }
+        dataProviderUrl() + "/projects/" + projectId() + "/blocksFromSampleIds",
+        {
+          sampleIds,
+          analysis,
+        },
+        requestConfig
       )
       .then((response) => response.data);
   },
@@ -160,30 +213,16 @@ export default {
   getModelResults(modelId, sampleIds) {
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          modelId +
-          "/getModelResults",
-        { sampleIds }
+        dataProviderUrl() + "/projects/" + projectId() + "/models/" + modelId + "/getModelResults",
+        { sampleIds },
+        requestConfig
       )
       .then((response) => response.data);
   },
   delModel(modelId) {
     let code = startRequest("Deleting selection");
     return axios
-      .delete(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/models/" +
-          modelId
-      )
+      .delete(dataProviderUrl() + "/projects/" + projectId() + "/models/" + modelId, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -192,9 +231,7 @@ export default {
   getSelections() {
     let code = startRequest("Loading selections");
     return axios
-      .get(
-        apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/selections/"
-      )
+      .get(dataProviderUrl() + "/projects/" + projectId() + "/selections/", requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -202,8 +239,12 @@ export default {
     let code = startRequest("Saving selection");
     return axios
       .post(
-        apiURL + "data-providers/" + dataProviderId() + "/projects/" + projectId() + "/selections/",
-        { sampleHashList, selectionName }
+        dataProviderUrl() + "/projects/" + projectId() + "/selections/",
+        {
+          sampleHashList,
+          selectionName,
+        },
+        requestConfig
       )
       .finally(() => {
         endRequest(code);
@@ -216,13 +257,8 @@ export default {
     let code = startRequest("Deleting selection");
     return axios
       .delete(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/selections/" +
-          selectionId
+        dataProviderUrl() + "/projects/" + projectId() + "/selections/" + selectionId,
+        requestConfig
       )
       .finally(() => {
         endRequest(code);
@@ -234,33 +270,37 @@ export default {
 
   // Layouts
   getLayouts() {
-    return axios.get(apiURL + "app/layouts/").then((response) => response.data);
+    return getCachedRequest(apiDebiaiURL + "app/layouts/", "layouts", "Getting layouts").then(
+      (data) => data.layouts
+    );
   },
   saveLayout(body) {
     let code = startRequest("Saving layout");
     body.projectId = projectId();
     body.dataProviderId = dataProviderId();
     return axios
-      .post(apiURL + "app/layouts/", body)
+      .post(apiDebiaiURL + "app/layouts/", body, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteLayout(layoutId) {
     let code = startRequest("Deleting layout");
     return axios
-      .delete(apiURL + "app/layouts/" + layoutId)
+      .delete(apiDebiaiURL + "app/layouts/" + layoutId, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
 
   // Widget configurations
   getWidgetConfigurationsOverview() {
-    return axios.get(apiURL + "app/widget-configurations/").then((response) => response.data);
+    return axios
+      .get(apiDebiaiURL + "app/widget-configurations/", requestConfig)
+      .then((response) => response.data);
   },
   getWidgetConfigurations(widgetKey) {
     let code = startRequest("Loading widget configurations");
     return axios
-      .get(apiURL + "app/widgets/" + widgetKey + "/configurations")
+      .get(apiDebiaiURL + "app/widgets/" + widgetKey + "/configurations", requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -270,20 +310,27 @@ export default {
   ) {
     let code = startRequest("Saving widget configuration");
     return axios
-      .post(apiURL + "app/widgets/" + widgetKey + "/configurations", {
-        projectId,
-        dataProviderId,
-        configuration,
-        name,
-        description,
-      })
+      .post(
+        apiDebiaiURL + "app/widgets/" + widgetKey + "/configurations",
+        {
+          projectId,
+          dataProviderId,
+          configuration,
+          name,
+          description,
+        },
+        requestConfig
+      )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteWidgetConfiguration(widgetKey, configurationId) {
     let code = startRequest("Deleting widget configuration");
     return axios
-      .delete(apiURL + "app/widgets/" + widgetKey + "/configurations/" + configurationId)
+      .delete(
+        apiDebiaiURL + "app/widgets/" + widgetKey + "/configurations/" + configurationId,
+        requestConfig
+      )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -292,7 +339,7 @@ export default {
   getExportMethods() {
     let code = startRequest("Loading export methods");
     return axios
-      .get(apiURL + "app/exportMethods")
+      .get(apiDebiaiURL + "app/exportMethods", requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -301,14 +348,14 @@ export default {
 
     let code = startRequest("Creating the export method");
     return axios
-      .post(apiURL + "app/exportMethods", toExport)
+      .post(apiDebiaiURL + "app/exportMethods", toExport, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteExportMethod(methodId) {
     let code = startRequest("Deleting the export method");
     return axios
-      .delete(apiURL + "app/exportMethods/" + methodId)
+      .delete(apiDebiaiURL + "app/exportMethods/" + methodId, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -327,13 +374,9 @@ export default {
     let code = startRequest("Exporting the selection " + selectionName);
     return axios
       .post(
-        apiURL +
-          "data-providers/" +
-          dataProviderId() +
-          "/projects/" +
-          projectId() +
-          "/exportSelection",
-        toSend
+        dataProviderUrl() + "/projects/" + projectId() + "/exportSelection",
+        toSend,
+        requestConfig
       )
       .finally(() => endRequest(code))
       .then((response) => response.data);
@@ -341,7 +384,11 @@ export default {
   exportData(data, exportMethodId) {
     let code = startRequest("Exporting " + data.type);
     return axios
-      .post(apiURL + "app/exportMethods/" + exportMethodId + "/exportData", data)
+      .post(
+        apiDebiaiURL + "app/exportMethods/" + exportMethodId + "/exportData",
+        data,
+        requestConfig
+      )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -350,7 +397,7 @@ export default {
   getAlgoProviders() {
     let code = startRequest("Loading algo providers");
     return axios
-      .get(apiURL + "app/algo-providers")
+      .get(apiAlgoURL, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
@@ -358,23 +405,27 @@ export default {
     let toExport = { name, url };
     let code = startRequest("Adding the algo provider");
     return axios
-      .post(apiURL + "app/algo-providers", toExport)
+      .post(apiAlgoURL, toExport, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   deleteAlgoProvider(algoProviderName) {
     let code = startRequest("Deleting the algo provider");
     return axios
-      .delete(apiURL + "app/algo-providers/" + algoProviderName)
+      .delete(apiAlgoURL + "/" + algoProviderName, requestConfig)
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },
   useAlgorithm(algoProviderName, algoId, inputs) {
     let code = startRequest("The algorithm is running");
     return axios
-      .post(apiURL + "app/algo-providers/" + algoProviderName + "/algorithms/use/" + algoId, {
-        inputs,
-      })
+      .post(
+        apiAlgoURL + "/" + algoProviderName + "/algorithms/use/" + algoId,
+        {
+          inputs,
+        },
+        requestConfig
+      )
       .finally(() => endRequest(code))
       .then((response) => response.data);
   },

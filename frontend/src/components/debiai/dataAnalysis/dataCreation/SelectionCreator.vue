@@ -150,12 +150,7 @@ export default {
 
       // Save the selection from the exploration data
       this.$explorationDialog
-        .createSelection(
-          this.$store.state.ProjectPage.projectId,
-          this.data.explorationId,
-          selectedCombinationsIds,
-          this.selectionName
-        )
+        .createSelection(this.data.explorationId, selectedCombinationsIds, this.selectionName)
         .then(() => {
           this.$store.commit("sendMessage", {
             title: "success",

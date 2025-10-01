@@ -2,7 +2,7 @@ import requests
 import ujson as json
 
 PYTHON_DATA_PROVIDER_ID = "Python module Data Provider"
-appUrl = "http://localhost:3000/"
+appUrl = "http://localhost:3000/api/v0/"
 test_project_name = "test_create_project"
 test_project_id = None
 
