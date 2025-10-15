@@ -1,4 +1,8 @@
 include debiaiServer/swagger.yaml
+include debiaiServer/api/v1/debiai/swagger.yaml
+include debiaiServer/api/v1/exploration/swagger.yaml
+include debiaiServer/api/v1/exploration_statistics/swagger.yaml
+include debiaiServer/api/v1/json_block_provider/swagger.yaml
 include debiaiServer/exploration/swagger.yaml
 include debiaiServer/exploration_statistics/swagger.yaml
 include debiaiServer/config/config.ini

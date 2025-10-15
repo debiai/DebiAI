@@ -26,6 +26,8 @@ setup(
         "werkzeug==2.2.2",
         "psutil==6.0.0",
         "waitress==3.0.0",
+        "pickledb==1.3.2",
+        'setuptools==80.9.0'
     ],
     entry_points={
         "console_scripts": [
