@@ -129,6 +129,9 @@ def get_project_columns(project):
             if "group" in column:
                 col["group"] = column["group"]
 
+            if "metrics" in column:
+                col["metrics"] = column["metrics"]
+
             project_columns.append(col)
 
     return project_columns

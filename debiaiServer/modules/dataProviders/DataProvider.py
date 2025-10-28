@@ -48,7 +48,7 @@ class DataProvider(ABC):
         pass
 
     @abstractmethod
-    def get_samples(self, _projectId, _analysis, id_list):
+    def get_samples(self, _projectId, _analysis, id_list) -> dict:
         pass
 
     # Selections
