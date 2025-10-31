@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: DebiAI's Exploration statistics API
   description: API for processing and managing exploration statistics.
-  version: 1.0.0
+  version: 1.0.1
 
 tags:
   - name: processing

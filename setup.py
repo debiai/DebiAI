@@ -7,7 +7,7 @@ except ModuleNotFoundError:
     VERSION = "0.0.0"
 
 setup(
-    name="debiai-gui",
+    name="debiai_gui",
     version=VERSION,
     packages=find_packages(include=["debiaiServer", "debiaiServer.*"]),
     include_package_data=True,
