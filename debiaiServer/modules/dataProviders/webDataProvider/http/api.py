@@ -59,7 +59,7 @@ def get_id_list(url, id_project, analysis, _from=None, _to=None):
                 url
                 + "/projects/"
                 + id_project
-                + "/data-id-list?from={}&to={}&analysisId={}".format(
+                + "/dataIdList?from={}&to={}&analysisId={}".format(
                     _from, _to, analysis["id"]
                 )
             )
@@ -68,7 +68,7 @@ def get_id_list(url, id_project, analysis, _from=None, _to=None):
                 url
                 + "/projects/"
                 + id_project
-                + "/data-id-list?analysisId={}".format(analysis["id"])
+                + "/dataIdList?analysisId={}".format(analysis["id"])
             )
 
         if "start" in analysis and analysis["start"]:
@@ -76,7 +76,7 @@ def get_id_list(url, id_project, analysis, _from=None, _to=None):
         if "end" in analysis and analysis["end"]:
             url += "&analysisEnd={}".format(str(analysis["end"]).lower())
 
-        r = requests.get(url)
+        r = requests.post(url)
 
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
@@ -91,7 +91,7 @@ def get_samples(url, id_project, analysis, id_list):
         if analysis:
             rurl = (
                 url
-                + "/projects/{}/data?analysisId={}&\
+                + "/projects/{}/blocksFromSampleIds?analysisId={}&\
 analysisStart={}&analysisEnd={}".format(
                     id_project,
                     analysis["id"],
@@ -100,9 +100,10 @@ analysisStart={}&analysisEnd={}".format(
                 )
             )
         else:
-            rurl = url + "/projects/{}/data".format(id_project)
+            rurl = url + "/projects/{}/blocksFromSampleIds".format(id_project)
 
-        r = requests.post(rurl, json=id_list)
+        r = requests.post(rurl, json={"sampleIds": id_list})
+        print(r.json())
         return get_http_response(r)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         raise Exception(

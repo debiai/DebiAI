@@ -71,7 +71,7 @@ def get_columns_statistics(dataProviderId, projectId):
         project_update_time = data_provider_project.get("updateDate", 0)
         if type(existing) is dict:
             existing_update_time = existing.get("updateDate", 0)
-            if existing_update_time >= project_update_time:
+            if (existing_update_time or 0) >= (project_update_time or 0):
                 return {"columns": existing["columns"]}
 
     # Get the project columns structure
@@ -103,8 +103,8 @@ def get_columns_statistics(dataProviderId, projectId):
     #
     # Set the columns statistics
     columns_statistics = []
+    metrics_already_present = True
     for column in columns_structure:
-        # Get the column statistics
         column_statistics = {
             "name": column["name"],
             "type": column["type"],
@@ -112,17 +112,43 @@ def get_columns_statistics(dataProviderId, projectId):
             "metadata": {
                 "category": column["category"],
             },
-            "metrics": {
-                "nbUniqueValues": 0,
-                "nbNullValues": 0,
-                "average": None,
-                "min": None,
-                "max": None,
-            },
+            "metrics": {},
         }
+
+        if column["type"] != "auto":
+            if (
+                "metrics" not in column
+                or type(column["metrics"]) is not dict
+                or len(column["metrics"]) == 0
+                or "nbUniqueValues" not in column["metrics"]
+            ):
+                metrics_already_present = False
+                column_statistics["metrics"] = {
+                    "nbUniqueValues": 0,
+                    "nbNullValues": 0,
+                    "average": None,
+                    "min": None,
+                    "max": None,
+                }
+            else:
+                column_statistics["metrics"] = column["metrics"]
         columns_statistics.append(column_statistics)
 
-    # Get the columns statistics
+    # Get the columns data to calculate the statistics if not already present
+
+    if metrics_already_present:
+        project_explorations_db.set(
+            project_columns_statistics_db_key,
+            {
+                "dataProviderId": dataProviderId,
+                "projectId": projectId,
+                "columns": columns_statistics,
+                "updateDate": data_provider_project["updateDate"],
+            },
+        )
+        project_explorations_db.save()
+        return {"columns": columns_statistics}
+
     analysis_id = str(uuid.uuid4())
     unique_values_map = {}
     nb_samples = 0
@@ -259,6 +285,9 @@ def get_samples_batch(
 
     # Load the samples
     data = data_provider.get_samples(projectId, analysis, data_id_list)
+
+    if "dataMap" in data:
+        data = data["data"]
 
     return data
 
