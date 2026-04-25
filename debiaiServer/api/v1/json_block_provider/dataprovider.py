@@ -37,6 +37,17 @@ def get_data_providers_project():
     return projects, 200
 
 
+def _flatten_column(col):
+    """Promote metadata.category and metadata.group to the top level of a column."""
+    flat = dict(col)
+    metadata = flat.get("metadata", {})
+    if "category" in metadata:
+        flat["category"] = metadata["category"]
+    if "group" in metadata:
+        flat["group"] = metadata["group"]
+    return flat
+
+
 def change_project_v1(project_info, column_info):
     v1_project_info = {
         "id": project_info["id"],
@@ -50,7 +61,7 @@ def change_project_v1(project_info, column_info):
             "nbSelections": project_info["nbSelections"],
             "nbSamples": project_info["nbSamples"],
         },
-        "columns": column_info,
+        "columns": [_flatten_column(c) for c in column_info],
         # "nbModels": project_info["nbModels"],
         # "nbSelections": project_info["nbSelections"],
         # "nbSamples": project_info["nbSamples"],
@@ -60,6 +71,11 @@ def change_project_v1(project_info, column_info):
         # projectColumns, get from statistics and remove duplicates
         # "blockLevelInfo": projectBlockLevel, remove here, keep in the API for python module in V1
     }
+
+    # Include resultStructure only when it is defined
+    result_structure = project_info.get("resultStructure")
+    if result_structure is not None:
+        v1_project_info["resultStructure"] = result_structure
 
     return v1_project_info
 

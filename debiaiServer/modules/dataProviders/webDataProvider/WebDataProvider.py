@@ -52,6 +52,7 @@ class WebDataProvider(DataProvider):
 
         # Init cache
         self.cache = Cache()
+        self._cached_projects = None  # Last known project list for resilience
 
     @property
     def name(self):
@@ -78,7 +79,12 @@ class WebDataProvider(DataProvider):
         # Request method to get projects overview
         # Return Arr[object{ id, name, nb_samples, nb_models, nb_selections,
         # update_time, creation_time}]
-        return get_all_projects_from_data_provider(self.url, self.name)
+        result = get_all_projects_from_data_provider(self.url, self.name)
+        if result is not None:
+            self._cached_projects = result
+            return result
+        # Fall back to last known list if DP is temporarily unreachable
+        return self._cached_projects
 
     def get_project(self, id_project):
         # Request method to get projects overview
