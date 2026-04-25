@@ -2,7 +2,6 @@
 
 
 def freeze(o):
-
     if isinstance(o, dict):
         return frozenset({k: freeze(v) for k, v in o.items()}.items())
 

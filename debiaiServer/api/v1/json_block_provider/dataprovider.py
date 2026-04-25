@@ -16,7 +16,6 @@ dataProviderId = "json_block"
 
 
 def get_data_providers_project():
-
     # Return a list of project overviews for a specific data provider
     data_provider = data_provider_manager.get_single_data_provider(dataProviderId)
 

@@ -24,7 +24,6 @@ class TestDataProvidersRegistry:
         return data_providers
 
     def get_dataprovider(self, name):
-
         data_providers = self.get_dataproviders()
         for dp in data_providers:
             self.check_provider(dp)
@@ -57,13 +56,11 @@ class TestDataProvidersRegistry:
             self.check_provider(dp)
 
     def test_get_json_block_provider(self):
-
         json_block = self.get_dataprovider("Python module Data Provider")
         assert json_block["id"] == "json_block"
         assert json_block["type"] == "internal"
 
     def test_all_data_providers(self):
-
         data_providers = self.get_dataproviders()
         for dp in data_providers:
             url = appUrl + "data-providers/" + dp["name"]
