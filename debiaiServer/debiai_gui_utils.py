@@ -157,10 +157,8 @@ def build_parameters(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="""DebiAI GUI Command Line.
-Learn more about DebiAI at https://debiai.irt-systemx.fr/"""
-    )
+    parser = argparse.ArgumentParser(description="""DebiAI GUI Command Line.
+Learn more about DebiAI at https://debiai.irt-systemx.fr/""")
 
     # Version flag
     parser.add_argument(
