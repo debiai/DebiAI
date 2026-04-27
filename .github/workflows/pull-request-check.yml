@@ -169,7 +169,7 @@ jobs:
   debiai-gui-build:
     # Test that the debiai_gui module builds in different Python versions
     name: debiai_gui build test
-    needs: [ black-format-check, prettier-check, cspell-check, version-upgrade-check ]
+    needs: [ black-format-check, flake8-check, prettier-check, cspell-check, version-upgrade-check ]
 
     runs-on: ubuntu-latest
 
@@ -198,7 +198,7 @@ jobs:
   docker-build-check:
     # Build the docker image and check that it can run
     name: Docker build check
-    needs: [ black-format-check, prettier-check, cspell-check, version-upgrade-check ]
+    needs: [ black-format-check, flake8-check, prettier-check, cspell-check, version-upgrade-check ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
