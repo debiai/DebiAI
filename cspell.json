@@ -48,6 +48,7 @@
     "rurl",
     "scipy",
     "sdist",
+    "setuptools",
     "showgrid",
     "showline",
     "sklearn",
