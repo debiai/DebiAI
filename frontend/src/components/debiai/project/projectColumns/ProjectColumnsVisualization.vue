@@ -117,7 +117,7 @@ export default {
       for (let category in categories) {
         const groups = { "": [] };
         for (let column of categories[category]) {
-          const group = column.metadata.group;
+          const group = column.metadata?.group;
           if (!group) {
             groups[""].push(column);
             continue;
@@ -131,6 +131,7 @@ export default {
       return categoriesGroups;
     },
   },
+
   computed: {
     columnsPerCategory() {
       let columnsPerCategory = {};

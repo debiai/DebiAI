@@ -6,13 +6,11 @@ appUrl = "http://localhost:3000/api/v1/"
 
 
 class TestProjects:
-
     PYTHON_DATA_PROVIDER_ID: str = "Python module Data Provider"
     PYTHON_API_URL: str = "http://localhost:3000/api/v0/"
     PROJECT_NAME_1: str = "Test Default Project"
 
     def delete_project(self, project_name, fail_if_not_found: bool = False):
-
         url = (
             self.PYTHON_API_URL
             + "data-providers/"
@@ -27,7 +25,6 @@ class TestProjects:
             assert resp.status_code == 200 or resp.status_code == 404
 
     def delete_projects(self):
-
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})
         assert resp.status_code == 200
@@ -105,7 +102,6 @@ class TestProjects:
         assert len(project_list) == 0
 
     def test_get_projects_check_project_one_empty(self, project_one):
-
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})
         assert (

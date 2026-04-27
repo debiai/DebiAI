@@ -32,13 +32,11 @@ DEBIAI_basic_block = {
 
 
 class TestBlocsIdProvider:
-
     PYTHON_DATA_PROVIDER_ID: str = "Python module Data Provider"
     PYTHON_API_URL: str = "http://localhost:3000/api/v0/"
     PROJECT_NAME_1: str = "Block ID Default Project"
 
     def delete_project(self, project_name, fail_if_not_found: bool = False):
-
         url = (
             self.PYTHON_API_URL
             + "data-providers/"
@@ -64,7 +62,6 @@ class TestBlocsIdProvider:
         return test_project_id
 
     def create_block_levels(self, project_name):
-
         url = (
             self.PYTHON_API_URL
             + "data-providers/"
@@ -119,7 +116,6 @@ class TestBlocsIdProvider:
         pass
 
     def test_get_projects_check_project_one_empty(self, project_one):
-
         url = appUrl + "projects"
         resp = requests.get(url=url, headers={})
         assert (

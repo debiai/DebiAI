@@ -8,7 +8,6 @@ from debiaiServer.utils.utils import get_app_version
 from debiaiServer.config.init_config import DEBUG_COLOR
 from flask import send_from_directory, request, Response
 
-
 DEV_FRONTEND_URL = "http://localhost:8080/"
 app = connexion.App(__name__)
 app.add_api("swagger.yaml", strict_validation=True)

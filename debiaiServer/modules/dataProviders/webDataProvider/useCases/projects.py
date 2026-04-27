@@ -86,7 +86,7 @@ def get_single_project_from_data_provider(url, data_provider_name, id_project):
         "name": project["name"] if "name" in project else id_project,
         "dataProvider": data_provider_name,
         "columns": project_columns,
-        "resultStructure": project["expectedResults"],
+        "resultStructure": project["resultStructure"],
         "nbModels": len(models),
         "nbSamples": nbSamples,
         "nbSelections": len(selections),
