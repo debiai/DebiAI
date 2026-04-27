@@ -38,7 +38,7 @@ setup(
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
-        "PyYAML==6.0.0",
+        "PyYAML==6.0.3",
         "psutil==6.0.0",
         "waitress==3.0.0",
         "pickledb==1.3.2",
