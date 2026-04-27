@@ -202,6 +202,19 @@ jobs:
         run: |
           python -c "import debiaiServer; print('debiai_gui module imported successfully')"
           debiai-gui --help
+      - name: Test debiai-gui start command
+        run: |
+          debiai-gui start --no-browser &
+          DEBIAI_PID=$!
+          sleep 5
+          if kill -0 $DEBIAI_PID 2>/dev/null; then
+            echo "debiai-gui started successfully"
+            kill $DEBIAI_PID
+            exit 0
+          else
+            echo "debiai-gui failed to start"
+            exit 1
+          fi
 
   docker-build-check:
     # Build the docker image and check that it can run
