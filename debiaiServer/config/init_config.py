@@ -1,9 +1,8 @@
 from configparser import ConfigParser
 from termcolor import colored
-import pkg_resources
 import os
 
-config_path = pkg_resources.resource_filename("debiaiServer", "config/config.ini")
+config_path = os.path.join(os.path.dirname(__file__), "config.ini")
 config_parser = ConfigParser()
 
 DEBUG_COLOR = "light_blue"

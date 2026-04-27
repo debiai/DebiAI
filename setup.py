@@ -1,10 +1,30 @@
 from setuptools import setup, find_packages
-from debiaiServer.utils.utils import get_app_version
+import os
+import re
 
-try:
-    VERSION = get_app_version()
-except ModuleNotFoundError:
-    VERSION = "0.0.0"
+
+def get_version():
+    """Read version from debiaiServer/swagger.yaml using regex"""
+    swagger_path = os.path.join(
+        os.path.dirname(__file__), "debiaiServer", "swagger.yaml"
+    )
+    try:
+        with open(swagger_path, "r") as f:
+            content = f.read()
+            # Match version: "X.Y.Z" or version: X.Y.Z
+            match = re.search(r'version:\s*["\']?([0-9.]+)["\']?', content)
+            if match:
+                return match.group(1)
+            raise ValueError("Version not found in swagger.yaml")
+    except (FileNotFoundError, ValueError) as e:
+        raise RuntimeError(
+            f"Cannot find version information in {swagger_path}. "
+            "Ensure that the version is specified in the swagger.yaml file. "
+            f"Error: {e}"
+        ) from e
+
+
+VERSION = get_version()
 
 setup(
     name="debiai_gui",
@@ -20,14 +40,12 @@ setup(
         "ujson==5.8.0",
         "kafka-python==2.0.2",
         "openapi_spec_validator==0.2.8",
-        "PyYAML==6.0",
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
         "psutil==6.0.0",
         "waitress==3.0.0",
         "pickledb==1.3.2",
-        'setuptools==80.9.0'
     ],
     entry_points={
         "console_scripts": [
