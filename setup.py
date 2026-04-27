@@ -1,12 +1,25 @@
 from setuptools import setup, find_packages
-from debiaiServer.utils.utils import get_app_version
+import os
+import yaml
 
-try:
-    VERSION = get_app_version()
-except ModuleNotFoundError:
-    raise RuntimeError("Cannot find version information. Please ensure\
- that the version is specified in the swagger.yaml file and that the file\
- is accessible.")
+
+def get_version():
+    """Read version from debiaiServer/swagger.yaml"""
+    swagger_path = os.path.join(
+        os.path.dirname(__file__), "debiaiServer", "swagger.yaml"
+    )
+    try:
+        with open(swagger_path, "r") as f:
+            data = yaml.safe_load(f)
+            return data["info"]["version"]
+    except (FileNotFoundError, KeyError, yaml.YAMLError) as e:
+        raise RuntimeError(
+            f"Cannot find version information in {swagger_path}. "
+            "Ensure that the version is specified in the swagger.yaml file."
+        ) from e
+
+
+VERSION = get_version()
 
 setup(
     name="debiai_gui",
@@ -25,6 +38,7 @@ setup(
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
+        "PyYAML==6.0.0",
         "psutil==6.0.0",
         "waitress==3.0.0",
         "pickledb==1.3.2",

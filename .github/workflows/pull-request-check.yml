@@ -166,7 +166,7 @@ jobs:
         run: |
           python run_debiai_server_dev.py & sleep 5 && pytest debiaiServer/tests/
 
-  debiai-gui-build:
+  debiai-gui-build-check:
     # Test that the debiai_gui module builds in different Python versions
     name: debiai_gui build test
     needs: [ black-format-check, flake8-check, prettier-check, cspell-check, version-upgrade-check ]
