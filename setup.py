@@ -1,21 +1,26 @@
 from setuptools import setup, find_packages
 import os
-import yaml
+import re
 
 
 def get_version():
-    """Read version from debiaiServer/swagger.yaml"""
+    """Read version from debiaiServer/swagger.yaml using regex"""
     swagger_path = os.path.join(
         os.path.dirname(__file__), "debiaiServer", "swagger.yaml"
     )
     try:
         with open(swagger_path, "r") as f:
-            data = yaml.safe_load(f)
-            return data["info"]["version"]
-    except (FileNotFoundError, KeyError, yaml.YAMLError) as e:
+            content = f.read()
+            # Match version: "X.Y.Z" or version: X.Y.Z
+            match = re.search(r'version:\s*["\']?([0-9.]+)["\']?', content)
+            if match:
+                return match.group(1)
+            raise ValueError("Version not found in swagger.yaml")
+    except (FileNotFoundError, ValueError) as e:
         raise RuntimeError(
             f"Cannot find version information in {swagger_path}. "
-            "Ensure that the version is specified in the swagger.yaml file."
+            "Ensure that the version is specified in the swagger.yaml file. "
+            f"Error: {e}"
         ) from e
 
 
@@ -38,7 +43,6 @@ setup(
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
-        "PyYAML==6.0.3",
         "psutil==6.0.0",
         "waitress==3.0.0",
         "pickledb==1.3.2",
