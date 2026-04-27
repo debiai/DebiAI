@@ -1,14 +1,14 @@
-Flask == 2.0.3
+Flask == 2.2.3
 flask_cors == 3.0.8
-connexion == 2.6.0
-requests == 2.25.1
+connexion == 2.14.2
+requests >= 2.27
 swagger-ui-bundle == 0.0.5
 ujson == 5.8.0
-kafka-python == 2.0.2
+kafka-python == 2.0.3
 openapi_spec_validator == 0.2.8
 cacheout == 0.14.1
 termcolor==2.3.0
-werkzeug==2.2.2
+werkzeug>=2.2.2
 psutil==6.0.0
 waitress==3.0.0
 jsonschema==3.2.0
