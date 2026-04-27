@@ -22,7 +22,6 @@ setup(
         "ujson==5.8.0",
         "kafka-python==2.0.2",
         "openapi_spec_validator==0.2.8",
-        "PyYAML==6.0",
         "cacheout==0.14.1",
         "termcolor==2.3.0",
         "werkzeug==2.2.2",
