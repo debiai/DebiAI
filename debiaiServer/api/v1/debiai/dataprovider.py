@@ -47,7 +47,6 @@ def format_data_provider_info(data_provider):
 
 
 def get_data_provider_info(dataProviderId):
-
     # As Parquet not yet supported we force json_block:
     if dataProviderId == "json_block":
         dataProviderId = "Python module Data Provider"
