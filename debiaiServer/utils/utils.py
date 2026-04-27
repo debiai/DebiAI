@@ -1,10 +1,10 @@
 import time
-import pkg_resources
 from urllib.parse import urlparse
 from itertools import cycle
 from shutil import get_terminal_size
 from threading import Thread
 from time import sleep
+import os
 
 
 def get_app_version():
@@ -12,7 +12,7 @@ def get_app_version():
     from yaml.loader import SafeLoader
 
     # Read the version from the API YAML file
-    yaml_path = pkg_resources.resource_filename("debiaiServer", "swagger.yaml")
+    yaml_path = os.path.join(os.path.dirname(__file__), "..", "swagger.yaml")
 
     try:
         with open(yaml_path, "r") as f:
