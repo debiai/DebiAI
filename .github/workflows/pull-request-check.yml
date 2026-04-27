@@ -204,7 +204,8 @@ jobs:
           debiai-gui --help
       - name: Test debiai-gui start command
         run: |
-          debiai-gui start --no-browser &
+          mkdir debiai_data
+          debiai-gui start --no-browser --data-folder debiai_data &
           DEBIAI_PID=$!
           sleep 5
           if kill -0 $DEBIAI_PID 2>/dev/null; then
