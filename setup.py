@@ -4,7 +4,9 @@ from debiaiServer.utils.utils import get_app_version
 try:
     VERSION = get_app_version()
 except ModuleNotFoundError:
-    VERSION = "0.0.0"
+    raise RuntimeError("Cannot find version information. Please ensure\
+ that the version is specified in the swagger.yaml file and that the file\
+ is accessible.")
 
 setup(
     name="debiai_gui",
@@ -27,7 +29,7 @@ setup(
         "psutil==6.0.0",
         "waitress==3.0.0",
         "pickledb==1.3.2",
-        'setuptools==80.9.0'
+        "setuptools==80.9.0",
     ],
     entry_points={
         "console_scripts": [

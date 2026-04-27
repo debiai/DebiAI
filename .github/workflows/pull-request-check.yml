@@ -8,7 +8,8 @@ on:
       - reopened
 
 jobs:
-  black-format-check: # Check that the debiaiServer codebase is formatted with black
+  black-format-check:
+    # Check that the debiaiServer codebase is formatted with black
     name: Black format check
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +25,8 @@ jobs:
           pip install black
           black --check --diff .
 
-  flake8-check: # Check that the debiaiServer codebase does not contain linting errors
+  flake8-check:
+    # Check that the debiaiServer codebase does not contain linting errors
     name: Flake8 check
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +42,8 @@ jobs:
           pip install flake8
           flake8 .
 
-  prettier-check: # Check that the frontend codebase is formatted with prettier
+  prettier-check:
+    # Check that the frontend codebase is formatted with prettier
     name: Prettier format check
     runs-on: ubuntu-latest
     steps:
@@ -55,7 +58,8 @@ jobs:
           npm install prettier
           npm run prettier:check
 
-  cspell-check: # Check that the project does not contain spelling errors
+  cspell-check:
+    # Check that the project does not contain spelling errors
     name: CSpell check
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +71,8 @@ jobs:
       - name: Install dependencies and check prettier format
         run: npm install -g cspell && cspell --no-summary --no-progress --no-color .
 
-  version-upgrade-check: # Check that the version is greater than the previous commit version
+  version-upgrade-check:
+    # Check that the version is greater than the previous commit version
     name: Version upgrade check
     runs-on: ubuntu-latest
     steps:
@@ -128,7 +133,8 @@ jobs:
 
           echo "Version upgraded: frontend/package.json version '$PREVIOUS_VERSION' < branch version '$BRANCH_VERSION'."
 
-  python-tests: # Install dependencies and run tests with pytest
+  python-tests:
+    # Install dependencies and run tests with pytest
     name: Python tests
     needs:
       [
@@ -142,7 +148,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: [ "3.8", "3.9", "3.10" ]
 
     steps:
       - uses: actions/checkout@v3
@@ -160,10 +166,39 @@ jobs:
         run: |
           python run_debiai_server_dev.py & sleep 5 && pytest debiaiServer/tests/
 
-  docker-build-check: # Build the docker image and check that it can run
+  debiai-gui-build:
+    # Test that the debiai_gui module builds in different Python versions
+    name: debiai_gui build test
+    needs: [ black-format-check, prettier-check, cspell-check, version-upgrade-check ]
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r debiaiServer/requirements.txt
+      - name: Build debiai_gui module
+        run: |
+          pip install .
+      - name: Verify debiai_gui installation
+        run: |
+          python -c "import debiaiServer; print('debiai_gui module imported successfully')"
+          debiai-gui --help
+
+  docker-build-check:
+    # Build the docker image and check that it can run
     name: Docker build check
-    needs:
-      [black-format-check, prettier-check, cspell-check, version-upgrade-check]
+    needs: [ black-format-check, prettier-check, cspell-check, version-upgrade-check ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
